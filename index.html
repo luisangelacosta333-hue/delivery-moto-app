@@ -232,8 +232,12 @@ DELIVERY MOTO LOS CONECTA.
 <div class="glass p-4 mb-4 relative z-10" style="border-top:4px solid var(--naranja)">
 <h3 class="font-black text-slate-800 text-[16.5px] mb-3"><i class="fa-solid fa-map-location-dot mr-1" style="color:var(--naranja)"></i> Trazar Ruta Local</h3>
 <div class="space-y-2.5 mb-4 relative">
+<div class="flex items-center gap-3 relative z-10">
+    <div class="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center text-green-500 shrink-0"><i class="fa-brands fa-whatsapp"></i></div>
+    <input type="tel" id="input-celular-comercio" placeholder="Tu WhatsApp (Ej: 381...)" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-[15px] font-bold text-slate-600 outline-none shadow-inner focus:border-[var(--naranja)] transition-all">
+</div>
 <div class="flex items-center gap-3 relative z-10"><div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i class="fa-solid fa-city"></i></div><input type="text" id="input-ciudad" placeholder="Escribe tu ciudad o zona..." class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-[15px] font-bold text-slate-600 outline-none shadow-inner focus:border-[var(--naranja)] transition-all"></div>
-<div class="absolute left-[17px] top-[50px] bottom-[22px] w-0.5 bg-slate-200 z-0"></div>
+<div class="absolute left-[17px] top-[100px] bottom-[22px] w-0.5 bg-slate-200 z-0"></div>
 <div class="flex items-center gap-3 relative z-10"><div class="w-4 h-4 rounded-full bg-slate-800 border-2 border-white shadow-sm shrink-0 ml-2.5"></div><input type="text" id="input-origen" placeholder="Calle de origen" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm"></div>
 <div class="flex items-center gap-3 relative z-10"><div class="w-4 h-4 rounded-sm border-2 border-white shadow-sm shrink-0 ml-2.5" style="background:var(--naranja)"></div><input type="text" id="input-destino" placeholder="Calle de destino" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm"></div>
 </div>
@@ -273,6 +277,7 @@ DELIVERY MOTO LOS CONECTA.
     <p class="text-[13.5px] text-slate-500 font-bold"><i class="fa-solid fa-motorcycle" style="color:var(--naranja)"></i> Honda Wave</p>
 </div>
 </div>
+<!-- El href real del whatsapp se actualiza dinamicamente si tuvieramos los datos del cadete, por ahora queda el UI de base -->
 <a href="https://wa.me/5493815550123?text=Hola,%20%C2%BFestas%20ahi%3F%20Necesito%20que%20me%20hagas%20un%20favor" target="_blank" class="w-full py-3.5 mt-2 mb-3 bg-[#25D366]/10 text-[#128C7E] border border-[#25D366]/30 font-black rounded-[50px] flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-[15.5px]">
     <i class="fa-brands fa-whatsapp text-2xl"></i> Favor por WhatsApp
 </a>
@@ -458,7 +463,7 @@ DELIVERY MOTO LOS CONECTA.
 <div class="modal-header"><h3 class="font-black text-slate-800 text-lg"><i class="fa-solid fa-file-invoice-dollar mr-2" style="color:var(--naranja)"></i>Abonar Costos</h3><div class="btn-close" onclick="cerrarModal('modal-pago')"><i class="fa-solid fa-xmark"></i></div></div>
 <div class="modal-body bg-slate-50 text-center">
 <p class="text-[15.5px] font-medium text-slate-600 mb-4">Para continuar recibiendo viajes, subí el comprobante de transferencia al alias oficial.</p>
-<p class="text-[26px] font-black text-slate-800 mb-5">Costo por Viaje: <span class="text-red-500">$200</span></p>
+<p class="text-[26px] font-black text-slate-800 mb-5">Monto: <span class="text-red-500" id="monto-a-pagar-ui">$0</span></p>
 
 <div class="relative bg-white border-2 border-dashed border-slate-300 rounded-xl p-6 mb-4 hover:border-[var(--naranja)] transition-colors group">
 <input type="file" accept="image/*,application/pdf" id="file-comprobante" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
@@ -477,12 +482,6 @@ DELIVERY MOTO LOS CONECTA.
 <div class="modal-header"><h3 class="font-black text-slate-800 text-lg"><i class="fa-solid fa-map-location-dot mr-2" style="color:var(--naranja)"></i>Tu Ubicación</h3><div class="btn-close" onclick="cerrarModal('modal-zona')"><i class="fa-solid fa-xmark"></i></div></div>
 <div class="modal-body p-0 relative">
 <div id="mapa-zona-render" class="w-full h-full bg-slate-800 shadow-inner"></div>
-<!-- Marcador Dinámico de la Moto -->
-<div id="marcador-moto-live" class="absolute hidden transition-all duration-500" style="transform: translate(-50%, -50%); z-index: 100;">
-    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2" style="border-color:var(--naranja)">
-        <i class="fa-solid fa-motorcycle text-xl" style="color:var(--naranja)"></i>
-    </div>
-</div>
 </div>
 </div>
 </div>
@@ -512,31 +511,8 @@ var estado={conectado:false};
 window.viajesTotales = 0;
 window.ultimoKmCalculado = 1.0;
 window.viajeActivoId = null;
-window.motoMarker = null;
 
-// ==========================================
-// NOTIFICACIONES PUSH NATIVAS
-// ==========================================
-function solicitarPermisoNotificaciones() {
-    if ("Notification" in window) {
-        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-            Notification.requestPermission();
-        }
-    }
-}
-
-function enviarNotificacionPush(titulo, cuerpo) {
-    if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(titulo, { 
-            body: cuerpo, 
-            icon: 'https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D' 
-        });
-    }
-}
-
-// ==========================================
-// FUNCIONES AUXILIARES
-// ==========================================
+// Funciones Auxiliares
 function generarEmail(celular) {
     return celular.trim() + '@deliverymoto.com';
 }
@@ -586,7 +562,7 @@ window.actualizarEstrellasPerfil = function() {
 };
 
 // ==========================================
-// GOOGLE MAPS PLATFORM (LÓGICA MATEMÁTICA EXACTA Y EN VIVO)
+// GOOGLE MAPS PLATFORM (LOGICA DE PRECIOS EXACTA)
 // ==========================================
 var miMapa, directionsService, directionsRenderer, mapaZona;
 var premiumDarkStyle = [{elementType: 'geometry', stylers: [{color: '#242f3e'}]},{elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},{elementType: 'labels.text.fill', stylers: [{color: '#746855'}]}];
@@ -632,39 +608,13 @@ window.initMapaZona = function() {
         });
     }
     if(typeof google !== 'undefined' && "geolocation" in navigator) {
-        navigator.geolocation.watchPosition(function(position){
-            var lat = position.coords.latitude;
-            var lng = position.coords.longitude;
-            mapaZona.setCenter({lat: lat, lng: lng});
+        navigator.geolocation.getCurrentPosition(function(position){
+            mapaZona.setCenter({lat: position.coords.latitude, lng: position.coords.longitude});
             mapaZona.setZoom(16);
-            if (!window.motoMarker) {
-                window.motoMarker = new google.maps.Marker({
-                    position: {lat: lat, lng: lng}, 
-                    map: mapaZona, 
-                    icon: {path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: '#ff8c00', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 3}
-                });
-            } else {
-                window.motoMarker.setPosition({lat: lat, lng: lng});
-            }
-            
-            // Función PENDIENTE para Live Tracking con el Backend:
-            // if(estado.conectado && window.viajeActivoId) {
-            //     supabase.from('viajes').update({ cadete_lat: lat, cadete_lng: lng }).eq('id', window.viajeActivoId);
-            // }
-            
+            new google.maps.Marker({position: {lat: position.coords.latitude, lng: position.coords.longitude}, map: mapaZona, icon: {path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: '#ff8c00', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 3}});
         });
     }
 };
-
-// Función para actualizar la motito en el mapa del comercio (Live Tracking)
-window.actualizarPosicionMoto = function(lat, lng) {
-    if (miMapa) {
-        var markerDiv = document.getElementById('marcador-moto-live');
-        markerDiv.classList.remove('hidden');
-        // Convertir lat/lng a pixeles en pantalla (Esta es la base, se ajustará al integrar con el SaaS)
-        // miMapa.panTo({lat: lat, lng: lng});
-    }
-}
 
 window.calcularRutaNacional = function(){
     if(typeof google === 'undefined') return;
@@ -697,14 +647,16 @@ window.calcularRutaNacional = function(){
             
             window.ultimoKmCalculado = distanciaKm;
 
-            var horaActual = new Date().getHours();
-            var esDeNoche = (horaActual >= 20 || horaActual < 6);
-
             // =====================================
             // LOGICA MATEMATICA DE PRECIOS EXACTA
             // =====================================
+            var horaActual = new Date().getHours();
+            var esDeNoche = (horaActual >= 20 || horaActual < 6);
+            
+            // Base Fija: $2300 (Dia) o $3000 (Noche)
             var total = esDeNoche ? 3000 : 2300; 
             
+            // Logica del Múltiplo: Por cada KM extra (o fracción), suma $1000 pesos
             var kmFloat = parseFloat(distanciaKm);
             if(kmFloat > 1.0) {
                 var kmExtra = kmFloat - 1.0;
@@ -729,7 +681,13 @@ window.calcularRutaNacional = function(){
     });
 };
 
-window.abrirModal = function(id) { document.getElementById(id).classList.add('show'); if(id === 'modal-zona') { setTimeout(initMapaZona, 100); } };
+window.abrirModal = function(id) { 
+    document.getElementById(id).classList.add('show'); 
+    if(id === 'modal-zona') { setTimeout(initMapaZona, 100); } 
+    if(id === 'modal-pago') {
+        document.getElementById('monto-a-pagar-ui').innerText = '$' + (window.viajesTotales * 200);
+    }
+};
 window.cerrarModal = function(id) { document.getElementById(id).classList.remove('show'); };
 
 function mostrarToast(mensaje,tipo){
@@ -757,21 +715,7 @@ window.speechSynthesis.speak(m);
 };
 
 // ==========================================
-// SUPABASE REALTIME - ESCUCHA DEL RADAR
-// ==========================================
-supabase.channel('radar-viajes')
-  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'viajes' }, payload => {
-      if (estado.conectado) { 
-          // Si el cadete está online, le llega la Push y el Toast
-          enviarNotificacionPush("🚨 ¡Nuevo Viaje en Radar!", "Retiro: " + payload.new.direccion_origen);
-          mostrarToast("Nuevo viaje disponible en tu zona", "success");
-          if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
-      }
-  })
-  .subscribe();
-
-// ==========================================
-// SUPABASE REAL - REGISTRO E INGRESOS
+// SUPABASE REAL - CADETES Y VIAJES
 // ==========================================
 
 window.marcarArchivoCargado = function(input) {
@@ -792,7 +736,7 @@ window.marcarArchivoCargado = function(input) {
     }
 };
 
-// 1. REGISTRO CADETE
+// 1. REGISTRO CADETE (INSERT a Supabase con Auth y Storage)
 window.iniciarAuditoriaIA = async function() {
     var cel = document.getElementById('reg-celular').value;
     var moto = document.getElementById('reg-moto').value;
@@ -806,7 +750,7 @@ window.iniciarAuditoriaIA = async function() {
     var filePolicia = document.getElementById('file-policia').files[0];
 
     if(!cel || !moto || !pwd || !prov || !fileSelfie) {
-        mostrarToast("Faltan datos o la foto selfie.", "info"); return;
+        mostrarToast("Completa tus datos y saca tu foto selfie.", "info"); return;
     }
     if(!c || !c.checked) { mostrarToast("Debes aceptar las Condiciones.", "info"); return; }
 
@@ -817,6 +761,7 @@ window.iniciarAuditoriaIA = async function() {
     try {
         txt.innerText = "Creando credenciales..."; barra.style.width = '20%';
 
+        // Truco Mail Auth
         const emailTrucho = generarEmail(cel);
         const { data: authData, error: authError } = await supabase.auth.signUp({ email: emailTrucho, password: pwd });
         if (authError) throw authError;
@@ -824,6 +769,7 @@ window.iniciarAuditoriaIA = async function() {
 
         txt.innerText = "Procesando foto de seguridad..."; barra.style.width = '50%';
 
+        // Subir Selfie Comprimida 800px a Storage
         let selfieUrl = '';
         const selfieName = `selfie_${userId}.jpg`;
         await new Promise(resolve => {
@@ -834,6 +780,7 @@ window.iniciarAuditoriaIA = async function() {
             });
         });
 
+        // Subir Documentos
         let afipUrl = '';
         if (fileAfip) {
             const afipName = `afip_${userId}_${fileAfip.name}`;
@@ -850,6 +797,7 @@ window.iniciarAuditoriaIA = async function() {
 
         txt.innerText = "Guardando perfil en base de datos..."; barra.style.width = '80%';
 
+        // Insertar a Tabla Cadetes
         const { error: dbError } = await supabase.from('cadetes').insert([{
             id: userId, celular: cel, provincia: prov, ciudad: ciudad, vehiculo: moto,
             foto_selfie: selfieUrl, constancia_afip: afipUrl, cert_policial: policiaUrl, estado_auditoria: 'aprobada'
@@ -879,7 +827,7 @@ window.iniciarAuditoriaIA = async function() {
     }
 };
 
-// 2. LOGIN CADETE
+// 2. LOGIN CADETE (SELECT / Auth)
 window.loginCadete = async function() {
     var cel = document.getElementById('login-celular').value;
     var pwd = document.getElementById('login-pwd').value;
@@ -899,6 +847,7 @@ window.loginCadete = async function() {
             window.viajesTotales = perfil.viajes_totales || 0;
             document.getElementById('contador-viajes').innerText = window.viajesTotales;
             document.getElementById('card-viajes').innerText = window.viajesTotales;
+            document.getElementById('deuda-texto').innerText = '-$ ' + (window.viajesTotales * 200);
         }
 
         mostrarToast("¡Bienvenido de nuevo!", "success");
@@ -923,12 +872,14 @@ window.subirSelfieComercio = function(input) {
             document.getElementById('texto-selfie-comercio').innerText = "Foto Nítida Lista";
             document.getElementById('texto-selfie-comercio').style.color = "var(--verde)";
             window.selfieComercioTomada = true;
-            mostrarToast("Selfie guardada", "success");
+            mostrarToast("Selfie lista", "success");
         });
     }
 };
 
 window.solicitarCadete = async function() {
+    var celularComercio = document.getElementById('input-celular-comercio').value;
+    if(!celularComercio) { mostrarToast("Ingresá tu WhatsApp para que el cadete te contacte.", "info"); return; }
     if(!window.selfieComercioTomada || !window.ultimaSelfieBlob) { mostrarToast("Subí tu foto selfie primero.", "info"); return; }
 
     var btn = document.getElementById('btn-pedir-cadete');
@@ -949,7 +900,7 @@ window.solicitarCadete = async function() {
 
         const { data: nuevoViaje, error: viajeError } = await supabase.from('viajes').insert([{
             foto_cliente: fotoUrl,
-            cliente_celular: 'COMERCIO_PWA', 
+            cliente_celular: celularComercio, 
             ciudad: ciudadComercio,
             direccion_origen: origen,
             direccion_destino: destino,
@@ -1078,7 +1029,6 @@ var sb=document.getElementById('status-bar');
 var eg=document.getElementById('estado-gps');
 
 if(!estado.conectado){
-solicitarPermisoNotificaciones(); // SOLICITA PERMISO PUSH
 estado.conectado=true;
 btn.style.background='linear-gradient(135deg,#ff8c00,#ff6b00,#cc4400)';
 btn.style.boxShadow='0 20px 50px rgba(255,107,0,0.5)';
