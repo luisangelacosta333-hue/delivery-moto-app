@@ -432,7 +432,7 @@ DELIVERY MOTO LOS CONECTA.
 <div class="p-4 border-b border-slate-100 flex items-center justify-between"><div class="flex items-center gap-3"><i class="fa-solid fa-location-dot text-red-500"></i><span class="font-bold text-slate-700 text-[16.5px]">Zona Activa</span></div><span id="perfil-zona" class="text-[14.5px] text-slate-500 font-black uppercase">Sin Localidad</span></div>
 <div class="p-4 border-b border-slate-100 flex items-center justify-between"><div class="flex items-center gap-3"><i class="fa-solid fa-motorcycle" style="color:var(--naranja)"></i><span class="font-bold text-slate-700 text-[16.5px]">Vehiculo</span></div><span id="perfil-moto" class="text-[14.5px] text-slate-500 font-medium">No definido</span></div>
 </div>
-<button class="w-full py-3.5 rounded-2xl bg-white text-red-500 font-black text-[16.5px] border border-red-100 shadow-sm" onclick="cambiarPantalla('pantalla-1');">
+<button class="w-full py-3.5 rounded-2xl bg-white text-red-500 font-black text-[16.5px] border border-red-100 shadow-sm" onclick="cambiarPantalla('pantalla-1'); mostrarToast('Sesion cerrada','info')">
 <i class="fa-solid fa-right-from-bracket mr-2"></i>Cerrar sesion
 </button>
 </div>
@@ -477,6 +477,12 @@ DELIVERY MOTO LOS CONECTA.
 <div class="modal-header"><h3 class="font-black text-slate-800 text-lg"><i class="fa-solid fa-map-location-dot mr-2" style="color:var(--naranja)"></i>Tu Ubicación</h3><div class="btn-close" onclick="cerrarModal('modal-zona')"><i class="fa-solid fa-xmark"></i></div></div>
 <div class="modal-body p-0 relative">
 <div id="mapa-zona-render" class="w-full h-full bg-slate-800 shadow-inner"></div>
+<!-- Marcador Dinámico de la Moto -->
+<div id="marcador-moto-live" class="absolute hidden transition-all duration-500" style="transform: translate(-50%, -50%); z-index: 100;">
+    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2" style="border-color:var(--naranja)">
+        <i class="fa-solid fa-motorcycle text-xl" style="color:var(--naranja)"></i>
+    </div>
+</div>
 </div>
 </div>
 </div>
@@ -506,8 +512,31 @@ var estado={conectado:false};
 window.viajesTotales = 0;
 window.ultimoKmCalculado = 1.0;
 window.viajeActivoId = null;
+window.motoMarker = null;
 
-// Funciones Auxiliares
+// ==========================================
+// NOTIFICACIONES PUSH NATIVAS
+// ==========================================
+function solicitarPermisoNotificaciones() {
+    if ("Notification" in window) {
+        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
+    }
+}
+
+function enviarNotificacionPush(titulo, cuerpo) {
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(titulo, { 
+            body: cuerpo, 
+            icon: 'https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D' 
+        });
+    }
+}
+
+// ==========================================
+// FUNCIONES AUXILIARES
+// ==========================================
 function generarEmail(celular) {
     return celular.trim() + '@deliverymoto.com';
 }
@@ -522,7 +551,7 @@ function comprimirImagen(file, callback) {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-            const MAX_WIDTH = 800; 
+            const MAX_WIDTH = 800; // Redimensionado optimizado para que se vea claro pero ligero
             const MAX_HEIGHT = 800;
             if (width > height) {
                 if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
@@ -557,7 +586,7 @@ window.actualizarEstrellasPerfil = function() {
 };
 
 // ==========================================
-// GOOGLE MAPS PLATFORM (LÓGICA MATEMÁTICA EXACTA)
+// GOOGLE MAPS PLATFORM (LÓGICA MATEMÁTICA EXACTA Y EN VIVO)
 // ==========================================
 var miMapa, directionsService, directionsRenderer, mapaZona;
 var premiumDarkStyle = [{elementType: 'geometry', stylers: [{color: '#242f3e'}]},{elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},{elementType: 'labels.text.fill', stylers: [{color: '#746855'}]}];
@@ -603,13 +632,39 @@ window.initMapaZona = function() {
         });
     }
     if(typeof google !== 'undefined' && "geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position){
-            mapaZona.setCenter({lat: position.coords.latitude, lng: position.coords.longitude});
+        navigator.geolocation.watchPosition(function(position){
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            mapaZona.setCenter({lat: lat, lng: lng});
             mapaZona.setZoom(16);
-            new google.maps.Marker({position: {lat: position.coords.latitude, lng: position.coords.longitude}, map: mapaZona, icon: {path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: '#ff8c00', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 3}});
+            if (!window.motoMarker) {
+                window.motoMarker = new google.maps.Marker({
+                    position: {lat: lat, lng: lng}, 
+                    map: mapaZona, 
+                    icon: {path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: '#ff8c00', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 3}
+                });
+            } else {
+                window.motoMarker.setPosition({lat: lat, lng: lng});
+            }
+            
+            // Función PENDIENTE para Live Tracking con el Backend:
+            // if(estado.conectado && window.viajeActivoId) {
+            //     supabase.from('viajes').update({ cadete_lat: lat, cadete_lng: lng }).eq('id', window.viajeActivoId);
+            // }
+            
         });
     }
 };
+
+// Función para actualizar la motito en el mapa del comercio (Live Tracking)
+window.actualizarPosicionMoto = function(lat, lng) {
+    if (miMapa) {
+        var markerDiv = document.getElementById('marcador-moto-live');
+        markerDiv.classList.remove('hidden');
+        // Convertir lat/lng a pixeles en pantalla (Esta es la base, se ajustará al integrar con el SaaS)
+        // miMapa.panTo({lat: lat, lng: lng});
+    }
+}
 
 window.calcularRutaNacional = function(){
     if(typeof google === 'undefined') return;
@@ -702,7 +757,21 @@ window.speechSynthesis.speak(m);
 };
 
 // ==========================================
-// SUPABASE REAL - CADETES Y VIAJES
+// SUPABASE REALTIME - ESCUCHA DEL RADAR
+// ==========================================
+supabase.channel('radar-viajes')
+  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'viajes' }, payload => {
+      if (estado.conectado) { 
+          // Si el cadete está online, le llega la Push y el Toast
+          enviarNotificacionPush("🚨 ¡Nuevo Viaje en Radar!", "Retiro: " + payload.new.direccion_origen);
+          mostrarToast("Nuevo viaje disponible en tu zona", "success");
+          if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      }
+  })
+  .subscribe();
+
+// ==========================================
+// SUPABASE REAL - REGISTRO E INGRESOS
 // ==========================================
 
 window.marcarArchivoCargado = function(input) {
@@ -737,7 +806,7 @@ window.iniciarAuditoriaIA = async function() {
     var filePolicia = document.getElementById('file-policia').files[0];
 
     if(!cel || !moto || !pwd || !prov || !fileSelfie) {
-        mostrarToast("Completa tus datos y saca tu foto selfie.", "info"); return;
+        mostrarToast("Faltan datos o la foto selfie.", "info"); return;
     }
     if(!c || !c.checked) { mostrarToast("Debes aceptar las Condiciones.", "info"); return; }
 
@@ -841,7 +910,7 @@ window.loginCadete = async function() {
     }
 };
 
-// 3. VIAJE COMERCIANTE
+// 3. VIAJE COMERCIANTE (INSERT RADAR)
 window.selfieComercioTomada = false;
 window.ultimaSelfieBlob = null;
 
@@ -854,7 +923,7 @@ window.subirSelfieComercio = function(input) {
             document.getElementById('texto-selfie-comercio').innerText = "Foto Nítida Lista";
             document.getElementById('texto-selfie-comercio').style.color = "var(--verde)";
             window.selfieComercioTomada = true;
-            mostrarToast("Selfie lista", "success");
+            mostrarToast("Selfie guardada", "success");
         });
     }
 };
@@ -903,12 +972,12 @@ window.solicitarCadete = async function() {
     }
 };
 
+// 4. CONFIRMAR VIAJE (UPDATE)
 window.confirmarEntrega = async function() {
     window.viajesTotales++; 
     document.getElementById('contador-viajes').innerText = window.viajesTotales;
     document.getElementById('card-viajes').innerText = window.viajesTotales;
     
-    // Calculo basico de deuda simulado para UI (Viajes * 200)
     var nuevaDeuda = window.viajesTotales * 200;
     var elemDeuda = document.getElementById('deuda-texto');
     if(elemDeuda) {
@@ -936,6 +1005,7 @@ window.confirmarEntrega = async function() {
     }
 };
 
+// 5. PROCESAR PAGO
 window.procesarPagoIA = async function() {
     var fileInput = document.getElementById('file-comprobante');
     var file = fileInput.files[0];
@@ -1008,6 +1078,7 @@ var sb=document.getElementById('status-bar');
 var eg=document.getElementById('estado-gps');
 
 if(!estado.conectado){
+solicitarPermisoNotificaciones(); // SOLICITA PERMISO PUSH
 estado.conectado=true;
 btn.style.background='linear-gradient(135deg,#ff8c00,#ff6b00,#cc4400)';
 btn.style.boxShadow='0 20px 50px rgba(255,107,0,0.5)';
