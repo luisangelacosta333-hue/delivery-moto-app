@@ -423,7 +423,7 @@ DELIVERY MOTO LOS CONECTA.
 <div class="tarjeta-control">
 <div class="control-fila"><div class="control-label"><i class="fa-solid fa-motorcycle"></i><span>Viajes</span></div><div class="control-valor naranja" id="card-viajes">0</div></div>
 <div class="control-fila"><div class="control-label"><i class="fa-solid fa-sack-dollar"></i><span>Ganancia bruta</span></div><div class="control-valor positivo" id="card-ganancia">$ 0</div></div>
-<div class="control-fila"><div class="control-label"><i class="fa-solid fa-arrow-down"></i><span>Costos</span></div><div class="flex items-center gap-2"><span class="control-valor" id="deuda-texto" style="color:#ef4444">-$ 600</span><button id="btn-pagar" onclick="abrirModal('modal-pago')" class="bg-red-50 border border-red-200 text-red-600 px-2.5 py-1 rounded text-[11.5px] font-black uppercase tracking-wider active:scale-95 shadow-sm">PAGAR</button></div></div>
+<div class="control-fila"><div class="control-label"><i class="fa-solid fa-arrow-down"></i><span>Costos</span></div><div class="flex items-center gap-2"><span class="control-valor" id="deuda-texto" style="color:#ef4444">-$ 0</span><button id="btn-pagar" onclick="abrirModal('modal-pago')" class="bg-red-50 border border-red-200 text-red-600 px-2.5 py-1 rounded text-[11.5px] font-black uppercase tracking-wider active:scale-95 shadow-sm">PAGAR</button></div></div>
 </div>
 </div>
 
@@ -458,7 +458,7 @@ DELIVERY MOTO LOS CONECTA.
 <div class="modal-header"><h3 class="font-black text-slate-800 text-lg"><i class="fa-solid fa-file-invoice-dollar mr-2" style="color:var(--naranja)"></i>Abonar Costos</h3><div class="btn-close" onclick="cerrarModal('modal-pago')"><i class="fa-solid fa-xmark"></i></div></div>
 <div class="modal-body bg-slate-50 text-center">
 <p class="text-[15.5px] font-medium text-slate-600 mb-4">Para continuar recibiendo viajes, subí el comprobante de transferencia al alias oficial.</p>
-<p class="text-[26px] font-black text-slate-800 mb-5">Monto: <span class="text-red-500">$600</span></p>
+<p class="text-[26px] font-black text-slate-800 mb-5">Costo por Viaje: <span class="text-red-500">$200</span></p>
 
 <div class="relative bg-white border-2 border-dashed border-slate-300 rounded-xl p-6 mb-4 hover:border-[var(--naranja)] transition-colors group">
 <input type="file" accept="image/*,application/pdf" id="file-comprobante" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
@@ -522,7 +522,7 @@ function comprimirImagen(file, callback) {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-            const MAX_WIDTH = 800; // Redimensionado optimizado para que se vea claro pero ligero
+            const MAX_WIDTH = 800; 
             const MAX_HEIGHT = 800;
             if (width > height) {
                 if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
@@ -557,7 +557,7 @@ window.actualizarEstrellasPerfil = function() {
 };
 
 // ==========================================
-// GOOGLE MAPS PLATFORM (LOGICA DE PRECIOS EXACTA)
+// GOOGLE MAPS PLATFORM (LÓGICA MATEMÁTICA EXACTA)
 // ==========================================
 var miMapa, directionsService, directionsRenderer, mapaZona;
 var premiumDarkStyle = [{elementType: 'geometry', stylers: [{color: '#242f3e'}]},{elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},{elementType: 'labels.text.fill', stylers: [{color: '#746855'}]}];
@@ -638,34 +638,29 @@ window.calcularRutaNacional = function(){
             directionsRenderer.setDirections(response);
             var ruta = response.routes[0].legs[0];
             var distanciaMetros = ruta.distance.value; 
-            var distanciaKm = (distanciaMetros / 1000).toFixed(1);
+            var distanciaKm = (distanciaMetros / 1000).toFixed(1); 
             
             window.ultimoKmCalculado = distanciaKm;
+
+            var horaActual = new Date().getHours();
+            var esDeNoche = (horaActual >= 20 || horaActual < 6);
 
             // =====================================
             // LOGICA MATEMATICA DE PRECIOS EXACTA
             // =====================================
-            var total = 2300; // Base MODIFICADA: $2300 pesos x el primer Kilometro
+            var total = esDeNoche ? 3000 : 2300; 
             
-            // Logica del Múltiplo: Por cada KM extra, suma $1000 pesos
-            if(distanciaKm > 1.0) {
-                var kmExtra = distanciaKm - 1.0;
+            var kmFloat = parseFloat(distanciaKm);
+            if(kmFloat > 1.0) {
+                var kmExtra = kmFloat - 1.0;
                 total += (kmExtra * 1000); 
-            }
-
-            // Suma $1000 Automatico después de las 20:00 hs o madrugada
-            var horaActual = new Date().getHours();
-            var recargoNoche = false;
-            if (horaActual >= 20 || horaActual < 6) {
-                total += 1000;
-                recargoNoche = true;
             }
 
             document.getElementById('caja-resultado').classList.remove('hidden');
             document.getElementById('resultado-tarifa').innerText = '$ ' + Math.floor(total);
             
             var infoKm = distanciaKm + ' KM';
-            if(recargoNoche) infoKm += ' (+ $1000 NOCHE)';
+            if(esDeNoche) infoKm += ' (TARIFA NOCTURNA)';
             
             document.getElementById('km-calculados').innerText = infoKm;
             document.getElementById('btn-pedir-cadete').classList.remove('opacity-50','pointer-events-none');
@@ -728,7 +723,7 @@ window.marcarArchivoCargado = function(input) {
     }
 };
 
-// 1. REGISTRO CADETE (INSERT a Supabase con Auth y Storage)
+// 1. REGISTRO CADETE
 window.iniciarAuditoriaIA = async function() {
     var cel = document.getElementById('reg-celular').value;
     var moto = document.getElementById('reg-moto').value;
@@ -753,7 +748,6 @@ window.iniciarAuditoriaIA = async function() {
     try {
         txt.innerText = "Creando credenciales..."; barra.style.width = '20%';
 
-        // Truco Mail Auth
         const emailTrucho = generarEmail(cel);
         const { data: authData, error: authError } = await supabase.auth.signUp({ email: emailTrucho, password: pwd });
         if (authError) throw authError;
@@ -761,7 +755,6 @@ window.iniciarAuditoriaIA = async function() {
 
         txt.innerText = "Procesando foto de seguridad..."; barra.style.width = '50%';
 
-        // Subir Selfie Comprimida 800px a Storage
         let selfieUrl = '';
         const selfieName = `selfie_${userId}.jpg`;
         await new Promise(resolve => {
@@ -772,7 +765,6 @@ window.iniciarAuditoriaIA = async function() {
             });
         });
 
-        // Subir Documentos
         let afipUrl = '';
         if (fileAfip) {
             const afipName = `afip_${userId}_${fileAfip.name}`;
@@ -789,7 +781,6 @@ window.iniciarAuditoriaIA = async function() {
 
         txt.innerText = "Guardando perfil en base de datos..."; barra.style.width = '80%';
 
-        // Insertar a Tabla Cadetes
         const { error: dbError } = await supabase.from('cadetes').insert([{
             id: userId, celular: cel, provincia: prov, ciudad: ciudad, vehiculo: moto,
             foto_selfie: selfieUrl, constancia_afip: afipUrl, cert_policial: policiaUrl, estado_auditoria: 'aprobada'
@@ -819,7 +810,7 @@ window.iniciarAuditoriaIA = async function() {
     }
 };
 
-// 2. LOGIN CADETE (SELECT / Auth)
+// 2. LOGIN CADETE
 window.loginCadete = async function() {
     var cel = document.getElementById('login-celular').value;
     var pwd = document.getElementById('login-pwd').value;
@@ -850,7 +841,7 @@ window.loginCadete = async function() {
     }
 };
 
-// 3. VIAJE COMERCIANTE (INSERT RADAR)
+// 3. VIAJE COMERCIANTE
 window.selfieComercioTomada = false;
 window.ultimaSelfieBlob = null;
 
@@ -863,7 +854,7 @@ window.subirSelfieComercio = function(input) {
             document.getElementById('texto-selfie-comercio').innerText = "Foto Nítida Lista";
             document.getElementById('texto-selfie-comercio').style.color = "var(--verde)";
             window.selfieComercioTomada = true;
-            mostrarToast("Selfie guardada", "success");
+            mostrarToast("Selfie lista", "success");
         });
     }
 };
@@ -912,11 +903,19 @@ window.solicitarCadete = async function() {
     }
 };
 
-// 4. CONFIRMAR VIAJE (UPDATE)
 window.confirmarEntrega = async function() {
     window.viajesTotales++; 
     document.getElementById('contador-viajes').innerText = window.viajesTotales;
     document.getElementById('card-viajes').innerText = window.viajesTotales;
+    
+    // Calculo basico de deuda simulado para UI (Viajes * 200)
+    var nuevaDeuda = window.viajesTotales * 200;
+    var elemDeuda = document.getElementById('deuda-texto');
+    if(elemDeuda) {
+        elemDeuda.innerText = '-$ ' + nuevaDeuda;
+        elemDeuda.style.color = '#ef4444';
+    }
+    
     actualizarEstrellasPerfil();
 
     mostrarToast("¡Viaje finalizado!", "success");
@@ -937,7 +936,6 @@ window.confirmarEntrega = async function() {
     }
 };
 
-// 5. PROCESAR PAGO (INSERT COMPROBANTE AL ALIAS) - COSTO FIJADO EN $600
 window.procesarPagoIA = async function() {
     var fileInput = document.getElementById('file-comprobante');
     var file = fileInput.files[0];
@@ -969,7 +967,7 @@ window.procesarPagoIA = async function() {
 
         await supabase.from('pagos_cadetes').insert([{
             cadete_id: userId,
-            monto: 600,
+            monto: window.viajesTotales * 200,
             comprobante_url: compUrl,
             estado_ia: 'procesando'
         }]);
@@ -979,8 +977,15 @@ window.procesarPagoIA = async function() {
 
         setTimeout(function(){
             cerrarModal('modal-ia');
-            document.getElementById('deuda-texto').style.color = 'var(--verde)';
-            document.getElementById('deuda-texto').innerText = '$ 0';
+            var elemDeuda = document.getElementById('deuda-texto');
+            if(elemDeuda){
+                elemDeuda.style.color = 'var(--verde)';
+                elemDeuda.innerText = '$ 0';
+            }
+            window.viajesTotales = 0;
+            document.getElementById('contador-viajes').innerText = '0';
+            document.getElementById('card-viajes').innerText = '0';
+            
             mostrarToast("Costo de servicio abonado. Deuda: $0","success");
             barra.style.width = '0%';
             fileInput.value = ''; 
@@ -993,7 +998,6 @@ window.procesarPagoIA = async function() {
     }
 };
 
-// SIMULACION DE ESTADO GPS PARA UI
 window.toggleConexion=function(){
 var btn=document.getElementById('btn-conectar');
 var txt=document.getElementById('texto-conexion');
