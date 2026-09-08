@@ -18,12 +18,33 @@
 /* ========================================================
    VARIABLES GLOBALES Y RESET
 ======================================================== */
-:root{--naranja:#ff6b00;--naranja2:#ff8c00;--naranja3:#cc4400;--verde:#00d13a;--texto:#0f172a; --rosa:#ea044e}
+:root{--naranja:#ff6b00;--naranja2:#ff8c00;--naranja3:#cc4400;--verde:#00d13a;--texto:#0f172a;}
 *{box-sizing:border-box}
 body{font-family:'Quicksand',sans-serif; color:var(--texto); margin:0; padding:0; -webkit-font-smoothing:antialiased;}
 a{text-decoration:none}
 .no-scrollbar::-webkit-scrollbar{display:none}
 .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+
+/* CORRECCIÓN CRÍTICA: AUTOCOMPLETADO DE GOOGLE MAPS POR ENCIMA DE LA APP */
+.pac-container {
+    z-index: 1000000 !important;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    border: 1px solid #e2e8f0;
+    font-family: 'Quicksand', sans-serif;
+    padding: 5px;
+    margin-top: 5px;
+}
+.pac-item {
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+}
+.pac-item:hover { background-color: #fff7ed; }
+.pac-icon { display: none; }
 
 /* ========================================================
    CSS ESPECÍFICO - LANDING PAGE Y ANIMACIONES
@@ -41,16 +62,16 @@ a{text-decoration:none}
 .glass-premium {background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border-radius: 1.5rem;}
 .glass-dark {background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2); border-radius: 1.5rem;}
 .btn-glow {border-radius: 50px !important; position: relative; z-index: 1; overflow: hidden;}
-.btn-glow::after {content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;background: linear-gradient(45deg, #ff8c00, #cc4400, #ff8c00);z-index: -1; border-radius: 50px; filter: blur(12px); opacity: 0.6;animation: pulse-glow 3s linear infinite;}
+.btn-glow::after {content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;background: linear-gradient(45deg, var(--naranja), var(--naranja3), var(--naranja));z-index: -1; border-radius: 50px; filter: blur(12px); opacity: 0.6;animation: pulse-glow 3s linear infinite;}
 @keyframes pulse-glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
 .rt{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;font-size:15.5px;font-weight:700;color:#fff;transition:all .2s}
-.rt:hover{border-color:#ff6b00;background:rgba(255,107,0,.15)}
+.rt:hover{border-color:var(--naranja);background:rgba(255,107,0,.15)}
 .ch{transition:all .35s}.ch:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.08)}
 @keyframes pg{0%,100%{box-shadow:0 0 0 0 rgba(0,209,58,.8)}50%{box-shadow:0 0 0 6px rgba(0,209,58,0)}}
 .pg{animation:pg 1.8s ease-in-out infinite}
-.boton-play-landing{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,#ff8c00 100%);border:4px solid white;box-shadow:0 10px 30px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
+.boton-play-landing{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,var(--naranja2) 100%);border:4px solid white;box-shadow:0 10px 30px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
 .boton-play-landing:active{transform:scale(.92)}
-.boton-play-landing .icono-play{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
+.boton-play-landing .icono-play{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--naranja2),var(--naranja3));display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
 .boton-play-landing .icono-play i{color:white;font-size:14.5px;margin-left:2px}
 
 /* ========================================================
@@ -71,9 +92,9 @@ a{text-decoration:none}
 .onda-play{position:absolute;border-radius:50%;border:3px solid var(--naranja2);animation:radarPlay 2s cubic-bezier(.1,.5,.5,1)infinite}
 .onda-play-1{animation-delay:0s;width:120px;height:120px}.onda-play-2{animation-delay:.6s;width:120px;height:120px}.onda-play-3{animation-delay:1.2s;width:120px;height:120px}
 @keyframes bouncePlay{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.boton-play-premium{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,#ff8c00 100%);border:4px solid white;box-shadow:0 15px 40px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8),inset 0 -3px 10px rgba(204,68,0,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
+.boton-play-premium{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,var(--naranja2) 100%);border:4px solid white;box-shadow:0 15px 40px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8),inset 0 -3px 10px rgba(204,68,0,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
 .boton-play-premium:active{transform:scale(.92)}
-.boton-play-premium .icono-play{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
+.boton-play-premium .icono-play{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--naranja2),var(--naranja3));display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
 .boton-play-premium .icono-play i{color:white;font-size:22px;margin-left:3px}
 @keyframes radar{0%{transform:scale(.9);opacity:1;border-color:rgba(255,107,0,.9)}100%{transform:scale(3.5);opacity:0;border-color:rgba(255,107,0,0)}}
 .onda{position:absolute;border-radius:50%;border:3px solid var(--naranja2);animation:radar 2.2s cubic-bezier(.1,.5,.5,1)infinite}
@@ -88,14 +109,14 @@ a{text-decoration:none}
 .titulo-3d-dark{font-family:'Sora',sans-serif;font-weight:800;letter-spacing:-1.5px;text-transform:uppercase;text-shadow:0 1px 0 #ccc,0 2px 0 #c9c9c9,0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 6px rgba(0,0,0,.2),0 6px 15px rgba(0,0,0,.25);}
 .frase-moderna{font-family:'Sora',sans-serif;font-weight:700;color:#fff;letter-spacing:-.3px}
 
-.btn-a{background:linear-gradient(135deg,#ff8c00 0%,#ff6b00 50%,#cc4400 100%);color:#fff;font-weight:800;border-radius:50px;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;transition:all .25s;display:flex;justify-content:center;align-items:center;gap:.5rem;box-shadow:0 12px 30px rgba(255,107,0,.45),inset 0 1px 0 rgba(255,255,255,.35);}
+.btn-a{background:linear-gradient(135deg,var(--naranja2) 0%,var(--naranja) 50%,var(--naranja3) 100%);color:#fff;font-weight:800;border-radius:50px;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;transition:all .25s;display:flex;justify-content:center;align-items:center;gap:.5rem;box-shadow:0 12px 30px rgba(255,107,0,.45),inset 0 1px 0 rgba(255,255,255,.35);}
 .btn-a:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(255,107,0,.55)}
 .btn-a:active{transform:scale(.95)}
 .btn-b{background:#fff;color:#0f172a;font-weight:800;transition:all .3s;border:2px solid #e2e8f0;border-radius:50px;box-shadow:0 4px 12px rgba(0,0,0,.05);display:inline-flex;align-items:center;justify-content:center;gap:.5rem;}
-.btn-b:hover{transform:translateY(-3px);border-color:#ff6b00;box-shadow:0 10px 25px rgba(255,107,0,.15)}
+.btn-b:hover{transform:translateY(-3px);border-color:var(--naranja);box-shadow:0 10px 25px rgba(255,107,0,.15)}
 .btn-b:active{transform:scale(.95)}
 .btn-d{background:#0f172a;color:#fff;font-weight:800;transition:all .3s;border-radius:50px;box-shadow:0 12px 28px rgba(15,23,42,.4),inset 0 1px 0 rgba(255,255,255,.1);display:inline-flex;align-items:center;justify-content:center;gap:.5rem; border: 1px solid #334155;}
-.btn-d:hover{transform:translateY(-3px);background:#ff6b00;box-shadow:0 18px 38px rgba(255,107,0,.5)}
+.btn-d:hover{transform:translateY(-3px);background:var(--naranja);box-shadow:0 18px 38px rgba(255,107,0,.5)}
 .btn-v{background:linear-gradient(135deg,#22e55e 0%,#00d13a 100%);color:#fff;font-weight:800;border-radius:50px;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;transition:all .25s;display:flex;justify-content:center;align-items:center;gap:.5rem;box-shadow:0 12px 28px rgba(0,209,58,.4),inset 0 1px 0 rgba(255,255,255,.3);}
 .btn-v:active{transform:scale(.95)}
 
@@ -116,7 +137,7 @@ a{text-decoration:none}
 .funcion i{font-size:26px;color:var(--naranja)}
 .funcion span{font-size:13px;font-weight:800;color:#334155;text-align:center;line-height:1.2}
 .tarjeta-control{background:linear-gradient(145deg,#ffffff,#f8fafc);border-radius:1.5rem;padding:20px;border:1.5px solid #e2e8f0;box-shadow:0 8px 25px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.95);position:relative;overflow:hidden;}
-.tarjeta-control::before{content:'position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#ff8c00,#ff6b00,#cc4400);'}
+.tarjeta-control::before{content:'position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--naranja2),var(--naranja),var(--naranja3));'}
 .control-fila{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f1f5f9;}
 .control-fila:last-child{border-bottom:none}
 .control-label{display:flex;align-items:center;gap:10px;font-weight:700;color:#475569;font-size:14.5px}
@@ -133,10 +154,10 @@ a{text-decoration:none}
 /* MARKETPLACE CSS */
 .bottom-nav { background: white; border-top: 1px solid #e2e8f0; position: fixed; bottom: 0; width: 100%; max-width: 448px; display: flex; justify-content: space-around; padding: 12px 0 20px 0; z-index: 50; border-radius: 1.5rem 1.5rem 0 0; box-shadow: 0 -10px 25px rgba(0,0,0,0.05); }
 .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #64748b; font-size: 11px; font-weight: 800; cursor: pointer; transition: color 0.2s;}
-.nav-item.active { color: var(--rosa); }
+.nav-item.active { color: var(--naranja); }
 .nav-item i { font-size: 22px; }
 .cat-card { background: white; border-radius: 1.25rem; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; cursor:pointer; transition: transform 0.2s; }
-.cat-card:active { transform: scale(0.95); border-color: var(--rosa); }
+.cat-card:active { transform: scale(0.95); border-color: var(--naranja); }
 .prod-card { background: white; border-radius: 1rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; display:flex; flex-direction:column; justify-content:space-between;}
 </style>
 </head>
@@ -152,14 +173,14 @@ a{text-decoration:none}
     <nav class="sticky top-0 z-50 glass-premium border-b-0 rounded-none rounded-b-2xl mx-2 mt-2">
     <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
-    <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden" style="background:linear-gradient(135deg,#ff8c00,#cc4400)">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden" style="background:linear-gradient(135deg,var(--naranja2),var(--naranja3))">
     <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo">
     </div>
     <div><div class="font-black text-[19.5px] leading-none tracking-tight">DELIVERY MOTO</div><div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Energy Software</div></div>
     </div>
     <div class="hidden md:flex items-center gap-7 text-[15.5px] font-bold text-slate-600">
-    <a href="#comercios" class="hover:text-[#ff6b00] transition-colors">Comercios</a>
-    <a href="#servimoto" class="hover:text-[#ff6b00] transition-colors">Servimoto</a>
+    <a href="#comercios" class="hover:text-[var(--naranja)] transition-colors">Comercios</a>
+    <a href="#servimoto" class="hover:text-[var(--naranja)] transition-colors">Servimoto</a>
     </div>
     <span class="hidden sm:inline-flex items-center gap-2 text-[13.5px] font-bold text-green-600 uppercase tracking-wide">
     <span class="w-2.5 h-2.5 rounded-full bg-green-500 pg"></span>Activo
@@ -168,7 +189,7 @@ a{text-decoration:none}
     </nav>
 
     <!-- TICKER PEDILOYYA _ COMPRAYA -->
-    <div class="bg-slate-900 border-y-2 border-[#ff6b00] overflow-hidden my-2 shadow-lg rounded-full mx-2">
+    <div class="bg-slate-900 border-y-2 border-[var(--naranja)] overflow-hidden my-2 shadow-lg rounded-full mx-2">
     <div class="overflow-hidden py-2"><div class="ticker-landing">
     <span class="text-white text-[13.5px] font-black uppercase tracking-widest px-5">DELIVERY MOTO | PEDILOYAA _ COMPRAYA | COMERCIOS Y FAMILIAS | 100% GANANCIAS | VIAJE $200 | COBRO SEMANAL | RADAR INTELIGENTE | </span>
     <span class="text-white text-[13.5px] font-black uppercase tracking-widest px-5">DELIVERY MOTO | PEDILOYAA _ COMPRAYA | COMERCIOS Y FAMILIAS | 100% GANANCIAS | VIAJE $200 | COBRO SEMANAL | RADAR INTELIGENTE | </span>
@@ -241,7 +262,7 @@ a{text-decoration:none}
     </div>
     </section>
 
-    <footer class="bg-black text-slate-400 py-6 px-5 mt-2 rounded-t-3xl mx-2 mb-0 border-t-4" style="border-color:#ff6b00">
+    <footer class="bg-black text-slate-400 py-6 px-5 mt-2 rounded-t-3xl mx-2 mb-0 border-t-4" style="border-color:var(--naranja)">
     <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
     <div class="md:col-span-1">
     <div class="flex items-center gap-3 mb-2">
@@ -254,7 +275,7 @@ a{text-decoration:none}
     </div>
     <div>
     <h4 class="text-white font-black uppercase tracking-widest text-[13.5px] mb-1">Desarrollo</h4>
-    <div class="flex items-center gap-2 text-[15.5px] mb-1"><i class="fa-solid fa-bolt text-[#ff6b00]"></i><span class="font-black text-white">ENERGY</span><span class="font-bold">SOFTWARE</span></div>
+    <div class="flex items-center gap-2 text-[15.5px] mb-1"><i class="fa-solid fa-bolt text-[var(--naranja)]"></i><span class="font-black text-white">ENERGY</span><span class="font-bold">SOFTWARE</span></div>
     <p class="text-[13.5px] font-medium leading-tight">Hecho en Argentina.<br>Tecnología de última generación.</p>
     </div>
     </div>
@@ -289,7 +310,7 @@ a{text-decoration:none}
 
         <!-- PANTALLA INICIO APP -->
         <div id="pantalla-1" class="pantalla activa flex-col h-full relative overflow-y-auto no-scrollbar bg-slate-50">
-            <div class="relative pb-8 pt-6 px-5 rounded-b-[2.5rem] shadow-[0_20px_40px_rgba(204,68,0,0.35)] flex flex-col items-center justify-center z-10 shrink-0 overflow-hidden" style="background:linear-gradient(135deg,#ff8c00 0%,#ff6b00 40%,#cc4400 100%)">
+            <div class="relative pb-8 pt-6 px-5 rounded-b-[2.5rem] shadow-[0_20px_40px_rgba(204,68,0,0.35)] flex flex-col items-center justify-center z-10 shrink-0 overflow-hidden" style="background:linear-gradient(135deg,var(--naranja2) 0%,var(--naranja) 40%,var(--naranja3) 100%)">
                 <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 mix-blend-overlay"></div>
                 <div class="relative z-10 flex flex-col items-center w-full">
                     <div class="relative mb-3 mt-2">
@@ -311,7 +332,7 @@ a{text-decoration:none}
                 <div class="pt-2">
                     <h4 class="text-center font-black text-slate-400 uppercase tracking-widest text-[12.5px] mb-3">Como deseas ingresar?</h4>
                     <div class="space-y-3">
-                        <button onclick="cambiarPantalla('pantalla-marketplace')" class="w-full bg-white border-2 border-rose-200 rounded-[50px] p-4 flex items-center justify-center gap-3 shadow-sm active:scale-95 transition-transform"><i class="fa-solid fa-burger text-[var(--rosa)] text-lg"></i> <span class="font-bold text-slate-800 text-[16.5px]">Soy Cliente (Comprar)</span></button>
+                        <button onclick="cambiarPantalla('pantalla-marketplace')" class="w-full bg-white border-2 border-orange-200 rounded-[50px] p-4 flex items-center justify-center gap-3 shadow-sm active:scale-95 transition-transform"><i class="fa-solid fa-burger text-[var(--naranja)] text-lg"></i> <span class="font-bold text-slate-800 text-[16.5px]">Soy Cliente (Comprar)</span></button>
                         <button onclick="cambiarPantalla('pantalla-admin-comercio')" class="w-full bg-white border-2 border-slate-200 rounded-[50px] p-4 flex items-center justify-center gap-3 shadow-sm active:scale-95 transition-transform"><i class="fa-solid fa-store text-indigo-500 text-lg"></i> <span class="font-bold text-slate-800 text-[16.5px]">Soy Comercio (Vender)</span></button>
                         <button onclick="cambiarPantalla('pantalla-login-opciones')" class="btn-a w-full py-4 text-[16.5px] btn-resplandor shadow-xl mt-2"><i class="fa-solid fa-motorcycle text-lg"></i> Soy Servimoto (Viajar)</button>
                     </div>
@@ -438,8 +459,8 @@ a{text-decoration:none}
         <!-- PANTALLA MARKETPLACE (DINÁMICO POR CIUDAD) -->
         <!-- ========================================================== -->
         <div id="pantalla-marketplace" class="pantalla flex-col h-full bg-slate-50 relative overflow-y-auto no-scrollbar">
-            <!-- HEADER CON BUSCADOR DE CIUDAD REAL -->
-            <div class="bg-[var(--rosa)] rounded-b-[2rem] pt-8 pb-6 px-5 relative shrink-0 shadow-lg z-20">
+            <!-- HEADER CON BUSCADOR DE CIUDAD REAL - CORREGIDO A NARANJA PREMIUM -->
+            <div class="bg-gradient-to-r from-[#ff8c00] to-[#ff6b00] rounded-b-[2rem] pt-8 pb-6 px-5 relative shrink-0 shadow-lg z-20">
                 <div class="flex justify-between items-center mb-4 text-white">
                     <div class="flex items-center gap-1 font-black text-[16px] cursor-pointer">
                         <i class="fa-solid fa-location-dot"></i>
@@ -453,19 +474,19 @@ a{text-decoration:none}
                         <button class="relative hover:scale-110 transition-transform"><i class="fa-regular fa-bell"></i><span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-white rounded-full"></span></button>
                         <button onclick="abrirModal('modal-carrito')" class="hover:scale-110 transition-transform relative">
                             <i class="fa-solid fa-cart-shopping"></i>
-                            <span id="badge-carrito" class="absolute -top-1 -right-2 bg-white text-[var(--rosa)] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                            <span id="badge-carrito" class="absolute -top-1 -right-2 bg-white text-[var(--naranja)] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
                         </button>
                     </div>
                 </div>
                 <div class="bg-white rounded-full flex items-center px-4 py-3.5 shadow-md">
-                    <div class="w-8 h-8 rounded-full text-[var(--rosa)] flex items-center justify-center mr-2 shrink-0"><i class="fa-solid fa-magnifying-glass text-lg"></i></div>
+                    <div class="w-8 h-8 rounded-full text-[var(--naranja)] flex items-center justify-center mr-2 shrink-0"><i class="fa-solid fa-magnifying-glass text-lg"></i></div>
                     <input type="text" placeholder="Locales, platos y productos" class="w-full bg-transparent outline-none text-[15px] font-bold text-slate-700">
                 </div>
             </div>
 
             <div class="p-5 flex-1 space-y-6 pb-28">
                 <!-- BANNER PROMOCIONAL -->
-                <div class="w-full rounded-[1.5rem] overflow-hidden relative shadow-lg" style="background: var(--rosa);">
+                <div class="w-full rounded-[1.5rem] overflow-hidden relative shadow-lg" style="background: linear-gradient(135deg, var(--naranja2), var(--naranja));">
                     <div class="p-5 text-white w-2/3 relative z-10">
                         <p class="text-[12px] font-bold uppercase tracking-wider mb-0.5">Hasta</p>
                         <h3 class="text-[32px] font-black leading-none mb-1 text-[#ffeb3b]">60% OFF</h3>
@@ -509,15 +530,15 @@ a{text-decoration:none}
 
             <div class="relative z-20 px-4 -mt-8 shrink-0 mb-4">
                 <div class="bg-white rounded-[2rem] p-5 shadow-sm border border-slate-100">
-                    <div class="bg-blue-600 text-white text-[12px] font-black text-center py-1.5 rounded-t-[1.5rem] -mt-5 -mx-5 mb-4">Abre a las 07:00 hs</div>
+                    <div class="bg-blue-600 text-white text-[12px] font-black text-center py-1.5 rounded-t-[1.5rem] -mt-5 -mx-5 mb-4 shadow-sm">Abre a las 07:00 hs</div>
                     <div class="flex items-center gap-4 mb-4">
-                        <img id="cat-logo" src="" class="w-16 h-16 rounded-2xl object-cover border-2 border-slate-100 shadow-sm bg-white">
+                        <img id="cat-logo" src="" class="w-16 h-16 rounded-2xl object-contain border border-slate-200 shadow-sm bg-white p-1">
                         <div>
                             <h2 id="cat-nombre" class="text-[20px] font-black text-slate-800 leading-tight">Cargando...</h2>
                             <p class="text-[13.5px] text-slate-500 font-medium mt-0.5"><i class="fa-solid fa-location-dot"></i> <span id="cat-ciudad"></span></p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 text-[13.5px] font-bold text-slate-700">
+                    <div class="flex items-center gap-2 text-[13.5px] font-bold text-slate-700 bg-slate-50 p-2 rounded-xl">
                         <i class="fa-solid fa-motorcycle text-[var(--naranja)]"></i> Envío a cargo del comprador
                     </div>
                 </div>
@@ -535,7 +556,7 @@ a{text-decoration:none}
                         <span class="font-black text-2xl text-slate-900 leading-none" id="barra-total">$0</span>
                         <span class="text-[12px] text-slate-500 font-medium mt-1" id="barra-cant">0 productos</span>
                     </div>
-                    <button onclick="abrirModal('modal-carrito')" class="bg-[var(--rosa)] text-white font-black text-[16px] py-3.5 px-8 rounded-full shadow-md active:scale-95 transition-transform">
+                    <button onclick="abrirModal('modal-carrito')" class="bg-[var(--naranja)] text-white font-black text-[16px] py-3.5 px-8 rounded-full shadow-md active:scale-95 transition-transform">
                         Ver mi carrito
                     </button>
                 </div>
@@ -592,25 +613,25 @@ a{text-decoration:none}
                 <div id="seccion-config" class="hidden">
                     <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm mb-4">
                         <h3 class="font-black text-slate-800 text-[16px] mb-1"><i class="fa-solid fa-link text-blue-500 mr-1"></i> Cobro Automático</h3>
-                        <p class="text-[13.5px] text-slate-500 font-medium mb-4">Pegá acá tu link de cobro de MercadoPago u otro sistema. El cliente pagará automáticamente al hacer el pedido.</p>
+                        <p class="text-[13.5px] text-slate-500 font-medium mb-4">Pegá acá tu link de cobro de MercadoPago u otro sistema. El sistema se lo enviará al cliente por WhatsApp de forma automática.</p>
                         
                         <label class="text-[12.5px] font-black uppercase text-slate-400 tracking-wider">Tu Número de WhatsApp</label>
-                        <input type="tel" id="config-wa" placeholder="Ej: 5493815551234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-4 mt-1">
+                        <input type="tel" id="config-wa" placeholder="Ej: 5493815551234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-4 mt-1 focus:border-[var(--naranja)] outline-none">
 
                         <label class="text-[12.5px] font-black uppercase text-slate-400 tracking-wider">Link de Pago General</label>
-                        <input type="url" id="config-mp" placeholder="https://link.mercadopago.com.ar/..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-blue-600 mb-4 mt-1">
+                        <input type="url" id="config-mp" placeholder="https://link.mercadopago.com.ar/..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-blue-600 mb-4 mt-1 focus:border-[var(--naranja)] outline-none">
                         
                         <button onclick="guardarConfigTienda()" class="btn-d w-full py-3.5 text-[15px]">Guardar Configuración</button>
                     </div>
 
                     <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
                         <h3 class="font-black text-slate-800 text-[16px] mb-1"><i class="fa-solid fa-burger text-orange-500 mr-1"></i> Cargar Producto</h3>
-                        <input type="text" id="prod-nombre" placeholder="Nombre (Ej: Pizza Especial)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 mt-2">
-                        <input type="number" id="prod-precio" placeholder="Precio ($)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3">
-                        <div class="relative bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-4 text-center mb-3">
+                        <input type="text" id="prod-nombre" placeholder="Nombre (Ej: Pizza Especial)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 mt-2 outline-none focus:border-[var(--naranja)]">
+                        <input type="number" id="prod-precio" placeholder="Precio ($)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 outline-none focus:border-[var(--naranja)]">
+                        <div class="relative bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-4 text-center mb-3 hover:border-[var(--naranja)] transition-colors cursor-pointer">
                             <input type="file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
                             <i class="fa-solid fa-camera text-slate-400 text-2xl mb-1"></i>
-                            <p class="font-bold text-[12.5px] text-slate-500">Subir foto del producto</p>
+                            <p class="font-bold text-[12.5px] text-slate-500">Subir foto o logo</p>
                         </div>
                         <button onclick="mostrarToast('Producto cargado al catálogo (Simulación)','success')" class="btn-a w-full py-3 text-[15px]"><i class="fa-solid fa-plus"></i> Agregar al Menú</button>
                     </div>
@@ -658,9 +679,9 @@ a{text-decoration:none}
         <div class="modal-body p-0 flex flex-col h-full bg-slate-50 overflow-y-auto no-scrollbar pb-32">
             <!-- CAJA DE DATOS DEL COMPRADOR PARA WHATSAPP -->
             <div class="p-5 bg-white border-b border-slate-100">
-                <h4 class="font-black text-slate-800 text-[15px] mb-3"><i class="fa-solid fa-location-dot text-[var(--rosa)] mr-1"></i> Datos de Entrega</h4>
-                <input type="text" id="checkout-nombre" placeholder="Tu Nombre" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none mb-3 focus:border-[var(--rosa)]">
-                <input type="text" id="checkout-direccion" placeholder="Dirección exacta (Ej: San Martín 123)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none focus:border-[var(--rosa)]">
+                <h4 class="font-black text-slate-800 text-[15px] mb-3"><i class="fa-solid fa-location-dot text-[var(--naranja)] mr-1"></i> Datos de Entrega</h4>
+                <input type="text" id="checkout-nombre" placeholder="Tu Nombre" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none mb-3 focus:border-[var(--naranja)]">
+                <input type="text" id="checkout-direccion" placeholder="Dirección exacta (Ej: San Martín 123)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none focus:border-[var(--naranja)]">
             </div>
 
             <!-- LISTA DE PRODUCTOS -->
@@ -672,7 +693,7 @@ a{text-decoration:none}
         <div class="absolute bottom-0 w-full bg-white p-5 border-t border-slate-200 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
             <div class="flex justify-between items-center mb-4"><span class="font-bold text-slate-500">Total a pagar</span><span class="font-black text-2xl text-slate-800" id="carrito-total-txt">$0</span></div>
             <button onclick="procesarCheckoutWhatsapp()" class="w-full py-4 bg-[#25D366] text-white font-black rounded-full flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform text-[16px]">
-                <i class="fa-brands fa-whatsapp text-2xl"></i> Enviar Pedido al Local
+                <i class="fa-brands fa-whatsapp text-2xl"></i> Enviar Pedido por WhatsApp
             </button>
         </div>
     </div>
@@ -734,11 +755,6 @@ function pedirPermisoNotificaciones() {
         Notification.requestPermission();
     }
 }
-function notificarSistema(titulo, cuerpo) {
-    if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(titulo, { body: cuerpo, icon: 'https://cdn-icons-png.flaticon.com/512/1986/1986958.png' });
-    }
-}
 
 // ==========================================
 // LOGICA COMBINADA PWA + LANDING
@@ -779,7 +795,10 @@ window.ultimoKmCalculado = 1.0;
 window.viajeActivoId = null;
 window.viajePendienteRadar = null;
 window.markerMoto = null;
-window.vistaActual = 'cliente'; // Para saber qué mapa actualizar
+window.vistaActual = 'cliente';
+
+// INSTANCIAS DE GOOGLE AUTOCOMPLETE GLOBALES
+var autocompleteCiudad, autocompleteOrigen, autocompleteDestino;
 
 function mostrarToast(mensaje,tipo){
     var c=document.getElementById('toast-container'),t=document.createElement('div');t.className='toast';
@@ -793,9 +812,13 @@ window.mostrarToast=mostrarToast;
 window.cambiarPantalla = function(id){
     document.querySelectorAll('.pantalla').forEach(function(p){p.classList.remove('activa')});
     document.getElementById(id).classList.add('activa');
+    
     if(id==='pantalla-marketplace'){ window.renderizarMarketplace(); }
-    if(id==='pantalla-admin-comercio'){ window.vistaActual = 'admin'; setTimeout(inicializarMapa, 200); }
-    if(id==='pantalla-comercio'){ window.vistaActual = 'cliente'; setTimeout(inicializarMapa, 200); }
+    if(id==='pantalla-admin-comercio'){ 
+        window.vistaActual = 'admin'; 
+        // Retrasamos la carga del mapa para que el DOM esté visible y no se rompa el Autocompletado
+        setTimeout(inicializarMapa, 200); 
+    }
 };
 
 window.abrirModal = function(id) { document.getElementById(id).classList.add('show'); };
@@ -810,10 +833,11 @@ window.comercioActual = null;
 const mockupBaseDeDatos = [
     {
         id: 1, ciudad: "Famaillá", categoria: "Restaurantes", nombre: "Empanadas Famaillá VIP",
-        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80", wa: "5493815551111", mp_link: "https://mpago.la/famailla",
+        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80", wa: "5493815551111", mp_link: "https://link.mercadopago.com.ar/empanadasfam",
         secciones: [
             { nombre: "Especialidades", productos: [
-                {id: 201, nombre: "Docena de Empanadas de Matambre", precio: 6500, desc: "Cortada a cuchillo", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"}
+                {id: 201, nombre: "Docena de Empanadas de Matambre", precio: 6500, desc: "Cortada a cuchillo, masa casera", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"},
+                {id: 202, nombre: "Pizza Especial Famaillá", precio: 5000, desc: "Muzzarella, jamón y morrones", img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png"}
             ]}
         ]
     },
@@ -826,21 +850,15 @@ const mockupBaseDeDatos = [
                 {id: 102, nombre: "Lasagna Matarazzo", precio: 3007, desc: "400g", img: "https://acdn.mitiendanube.com/stores/001/181/985/products/lasana-matarazzo-400gr-841f3e7906d203932716186088234383-640-0.jpg"}
             ]}
         ]
-    },
-    {
-        id: 3, ciudad: "Tucumán", categoria: "Kioscos", nombre: "Kiosco 24hs Centro",
-        logo: "https://cdn-icons-png.flaticon.com/512/1046/1046786.png", portada: "https://images.unsplash.com/photo-1588693444007-8e6c71c1b1c6?auto=format&fit=crop&w=800&q=80", wa: "5493815552222", mp_link: "https://mpago.la/kiosco",
-        secciones: [
-            { nombre: "Bebidas", productos: [
-                {id: 301, nombre: "Coca Cola 2L", precio: 2200, desc: "Retornable", img: "https://cdn-icons-png.flaticon.com/512/920/920556.png"}
-            ]}
-        ]
     }
 ];
 
 // RENDERIZAR MARKETPLACE SEGÚN LA CIUDAD ELEGIDA
 window.renderizarMarketplace = function() {
-    var ciudadFiltro = document.getElementById('filtro-ciudad-mkp').value;
+    var ciudadFiltro = document.getElementById('filtro-ciudad-mkp').value || localStorage.getItem('ciudadCliente') || 'Famaillá';
+    document.getElementById('filtro-ciudad-mkp').value = ciudadFiltro;
+    localStorage.setItem('ciudadCliente', ciudadFiltro);
+
     var grilla = document.getElementById('grilla-locales-dinamica');
     grilla.innerHTML = '';
 
@@ -863,7 +881,7 @@ window.renderizarMarketplace = function() {
 };
 
 // ==========================================
-// RENDERIZAR CATÁLOGO DEL COMERCIO
+// RENDERIZAR CATÁLOGO DEL COMERCIO A 2 COLUMNAS
 // ==========================================
 window.abrirCatalogoComercio = function(idComercio) {
     window.comercioActual = mockupBaseDeDatos.find(c => c.id === idComercio);
@@ -880,19 +898,19 @@ window.abrirCatalogoComercio = function(idComercio) {
 
     window.comercioActual.secciones.forEach(seccion => {
         navCategorias.innerHTML += `<div class="bg-white rounded-xl px-4 py-2 shadow-sm border border-slate-200 shrink-0 font-bold text-[14px] text-slate-700">${seccion.nombre}</div>`;
-        let htmlSeccion = `<div class="flex justify-between items-end mb-3 mt-6"><h3 class="font-black text-[22px] text-slate-800 leading-none">${seccion.nombre}</h3></div><div class="grid grid-cols-2 gap-3">`;
+        let htmlSeccion = `<div class="flex justify-between items-end mb-3 mt-6"><h3 class="font-black text-[20px] text-slate-800 leading-none">${seccion.nombre}</h3></div><div class="grid grid-cols-2 gap-3">`;
         
         seccion.productos.forEach(p => {
             htmlSeccion += `
-            <div class="bg-white rounded-2xl p-3 flex flex-col relative shadow-sm border border-slate-100 h-full">
-                <div class="w-full h-28 flex items-center justify-center mb-3 relative mt-1">
-                    <img src="${p.img}" class="max-h-full max-w-full object-contain">
-                    <button onclick="agregarAlCarrito(${p.id}, '${p.nombre}', ${p.precio})" class="absolute -bottom-2 -right-2 w-9 h-9 bg-white border border-slate-200 rounded-full shadow-md flex items-center justify-center text-slate-700 hover:text-[var(--rosa)] transition-colors active:scale-90"><i class="fa-solid fa-plus text-lg"></i></button>
+            <div class="bg-white rounded-[1.25rem] p-3 flex flex-col relative shadow-sm border border-slate-100 h-full">
+                <div class="w-full h-32 flex items-center justify-center mb-3 relative mt-1 rounded-xl overflow-hidden bg-slate-50">
+                    <img src="${p.img}" class="max-h-full max-w-full object-cover">
+                    <button onclick="agregarAlCarrito(${p.id}, '${p.nombre}', ${p.precio})" class="absolute bottom-1 right-1 w-9 h-9 bg-white border border-slate-200 rounded-full shadow-md flex items-center justify-center text-slate-700 hover:text-[var(--naranja)] transition-colors active:scale-90"><i class="fa-solid fa-plus text-sm"></i></button>
                 </div>
-                <h4 class="font-medium text-[13.5px] text-slate-800 leading-tight mb-2 flex-1">${p.nombre}</h4>
+                <h4 class="font-bold text-[13px] text-slate-800 leading-tight mb-2 flex-1">${p.nombre}</h4>
                 <div>
-                    <p class="font-black text-[17px] text-slate-900 leading-none">$ ${p.precio}</p>
-                    <p class="text-[11.5px] text-slate-500 font-medium mt-1">${p.desc}</p>
+                    <p class="font-black text-[16.5px] text-slate-900 leading-none">$ ${p.precio}</p>
+                    <p class="text-[11px] text-slate-500 font-medium mt-1 truncate">${p.desc}</p>
                 </div>
             </div>`;
         });
@@ -903,7 +921,7 @@ window.abrirCatalogoComercio = function(idComercio) {
 };
 
 // ==========================================
-// CARRITO Y WHATSAPP COMPRADOR
+// CARRITO Y WHATSAPP COMPRADOR (CON LINK INYECTADO)
 // ==========================================
 window.agregarAlCarrito = function(id, nombre, precio) { 
     window.carrito.push({id, nombre, precio}); 
@@ -929,7 +947,7 @@ function actualizarInterfazCarrito() {
     
     var list = document.getElementById('carrito-lista'); list.innerHTML = '';
     window.carrito.forEach((p, index) => { 
-        list.innerHTML += `<div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm"><span class="font-bold text-slate-700 text-[14px] flex-1 pr-2">${p.nombre}</span><div class="flex items-center gap-3 shrink-0"><span class="font-black text-[var(--rosa)] text-[16px]">$${p.precio}</span><button onclick="eliminarDelCarrito(${index})" class="bg-slate-100 text-slate-500 rounded-full w-7 h-7 flex items-center justify-center active:scale-90"><i class="fa-solid fa-trash-can text-sm"></i></button></div></div>`; 
+        list.innerHTML += `<div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm"><span class="font-bold text-slate-700 text-[14px] flex-1 pr-2">${p.nombre}</span><div class="flex items-center gap-3 shrink-0"><span class="font-black text-[var(--naranja)] text-[16px]">$${p.precio}</span><button onclick="eliminarDelCarrito(${index})" class="bg-slate-100 text-slate-500 rounded-full w-7 h-7 flex items-center justify-center active:scale-90"><i class="fa-solid fa-trash-can text-sm"></i></button></div></div>`; 
     });
     document.getElementById('carrito-total-txt').innerText = "$" + total;
 }
@@ -941,20 +959,32 @@ window.procesarCheckoutWhatsapp = function() {
     
     var nombreComprador = document.getElementById('checkout-nombre').value;
     var dirComprador = document.getElementById('checkout-direccion').value;
+    
     if(!nombreComprador || !dirComprador) {
         return mostrarToast("Por favor ingresá tu Nombre y Dirección", "info");
     }
 
     var total = window.carrito.reduce((acc, curr) => acc + curr.precio, 0);
     
-    var pedidoTxt = "Hola *" + window.comercioActual.nombre + "*! 👋 Quiero hacer un pedido:\n\n";
-    window.carrito.forEach(p => { pedidoTxt += "🛒 1x " + p.nombre + " ($" + p.precio + ")\n"; });
-    pedidoTxt += "\n💰 *Total pedido: $" + total + "*\n";
-    pedidoTxt += "_(El costo de envío en moto se paga al recibir)_\n";
-    pedidoTxt += "\n👤 *Mis Datos:*\n";
-    pedidoTxt += "Nombre: " + nombreComprador + "\n";
-    pedidoTxt += "Dirección: " + dirComprador + ", " + window.comercioActual.ciudad + "\n";
-    pedidoTxt += "\nPor favor confirmame el pedido para que puedas llamar a la motito. ¡Gracias!";
+    var pedidoTxt = `Hola *${window.comercioActual.nombre}*! 👋 Quiero hacer un pedido:\n\n`;
+    window.carrito.forEach(p => { 
+        pedidoTxt += `🛒 1x ${p.nombre} ($${p.precio})\n`; 
+    });
+    
+    pedidoTxt += `\n💰 *Total pedido: $${total}*\n`;
+    pedidoTxt += `_(El costo de envío en moto se abona al recibir)_\n`;
+    
+    pedidoTxt += `\n👤 *Mis Datos:*\n`;
+    pedidoTxt += `Nombre: ${nombreComprador}\n`;
+    pedidoTxt += `Dirección: ${dirComprador}, ${window.comercioActual.ciudad}\n\n`;
+    
+    // Inyección de Link de Cobro del Local Automático
+    if(window.comercioActual.mp_link) {
+        pedidoTxt += `💳 *Podés abonar los $${total} en este link (Transferencia/MercadoPago):* \n${window.comercioActual.mp_link}\n\n`;
+        pedidoTxt += `(Te enviaré el comprobante enseguida por acá).\n\n`;
+    }
+
+    pedidoTxt += `Por favor confirmame el pedido para que puedas llamar a la motito. ¡Gracias!`;
 
     window.open("https://wa.me/" + window.comercioActual.wa + "?text=" + encodeURIComponent(pedidoTxt), '_blank');
     
@@ -968,8 +998,25 @@ window.switchTabComercio = function(tab) {
     document.getElementById('tab-logistica').classList.remove('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); document.getElementById('tab-logistica').classList.add('text-slate-500');
     document.getElementById('tab-config').classList.remove('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); document.getElementById('tab-config').classList.add('text-slate-500');
     document.getElementById('seccion-logistica').classList.add('hidden'); document.getElementById('seccion-config').classList.add('hidden');
-    if(tab === 'logistica') { document.getElementById('tab-logistica').classList.add('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); document.getElementById('tab-logistica').classList.remove('text-slate-500'); document.getElementById('seccion-logistica').classList.remove('hidden'); setTimeout(inicializarMapa, 100); } 
-    else { document.getElementById('tab-config').classList.add('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); document.getElementById('tab-config').classList.remove('text-slate-500'); document.getElementById('seccion-config').classList.remove('hidden'); }
+    
+    if(tab === 'logistica') { 
+        document.getElementById('tab-logistica').classList.add('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); 
+        document.getElementById('tab-logistica').classList.remove('text-slate-500'); 
+        document.getElementById('seccion-logistica').classList.remove('hidden'); 
+        // Forzamos la actualización del mapa al mostrar la pestaña
+        setTimeout(() => {
+            if (!mapaAdmin) inicializarMapa(); 
+            else {
+                google.maps.event.trigger(mapaAdmin, 'resize');
+                mapaAdmin.setCenter({lat: -27.0525, lng: -65.4022});
+            }
+        }, 150); 
+    } 
+    else { 
+        document.getElementById('tab-config').classList.add('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); 
+        document.getElementById('tab-config').classList.remove('text-slate-500'); 
+        document.getElementById('seccion-config').classList.remove('hidden'); 
+    }
 };
 window.guardarConfigTienda = function() { mostrarToast("¡Configuración guardada!", "success"); };
 
@@ -977,19 +1024,23 @@ window.guardarConfigTienda = function() { mostrarToast("¡Configuración guardad
 // MAPA GOOGLE Y MOTITO (PANEL ADMIN)
 // ==========================================
 var mapaAdmin, dirRendererAdmin, directionsService;
-window.markerMoto = null;
 
 function inicializarMapa(){
     if(typeof google === 'undefined') return;
-    if(document.getElementById('mapa-admin') && !mapaAdmin){
+    
+    // Solo inicializamos si la pestaña de admin está visible
+    if(document.getElementById('mapa-admin') && document.getElementById('seccion-logistica').offsetParent !== null && !mapaAdmin){
+        
+        // Centrado por defecto en tu zona operativa
         mapOptions = { center: {lat: -27.0525, lng: -65.4022}, zoom: 14, mapTypeControl: false, streetViewControl: false };
         mapaAdmin = new google.maps.Map(document.getElementById('mapa-admin'), mapOptions);
         directionsService = new google.maps.DirectionsService();
         dirRendererAdmin = new google.maps.DirectionsRenderer({map: mapaAdmin, polylineOptions: {strokeColor: '#ff6b00', strokeWeight: 5}});
         
-        new google.maps.places.Autocomplete(document.getElementById('input-ciudad-admin'), { componentRestrictions: { country: "ar" } });
-        new google.maps.places.Autocomplete(document.getElementById('input-origen-admin'), { componentRestrictions: { country: "ar" } });
-        new google.maps.places.Autocomplete(document.getElementById('input-destino-admin'), { componentRestrictions: { country: "ar" } });
+        // Inicializamos los autocompletados
+        if(!autocompleteCiudad) autocompleteCiudad = new google.maps.places.Autocomplete(document.getElementById('input-ciudad-admin'), { componentRestrictions: { country: "ar" } });
+        if(!autocompleteOrigen) autocompleteOrigen = new google.maps.places.Autocomplete(document.getElementById('input-origen-admin'), { componentRestrictions: { country: "ar" } });
+        if(!autocompleteDestino) autocompleteDestino = new google.maps.places.Autocomplete(document.getElementById('input-destino-admin'), { componentRestrictions: { country: "ar" } });
     }
 }
 
@@ -1026,7 +1077,7 @@ window.solicitarCadeteAdmin = function() {
     document.getElementById('btn-pedir-admin').innerHTML = '<i class="fa-solid fa-check"></i> Repartidor Asignado';
 };
 
-// Iniciar renderizado de la grilla de ciudades
+// Iniciar renderizado de la grilla
 renderizarMarketplace();
 })();
 </script>
