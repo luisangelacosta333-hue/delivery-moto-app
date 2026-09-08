@@ -1,10 +1,11 @@
 <html style="margin:0;padding:0;">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Delivery Moto Premium | pediloyaa _ compraya</title>
+<title>Delivery Moto Premium | pediloyaa _ compraya | Energy Software</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 (function(){
@@ -14,25 +15,35 @@
     --naranja: #ff6b00;
     --naranja2: #ff8c00;
     --naranja3: #cc4400;
+    --naranja-soft: #fff7ed;
     --verde: #00d13a;
     --verde2: #16a34a;
     --texto: #0f172a;
-    --bg-dark: #1a2235;
-    --bg-dark2: #243049;
+    --bg-dark: #0f172a;
     --rojo: #dc2626;
     --azul: #2563eb;
+    --gris-suave: #f8fafc;
+    --borde: #e2e8f0;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; background: linear-gradient(135deg, #1a2235 0%, #243049 50%, #1e293b 100%); }
-a { text-decoration: none; cursor: pointer; }
+body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; background: #ffffff; }
+a { text-decoration: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-@keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
-.skeleton { background: #e2e8f0; background-image: linear-gradient(to right, #e2e8f0 0%, #f1f5f9 20%, #e2e8f0 40%, #e2e8f0 100%); background-repeat: no-repeat; background-size: 1000px 100%; animation: shimmer 1.8s linear infinite; }
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+.skeleton {
+    background: #e2e8f0;
+    background-image: linear-gradient(to right, #e2e8f0 0%, #f1f5f9 20%, #e2e8f0 40%, #e2e8f0 100%);
+    background-repeat: no-repeat;
+    background-size: 1000px 100%;
+    animation: shimmer 1.8s linear infinite;
+}
 
-.landing-bg { background: linear-gradient(135deg, #1a2235 0%, #243049 30%, #1e293b 60%, #2a3a55 100%); background-size: 200% 200%; animation: gradientBG 18s ease infinite; }
-@keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+.landing-bg { background: #ffffff; }
 
 @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .ticker-landing { display: inline-block; animation: ticker 35s linear infinite; white-space: nowrap; }
@@ -40,116 +51,129 @@ a { text-decoration: none; cursor: pointer; }
 @keyframes logoFloat { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
 .logo-float { animation: logoFloat 3.5s ease-in-out infinite; }
 
-.glass-premium { background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); border-radius: 1.75rem; }
-.glass-light { background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08); border-radius: 1.75rem; }
+.hg-white { background: linear-gradient(135deg, #ffffff 0%, #fff7ed 50%, #ffffff 100%) !important; }
 
-.btn-glow { border-radius: 50px !important; position: relative; z-index: 1; overflow: hidden; cursor: pointer; }
-.btn-glow::after { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(45deg, var(--naranja), var(--naranja3), var(--naranja)); z-index: -1; border-radius: 50px; filter: blur(12px); opacity: 0.55; animation: pulse-glow 3s linear infinite; }
-@keyframes pulse-glow { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.75; } }
+.glass-premium { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 107, 0, 0.15); box-shadow: 0 15px 35px rgba(255, 107, 0, 0.1); border-radius: 1.75rem; }
+.glass-light { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06); border-radius: 1.75rem; }
+
+.btn-glow { border-radius: 50px !important; position: relative; z-index: 1; overflow: hidden; }
+.btn-glow::after { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(45deg, var(--naranja), var(--naranja3), var(--naranja)); z-index: -1; border-radius: 50px; filter: blur(12px); opacity: 0.5; animation: pulse-glow 3s linear infinite; }
+@keyframes pulse-glow { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.7; } }
 
 @keyframes pulseGreen { 0%, 100% { box-shadow: 0 0 0 0 rgba(0, 209, 58, 0.8); } 50% { box-shadow: 0 0 0 10px rgba(0, 209, 58, 0); } }
 .pg { animation: pulseGreen 1.8s ease-in-out infinite; }
 
-.boton-play-landing { width: 88px; height: 88px; border-radius: 50%; background: linear-gradient(135deg, #fff 0%, #ffedd5 40%, var(--naranja2) 100%); border: 4px solid white; box-shadow: 0 10px 30px rgba(255,107,0,.5), inset 0 2px 10px rgba(255,255,255,.8); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .3s; position: relative; z-index: 10; }
+.boton-play-landing { width: 92px; height: 92px; border-radius: 50%; background: linear-gradient(135deg, #fff 0%, #ffedd5 40%, var(--naranja2) 100%); border: 4px solid white; box-shadow: 0 10px 30px rgba(255,107,0,.4), inset 0 2px 10px rgba(255,255,255,.8); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .3s; position: relative; z-index: 10; }
 .boton-play-landing:active { transform: scale(0.92); }
-.boton-play-landing .icono-play { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--naranja2), var(--naranja3)); display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(204,68,0,.5); }
-.boton-play-landing .icono-play i { color: white; font-size: 14px; margin-left: 2px; }
-
-@keyframes scrollApp { 0% { transform: translateX(100vw); } 100% { transform: translateX(-150%); } }
-.animate-scroll { display: inline-block; white-space: nowrap; animation: scrollApp 40s linear infinite; }
+.boton-play-landing .icono-play { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--naranja2), var(--naranja3)); display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(204,68,0,.5); }
+.boton-play-landing .icono-play i { color: white; font-size: 15px; margin-left: 2px; }
 
 @keyframes resplandorGlow { 0%, 100% { box-shadow: 0 0 15px rgba(255,107,0,.4); transform: scale(1); } 50% { box-shadow: 0 0 35px rgba(255,107,0,.9); transform: scale(1.02); border: 2px solid #fff; } }
-.btn-resplandor { animation: resplandorGlow 2s infinite; border-radius: 50px !important; cursor: pointer; }
+.btn-resplandor { animation: resplandorGlow 2s infinite; border-radius: 50px !important; }
 
 @keyframes radarPlay { 0% { transform: scale(.9); opacity: 1; border-color: rgba(255,107,0,.9); } 100% { transform: scale(2.4); opacity: 0; border-color: rgba(255,107,0,0); } }
 .onda-play { position: absolute; border-radius: 50%; border: 3px solid var(--naranja2); animation: radarPlay 2s cubic-bezier(.1,.5,.5,1) infinite; }
-.onda-play-1 { animation-delay: 0s; width: 120px; height: 120px; }
-.onda-play-2 { animation-delay: .6s; width: 120px; height: 120px; }
-.onda-play-3 { animation-delay: 1.2s; width: 120px; height: 120px; }
+.onda-play-1 { animation-delay: 0s; width: 130px; height: 130px; }
+.onda-play-2 { animation-delay: .6s; width: 130px; height: 130px; }
+.onda-play-3 { animation-delay: 1.2s; width: 130px; height: 130px; }
 
-.titulo-3d { font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; letter-spacing: -1.5px; text-transform: uppercase; text-shadow: 0 1px 0 #e6e6e6, 0 2px 0 #d9d9d9, 0 3px 0 #cccccc, 0 4px 0 #bfbfbf, 0 5px 0 #b3b3b3, 0 6px 1px rgba(0,0,0,.1), 0 0 10px rgba(0,0,0,.3); }
-.frase-moderna { font-family: 'Sora', sans-serif; font-weight: 700; color: #fff; letter-spacing: -.3px; }
+.titulo-3d { font-family: 'Sora', sans-serif; font-weight: 800; color: var(--texto); letter-spacing: -1.5px; text-transform: uppercase; text-shadow: 0 1px 0 #e6e6e6, 0 2px 0 #d9d9d9, 0 3px 1px rgba(0,0,0,.08); }
+.titulo-3d-dark { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -1.5px; text-transform: uppercase; text-shadow: 0 1px 0 #ccc, 0 2px 0 #bbb, 0 3px 1px rgba(0,0,0,.1); }
+.frase-moderna { font-family: 'Sora', sans-serif; font-weight: 700; color: var(--texto); letter-spacing: -.3px; }
 
-.btn-a { background: linear-gradient(135deg, var(--naranja2) 0%, var(--naranja) 50%, var(--naranja3) 100%); color: #fff; font-weight: 800; border-radius: 50px; border: none; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .25s; display: inline-flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(255,107,0,.45), inset 0 1px 0 rgba(255,255,255,.35); padding: 14px 28px; }
-.btn-a:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(255,107,0,.55); }
+.btn-a { background: linear-gradient(135deg, var(--naranja2) 0%, var(--naranja) 50%, var(--naranja3) 100%); color: #fff; font-weight: 800; border-radius: 50px; border: none; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .25s; display: flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(255,107,0,.4), inset 0 1px 0 rgba(255,255,255,.35); }
+.btn-a:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(255,107,0,.5); }
 .btn-a:active { transform: scale(0.95); }
 .btn-a:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-.btn-b { background: #fff; color: #0f172a; font-weight: 800; transition: all .3s; border: 2px solid #e2e8f0; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,.05); display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: 14px 28px; cursor: pointer; }
+.btn-b { background: #fff; color: var(--texto); font-weight: 800; transition: all .3s; border: 2px solid var(--borde); border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,.05); display: inline-flex; align-items: center; justify-content: center; gap: .5rem; }
 .btn-b:hover { transform: translateY(-3px); border-color: var(--naranja); box-shadow: 0 10px 25px rgba(255,107,0,.15); }
 
-.btn-d { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); color: #fff; font-weight: 800; transition: all .3s; border-radius: 50px; box-shadow: 0 12px 28px rgba(15,23,42,.4), inset 0 1px 0 rgba(255,255,255,.1); display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid #475569; padding: 14px 28px; cursor: pointer; }
-.btn-d:hover { transform: translateY(-3px); background: linear-gradient(135deg, var(--naranja2), var(--naranja)); box-shadow: 0 18px 38px rgba(255,107,0,.5); }
+.btn-d { background: var(--bg-dark); color: #fff; font-weight: 800; transition: all .3s; border-radius: 50px; box-shadow: 0 12px 28px rgba(15,23,42,.25), inset 0 1px 0 rgba(255,255,255,.1); display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid #334155; }
+.btn-d:hover { transform: translateY(-3px); background: var(--naranja); box-shadow: 0 18px 38px rgba(255,107,0,.5); }
 
-.btn-verde { background: linear-gradient(135deg, var(--verde2) 0%, var(--verde) 100%); color: #fff; font-weight: 800; border-radius: 50px; border: none; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .25s; display: inline-flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(22,163,74,.4), inset 0 1px 0 rgba(255,255,255,.35); padding: 14px 28px; }
+.btn-verde { background: linear-gradient(135deg, var(--verde2) 0%, var(--verde) 100%); color: #fff; font-weight: 800; border-radius: 50px; border: none; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .25s; display: flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(22,163,74,.4), inset 0 1px 0 rgba(255,255,255,.35); }
 .btn-verde:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(22,163,74,.5); }
+.btn-verde:active { transform: scale(0.95); }
 
 .pantalla { display: none; opacity: 0; transition: all .4s ease; transform: translateY(15px); }
 .pantalla.activa { display: flex; opacity: 1; transform: translateY(0); }
 
-#toast-container { position: absolute; top: 0; left: 0; right: 0; z-index: 9999999; pointer-events: none; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 8px; }
-.toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); color: #fff; border-radius: 1.25rem; padding: 12px 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); transform: translateY(-100px); opacity: 0; transition: all .4s; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 14px; width: 92%; max-width: 340px; border: 1px solid rgba(255,255,255,0.15); }
+#toast-container { position: absolute; top: 0; left: 0; right: 0; z-index: 9999999; pointer-events: none; display: flex; flex-direction: column; align-items: center; padding-top: 25px; gap: 8px; }
+.toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); color: #fff; border-radius: 1.5rem; padding: 14px 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); transform: translateY(-100px); opacity: 0; transition: all .4s; display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 15.5px; width: 92%; max-width: 360px; border: 1px solid rgba(255,255,255,0.15); }
 .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
 
-.modal-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); z-index: 100000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; }
+.modal-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 100000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; }
 .modal-overlay.show { opacity: 1; pointer-events: auto; }
-.modal-content { background: #f8fafc; width: 92%; max-width: 380px; max-height: 88vh; border-radius: 1.75rem; box-shadow: 0 25px 60px rgba(0,0,0,0.3); transform: scale(0.92) translateY(20px); transition: all .3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; overflow: hidden; }
+.modal-content { background: #f8fafc; width: 90%; max-width: 380px; max-height: 88vh; border-radius: 2.25rem; box-shadow: 0 25px 60px rgba(0,0,0,0.25); transform: scale(0.92) translateY(20px); transition: all .3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; overflow: hidden; }
 .modal-overlay.show .modal-content { transform: scale(1) translateY(0); }
 
-.bottom-nav { background: #ffffff; border-top: 1px solid #e2e8f0; position: absolute; bottom: 0; width: 100%; max-width: 448px; display: flex; justify-content: space-around; padding: 10px 0 18px 0; z-index: 50; border-radius: 1.5rem 1.5rem 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.06); }
-.nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: #64748b; font-size: 10.5px; font-weight: 800; cursor: pointer; transition: color 0.2s; }
+.bottom-nav { background: #ffffff; border-top: 1px solid var(--borde); position: absolute; bottom: 0; width: 100%; max-width: 448px; display: flex; justify-content: space-around; padding: 12px 0 22px 0; z-index: 50; border-radius: 2rem 2rem 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.06); }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #64748b; font-size: 11px; font-weight: 800; cursor: pointer; transition: color 0.2s; }
 .nav-item.active { color: var(--naranja); }
-.nav-item i { font-size: 20px; }
+.nav-item i { font-size: 22px; }
 
-.cat-card { background: white; border-radius: 1.25rem; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid #f1f5f9; cursor: pointer; transition: all 0.2s; }
+.cat-card { background: white; border-radius: 1.5rem; padding: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
 .cat-card:active { transform: scale(0.96); border-color: var(--naranja); }
-.cat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.1); }
+.cat-card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
 
-.producto-card { background: white; border-radius: 1.25rem; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.06); border: 1px solid #f1f5f9; transition: all 0.25s; cursor: pointer; }
-.producto-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.1); border-color: var(--naranja); }
+.producto-card { background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.06); border: 1px solid #f1f5f9; transition: all 0.25s; cursor: pointer; }
+.producto-card:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-color: var(--naranja); }
 .producto-card:active { transform: scale(0.97); }
 
-.producto-img { width: 100%; height: 130px; object-fit: cover; background: linear-gradient(135deg, #fff7ed, #ffedd5); }
-.producto-img-placeholder { width: 100%; height: 130px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff7ed, #ffedd5); font-size: 42px; color: var(--naranja); }
+.producto-img { width: 100%; height: 140px; object-fit: cover; background: linear-gradient(135deg, #fff7ed, #ffedd5); }
+.producto-img-placeholder { width: 100%; height: 140px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fff7ed, #ffedd5); font-size: 48px; color: var(--naranja); }
 
-.input-premium { width: 100%; background: #fff; border: 2px solid #e2e8f0; border-radius: 0.875rem; padding: 11px 14px; font-size: 14.5px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.2s; font-family: 'Quicksand', sans-serif; }
+.input-premium { width: 100%; background: #fff; border: 2px solid var(--borde); border-radius: 1rem; padding: 12px 16px; font-size: 15px; font-weight: 700; color: var(--texto); outline: none; transition: all 0.2s; font-family: 'Quicksand', sans-serif; }
 .input-premium:focus { border-color: var(--naranja); box-shadow: 0 0 0 4px rgba(255,107,0,0.1); }
 
-.badge-seguridad { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 9999px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
+.badge-seguridad { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge-verde { background: rgba(0,209,58,0.1); color: var(--verde2); border: 1px solid rgba(0,209,58,0.2); }
 .badge-naranja { background: rgba(255,107,0,0.1); color: var(--naranja); border: 1px solid rgba(255,107,0,0.2); }
 .badge-azul { background: rgba(37,99,235,0.1); color: var(--azul); border: 1px solid rgba(37,99,235,0.2); }
 
-.security-strip { background: linear-gradient(90deg, rgba(0,209,58,0.08), rgba(255,107,0,0.08), rgba(37,99,235,0.08)); border: 1px solid rgba(0,0,0,0.05); border-radius: 0.875rem; padding: 10px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.security-strip { background: linear-gradient(90deg, rgba(0,209,58,0.08), rgba(255,107,0,0.08), rgba(37,99,235,0.08)); border: 1px solid rgba(0,0,0,0.05); border-radius: 1rem; padding: 12px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
-.upload-zone { border: 3px dashed #cbd5e1; border-radius: 1rem; padding: 20px; text-align: center; cursor: pointer; transition: all 0.25s; background: #fafafa; }
+.upload-zone { border: 3px dashed #cbd5e1; border-radius: 1.25rem; padding: 24px; text-align: center; cursor: pointer; transition: all 0.25s; background: #fafafa; }
 .upload-zone:hover { border-color: var(--naranja); background: #fff7ed; }
 .upload-zone.has-file { border-style: solid; border-color: var(--verde); background: rgba(0,209,58,0.05); }
 
-.tab-btn { padding: 9px 14px; border-radius: 9999px; font-weight: 800; font-size: 12.5px; cursor: pointer; transition: all 0.2s; border: none; background: transparent; color: #64748b; font-family: 'Quicksand', sans-serif; }
+.tab-btn { padding: 10px 16px; border-radius: 9999px; font-weight: 800; font-size: 13.5px; cursor: pointer; transition: all 0.2s; border: none; background: transparent; color: #64748b; font-family: 'Quicksand', sans-serif; }
 .tab-btn.active { background: white; color: var(--naranja); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 
-.mapa-container { width: 100%; background: linear-gradient(135deg, #e0f2fe, #f0fdf4); border-radius: 1rem; border: 2px solid #cbd5e1; position: relative; overflow: hidden; box-shadow: inset 0 2px 8px rgba(0,0,0,0.05); }
-.mapa-info-box { position: absolute; bottom: 12px; left: 12px; right: 12px; background: white; border-radius: 0.75rem; padding: 10px 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.12); z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.mapa-info-box { position: absolute; bottom: 16px; left: 16px; right: 16px; background: white; border-radius: 1rem; padding: 12px 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 10; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.mapa-marker-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-.precio-viaje-chip { background: linear-gradient(135deg, var(--naranja2), var(--naranja)); color: white; padding: 5px 12px; border-radius: 9999px; font-weight: 900; font-size: 13px; box-shadow: 0 4px 10px rgba(255,107,0,0.3); }
+.precio-viaje-chip { background: linear-gradient(135deg, var(--naranja2), var(--naranja)); color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 900; font-size: 14px; box-shadow: 0 4px 12px rgba(255,107,0,0.3); }
 
-.step-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
-.step-dot { width: 10px; height: 10px; border-radius: 50%; background: #e2e8f0; transition: all 0.3s; }
-.step-dot.active { background: var(--naranja); width: 26px; border-radius: 9999px; box-shadow: 0 0 10px rgba(255,107,0,0.4); }
+.divider-security { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.divider-security::before, .divider-security::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--borde), transparent); }
+
+.logo-glow { filter: drop-shadow(0 0 20px rgba(255,107,0,0.4)); }
+
+.step-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; }
+.step-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--borde); transition: all 0.3s; }
+.step-dot.active { background: var(--naranja); width: 28px; border-radius: 9999px; box-shadow: 0 0 12px rgba(255,107,0,0.4); }
 .step-dot.done { background: var(--verde); }
 
-@keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-.animate-slide-in { animation: slideInRight 0.35s ease; }
+@keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+.animate-slide-in { animation: slideInRight 0.4s ease; }
 
-.logo-glow { filter: drop-shadow(0 0 16px rgba(255,107,0,0.5)); }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-up { animation: fadeInUp 0.5s ease; }
 
-.direccion-box { background: white; border-radius: 0.875rem; padding: 12px; border: 2px solid #e2e8f0; margin-bottom: 12px; }
-.direccion-box.origen { border-left: 4px solid var(--naranja); }
-.direccion-box.destino { border-left: 4px solid var(--azul); }
-.direccion-label { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; pointer-events: none; }
+.orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(255,107,0,0.4), transparent 70%); top: -100px; right: -100px; }
+.orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,140,0,0.3), transparent 70%); bottom: -50px; left: -50px; }
 
-.hero-card { background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.25); border-radius: 1.5rem; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+.nav-landing { background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,107,0,0.1); }
+
+.card-feature { background: white; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid var(--borde); transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+.card-feature:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(255,107,0,0.12); border-color: rgba(255,107,0,0.3); }
+
+.icon-feature { width: 56px; height: 56px; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 1rem; }
+
+.select-provincia { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ff6b00' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
 `;
     document.head.appendChild(s);
 })();
@@ -157,753 +181,821 @@ a { text-decoration: none; cursor: pointer; }
 
 <div style="background-color:transparent;box-sizing:border-box;position:relative;">
 
-<!-- ============ LANDING PAGE ============ -->
-<div id="vista-landing" class="landing-bg w-full overflow-x-hidden text-white" style="padding-bottom: 30px;">
+<!-- LANDING PAGE - FONDO BLANCO -->
+<div id="vista-landing" class="landing-bg w-full overflow-x-hidden" style="padding-bottom: 40px;">
     
-    <!-- NAV -->
-    <nav class="sticky top-0 z-50 glass-premium mx-3 mt-3" style="position:relative;border-radius:0 0 1.25rem 1.25rem;">
-        <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
+    <nav class="sticky top-0 z-50 nav-landing mx-3 mt-3 rounded-b-3xl">
+        <div class="max-w-6xl mx-auto px-6 py-3.5 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden bg-gradient-to-br from-orange-500 to-orange-700">
-                    <span class="text-white font-black text-lg">DM</span>
+                <div class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden bg-gradient-to-br from-orange-500 to-orange-700">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo" onerror="this.style.display='none'">
                 </div>
                 <div>
-                    <div class="font-black text-[18px] leading-none tracking-tight">DELIVERY MOTO</div>
-                    <div class="text-[10px] font-bold text-orange-300 uppercase tracking-widest mt-0.5">Energy Software</div>
+                    <div class="font-black text-[20px] leading-none tracking-tight" style="color:var(--texto)">DELIVERY MOTO</div>
+                    <div class="text-[11px] font-bold text-orange-500 uppercase tracking-widest mt-1">Energy Software</div>
                 </div>
             </div>
-            <span class="inline-flex items-center gap-2 text-[11px] font-bold text-green-300 uppercase tracking-wide bg-green-500/15 px-2.5 py-1 rounded-full border border-green-500/30">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-400 pg"></span>Activo
+            <div class="hidden md:flex items-center gap-8 text-[15px] font-bold text-slate-600">
+                <a href="#comercios" class="hover:text-orange-500 transition-colors">Comercios</a>
+                <a href="#servimoto" class="hover:text-orange-500 transition-colors">Servimoto</a>
+                <a href="#" onclick="abrirConfigSupabase()" class="hover:text-orange-500 transition-colors"><i class="fa-solid fa-database mr-1"></i> Supabase Cloud</a>
+            </div>
+            <span class="inline-flex items-center gap-2 text-[13px] font-bold text-green-600 uppercase tracking-wide bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                <span class="w-2 h-2 rounded-full bg-green-500 pg"></span>Sistema Activo
             </span>
         </div>
     </nav>
 
-    <!-- TICKER -->
-    <div class="bg-gradient-to-r from-orange-600 to-orange-500 overflow-hidden my-3 shadow-lg rounded-full mx-3">
-        <div class="overflow-hidden py-2">
+    <!-- TICKER SUPERIOR -->
+    <div class="bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 overflow-hidden my-3 shadow-lg rounded-full mx-3">
+        <div class="overflow-hidden py-2.5">
             <div class="ticker-landing">
-                <span class="text-white text-[11px] font-black uppercase tracking-widest px-5">VIAJE $200 • PAGO SEMANAL LUNES • GPS EN VIVO • WHATSAPP DIRECTO • CIFRADO SSL • VIAJE $200 • </span>
-                <span class="text-white text-[11px] font-black uppercase tracking-widest px-5">VIAJE $200 • PAGO SEMANAL LUNES • GPS EN VIVO • WHATSAPP DIRECTO • CIFRADO SSL • VIAJE $200 • </span>
+                <span class="text-white text-[13px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | PEDILOYAA _ COMPRAYA | COMERCIOS Y FAMILIAS | VIAJE $200 | PAGO SEMANAL LUNES | RADAR GPS EN TIEMPO REAL | CIFRADO SSL 256-BIT |</span>
+                <span class="text-white text-[13px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | PEDILOYAA _ COMPRAYA | COMERCIOS Y FAMILIAS | VIAJE $200 | PAGO SEMANAL LUNES | RADAR GPS EN TIEMPO REAL | CIFRADO SSL 256-BIT |</span>
             </div>
         </div>
     </div>
 
-    <!-- HERO -->
-    <section class="relative overflow-hidden rounded-3xl mx-3 shadow-2xl mb-5" style="background: linear-gradient(135deg, #2a3a55 0%, #1e293b 40%, #243049 100%);">
-        <div class="absolute top-0 right-0 w-[350px] h-[350px] rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(255,107,0,.35),transparent 70%)"></div>
+    <!-- HERO SECTION - FONDO BLANCO -->
+    <section class="hg-white relative overflow-hidden rounded-3xl mx-3 shadow-xl mb-6 border border-orange-100" style="background:#ffffff;">
+        <div class="hero-orb orb-1"></div>
+        <div class="hero-orb orb-2"></div>
         
-        <div class="max-w-5xl mx-auto px-5 py-8 md:py-10 relative z-10 text-center">
-            <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1 mb-3 backdrop-blur-md">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-400 pg"></span>
-                <span class="text-[11px] font-bold text-green-300 uppercase tracking-wider">Plataforma Logística Unificada</span>
+        <div class="max-w-5xl mx-auto px-6 py-12 md:py-16 relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full px-4 py-1.5 mb-5">
+                <span class="w-2 h-2 rounded-full bg-green-500 pg"></span>
+                <span class="text-[13px] font-bold text-orange-600 uppercase tracking-wider">Plataforma Logística Unificada</span>
             </div>
             
-            <div class="security-strip mb-4 mx-auto max-w-sm" style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);">
-                <span class="badge-seguridad badge-verde"><i class="fa-solid fa-shield-halved"></i> SSL</span>
+            <div class="security-strip mb-5 mx-auto max-w-md" style="background: rgba(255,107,0,0.04); border-color: rgba(255,107,0,0.15);">
+                <span class="badge-seguridad badge-verde"><i class="fa-solid fa-shield-halved"></i> SSL Seguro</span>
                 <span class="badge-seguridad badge-naranja"><i class="fa-solid fa-lock"></i> Datos Protegidos</span>
-                <span class="badge-seguridad badge-azul"><i class="fa-solid fa-satellite-dish"></i> GPS</span>
+                <span class="badge-seguridad badge-azul"><i class="fa-solid fa-satellite-dish"></i> GPS en Vivo</span>
             </div>
             
-            <div class="relative inline-block mb-3">
-                <div class="absolute inset-0 rounded-full blur-2xl opacity-40" style="background:radial-gradient(circle,rgba(255,107,0,.8),transparent 60%)"></div>
-                <div class="relative w-28 h-28 mx-auto rounded-2xl overflow-hidden border-[3px] border-white/30 shadow-2xl logo-float bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center logo-glow">
-                    <span class="text-white font-black text-4xl">DM</span>
+            <div class="relative inline-block mb-5">
+                <div class="absolute inset-0 rounded-full blur-3xl opacity-40" style="background:radial-gradient(circle,rgba(255,107,0,.8),transparent 60%)"></div>
+                <div class="relative w-40 h-40 md:w-48 md:h-48 mx-auto rounded-[2.5rem] overflow-hidden border-[4px] border-white shadow-2xl logo-float bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center logo-glow">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo 3D" onerror="this.style.display='none'">
                 </div>
             </div>
 
-            <h1 class="titulo-3d text-[28px] md:text-[44px] leading-[1.05] mb-2 tracking-tighter">DELIVERY MOTO</h1>
+            <h1 class="titulo-3d text-[34px] md:text-[56px] leading-[1.05] mb-3 tracking-tighter">DELIVERY MOTO</h1>
             
-            <div class="hero-card w-full max-w-sm mx-auto mb-4">
-                <p class="frase-moderna text-[14px] text-white leading-snug">
-                    <span class="block text-yellow-300 text-[10px] uppercase tracking-widest mb-1">PEDILOYAA _ COMPRAYA</span>
-                    <span class="block">COMERCIOS Y FAMILIAS ENVÍAN.</span>
-                    <span class="block mt-0.5">EL SERVIMOTO NECESITA VIAJAR.</span>
+            <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-2xl p-4 w-full max-w-md mx-auto mb-6 shadow-sm">
+                <p class="frase-moderna text-[16px] md:text-[18px] leading-snug">
+                    <span class="block text-orange-500 text-[13px] uppercase tracking-widest mb-1">CON PEDILOYAA _ COMPRAYA</span>
+                    <span class="block" style="color:var(--texto)">COMERCIOS Y FAMILIAS ENVÍAN.</span>
+                    <span class="block mt-1" style="color:var(--texto)">EL SERVIMOTO NECESITA VIAJAR.</span>
                 </p>
             </div>
 
             <!-- Tarifa destacada -->
-            <div class="inline-flex items-center gap-4 bg-gradient-to-r from-orange-600/40 to-orange-500/40 border-2 border-orange-400/60 rounded-2xl px-5 py-3 mb-4 backdrop-blur-md">
+            <div class="inline-flex items-center gap-4 bg-gradient-to-r from-orange-500 to-orange-400 border-2 border-orange-300 rounded-2xl px-6 py-3 mb-6 shadow-lg">
                 <div class="text-center">
-                    <p class="text-[9px] font-bold uppercase tracking-widest text-orange-200">Tarifa de Viaje</p>
-                    <p class="text-[28px] font-black text-white leading-none">$200</p>
-                    <p class="text-[9px] font-bold text-orange-200">POR ENVÍO</p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-orange-100">Tarifa de Viaje</p>
+                    <p class="text-[32px] font-black text-white leading-none">$200</p>
+                    <p class="text-[10px] font-bold text-orange-100">POR ENVÍO</p>
                 </div>
-                <div class="w-px h-10 bg-white/30"></div>
-                <div class="text-left text-[11px]">
-                    <p class="font-bold text-green-300"><i class="fa-solid fa-check-circle mr-1"></i> Pago al cadete</p>
-                    <p class="font-bold text-green-300"><i class="fa-solid fa-check-circle mr-1"></i> Sin comisiones</p>
-                    <p class="font-bold text-green-300"><i class="fa-solid fa-check-circle mr-1"></i> Pago lunes</p>
+                <div class="w-px h-12 bg-white/40"></div>
+                <div class="text-left">
+                    <p class="text-[12px] font-bold text-white"><i class="fa-solid fa-check-circle mr-1"></i> Pago al cadete</p>
+                    <p class="text-[12px] font-bold text-white"><i class="fa-solid fa-check-circle mr-1"></i> Sin comisiones ocultas</p>
+                    <p class="text-[12px] font-bold text-white"><i class="fa-solid fa-check-circle mr-1"></i> Liquidación semanal</p>
                 </div>
             </div>
 
-            <!-- Audio -->
-            <div class="relative inline-flex items-center justify-center mb-2">
+            <!-- AUDIO PRESENTACIÓN -->
+            <div class="relative inline-flex items-center justify-center mb-3">
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div class="onda-play onda-play-1"></div><div class="onda-play onda-play-2"></div><div class="onda-play onda-play-3"></div>
                 </div>
-                <button onclick="reproducirAudioLanding()" class="boton-play-landing">
+                <button onclick="reproducirAudioLanding()" class="boton-play-landing" title="Escuchar presentación">
                     <div class="icono-play"><i class="fa-solid fa-play"></i></div>
                 </button>
             </div>
-            <p class="text-slate-300 text-[12px] font-bold mb-5">Toca para escuchar</p>
+            <p class="text-slate-500 text-[14px] font-bold mb-6">Toca para escuchar la presentación de voz</p>
 
-            <!-- Botones -->
-            <div class="flex flex-col sm:flex-row gap-3 justify-center relative z-20 max-w-sm mx-auto">
-                <a onclick="abrirPWA()" class="btn-a btn-glow px-6 py-3.5 text-[14px] shadow-xl">
-                    <i class="fa-solid fa-globe"></i> INGRESAR APP
-                </a>
-                <a onclick="abrirPWA()" class="btn-d btn-glow px-6 py-3.5 text-[14px] shadow-xl">
-                    <i class="fa-brands fa-android"></i> DESCARGAR
-                </a>
+            <!-- BOTONES PRINCIPALES - FUNCIONALES -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center relative z-20 max-w-lg mx-auto">
+                <button onclick="ingresarComoComprador()" class="btn-a btn-glow px-8 py-4 text-[16px] cursor-pointer shadow-xl w-full">
+                    <i class="fa-solid fa-bag-shopping text-xl"></i> COMPRAR / PEDIR AHORA
+                </button>
+                <button onclick="ingresarComoComercio()" class="btn-d btn-glow px-8 py-4 text-[16px] shadow-xl border border-slate-700 w-full">
+                    <i class="fa-solid fa-store text-xl"></i> SOY COMERCIO (INGRESAR)
+                </button>
             </div>
         </div>
     </section>
 
-    <!-- Plataformas -->
-    <section class="py-5 px-5 max-w-5xl mx-auto">
-        <h2 class="text-[22px] md:text-[28px] font-black mb-4 text-center tracking-tight text-white">DOS PLATAFORMAS. UNA RED.</h2>
-        <div class="grid md:grid-cols-2 gap-3">
-            <div class="glass-premium p-5">
-                <div class="w-12 h-12 bg-orange-500 text-white rounded-xl flex items-center justify-center text-xl mb-3 shadow-lg"><i class="fa-solid fa-store"></i></div>
-                <h3 class="text-[18px] font-black mb-1 text-white">Comercios y Familias</h3>
-                <p class="font-medium text-[13px] text-slate-300 leading-relaxed mb-3">Pide comida, abarrotes o solicita envíos. Tracking GPS + WhatsApp + MercadoPago.</p>
-                <div class="flex flex-wrap gap-1.5">
+    <!-- CARACTERÍSTICAS DESTACADAS -->
+    <section class="py-8 px-6 max-w-6xl mx-auto">
+        <h2 class="text-[28px] md:text-[36px] font-black mb-2 text-center tracking-tight" style="color:var(--texto)">Todo lo que necesitás en un solo lugar</h2>
+        <p class="text-center text-slate-500 font-medium mb-8 max-w-2xl mx-auto">La plataforma completa para gestionar tus envíos, ventas y deliveries de forma profesional</p>
+        
+        <div class="grid md:grid-cols-3 gap-4 mb-8">
+            <div class="card-feature animate-fade-up">
+                <div class="icon-feature bg-orange-100 text-orange-500"><i class="fa-solid fa-cart-shopping"></i></div>
+                <h3 class="font-black text-lg mb-2" style="color:var(--texto)">Marketplace Inteligente</h3>
+                <p class="text-slate-500 text-sm font-medium">Comprá y vendé por provincia y ciudad. Catálogo completo con carrito de compras integrado.</p>
+            </div>
+            <div class="card-feature animate-fade-up" style="animation-delay:0.1s">
+                <div class="icon-feature bg-green-100 text-green-600"><i class="fa-solid fa-motorcycle"></i></div>
+                <h3 class="font-black text-lg mb-2" style="color:var(--texto)">Red de Cadetes</h3>
+                <p class="text-slate-500 text-sm font-medium">Servimoto verificados con GPS en tiempo real. Tarifa fija de $200 por viaje.</p>
+            </div>
+            <div class="card-feature animate-fade-up" style="animation-delay:0.2s">
+                <div class="icon-feature bg-blue-100 text-blue-600"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3 class="font-black text-lg mb-2" style="color:var(--texto)">Plataforma Segura</h3>
+                <p class="text-slate-500 text-sm font-medium">Cifrado SSL, verificación de identidad y auditoría IA para máxima tranquilidad.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DUO PLATAFORMA -->
+    <section id="comercios" class="py-8 px-6 max-w-5xl mx-auto">
+        <h2 class="text-[28px] md:text-[36px] font-black mb-6 text-center tracking-tight" style="color:var(--texto)">DOS PLATAFORMAS. UNA SOLA RED.</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="glass-premium p-6 transition-transform hover:-translate-y-1">
+                <div class="w-14 h-14 bg-orange-500 text-white rounded-2xl flex items-center justify-center text-[24px] mb-4 shadow-lg"><i class="fa-solid fa-store"></i></div>
+                <h3 class="text-[22px] font-black mb-2" style="color:var(--texto)">Comercios y Familias (Web App)</h3>
+                <p class="font-medium text-[15px] text-slate-600 leading-relaxed">Pide comida, abarrotes o solicita envíos inmediatos en tu ciudad con tracking en tiempo real, pagos integrados y conexión directa por WhatsApp.</p>
+                <div class="mt-4 flex flex-wrap gap-2">
                     <span class="badge-seguridad badge-verde"><i class="fa-solid fa-wallet"></i> MercadoPago</span>
-                    <span class="badge-seguridad badge-naranja"><i class="fa-brands fa-whatsapp"></i> Chat</span>
+                    <span class="badge-seguridad badge-naranja"><i class="fa-brands fa-whatsapp"></i> Chat Directo</span>
+                    <span class="badge-seguridad badge-azul"><i class="fa-solid fa-bag-shopping"></i> Catálogo Premium</span>
                 </div>
+                <button onclick="ingresarComoComprador()" class="btn-a w-full mt-5 py-3 text-sm">
+                    <i class="fa-solid fa-arrow-right"></i> Empezar a Comprar
+                </button>
             </div>
-            <div class="glass-premium p-5">
-                <div class="w-12 h-12 bg-slate-700 text-green-400 rounded-xl flex items-center justify-center text-xl mb-3 shadow-lg border border-slate-600"><i class="fa-solid fa-motorcycle"></i></div>
-                <h3 class="text-[18px] font-black mb-1 text-white">Servimoto App</h3>
-                <p class="font-medium text-[13px] text-slate-300 leading-relaxed mb-3">Aplicación para cadetes. Radar GPS + Auditoría IA + Cobro de <strong class="text-orange-400">$200</strong> por viaje.</p>
-                <div class="flex flex-wrap gap-1.5">
-                    <span class="badge-seguridad badge-verde"><i class="fa-solid fa-satellite-dish"></i> Radar</span>
-                    <span class="badge-seguridad badge-naranja"><i class="fa-solid fa-robot"></i> IA Audit</span>
+            <div id="servimoto" class="glass-premium p-6 transition-transform hover:-translate-y-1">
+                <div class="w-14 h-14 bg-slate-800 text-green-400 rounded-2xl flex items-center justify-center text-[24px] mb-4 shadow-lg border border-slate-700"><i class="fa-solid fa-motorcycle"></i></div>
+                <h3 class="text-[22px] font-black mb-2" style="color:var(--texto)">Servimoto App (APK Nativa)</h3>
+                <p class="font-medium text-[15px] text-slate-600 leading-relaxed">Aplicación exclusiva para cadetes con radar GPS inteligente, auditoría automática por Inteligencia Artificial, cobros semanales directos y tarifa fija de <strong class="text-orange-500">$200</strong> por viaje.</p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="badge-seguridad badge-verde"><i class="fa-solid fa-satellite-dish"></i> Radar GPS</span>
+                    <span class="badge-seguridad badge-naranja"><i class="fa-solid fa-robot"></i> Auditoría IA</span>
+                    <span class="badge-seguridad badge-azul"><i class="fa-solid fa-calendar-week"></i> Pago Lunes</span>
+                </div>
+                <button onclick="ingresarComoServimoto()" class="btn-d w-full mt-5 py-3 text-sm">
+                    <i class="fa-solid fa-motorcycle"></i> Acceso Servimoto
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN SEGURIDAD -->
+    <section class="py-8 px-6 max-w-5xl mx-auto">
+        <div class="glass-premium p-6 md:p-8">
+            <div class="text-center mb-6">
+                <h2 class="text-[24px] md:text-[30px] font-black mb-2 tracking-tight" style="color:var(--texto)"><i class="fa-solid fa-shield-halved text-orange-500 mr-2"></i>Plataforma Segura y Verificada</h2>
+                <p class="text-slate-500 font-medium">Tu información y tus pagos protegidos con tecnología de nivel bancario</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="text-center p-4 bg-orange-50/50 rounded-2xl border border-orange-100">
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-green-500/20 flex items-center justify-center text-green-600 text-xl"><i class="fa-solid fa-lock"></i></div>
+                    <h4 class="font-black mb-1" style="color:var(--texto)">Cifrado SSL 256-bit</h4>
+                    <p class="text-[13px] text-slate-500">Toda comunicación está encriptada de extremo a extremo.</p>
+                </div>
+                <div class="text-center p-4 bg-orange-50/50 rounded-2xl border border-orange-100">
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-500 text-xl"><i class="fa-solid fa-id-card"></i></div>
+                    <h4 class="font-black mb-1" style="color:var(--texto)">Verificación de Identidad</h4>
+                    <p class="text-[13px] text-slate-500">Cadetes auditados por IA con DNI, AFIP y antecedentes.</p>
+                </div>
+                <div class="text-center p-4 bg-orange-50/50 rounded-2xl border border-orange-100">
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-600 text-xl"><i class="fa-solid fa-location-crosshairs"></i></div>
+                    <h4 class="font-black mb-1" style="color:var(--texto)">Tracking en Vivo</h4>
+                    <p class="text-[13px] text-slate-500">Seguimiento GPS en tiempo real de cada envío.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Seguridad -->
-    <section class="py-5 px-5 max-w-5xl mx-auto">
-        <div class="glass-premium p-5">
-            <div class="text-center mb-4">
-                <h2 class="text-[20px] font-black mb-1 text-white tracking-tight"><i class="fa-solid fa-shield-halved text-orange-400 mr-2"></i>Plataforma Segura</h2>
-                <p class="text-slate-400 text-xs font-medium">Tus datos y pagos protegidos</p>
-            </div>
-            <div class="grid grid-cols-3 gap-3">
-                <div class="text-center p-3 bg-white/5 rounded-xl border border-white/10">
-                    <div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400"><i class="fa-solid fa-lock text-sm"></i></div>
-                    <h4 class="font-black text-white text-[11px] mb-0.5">SSL 256-bit</h4>
-                    <p class="text-[10px] text-slate-400">Cifrado</p>
-                </div>
-                <div class="text-center p-3 bg-white/5 rounded-xl border border-white/10">
-                    <div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400"><i class="fa-solid fa-id-card text-sm"></i></div>
-                    <h4 class="font-black text-white text-[11px] mb-0.5">Verificación</h4>
-                    <p class="text-[10px] text-slate-400">IA + DNI</p>
-                </div>
-                <div class="text-center p-3 bg-white/5 rounded-xl border border-white/10">
-                    <div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-location-crosshairs text-sm"></i></div>
-                    <h4 class="font-black text-white text-[11px] mb-0.5">Tracking</h4>
-                    <p class="text-[10px] text-slate-400">GPS en vivo</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-6 px-5 mt-4 rounded-t-2xl mx-3" style="background: linear-gradient(180deg, #1e293b, #0f172a); border-top: 2px solid var(--naranja);">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+    <footer class="bg-slate-900 text-slate-400 py-8 px-6 mt-6 rounded-t-3xl mx-3 border-t-2 border-orange-500">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg flex items-center justify-center shadow bg-gradient-to-br from-orange-500 to-orange-700">
-                    <span class="text-white font-black">DM</span>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg bg-slate-800">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo" onerror="this.style.display='none'">
                 </div>
                 <div>
-                    <div class="font-black text-white text-[15px] leading-none">DELIVERY MOTO</div>
-                    <div class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Energy Software • 2026</div>
+                    <div class="font-black text-white text-[18px] leading-none tracking-tight">DELIVERY MOTO</div>
+                    <div class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Energy Software • 2026</div>
                 </div>
             </div>
-            <div class="text-center md:text-right text-[11px]">
-                <p class="font-bold text-white">Desarrollado en Argentina</p>
-                <p class="text-slate-500 mt-0.5">Soporte: soporte@deliverymoto.com</p>
+            <div class="text-center md:text-right text-[13.5px]">
+                <p class="font-bold text-white">Desarrollado en Argentina para toda Latinoamérica.</p>
+                <p class="text-slate-500 mt-0.5">Soporte técnico integrado con Supabase & OpenAI.</p>
             </div>
         </div>
     </footer>
 </div>
 
-<!-- ============ VISTA APP ============ -->
-<div id="vista-app" class="hidden" style="position:relative;width:100%;min-height:750px;background:linear-gradient(135deg,#1a2235,#243049);display:flex;align-items:flex-start;justify-content:center;z-index:99999;">
+<!-- VISTA DE LA APLICACIÓN (PWA) -->
+<div id="vista-app" class="hidden" style="position:relative;width:100%;min-height:800px;background:#f8fafc;display:flex;align-items:flex-start;justify-content:center;z-index:99999;">
     
-    <!-- SPLASH -->
-    <div id="splash-screen" style="position:absolute;inset:0;background:linear-gradient(135deg,#1a2235,#243049);z-index:999999;display:none;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:0;">
-        <div class="relative w-32 h-32 rounded-2xl overflow-hidden border-[3px] border-orange-500/50 shadow-[0_0_40px_rgba(255,107,0,0.4)] logo-glow bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center mb-4">
-            <span class="text-white font-black text-4xl">DM</span>
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen" style="position:absolute;inset:0;background:#ffffff;z-index:999999;display:none;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:0;">
+        <div class="relative w-44 h-44 rounded-[2.5rem] overflow-hidden border-[4px] border-orange-500/40 shadow-[0_0_60px_rgba(255,107,0,0.4)] logo-glow bg-orange-50 flex items-center justify-center mb-6">
+            <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo" onerror="this.style.display='none'">
         </div>
-        <h1 class="titulo-3d text-[1.6rem] leading-none mb-1 text-white">DELIVERY MOTO</h1>
-        <p class="text-[10px] font-black uppercase tracking-widest text-orange-400 mt-1">pediloyaa _ compraya</p>
-        <div class="mt-4"><span class="badge-seguridad badge-verde"><i class="fa-solid fa-shield-halved"></i> Cargando...</span></div>
+        <h1 class="titulo-3d text-[2.2rem] leading-none mb-1 text-center tracking-tighter" style="color:var(--texto)">DELIVERY MOTO</h1>
+        <p class="text-[12px] font-black uppercase tracking-widest text-orange-500 mt-2">pediloyaa _ compraya</p>
+        <div class="mt-6 flex gap-2">
+            <span class="badge-seguridad badge-verde"><i class="fa-solid fa-shield-halved"></i> Cargando módulos seguros...</span>
+        </div>
     </div>
 
-    <!-- CONTENEDOR APP -->
-    <div style="width:100%;max-width:448px;background:#f8fafc;position:relative;flex-direction:column;display:flex;min-height:750px;box-shadow:0 20px 50px rgba(0,0,0,0.4);overflow:hidden;">
+    <!-- CONTENEDOR CELULAR APP -->
+    <div style="width:100%;max-width:448px;background:#f8fafc;position:relative;flex-direction:column;display:flex;min-height:800px;box-shadow:0 25px 60px rgba(0,0,0,0.2);overflow:hidden;">
         
         <div id="toast-container"></div>
 
         <!-- TICKER APP -->
-        <div class="w-full bg-gradient-to-r from-orange-600 to-orange-500 overflow-hidden relative z-50 shrink-0">
-            <div class="animate-scroll py-1.5 w-full">
-                <span class="text-white text-[11px] font-black uppercase tracking-widest px-3">
-                    VIAJE $200 • GPS EN VIVO • WHATSAPP • PAGO LUNES • SEGURO SSL
+        <div class="w-full bg-gradient-to-r from-orange-500 to-orange-400 border-b-2 border-orange-300 overflow-hidden relative z-50 shrink-0">
+            <div class="animate-scroll py-2 w-full" style="display:inline-block;white-space:nowrap;animation:ticker 25s linear infinite;">
+                <span class="text-white text-[12.5px] font-black uppercase tracking-widest px-3">
+                    DELIVERY MOTO | VIAJE $200 | RUTA GPS | CHAT WSP | PAGO SEMANAL | SSL SEGURO |
+                </span>
+                <span class="text-white text-[12.5px] font-black uppercase tracking-widest px-3">
+                    DELIVERY MOTO | VIAJE $200 | RUTA GPS | CHAT WSP | PAGO SEMANAL | SSL SEGURO |
                 </span>
             </div>
         </div>
 
-        <!-- PANTALLA 1: INICIO -->
-        <div id="pantalla-1" class="pantalla activa flex-col h-full relative overflow-y-auto no-scrollbar bg-slate-50">
-            <div class="relative pb-8 pt-6 px-5 rounded-b-[2rem] shadow-xl flex flex-col items-center justify-center z-10 shrink-0 overflow-hidden" style="background:linear-gradient(135deg,#ff8c00 0%,#ff6b00 40%,#cc4400 100%)">
+        <!-- PANTALLA INICIO APP -->
+        <div id="pantalla-1" class="pantalla activa flex-col h-full relative overflow-y-auto no-scrollbar bg-white">
+            <div class="relative pb-10 pt-8 px-6 rounded-b-[2.5rem] shadow-xl flex flex-col items-center justify-center z-10 shrink-0 overflow-hidden" style="background:linear-gradient(135deg,#ff8c00 0%,#ff6b00 40%,#cc4400 100%)">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 mix-blend-overlay"></div>
                 <div class="relative z-10 flex flex-col items-center w-full">
-                    <div class="security-strip mb-3" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.25);">
-                        <span class="badge-seguridad" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3);font-size:9px;"><i class="fa-solid fa-shield-halved"></i> Seguro</span>
-                        <span class="badge-seguridad" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3);font-size:9px;"><i class="fa-solid fa-satellite-dish"></i> GPS</span>
+                    <div class="security-strip mb-4" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.25);">
+                        <span class="badge-seguridad" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3);"><i class="fa-solid fa-shield-halved"></i> Seguro</span>
+                        <span class="badge-seguridad" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3);"><i class="fa-solid fa-satellite-dish"></i> GPS</span>
                     </div>
-                    <div class="relative mb-3">
-                        <div class="relative w-24 h-24 rounded-2xl overflow-hidden border-[3px] border-white/40 shadow-2xl logo-float bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center logo-glow">
-                            <span class="text-white font-black text-3xl">DM</span>
+                    <div class="relative mb-4 mt-2">
+                        <div class="relative w-36 h-36 rounded-[2.2rem] overflow-hidden border-[3px] border-white/40 shadow-2xl logo-glow logo-float bg-white flex items-center justify-center">
+                            <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo 3D" onerror="this.style.display='none'">
                         </div>
                     </div>
-                    <h1 class="titulo-3d text-[1.6rem] leading-none mb-2">DELIVERY MOTO</h1>
-                    <div class="bg-white/15 backdrop-blur-md border border-white/30 rounded-xl p-2.5 w-full max-w-[260px]">
-                        <p class="frase-moderna text-[12px] text-white text-center leading-snug">
+                    <h1 class="titulo-3d text-[2rem] leading-none mb-2 text-center tracking-tighter" style="color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.2)">DELIVERY MOTO</h1>
+                    <div class="bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-3 w-full max-w-[280px]">
+                        <h2 class="frase-moderna text-[13.5px] text-white text-center leading-snug">
                             <span class="block">COMERCIOS Y FAMILIAS ENVÍAN.</span>
                             <span class="block mt-0.5">EL SERVIMOTO NECESITA VIAJAR.</span>
-                        </p>
+                        </h2>
                     </div>
                 </div>
             </div>
             
-            <div class="flex-1 px-5 pt-5 pb-8 flex flex-col justify-center space-y-3">
-                <h4 class="text-center font-black text-slate-400 uppercase tracking-widest text-[11px] mb-1">Selecciona tu perfil</h4>
-                <div class="space-y-3">
-                    <button onclick="cambiarPantalla('pantalla-marketplace')" class="w-full bg-white border-2 border-orange-200 rounded-full p-3.5 flex items-center justify-center gap-3 shadow-md active:scale-95 transition-all hover:border-orange-500">
-                        <i class="fa-solid fa-burger" style="color:var(--naranja);font-size:18px;"></i>
-                        <span class="font-black text-slate-800 text-[15px]">Soy Cliente (Comprar)</span>
+            <div class="flex-1 px-6 pt-6 pb-10 flex flex-col justify-center space-y-4">
+                <h4 class="text-center font-black text-slate-400 uppercase tracking-widest text-[12px] mb-2">Selecciona tu perfil</h4>
+                <div class="space-y-3.5">
+                    <button onclick="cambiarPantalla('pantalla-registro-comprador')" class="w-full bg-white border-2 border-orange-200 rounded-[50px] p-4 flex items-center justify-center gap-3 shadow-md active:scale-95 transition-all hover:border-orange-500">
+                        <i class="fa-solid fa-bag-shopping" style="color:var(--naranja);font-size:20px;"></i>
+                        <span class="font-black text-slate-800 text-[16px]">Soy Cliente (Comprar / Pedir)</span>
                     </button>
-                    <button onclick="cambiarPantalla('pantalla-login-comercio')" class="w-full bg-white border-2 border-slate-200 rounded-full p-3.5 flex items-center justify-center gap-3 shadow-md active:scale-95 transition-all hover:border-indigo-500">
-                        <i class="fa-solid fa-store text-indigo-600 text-lg"></i>
-                        <span class="font-black text-slate-800 text-[15px]">Soy Comercio (Vender)</span>
+                    <button onclick="cambiarPantalla('pantalla-login-comercio')" class="w-full bg-white border-2 border-slate-200 rounded-[50px] p-4 flex items-center justify-center gap-3 shadow-md active:scale-95 transition-all hover:border-indigo-500">
+                        <i class="fa-solid fa-store text-indigo-600 text-xl"></i>
+                        <span class="font-black text-slate-800 text-[16px]">Soy Comercio (Vender / Enviar)</span>
                     </button>
-                    <button onclick="cambiarPantalla('pantalla-login-opciones')" class="btn-a w-full py-3.5 text-[15px] btn-resplandor shadow-xl" style="width:100%;">
-                        <i class="fa-solid fa-motorcycle"></i> Soy Servimoto (Viajar)
+                    <button onclick="cambiarPantalla('pantalla-login-opciones')" class="btn-a w-full py-4 text-[16px] btn-resplandor shadow-xl">
+                        <i class="fa-solid fa-motorcycle text-xl"></i> Soy Servimoto (Viajar)
                     </button>
+                </div>
+                <div class="text-center mt-4">
+                    <button onclick="abrirConfigSupabase()" class="text-xs font-bold text-slate-500 hover:text-orange-500 underline">Configurar Conexión Supabase / API</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- REGISTRO COMPRADOR - PROVINCIA / CIUDAD -->
+        <div id="pantalla-registro-comprador" class="pantalla flex-col h-full bg-slate-50 relative overflow-hidden">
+            <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
+                <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-orange-500 mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
+                <div><h2 class="text-[22px] font-black text-slate-800 leading-none">Tu Ubicación</h2></div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 flex flex-col space-y-4 pb-20">
+                <div class="text-center mb-2">
+                    <div class="w-20 h-20 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-3xl shadow-lg"><i class="fa-solid fa-location-dot"></i></div>
+                    <h3 class="font-black text-slate-800 text-xl">¡Bienvenido!</h3>
+                    <p class="text-slate-500 text-sm font-medium mt-1">Contános dónde estás para ver locales cerca tuyo</p>
+                </div>
+                
+                <div class="glass-light p-6 border border-slate-200 shadow-lg">
+                    <div class="mb-4">
+                        <label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Tu Nombre</label>
+                        <input type="text" id="reg-nombre" placeholder="Ej: María Gómez" class="input-premium mt-1">
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Celular (WhatsApp)</label>
+                        <input type="tel" id="reg-celular" placeholder="Ej: 3815550123" class="input-premium mt-1">
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Provincia</label>
+                        <select id="reg-provincia" class="input-premium mt-1 select-provincia" onchange="cargarCiudades()">
+                            <option value="" disabled selected>Seleccioná tu provincia...</option>
+                            <option value="Buenos Aires">Buenos Aires</option>
+                            <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                            <option value="Catamarca">Catamarca</option>
+                            <option value="Chaco">Chaco</option>
+                            <option value="Chubut">Chubut</option>
+                            <option value="Córdoba">Córdoba</option>
+                            <option value="Corrientes">Corrientes</option>
+                            <option value="Entre Ríos">Entre Ríos</option>
+                            <option value="Formosa">Formosa</option>
+                            <option value="Jujuy">Jujuy</option>
+                            <option value="La Pampa">La Pampa</option>
+                            <option value="La Rioja">La Rioja</option>
+                            <option value="Mendoza">Mendoza</option>
+                            <option value="Misiones">Misiones</option>
+                            <option value="Neuquén">Neuquén</option>
+                            <option value="Río Negro">Río Negro</option>
+                            <option value="Salta">Salta</option>
+                            <option value="San Juan">San Juan</option>
+                            <option value="San Luis">San Luis</option>
+                            <option value="Santa Cruz">Santa Cruz</option>
+                            <option value="Santa Fe">Santa Fe</option>
+                            <option value="Santiago del Estero">Santiago del Estero</option>
+                            <option value="Tierra del Fuego">Tierra del Fuego</option>
+                            <option value="Tucumán">Tucumán</option>
+                        </select>
+                    </div>
+                    <div class="mb-5">
+                        <label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Ciudad / Localidad</label>
+                        <select id="reg-ciudad" class="input-premium mt-1 select-provincia">
+                            <option value="" disabled selected>Primero elegí tu provincia...</option>
+                        </select>
+                    </div>
+                    <div class="mb-5">
+                        <label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Dirección de Entrega</label>
+                        <input type="text" id="reg-direccion" placeholder="Calle, número, barrio..." class="input-premium mt-1">
+                    </div>
+                    <button onclick="registrarComprador()" class="btn-a w-full py-4 text-[16px] shadow-md tracking-wide"><i class="fa-solid fa-check"></i> Continuar al Marketplace</button>
+                </div>
+                
+                <div class="security-strip mt-2">
+                    <span class="badge-seguridad badge-verde"><i class="fa-solid fa-shield-halved"></i> Datos Protegidos</span>
+                    <span class="text-xs text-slate-500 font-medium">Tu información solo se usa para entregas</span>
                 </div>
             </div>
         </div>
 
         <!-- LOGIN COMERCIO -->
         <div id="pantalla-login-comercio" class="pantalla flex-col h-full bg-slate-50 relative overflow-hidden">
-            <div class="h-20 bg-white flex items-end pb-3 px-5 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
-                <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-[var(--naranja)] mr-3"><i class="fa-solid fa-arrow-left text-xl"></i></button>
-                <div><h2 class="text-[20px] font-black text-slate-800 leading-none">Acceso Comercio</h2></div>
+            <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
+                <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-orange-500 mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
+                <div><h2 class="text-[24px] font-black text-slate-800 leading-none">Acceso Comercio</h2></div>
             </div>
-            <div class="flex-1 overflow-y-auto p-5 flex flex-col justify-center space-y-3 pb-16">
-                <div class="text-center mb-3">
-                    <div class="w-16 h-16 mx-auto mb-2 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white text-2xl shadow-lg"><i class="fa-solid fa-store"></i></div>
-                    <h3 class="font-black text-slate-800 text-lg">Panel del Comercio</h3>
-                    <p class="text-slate-500 text-xs font-medium mt-0.5">Gestiona tu catálogo y envíos</p>
+            <div class="flex-1 overflow-y-auto p-6 flex flex-col justify-center space-y-4 pb-20">
+                <div class="text-center mb-4">
+                    <div class="w-20 h-20 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white text-3xl shadow-lg"><i class="fa-solid fa-store"></i></div>
+                    <h3 class="font-black text-slate-800 text-xl">Panel del Comercio</h3>
+                    <p class="text-slate-500 text-sm font-medium mt-1">Gestiona tu catálogo y envíos</p>
                 </div>
                 
-                <div class="glass-light p-5 border border-slate-200 shadow-lg">
-                    <div class="mb-3">
-                        <label class="text-[11px] font-black uppercase text-slate-500 tracking-wider">WhatsApp (10 dígitos)</label>
-                        <input type="tel" id="login-comercio-celular" placeholder="Ej: 3815550123" maxlength="10" class="input-premium mt-1">
+                <div class="glass-light p-6 mb-4 border border-slate-200 shadow-lg">
+                    <div class="mb-4">
+                        <label class="text-[13px] font-black uppercase text-slate-500 tracking-wider">Celular (WhatsApp)</label>
+                        <input type="tel" id="login-comercio-celular" placeholder="Ej: 3815550123" class="input-premium mt-1">
                     </div>
-                    <div class="mb-3">
-                        <label class="text-[11px] font-black uppercase text-slate-500 tracking-wider">Contraseña (3 caracteres)</label>
-                        <input type="password" id="login-comercio-pwd" placeholder="Ej: ABC" maxlength="3" class="input-premium mt-1" style="letter-spacing:4px;font-size:18px;text-align:center;">
+                    <div class="mb-5">
+                        <label class="text-[13px] font-black uppercase text-slate-500 tracking-wider">Contraseña</label>
+                        <input type="password" id="login-comercio-pwd" placeholder="••••••••" class="input-premium mt-1">
                     </div>
-                    <button onclick="loginComercio()" class="btn-a w-full py-3 text-[14px] shadow-md" style="width:100%;"><i class="fa-solid fa-right-to-bracket"></i> Ingresar</button>
+                    <button onclick="loginComercio()" class="btn-a w-full py-4 text-[16px] shadow-md tracking-wide"><i class="fa-solid fa-right-to-bracket"></i> Ingresar al Panel</button>
                 </div>
                 
                 <div class="text-center">
-                    <button onclick="mostrarToast('Registrate: soporte@deliverymoto.com','info')" class="text-orange-600 font-black text-xs underline">¿Primera vez? Solicitar alta</button>
+                    <p class="text-slate-400 text-xs font-bold mb-2">¿Aún no tienes cuenta de comercio?</p>
+                    <button onclick="mostrarToast('Contactanos para habilitar tu comercio: soporte@deliverymoto.com','info')" class="text-orange-500 font-black text-sm underline">Solicitar Alta de Comercio</button>
                 </div>
                 
-                <div class="security-strip mt-2">
+                <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center">
+                    <p class="text-[12px] font-bold text-blue-700 mb-1"><i class="fa-solid fa-key mr-1"></i> DEMO:</p>
+                    <p class="text-[11px] text-blue-600 font-medium">Celular: 3815551111 | Contraseña: demo1234</p>
+                </div>
+                
+                <div class="security-strip mt-4">
                     <span class="badge-seguridad badge-verde"><i class="fa-solid fa-shield-halved"></i> Acceso Seguro</span>
+                    <span class="text-xs text-slate-500 font-medium">Tus datos están protegidos con cifrado SSL</span>
                 </div>
             </div>
         </div>
 
         <!-- PANEL COMERCIO -->
         <div id="pantalla-admin-comercio" class="pantalla flex-col h-full bg-slate-50 relative overflow-y-auto no-scrollbar">
-            <div class="h-20 bg-white flex items-end pb-3 px-5 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
-                <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-orange-500 mr-3"><i class="fa-solid fa-arrow-left text-xl"></i></button>
+            <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
+                <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-orange-500 mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
                 <div class="flex-1">
-                    <h2 class="text-[20px] font-black text-slate-800 leading-none">Panel Comercio</h2>
-                    <p class="text-[10px] uppercase tracking-widest font-black text-orange-500 mt-0.5" id="comercio-nombre-header">Tu Local</p>
+                    <h2 class="text-[24px] font-black text-slate-800 leading-none">Panel Comercio</h2>
+                    <p class="text-[12px] uppercase tracking-widest font-black text-orange-500 mt-1">Empanadas Famaillá VIP</p>
                 </div>
-                <button onclick="logoutComercio()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-right-from-bracket text-lg"></i></button>
+                <button onclick="logoutComercio()" class="text-slate-400 hover:text-red-500" title="Cerrar sesión"><i class="fa-solid fa-right-from-bracket text-xl"></i></button>
             </div>
             
-            <div class="flex-1 p-4 pb-28">
-                <!-- Info Local -->
-                <div class="bg-white rounded-2xl p-4 mb-3 shadow-sm border border-slate-100 border-t-4 border-orange-500">
-                    <div class="flex items-start gap-3 mb-3">
-                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-2xl shadow"><i class="fa-solid fa-store"></i></div>
+            <div class="flex-1 p-5 pb-32">
+                <div class="bg-white rounded-3xl p-5 mb-4 shadow-sm border border-slate-100 border-t-4 border-orange-500">
+                    <div class="flex items-start gap-4 mb-4">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" class="w-16 h-16 rounded-2xl object-contain border border-slate-200 bg-white p-1 shadow-sm" onerror="this.style.display='none'">
                         <div class="flex-1">
-                            <h3 class="font-black text-slate-800 text-base leading-tight" id="info-local-nombre">Tu Comercio</h3>
-                            <div class="flex flex-wrap gap-1 mt-1.5">
+                            <h3 class="font-black text-slate-800 text-lg leading-tight">Empanadas Famaillá VIP</h3>
+                            <div class="flex flex-wrap gap-1.5 mt-2">
                                 <span class="badge-seguridad badge-verde"><i class="fa-solid fa-circle-check"></i> Verificado</span>
                                 <span class="badge-seguridad badge-naranja"><i class="fa-solid fa-star"></i> 4.9</span>
                             </div>
                         </div>
                     </div>
-                    <div class="space-y-2 text-xs">
-                        <div class="flex items-center gap-2 text-slate-600">
-                            <i class="fa-solid fa-location-dot text-orange-500 w-4"></i>
-                            <span class="font-medium"><strong>Dirección:</strong> <span id="info-direccion">San Martín 456</span></span>
+                    <div class="space-y-2.5 text-sm">
+                        <div class="flex items-center gap-3 text-slate-600">
+                            <i class="fa-solid fa-location-dot text-orange-500 w-5"></i>
+                            <span class="font-medium"><strong>Dirección:</strong> San Martín 456, Famaillá, Tucumán</span>
                         </div>
-                        <div class="flex items-center gap-2 text-slate-600">
-                            <i class="fa-solid fa-city text-blue-500 w-4"></i>
-                            <span class="font-medium"><strong>Ciudad:</strong> <span id="info-ciudad">Famaillá</span>, <span id="info-provincia">Tucumán</span></span>
+                        <div class="flex items-center gap-3 text-slate-600">
+                            <i class="fa-solid fa-clock text-green-500 w-5"></i>
+                            <span class="font-medium"><strong>Horario:</strong> Lun a Dom - 19:00 a 00:00</span>
                         </div>
-                        <div class="flex items-center gap-2 text-slate-600">
-                            <i class="fa-solid fa-clock text-green-500 w-4"></i>
-                            <span class="font-medium"><strong>Horario:</strong> <span id="info-horario">19:00 a 00:00</span></span>
-                        </div>
-                        <div class="flex items-center gap-2 text-slate-600">
-                            <i class="fa-brands fa-whatsapp text-green-500 w-4"></i>
-                            <span class="font-medium"><strong>WhatsApp:</strong> <span id="info-wa">3815550123</span></span>
+                        <div class="flex items-center gap-3 text-slate-600">
+                            <i class="fa-brands fa-whatsapp text-green-500 w-5"></i>
+                            <span class="font-medium"><strong>WhatsApp:</strong> +54 9 3815 55-1111</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tabs -->
-                <div class="flex bg-slate-200 rounded-full p-1 mb-4">
+                <div class="flex bg-slate-200 rounded-full p-1 mb-5">
                     <button onclick="switchTabComercio('logistica')" id="tab-logistica" class="tab-btn active flex-1">Llamar Moto</button>
                     <button onclick="switchTabComercio('productos')" id="tab-productos" class="tab-btn flex-1">Productos</button>
                     <button onclick="switchTabComercio('config')" id="tab-config" class="tab-btn flex-1">Ajustes</button>
                 </div>
 
-                <!-- LOGÍSTICA -->
                 <div id="seccion-logistica">
-                    <div class="bg-white p-4 mb-3 rounded-2xl shadow-sm border border-slate-100 border-t-4 border-orange-500">
-                        <h3 class="font-black text-slate-800 text-[15px] mb-3"><i class="fa-solid fa-motorcycle mr-1 text-orange-500"></i> Solicitar Envío</h3>
-
-                        <div class="flex items-center gap-2 mb-3">
-                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0"><i class="fa-brands fa-whatsapp text-sm"></i></div>
-                            <input type="tel" id="input-wa-admin" placeholder="WhatsApp Cliente" class="input-premium" style="padding:9px 12px;font-size:13px;">
+                    <div class="glass-light p-5 mb-4 relative z-10 border-t-4 border-orange-500 border border-slate-200 shadow-md">
+                        <h3 class="font-black text-slate-800 text-[16px] mb-3"><i class="fa-solid fa-motorcycle mr-1 text-orange-500"></i> Emitir Alerta de Envío</h3>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0"><i class="fa-brands fa-whatsapp"></i></div>
+                            <input type="tel" id="input-wa-admin" placeholder="WhatsApp del Cliente" class="input-premium">
                         </div>
-
-                        <!-- Dirección ORIGEN -->
-                        <div class="direccion-box origen">
-                            <div class="direccion-label text-orange-500"><i class="fa-solid fa-store mr-1"></i> ORIGEN (Tu local)</div>
-                            <div class="flex gap-2">
-                                <select id="select-provincia-origen" onchange="actualizarCiudades('origen')" class="input-premium" style="padding:8px 10px;font-size:12px;flex:1;">
-                                    <option value="Tucumán">Tucumán</option>
-                                    <option value="Buenos Aires">Buenos Aires</option>
-                                    <option value="Córdoba">Córdoba</option>
-                                    <option value="Santa Fe">Santa Fe</option>
-                                    <option value="Salta">Salta</option>
-                                    <option value="Jujuy">Jujuy</option>
-                                    <option value="Mendoza">Mendoza</option>
-                                </select>
-                                <select id="select-ciudad-origen" class="input-premium" style="padding:8px 10px;font-size:12px;flex:1;">
-                                    <option>Famaillá</option>
-                                    <option>San Miguel de Tucumán</option>
-                                    <option>Monteros</option>
-                                    <option>Concepción</option>
-                                </select>
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 shrink-0"><i class="fa-solid fa-store"></i></div>
+                                <div class="flex-1 relative">
+                                    <input type="text" id="input-origen-admin" placeholder="Origen (tu local)..." class="input-premium" value="San Martín 456, Famaillá">
+                                </div>
                             </div>
-                            <input type="text" id="input-origen-admin" placeholder="Calle y número..." class="input-premium mt-2" style="padding:8px 12px;font-size:13px;" value="San Martín 456">
-                        </div>
-
-                        <!-- Dirección DESTINO -->
-                        <div class="direccion-box destino">
-                            <div class="direccion-label text-blue-500"><i class="fa-solid fa-flag-checkered mr-1"></i> DESTINO (Cliente)</div>
-                            <div class="flex gap-2">
-                                <select id="select-provincia-destino" onchange="actualizarCiudades('destino')" class="input-premium" style="padding:8px 10px;font-size:12px;flex:1;">
-                                    <option value="Tucumán">Tucumán</option>
-                                    <option value="Buenos Aires">Buenos Aires</option>
-                                    <option value="Córdoba">Córdoba</option>
-                                    <option value="Santa Fe">Santa Fe</option>
-                                    <option value="Salta">Salta</option>
-                                </select>
-                                <select id="select-ciudad-destino" class="input-premium" style="padding:8px 10px;font-size:12px;flex:1;">
-                                    <option>Famaillá</option>
-                                    <option>San Miguel de Tucumán</option>
-                                    <option>Monteros</option>
-                                </select>
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-flag-checkered"></i></div>
+                                <div class="flex-1 relative">
+                                    <input type="text" id="input-destino-admin" placeholder="Destino (cliente)..." class="input-premium">
+                                </div>
                             </div>
-                            <input type="text" id="input-destino-admin" placeholder="Calle y número..." class="input-premium mt-2" style="padding:8px 12px;font-size:13px;">
                         </div>
-
-                        <!-- MAPA GRANDE -->
-                        <div class="mapa-container mb-3" style="height:220px;">
-                            <svg width="100%" height="100%" viewBox="0 0 400 220">
-                                <defs>
-                                    <pattern id="gridmap" width="35" height="35" patternUnits="userSpaceOnUse">
-                                        <path d="M 35 0 L 0 0 0 35" fill="none" stroke="#bae6fd" stroke-width="0.5"/>
-                                    </pattern>
-                                </defs>
-                                <rect width="100%" height="100%" fill="url(#gridmap)"/>
-                                <rect x="50" y="30" width="300" height="160" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1" opacity="0.5"/>
-                                <path d="M 80 170 L 120 140 L 160 150 L 200 110 L 240 90 L 280 70 L 320 50" stroke="#ff6b00" stroke-width="4" fill="none" stroke-dasharray="6,4" stroke-linecap="round"/>
-                                <g>
-                                    <circle cx="80" cy="170" r="14" fill="#ff6b00"/>
-                                    <circle cx="80" cy="170" r="7" fill="white"/>
-                                    <text x="80" y="198" text-anchor="middle" font-size="9" font-weight="900" fill="#ff6b00">ORIGEN</text>
-                                </g>
-                                <g>
-                                    <circle cx="320" cy="50" r="14" fill="#2563eb"/>
-                                    <circle cx="320" cy="50" r="7" fill="white"/>
-                                    <text x="320" y="32" text-anchor="middle" font-size="9" font-weight="900" fill="#2563eb">DESTINO</text>
-                                </g>
-                                <g transform="translate(195, 112)">
-                                    <circle r="11" fill="#00d13a" stroke="white" stroke-width="2"/>
-                                    <text y="4" text-anchor="middle" font-size="10" fill="white" font-weight="900">M</text>
-                                </g>
-                            </svg>
+                        <div id="mapa-admin" class="w-full bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl mb-4 border-2 border-slate-300 relative overflow-hidden shadow-inner flex items-center justify-center" style="height:220px;">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <svg width="100%" height="100%" viewBox="0 0 400 220">
+                                    <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#cbd5e1" stroke-width="0.5"/></pattern></defs>
+                                    <rect width="100%" height="100%" fill="url(#grid)"/>
+                                    <path d="M 80 160 Q 150 80 200 110 T 320 60" stroke="#ff6b00" stroke-width="4" fill="none" stroke-dasharray="8,4" stroke-linecap="round"/>
+                                    <circle cx="80" cy="160" r="14" fill="#ff6b00"/><circle cx="80" cy="160" r="8" fill="white"/>
+                                    <text x="80" y="190" text-anchor="middle" font-size="10" font-weight="800" fill="#0f172a">ORIGEN</text>
+                                    <circle cx="320" cy="60" r="14" fill="#2563eb"/><circle cx="320" cy="60" r="8" fill="white"/>
+                                    <text x="320" y="40" text-anchor="middle" font-size="10" font-weight="800" fill="#0f172a">DESTINO</text>
+                                </svg>
+                            </div>
                             <div class="mapa-info-box">
-                                <div class="text-center">
-                                    <p class="text-[9px] font-black uppercase text-orange-500">Distancia</p>
-                                    <p class="font-black text-slate-800 text-base" id="mapa-distancia">~2.5 km</p>
-                                </div>
-                                <div class="w-px h-8 bg-slate-200"></div>
-                                <div class="text-center">
-                                    <p class="text-[9px] font-black uppercase text-blue-500">Tiempo</p>
-                                    <p class="font-black text-slate-800 text-base" id="mapa-tiempo">~8 min</p>
-                                </div>
+                                <div><p class="mapa-marker-label text-orange-500">Distancia</p><p class="font-black text-slate-800 text-lg">-- km</p></div>
+                                <div class="w-px h-10 bg-slate-200"></div>
+                                <div><p class="mapa-marker-label text-blue-500">Tiempo Est.</p><p class="font-black text-slate-800 text-lg">-- min</p></div>
                                 <div class="precio-viaje-chip">$200</div>
                             </div>
                         </div>
-
-                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-center mb-3">
-                            <p class="text-[10px] uppercase font-black tracking-widest mb-0.5 text-orange-600">Tarifa Fija</p>
-                            <p class="text-[32px] font-black text-slate-900 tracking-tight leading-none">$ 200</p>
-                            <p class="text-[11px] text-slate-500 font-medium mt-0.5">Abonar al cadete en puerta</p>
+                        <button onclick="calcularRutaNacional()" class="btn-b w-full py-3.5 text-[15.5px] mb-3 shadow-md"><i class="fa-solid fa-route"></i> Calcular Ruta y Tarifa</button>
+                        <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-center">
+                            <p class="text-[12.5px] uppercase font-black tracking-widest mb-1 text-orange-600">Tarifa Fija de Viaje</p>
+                            <p class="text-[42px] font-black text-slate-900 tracking-tight leading-none mb-1">$ 200</p>
+                            <p class="text-[13px] text-slate-500 font-medium mb-3">Costo de envío a abonar al cadete en puerta.</p>
+                            <button onclick="solicitarCadeteAdmin()" class="btn-a w-full py-3.5 text-[16px] tracking-wide uppercase"><i class="fa-solid fa-satellite-dish fa-beat"></i> Enviar Alerta al Radar</button>
                         </div>
-                        
-                        <button onclick="solicitarCadeteAdmin()" class="btn-a w-full py-3 text-[14px] uppercase" style="width:100%;"><i class="fa-solid fa-satellite-dish fa-beat"></i> Enviar Alerta al Radar</button>
                     </div>
                 </div>
 
-                <!-- PRODUCTOS -->
-                <div id="seccion-productos" class="hidden space-y-3">
-                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm border-t-4 border-orange-500">
-                        <h3 class="font-black text-slate-800 text-[15px] mb-1"><i class="fa-solid fa-plus-circle text-orange-500 mr-1"></i>Nuevo Producto</h3>
-                        <p class="text-[11px] text-slate-500 font-medium mb-3">Sube foto y datos para publicar en el marketplace</p>
-                        
-                        <div class="upload-zone mb-3" id="upload-zone" onclick="document.getElementById('file-foto-producto').click()">
+                <div id="seccion-productos" class="hidden space-y-4">
+                    <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm border-t-4 border-orange-500">
+                        <h3 class="font-black text-slate-800 text-[17px] mb-1"><i class="fa-solid fa-plus-circle text-orange-500 mr-2"></i>Nuevo Producto</h3>
+                        <p class="text-[13px] text-slate-500 font-medium mb-4">Agrega artículos con foto a tu menú</p>
+                        <div class="upload-zone mb-4" id="upload-zone" onclick="document.getElementById('file-foto-producto').click()">
                             <input type="file" id="file-foto-producto" accept="image/*" class="hidden" onchange="previewFotoProducto(event)">
-                            <div id="upload-preview-container">
-                                <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-1"></i>
-                                <p class="font-black text-slate-700 text-xs">Toca para subir foto</p>
-                                <p class="text-[10px] text-slate-500 font-medium">PNG, JPG</p>
-                            </div>
-                            <img id="preview-foto" class="hidden max-h-28 object-contain rounded-lg mx-auto">
+                            <div id="upload-preview-container"><i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-400 mb-2"></i><p class="font-black text-slate-700">Toca para subir foto</p><p class="text-xs text-slate-500 font-medium">PNG, JPG hasta 5MB</p></div>
+                            <img id="preview-foto" class="hidden w-full max-h-40 object-contain rounded-xl mx-auto">
                         </div>
-                        
-                        <input type="text" id="add-prod-nombre" placeholder="Nombre del producto" class="input-premium mb-2" style="padding:9px 12px;font-size:13px;">
-                        <div class="flex gap-2 mb-2">
-                            <input type="number" id="add-prod-precio" placeholder="Precio $" class="input-premium" style="padding:9px 12px;font-size:13px;flex:1;">
-                            <select id="add-prod-cat" class="input-premium" style="padding:9px 12px;font-size:13px;flex:1;">
-                                <option value="Comidas">Comidas</option>
-                                <option value="Bebidas">Bebidas</option>
-                                <option value="Postres">Postres</option>
-                                <option value="Almacén">Almacén</option>
-                            </select>
-                        </div>
-                        <textarea id="add-prod-desc" placeholder="Descripción breve..." class="input-premium mb-3" rows="2" style="padding:9px 12px;font-size:13px;resize:none;"></textarea>
-                        
-                        <button onclick="cargarProductoComercio()" class="btn-a w-full py-3 text-[13px] uppercase" style="width:100%;"><i class="fa-solid fa-upload"></i> Publicar</button>
+                        <input type="text" id="add-prod-nombre" placeholder="Nombre (Ej: Pizza Muzzarella)" class="input-premium mb-3">
+                        <input type="number" id="add-prod-precio" placeholder="Precio ($)" class="input-premium mb-3">
+                        <textarea id="add-prod-desc" placeholder="Descripción..." class="input-premium mb-3" rows="2" style="resize:none;"></textarea>
+                        <button onclick="cargarProductoComercio()" class="btn-a w-full py-3.5 text-[15px] uppercase tracking-wide"><i class="fa-solid fa-upload"></i> Publicar Artículo</button>
                     </div>
-                    
-                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-black text-slate-800 text-[15px]">Mis Productos</h3>
+                    <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-black text-slate-800 text-[17px]">Mis Productos</h3>
                             <span class="badge-seguridad badge-naranja" id="contador-productos">0 artículos</span>
                         </div>
-                        <div id="lista-productos-comercio" class="space-y-2">
-                            <p class="text-center text-slate-400 text-xs py-6 font-medium">Aún no tienes productos. ¡Carga el primero!</p>
+                        <div id="lista-productos-comercio" class="space-y-3">
+                            <p class="text-center text-slate-400 text-sm py-8 font-medium">Aún no tienes productos publicados</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- CONFIG -->
-                <div id="seccion-config" class="hidden space-y-3">
-                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                        <h3 class="font-black text-slate-800 text-[15px] mb-3"><i class="fa-solid fa-gear text-slate-600 mr-1"></i>Datos del Local</h3>
-                        
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Nombre</label>
-                        <input type="text" id="config-nombre" value="Tu Comercio" class="input-premium mb-2 mt-1" style="padding:9px 12px;font-size:13px;">
-
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Provincia</label>
-                        <select id="config-provincia" class="input-premium mb-2 mt-1" style="padding:9px 12px;font-size:13px;">
-                            <option>Tucumán</option><option>Buenos Aires</option><option>Córdoba</option><option>Santa Fe</option><option>Salta</option><option>Jujuy</option><option>Mendoza</option>
-                        </select>
-
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Ciudad</label>
-                        <input type="text" id="config-ciudad" value="Famaillá" class="input-premium mb-2 mt-1" style="padding:9px 12px;font-size:13px;">
-
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Dirección</label>
-                        <input type="text" id="config-direccion" value="San Martín 456" class="input-premium mb-2 mt-1" style="padding:9px 12px;font-size:13px;">
-
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Horario de Atención</label>
-                        <input type="text" id="config-horario" value="Lun a Dom - 19:00 a 00:00" class="input-premium mb-2 mt-1" style="padding:9px 12px;font-size:13px;">
-                        
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-wider">WhatsApp</label>
-                        <input type="tel" id="config-wa" value="3815550123" class="input-premium mb-2 mt-1" style="padding:9px 12px;font-size:13px;">
-                        
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-wider">MercadoPago (Link)</label>
-                        <input type="url" id="config-mp" placeholder="https://link.mercadopago.com.ar/..." class="input-premium mb-3 mt-1" style="padding:9px 12px;font-size:13px;">
-                        
-                        <button onclick="guardarDatosLocal()" class="btn-d w-full py-2.5 text-[13px]" style="width:100%;"><i class="fa-solid fa-save"></i> Guardar</button>
+                <div id="seccion-config" class="hidden space-y-4">
+                    <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
+                        <h3 class="font-black text-slate-800 text-[17px] mb-4"><i class="fa-solid fa-gear text-slate-600 mr-2"></i>Datos del Local</h3>
+                        <label class="text-[11.5px] font-black uppercase text-slate-400 tracking-wider">Nombre del Local</label>
+                        <input type="text" id="config-nombre" value="Empanadas Famaillá VIP" class="input-premium mb-3 mt-1">
+                        <label class="text-[11.5px] font-black uppercase text-slate-400 tracking-wider">Dirección Completa</label>
+                        <input type="text" id="config-direccion" value="San Martín 456, Famaillá, Tucumán" class="input-premium mb-3 mt-1">
+                        <label class="text-[11.5px] font-black uppercase text-slate-400 tracking-wider">Horario de Atención</label>
+                        <input type="text" id="config-horario" value="Lunes a Domingo - 19:00 a 00:00" class="input-premium mb-3 mt-1">
+                        <label class="text-[11.5px] font-black uppercase text-slate-400 tracking-wider">WhatsApp</label>
+                        <input type="tel" id="config-wa" value="+54 9 3815 55-1111" class="input-premium mb-3 mt-1">
+                        <label class="text-[11.5px] font-black uppercase text-slate-400 tracking-wider">Link de Pago (MercadoPago)</label>
+                        <input type="url" id="config-mp" value="https://link.mercadopago.com.ar/empanadasfam" class="input-premium mb-4 mt-1">
+                        <button onclick="guardarDatosLocal()" class="btn-d w-full py-3 text-[14.5px]"><i class="fa-solid fa-save"></i> Guardar Cambios</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- MARKETPLACE -->
+        <!-- MARKETPLACE PREMIUM - FILTRADO POR UBICACIÓN -->
         <div id="pantalla-marketplace" class="pantalla flex-col h-full bg-slate-50 relative overflow-y-auto no-scrollbar">
-            <div class="bg-gradient-to-r from-orange-600 to-orange-500 rounded-b-[1.5rem] pt-6 pb-5 px-5 relative shrink-0 shadow-lg z-20">
-                <div class="flex justify-between items-center mb-3 text-white">
-                    <div class="flex items-center gap-2 font-black text-[13px] bg-white/20 px-3 py-1 rounded-full backdrop-blur-md border border-white/30">
-                        <i class="fa-solid fa-location-dot text-sm"></i>
-                        <select id="filtro-ciudad-mkp" onchange="renderizarMarketplace()" class="bg-transparent text-white outline-none font-black cursor-pointer appearance-none ml-1 text-sm">
-                            <option value="Todas" class="text-slate-800">Todas</option>
+            <div class="bg-gradient-to-r from-orange-600 to-orange-500 rounded-b-[2rem] pt-8 pb-6 px-6 relative shrink-0 shadow-lg z-20">
+                <div class="flex justify-between items-center mb-4 text-white">
+                    <div class="flex items-center gap-2 font-black text-[13px] cursor-pointer bg-white/20 px-3.5 py-1.5 rounded-full backdrop-blur-md border border-white/30">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <select id="filtro-ciudad-mkp" onchange="renderizarMarketplace()" class="bg-transparent text-white outline-none font-black cursor-pointer appearance-none ml-1">
+                            <option value="Todas" class="text-slate-800">Todas las Zonas</option>
                             <option value="Famaillá" class="text-slate-800" selected>Famaillá</option>
-                            <option value="Tucumán" class="text-slate-800">S.M. Tucumán</option>
+                            <option value="Tucumán" class="text-slate-800">San Miguel de Tucumán</option>
                         </select>
-                        <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
+                        <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
                     </div>
-                    <div class="flex items-center gap-3 text-lg">
+                    <div class="flex items-center gap-4 text-[20px]">
+                        <button onclick="cambiarPantalla('pantalla-perfil-comprador')" class="hover:scale-110 transition-transform"><i class="fa-regular fa-user"></i></button>
                         <button onclick="abrirModal('modal-carrito')" class="hover:scale-110 transition-transform relative">
                             <i class="fa-solid fa-cart-shopping"></i>
-                            <span id="badge-carrito" class="absolute -top-1 -right-2 bg-white text-orange-600 text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                            <span id="badge-carrito" class="absolute -top-1 -right-2 bg-white text-orange-600 text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
                         </button>
                     </div>
                 </div>
-                <div class="bg-white rounded-full flex items-center px-3 py-2 shadow-md">
-                    <i class="fa-solid fa-magnifying-glass text-orange-500 mr-2 text-sm"></i>
-                    <input type="text" id="buscador-global" placeholder="Buscar locales o productos..." onkeyup="filtrarPorTexto()" class="w-full bg-transparent outline-none text-[13px] font-bold text-slate-700">
+                <div class="bg-white rounded-full flex items-center px-4 py-3 shadow-md">
+                    <div class="w-8 h-8 rounded-full text-orange-500 flex items-center justify-center mr-2 shrink-0"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <input type="text" id="buscador-global" placeholder="Buscar locales o productos..." onkeyup="filtrarPorTexto()" class="w-full bg-transparent outline-none text-[15px] font-bold text-slate-700">
                 </div>
             </div>
 
-            <div class="p-4 flex-1 space-y-4 pb-24">
+            <div class="p-5 flex-1 space-y-5 pb-28">
+                <!-- Info ubicación -->
+                <div class="bg-white rounded-2xl p-4 border border-orange-100 shadow-sm flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 shrink-0"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="flex-1">
+                        <p class="text-[11px] font-black uppercase text-slate-400 tracking-wider">Comprando desde</p>
+                        <p class="font-black text-slate-800 text-sm" id="ubicacion-actual">Famaillá, Tucumán</p>
+                    </div>
+                    <button onclick="cambiarPantalla('pantalla-registro-comprador')" class="text-xs font-black text-orange-500 bg-orange-50 px-3 py-1.5 rounded-full">Cambiar</button>
+                </div>
+
                 <div class="security-strip">
                     <span class="badge-seguridad badge-verde"><i class="fa-solid fa-shield-halved"></i> Compra Segura</span>
                     <span class="badge-seguridad badge-naranja"><i class="fa-solid fa-motorcycle"></i> Envío $200</span>
                     <span class="badge-seguridad badge-azul"><i class="fa-brands fa-whatsapp"></i> Chat Directo</span>
                 </div>
 
-                <div class="w-full rounded-2xl overflow-hidden relative shadow bg-gradient-to-br from-amber-500 to-orange-600 p-4 text-white flex items-center justify-between">
+                <div class="w-full rounded-[1.5rem] overflow-hidden relative shadow-lg bg-gradient-to-br from-amber-400 to-orange-500 p-5 text-white flex items-center justify-between">
                     <div>
-                        <p class="text-[9px] font-bold uppercase tracking-wider mb-0.5 opacity-90">Tarifa Especial</p>
-                        <h3 class="text-xl font-black leading-none mb-0.5 text-yellow-300">¡ENVÍO $200!</h3>
-                        <p class="font-bold text-[11px]">Tarifa fija en todos los envíos</p>
+                        <p class="text-[11.5px] font-bold uppercase tracking-wider mb-1 opacity-90">Promoción Exclusiva</p>
+                        <h3 class="text-[28px] font-black leading-none mb-1 text-yellow-200">¡ENVÍO RÁPIDO!</h3>
+                        <p class="font-bold text-[13.5px]">Tarifa fija de solo $200 por envío</p>
                     </div>
-                    <i class="fa-solid fa-motorcycle text-4xl opacity-90"></i>
+                    <div class="text-6xl opacity-90"><i class="fa-solid fa-motorcycle"></i></div>
                 </div>
 
                 <div>
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-black text-slate-800 text-[15px]">Locales</h3>
-                        <span class="text-[10px] font-bold text-slate-400" id="contador-locales">0 locales</span>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-black text-slate-800 text-[17px]">Locales Disponibles</h3>
+                        <span class="text-xs font-bold text-slate-400" id="contador-locales">0 locales</span>
                     </div>
-                    <div id="grilla-locales-dinamica" class="grid grid-cols-2 gap-3"></div>
+                    <div id="grilla-locales-dinamica" class="grid grid-cols-2 gap-3.5"></div>
                 </div>
             </div>
 
             <div class="bottom-nav">
                 <div class="nav-item active"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
-                <div class="nav-item" onclick="mostrarToast('Función próximamente','info')"><i class="fa-solid fa-basket-shopping"></i><span>Súper</span></div>
-                <div class="nav-item" onclick="mostrarToast('Sin promos hoy','info')"><i class="fa-solid fa-percent"></i><span>Promos</span></div>
-                <div onclick="cambiarPantalla('pantalla-1')" class="nav-item"><i class="fa-regular fa-user"></i><span>Salir</span></div>
+                <div class="nav-item" onclick="mostrarToast('Catálogo de Súper en preparación','info')"><i class="fa-solid fa-basket-shopping"></i><span>Súper</span></div>
+                <div class="nav-item" onclick="mostrarToast('Sin cupones activos hoy','info')"><i class="fa-solid fa-percent"></i><span>Promos</span></div>
+                <div onclick="cambiarPantalla('pantalla-perfil-comprador')" class="nav-item"><i class="fa-regular fa-user"></i><span>Perfil</span></div>
             </div>
         </div>
 
-        <!-- CATÁLOGO -->
-        <div id="pantalla-catalogo" class="pantalla flex-col h-full bg-slate-50 relative overflow-y-auto no-scrollbar">
-            <div class="relative shrink-0 bg-gradient-to-r from-orange-600 to-orange-500 pb-10 pt-5 px-4">
-                <div class="relative z-10 flex items-center gap-3">
-                    <button onclick="cambiarPantalla('pantalla-marketplace')" class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow text-slate-800"><i class="fa-solid fa-chevron-left text-sm"></i></button>
-                    <div class="flex-1 bg-white rounded-full flex items-center px-3 py-2 shadow">
-                        <i class="fa-solid fa-magnifying-glass text-slate-400 mr-2 text-sm"></i>
-                        <input type="text" id="buscador-productos" placeholder="Buscar productos..." onkeyup="filtrarProductosLocal()" class="w-full bg-transparent outline-none text-[13px] font-bold text-slate-700">
-                    </div>
-                </div>
+        <!-- PERFIL COMPRADOR -->
+        <div id="pantalla-perfil-comprador" class="pantalla flex-col h-full bg-slate-50 relative overflow-y-auto no-scrollbar">
+            <div class="h-24 bg-gradient-to-r from-orange-500 to-orange-400 flex items-end pb-4 px-6 z-20 shrink-0 shadow-sm sticky top-0 rounded-b-[2rem]">
+                <button onclick="cambiarPantalla('pantalla-marketplace')" class="text-white/90 hover:text-white mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
+                <div class="flex-1"><h2 class="text-[22px] font-black text-white leading-none">Mi Perfil</h2></div>
             </div>
-
-            <div class="relative z-20 px-4 -mt-6 shrink-0 mb-3">
-                <div class="bg-white rounded-2xl p-4 shadow-md border border-slate-100">
-                    <div class="bg-green-600 text-white text-[10px] font-black text-center py-1 rounded-t-xl -mt-4 -mx-4 mb-3" id="cat-horario">Abierto</div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-xl shadow"><i class="fa-solid fa-store"></i></div>
-                        <div class="flex-1">
-                            <h2 id="cat-nombre" class="text-[16px] font-black text-slate-800 leading-tight">Cargando...</h2>
-                            <p class="text-[11px] text-slate-500 font-bold mt-0.5"><i class="fa-solid fa-location-dot text-orange-500 text-xs"></i> <span id="cat-ciudad"></span></p>
+            <div class="flex-1 p-5 pb-28 space-y-4">
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-2xl font-black shadow-lg" id="perfil-avatar">M</div>
+                        <div>
+                            <h3 class="font-black text-slate-800 text-lg" id="perfil-nombre">Usuario Invitado</h3>
+                            <p class="text-sm text-slate-500 font-medium" id="perfil-ubicacion">Sin ubicación definida</p>
                         </div>
                     </div>
-                    <p id="cat-desc" class="text-[11px] text-slate-600 font-medium mb-2 italic"></p>
-                    <div class="flex items-center gap-2 text-[10px] font-bold text-slate-700 bg-orange-50 border border-orange-100 p-2 rounded-lg">
-                        <i class="fa-solid fa-motorcycle text-orange-500"></i> Envío: <strong class="text-orange-600">$200</strong> · Pagable al cadete
+                    <div class="space-y-2 text-sm border-t border-slate-100 pt-4">
+                        <div class="flex items-center gap-3 text-slate-600">
+                            <i class="fa-solid fa-phone text-orange-500 w-5"></i>
+                            <span class="font-medium" id="perfil-celular">--</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-slate-600">
+                            <i class="fa-solid fa-location-dot text-orange-500 w-5"></i>
+                            <span class="font-medium" id="perfil-direccion">--</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="cambiarPantalla('pantalla-registro-comprador')" class="btn-b w-full py-3.5 text-sm"><i class="fa-solid fa-edit"></i> Editar mis datos</button>
+                <button onclick="abrirModal('modal-carrito')" class="btn-a w-full py-3.5 text-sm"><i class="fa-solid fa-cart-shopping"></i> Ver mi carrito</button>
+                <button onclick="volverAlInicio()" class="w-full bg-white border-2 border-red-200 text-red-500 font-black rounded-full py-3.5 text-sm hover:bg-red-50 transition-all"><i class="fa-solid fa-sign-out-alt"></i> Cerrar sesión</button>
+            </div>
+        </div>
+
+        <!-- CATALOGO LOCAL -->
+        <div id="pantalla-catalogo" class="pantalla flex-col h-full bg-slate-50 relative overflow-y-auto no-scrollbar">
+            <div class="relative shrink-0 bg-gradient-to-br from-orange-500 to-orange-600 pb-12">
+                <div class="relative z-10 px-5 pt-6 pb-2 flex items-center gap-3">
+                    <button onclick="cambiarPantalla('pantalla-marketplace')" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg text-slate-800 hover:scale-105 transition-transform"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div class="flex-1 bg-white rounded-full flex items-center px-4 py-2.5 shadow-md">
+                        <i class="fa-solid fa-magnifying-glass text-slate-400 mr-2"></i>
+                        <input type="text" id="buscador-productos" placeholder="Buscar en este local..." onkeyup="filtrarProductosLocal()" class="w-full bg-transparent outline-none text-[14.5px] font-bold text-slate-700">
                     </div>
                 </div>
             </div>
 
-            <div class="flex-1 bg-slate-50 px-4 pb-28">
-                <h3 class="font-black text-[16px] text-slate-800 leading-none mb-3">Menú</h3>
-                <div id="contenedor-productos" class="grid grid-cols-2 gap-3"></div>
-                <div id="loader-productos" class="hidden text-center py-4">
-                    <div class="inline-block w-6 h-6 border-3 border-orange-200 border-t-orange-500 rounded-full animate-spin" style="border-width:3px;"></div>
-                    <p class="text-[10px] text-slate-400 font-bold mt-1">Cargando...</p>
+            <div class="relative z-20 px-5 -mt-8 shrink-0 mb-4">
+                <div class="bg-white rounded-[2rem] p-5 shadow-md border border-slate-100">
+                    <div id="cat-horario" class="bg-green-600 text-white text-[11.5px] font-black text-center py-1.5 rounded-t-[1.5rem] -mt-5 -mx-5 mb-4 shadow-sm">Abierto · Horario: Lun a Dom 19:00 a 00:00</div>
+                    <div class="flex items-center gap-4 mb-3">
+                        <img id="cat-logo" src="" class="w-16 h-16 rounded-2xl object-contain border border-slate-200 shadow-sm bg-white p-1" onerror="this.style.display='none'">
+                        <div class="flex-1">
+                            <h2 id="cat-nombre" class="text-[19px] font-black text-slate-800 leading-tight">Cargando...</h2>
+                            <p class="text-[13px] text-slate-500 font-bold mt-0.5"><i class="fa-solid fa-location-dot text-orange-500"></i> <span id="cat-ciudad"></span></p>
+                            <div class="flex gap-1.5 mt-1.5">
+                                <span class="badge-seguridad badge-verde"><i class="fa-solid fa-circle-check"></i> Verificado</span>
+                                <span class="badge-seguridad badge-naranja"><i class="fa-solid fa-star"></i> 4.9</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="cat-desc" class="text-[13px] text-slate-600 font-medium mb-3 italic"></p>
+                    <div class="flex items-center gap-2 text-[12px] font-bold text-slate-700 bg-orange-50 border border-orange-100 p-2.5 rounded-xl">
+                        <i class="fa-solid fa-motorcycle text-orange-500 text-lg"></i> Envío a cargo del comprador · Tarifa fija: <strong class="text-orange-500">$200</strong>
+                    </div>
                 </div>
             </div>
+
+            <div class="flex-1 bg-slate-50 px-5 pb-32">
+                <h3 class="font-black text-[18px] text-slate-800 leading-none mb-3 px-1">Nuestro Menú</h3>
+                <div id="contenedor-productos" class="grid grid-cols-2 gap-3.5"></div>
+            </div>
             
-            <div id="barra-ver-carrito" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t border-slate-200 p-3 shadow-2xl z-50">
+            <div id="barra-ver-carrito" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t border-slate-200 p-4 shadow-2xl z-50">
                 <div class="flex justify-between items-center">
                     <div class="flex flex-col">
-                        <span class="font-black text-xl text-slate-900 leading-none" id="barra-total">$0</span>
-                        <span class="text-[10px] text-slate-500 font-medium mt-0.5" id="barra-cant">0 productos</span>
+                        <span class="font-black text-2xl text-slate-900 leading-none" id="barra-total">$0</span>
+                        <span class="text-[12px] text-slate-500 font-medium mt-1" id="barra-cant">0 productos</span>
                     </div>
-                    <button onclick="abrirModal('modal-carrito')" class="bg-orange-600 text-white font-black text-[13px] py-3 px-5 rounded-full shadow active:scale-95 transition-transform">
-                        Ver pedido
+                    <button onclick="abrirModal('modal-carrito')" class="bg-orange-500 text-white font-black text-[15px] py-3.5 px-7 rounded-full shadow-lg active:scale-95 transition-transform">
+                        Ver mi pedido
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- LOGIN CADETE OPCIONES -->
+        <!-- LOGIN CADETE -->
         <div id="pantalla-login-opciones" class="pantalla flex-col h-full bg-slate-50 relative overflow-hidden">
-            <div class="h-20 bg-white flex items-end pb-3 px-5 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
-                <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-[var(--naranja)] mr-3"><i class="fa-solid fa-arrow-left text-xl"></i></button>
-                <div><h2 class="text-[20px] font-black text-slate-800 leading-none">Acceso Servimoto</h2></div>
+            <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
+                <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-orange-500 mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
+                <div><h2 class="text-[24px] font-black text-slate-800 leading-none">Acceso Servimoto</h2></div>
             </div>
-            <div class="flex-1 p-5 flex flex-col justify-center space-y-3 pb-16">
-                <button onclick="cambiarPantalla('pantalla-login-cadete')" class="btn-a w-full py-4 text-[15px] btn-resplandor shadow-xl" style="width:100%;">
-                    <i class="fa-solid fa-right-to-bracket"></i> YA TENGO CUENTA
+            <div class="flex-1 p-6 flex flex-col justify-center space-y-4 pb-20">
+                <button onclick="cambiarPantalla('pantalla-login-cadete')" class="btn-a w-full py-5 text-[17px] btn-resplandor shadow-xl">
+                    <i class="fa-solid fa-right-to-bracket text-lg"></i> YA TENGO CUENTA
                 </button>
-                <div class="text-center my-1 text-slate-400 font-bold text-xs">O</div>
-                <button onclick="cambiarPantalla('pantalla-registro-cadete')" class="w-full bg-white border-2 border-slate-200 text-slate-700 font-black rounded-full py-3.5 text-[14px] shadow-sm flex justify-center items-center gap-2 hover:border-orange-500">
-                    <i class="fa-solid fa-user-plus" style="color:var(--naranja);"></i> Quiero Registrarme
+                <div class="text-center my-2 text-slate-400 font-bold text-sm">O</div>
+                <button onclick="cambiarPantalla('pantalla-registro-cadete')" class="w-full bg-white border-2 border-slate-200 text-slate-700 font-black rounded-[50px] py-4 text-[16px] shadow-sm flex justify-center items-center gap-2 hover:border-orange-500">
+                    <i class="fa-solid fa-user-plus" style="color:var(--naranja);"></i> Quiero Registrarme (IA Audit)
                 </button>
-                <div class="security-strip mt-3">
+                <div class="security-strip mt-4">
                     <span class="badge-seguridad badge-verde"><i class="fa-solid fa-robot"></i> Auditoría IA</span>
-                    <span class="text-[10px] text-slate-500 font-medium">Verificación automática · Viaje $200</span>
+                    <span class="text-xs text-slate-500 font-medium">Verificación automática de credenciales</span>
                 </div>
             </div>
         </div>
 
-        <!-- LOGIN CADETE FORM -->
         <div id="pantalla-login-cadete" class="pantalla flex-col h-full bg-slate-50 relative overflow-hidden">
-            <div class="h-20 bg-white flex items-end pb-3 px-5 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
-                <button onclick="cambiarPantalla('pantalla-login-opciones')" class="text-slate-400 hover:text-[var(--naranja)] mr-3"><i class="fa-solid fa-arrow-left text-xl"></i></button>
-                <div><h2 class="text-[20px] font-black text-slate-800 leading-none">Iniciar Sesión</h2></div>
+            <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
+                <button onclick="cambiarPantalla('pantalla-login-opciones')" class="text-slate-400 hover:text-orange-500 mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
+                <div><h2 class="text-[24px] font-black text-slate-800 leading-none">Iniciar Sesión</h2></div>
             </div>
-            <div class="flex-1 overflow-y-auto p-5 flex flex-col justify-center pb-16">
-                <div class="glass-light p-5 border border-slate-200 shadow-lg">
-                    <div class="mb-3">
-                        <label class="text-[11px] font-black uppercase text-slate-500 tracking-wider">WhatsApp (10 dígitos)</label>
-                        <input type="tel" id="login-celular" placeholder="Ej: 3815550123" maxlength="10" class="input-premium mt-1">
-                    </div>
+            <div class="flex-1 overflow-y-auto p-6 flex flex-col justify-center pb-20">
+                <div class="glass-light p-6 mb-6 border border-slate-200 shadow-lg">
                     <div class="mb-4">
-                        <label class="text-[11px] font-black uppercase text-slate-500 tracking-wider">Contraseña (3 caracteres)</label>
-                        <input type="password" id="login-pwd" placeholder="Ej: 123" maxlength="3" class="input-premium mt-1" style="letter-spacing:4px;font-size:18px;text-align:center;">
+                        <label class="text-[13px] font-black uppercase text-slate-500 tracking-wider">Celular (WhatsApp)</label>
+                        <input type="tel" id="login-celular" placeholder="Ej: 3815550123" class="input-premium mt-1">
                     </div>
-                    <button onclick="loginCadete()" class="btn-a w-full py-3 text-[14px] shadow-md" style="width:100%;">Ingresar al Radar</button>
+                    <div class="mb-5">
+                        <label class="text-[13px] font-black uppercase text-slate-500 tracking-wider">Contraseña</label>
+                        <input type="password" id="login-pwd" placeholder="••••••••" class="input-premium mt-1">
+                    </div>
+                    <button onclick="loginCadete()" class="btn-a w-full py-4 text-[16px] shadow-md tracking-wide">Ingresar al Radar</button>
                 </div>
             </div>
         </div>
 
-        <!-- REGISTRO CADETE -->
         <div id="pantalla-registro-cadete" class="pantalla flex-col h-full bg-slate-50 relative overflow-x-hidden">
-            <div class="h-20 bg-white flex items-end pb-3 px-5 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0 w-full">
-                <button onclick="cambiarPantalla('pantalla-login-opciones')" class="text-slate-400 hover:text-[var(--naranja)] mr-3"><i class="fa-solid fa-arrow-left text-xl"></i></button>
-                <div><h2 class="text-[20px] font-black text-slate-800 leading-none">Alta de Cadete</h2></div>
+            <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0 w-full">
+                <button onclick="cambiarPantalla('pantalla-login-opciones')" class="text-slate-400 hover:text-orange-500 mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
+                <div><h2 class="text-[24px] font-black text-slate-800 leading-none">Alta de Cadete</h2></div>
             </div>
-            <div class="flex-1 overflow-y-auto no-scrollbar p-5 pb-28 relative flex flex-col w-full">
-                <div class="bg-slate-900 p-3 rounded-xl shadow border border-slate-800 mb-3 shrink-0">
-                    <h3 class="font-black text-white text-[13px] mb-0.5"><i class="fa-solid fa-robot text-orange-400 mr-1"></i> Auditoría IA</h3>
-                    <p class="text-[11px] text-slate-300 font-medium">Viaje: <strong class="text-orange-400">$200</strong> · Pago: Lunes</p>
+            <div class="flex-1 overflow-y-auto no-scrollbar p-6 pb-32 relative flex flex-col w-full">
+                <div class="bg-gradient-to-r from-slate-800 to-slate-900 p-4 rounded-2xl shadow-md border border-slate-700 mb-4 shrink-0">
+                    <h3 class="font-black text-white text-[15px] mb-1"><i class="fa-solid fa-robot text-orange-400 mr-1"></i> Auditoría Automática IA</h3>
+                    <p class="text-[13.5px] text-slate-300 font-medium">Sube tus documentos para verificación instantánea por IA.</p>
                 </div>
-
-                <div class="bg-white p-4 rounded-2xl mb-3 shadow-sm border border-slate-200">
-                    <div class="mb-2">
-                        <label class="text-[10px] font-black uppercase text-slate-500 tracking-wider">WhatsApp (10 dígitos)</label>
-                        <input type="tel" id="reg-celular" maxlength="10" placeholder="3815550123" class="input-premium mt-1" style="padding:9px 12px;font-size:13px;">
-                    </div>
-                    <div class="mb-2">
-                        <label class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Contraseña (3 caracteres)</label>
-                        <input type="password" id="reg-password" maxlength="3" placeholder="Ej: ABC" class="input-premium mt-1" style="padding:9px 12px;font-size:16px;letter-spacing:4px;text-align:center;">
-                    </div>
-                    <div class="mb-2">
-                        <label class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Provincia</label>
-                        <select id="reg-prov" class="input-premium mt-1" style="padding:9px 12px;font-size:13px;">
-                            <option value="" disabled selected>Seleccioná...</option>
-                            <option>Tucumán</option><option>Buenos Aires</option><option>Córdoba</option><option>Santa Fe</option>
-                            <option>Salta</option><option>Jujuy</option><option>Mendoza</option><option>Chaco</option>
-                            <option>Corrientes</option><option>Entre Ríos</option><option>Formosa</option><option>La Rioja</option>
-                            <option>Catamarca</option><option>Santiago del Estero</option><option>Misiones</option><option>Neuquén</option>
-                            <option>Río Negro</option><option>San Juan</option><option>San Luis</option><option>Santa Cruz</option>
-                            <option>Tierra del Fuego</option><option>La Pampa</option><option>Chubut</option><option>CABA</option>
+                <div class="glass-light p-5 mb-4 shadow-sm shrink-0 border border-slate-200">
+                    <div class="mb-3"><label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Celular (WhatsApp)</label><input type="tel" id="reg-celular-cad" class="input-premium mt-1"></div>
+                    <div class="mb-3"><label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Provincia</label>
+                        <select id="reg-prov-cad" class="input-premium mt-1">
+                            <option value="" disabled selected>Seleccioná tu provincia...</option>
+                            <option value="Tucumán">Tucumán</option><option value="Buenos Aires">Buenos Aires</option><option value="Córdoba">Córdoba</option><option value="Santa Fe">Santa Fe</option><option value="Salta">Salta</option><option value="Jujuy">Jujuy</option>
                         </select>
                     </div>
-                    <div class="mb-2">
-                        <label class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Ciudad</label>
-                        <input type="text" id="reg-ciudad-cadete" placeholder="Ej: Famaillá" class="input-premium mt-1" style="padding:9px 12px;font-size:13px;">
+                    <div class="mb-3"><label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Ciudad</label><input type="text" id="reg-ciudad-cadete" placeholder="Ej: Famaillá" class="input-premium mt-1"></div>
+                    <div class="mb-3"><label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Vehículo / Patente</label><input type="text" id="reg-moto" placeholder="Ej: Honda Wave - A123BCD" class="input-premium mt-1"></div>
+                    <div><label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Contraseña</label><input type="password" id="reg-password-cad" class="input-premium mt-1"></div>
+                </div>
+                <div class="space-y-3 shrink-0 mb-4">
+                    <div class="relative glass-light p-4 overflow-hidden border border-slate-200">
+                        <input type="file" id="file-selfie-cadete" accept="image/*" capture="user" onchange="marcarArchivoCargado(this)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="flex items-center gap-4 relative z-10 pointer-events-none archivo-status">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl bg-orange-100 text-orange-500"><i class="fa-solid fa-camera"></i></div>
+                            <div><h4 class="text-slate-800 font-black text-[15px]">Selfie con DNI</h4><p class="text-xs text-slate-500">Toca para capturar</p></div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Moto / Patente</label>
-                        <input type="text" id="reg-moto" placeholder="Honda Wave - ABC123" class="input-premium mt-1" style="padding:9px 12px;font-size:13px;">
+                    <div class="relative glass-light p-4 overflow-hidden border border-slate-200">
+                        <input type="file" id="file-afip" accept="image/*,application/pdf" onchange="marcarArchivoCargado(this)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="flex items-center gap-4 relative z-10 pointer-events-none archivo-status">
+                            <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                            <div><h4 class="text-slate-800 font-black text-[15px]">Constancia AFIP</h4><p class="text-xs text-slate-500">Subir PDF o foto</p></div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="bg-white p-4 rounded-2xl border shadow-sm border-orange-200 mb-3">
-                    <h4 class="font-black text-slate-800 text-[14px] mb-2"><i class="fa-solid fa-scale-balanced mr-1 text-orange-500"></i> Términos</h4>
-                    <ul class="text-[11px] text-slate-600 font-medium space-y-1 mb-3 list-none p-0">
-                        <li>• Tarifa: <strong class="font-black">$200</strong> por viaje asignado.</li>
-                        <li>• Pago semanal los días <strong class="font-black">LUNES</strong>.</li>
+                <div class="bg-white p-5 rounded-3xl border shadow-sm shrink-0 border-orange-200">
+                    <h4 class="font-black text-slate-800 text-[16px] mb-2"><i class="fa-solid fa-scale-balanced mr-1 text-orange-500"></i> Términos y Condiciones</h4>
+                    <ul class="text-[13.5px] text-slate-600 font-medium space-y-1.5 mb-4 list-none p-0">
+                        <li>• Comisión fija de <strong class="font-black">$200</strong> por viaje asignado.</li>
+                        <li>• Liquidación y pagos semanales los días <strong class="font-black">LUNES</strong>.</li>
                     </ul>
-                    <label class="flex items-center gap-2 cursor-pointer bg-slate-50 p-3 rounded-xl border-2 border-slate-200 hover:border-orange-500 transition-all">
-                        <input type="checkbox" id="acepto-terminos" class="w-4 h-4 rounded shrink-0 cursor-pointer accent-orange-500">
-                        <span class="text-[12px] font-black text-slate-800 select-none">Acepto términos y condiciones</span>
+                    <label class="flex items-center gap-3 cursor-pointer bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 hover:border-orange-500 transition-all">
+                        <input type="checkbox" id="acepto-terminos" class="w-5 h-5 rounded shrink-0 cursor-pointer accent-orange-500">
+                        <span class="text-[14.5px] font-black text-slate-800 select-none">Acepto los términos y condiciones.</span>
                     </label>
                 </div>
             </div>
-            
-            <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md pt-3 pb-4 px-5 z-30 shadow-2xl border-t border-slate-200">
-                <button onclick="iniciarAuditoriaIA()" class="btn-a w-full py-3.5 text-[14px] shadow-lg" style="width:100%;"><i class="fa-solid fa-robot"></i> Auditar con IA</button>
+            <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md pt-3 pb-5 px-6 z-30 shadow-2xl border-t border-slate-200">
+                <button onclick="iniciarAuditoriaIA()" class="btn-a w-full py-4 text-[16.5px] tracking-wide shadow-lg"><i class="fa-solid fa-robot"></i> Auditar Registro con IA</button>
             </div>
         </div>
 
         <!-- PANEL CADETE -->
         <div id="pantalla-3" class="pantalla flex-col h-full bg-slate-100 relative overflow-x-hidden">
-            <div class="flex-1 overflow-y-auto no-scrollbar pb-24 flex flex-col w-full">
-                <div class="bg-white px-5 pt-8 pb-3 z-20 flex justify-between items-center border-b border-slate-200 shadow-sm rounded-b-2xl shrink-0">
+            <div class="flex-1 overflow-y-auto no-scrollbar pb-32 flex flex-col w-full">
+                <div class="bg-white px-6 pt-10 pb-4 z-20 flex justify-between items-center border-b border-slate-200 shadow-sm rounded-b-3xl shrink-0">
                     <div class="flex items-center gap-3">
-                        <div class="relative w-11 h-11 rounded-xl bg-slate-200 flex items-center justify-center font-black text-slate-700 shadow-sm border">JP</div>
+                        <div class="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center font-black text-white text-lg shadow-sm">JP</div>
                         <div>
-                            <h3 class="font-black text-slate-800 text-[16px] leading-none mb-0.5">Juan Pedro</h3>
-                            <div class="flex items-center gap-1 mt-0.5 text-yellow-500 text-[11px] font-bold"><i class="fa-solid fa-star text-xs"></i> 4.9 · <span class="text-orange-500">$200/viaje</span></div>
+                            <h3 class="font-black text-slate-800 text-[18px] leading-none mb-1">Juan Pedro (Cadete)</h3>
+                            <div class="flex items-center gap-1 mt-0.5 text-yellow-500 text-[12px] font-bold"><i class="fa-solid fa-star"></i> 4.9 • Tarifa: $200/viaje</div>
                         </div>
                     </div>
                 </div>
-
-                <div class="px-5 py-8 flex flex-col items-center justify-center relative shrink-0 mt-3">
+                <div class="px-5 py-8 flex flex-col items-center justify-center relative shrink-0 mt-4">
                     <div id="efecto-radar" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-700 pointer-events-none">
                         <div class="onda-play onda-play-1"></div><div class="onda-play onda-play-2"></div><div class="onda-play onda-play-3"></div>
                     </div>
                     <div class="z-20 text-center flex flex-col items-center">
-                        <button id="btn-conectar" onclick="toggleConexion()" class="w-44 h-44 rounded-full bg-white flex flex-col items-center justify-center shadow-2xl border-8 border-slate-50 relative transition-all duration-300">
-                            <i id="icono-conexion" class="fa-solid fa-motorcycle text-4xl mb-1 text-slate-300 transition-colors duration-300"></i>
-                            <span id="texto-conexion" class="font-black tracking-widest text-slate-400 text-lg mt-1">OFFLINE</span>
+                        <button id="btn-conectar" onclick="toggleConexion()" class="w-52 h-52 rounded-full bg-white flex flex-col items-center justify-center shadow-2xl border-8 border-slate-50 relative transition-all duration-300">
+                            <div class="relative"><i id="icono-conexion" class="fa-solid fa-motorcycle text-5xl mb-2 text-slate-300 transition-colors duration-300"></i></div>
+                            <span id="texto-conexion" class="font-black tracking-widest text-slate-400 text-xl mt-2">OFFLINE</span>
                         </button>
-                        <div id="status-bar" class="mt-5 bg-white shadow-md px-5 py-2 rounded-full border border-slate-200">
-                            <p id="estado-gps" class="text-[12px] font-black uppercase tracking-wider text-slate-500"><i class="fa-solid fa-location-crosshairs mr-1 text-sm"></i> Desconectado</p>
+                        <div id="status-bar" class="mt-6 bg-white shadow-md px-6 py-3 rounded-full border border-slate-200">
+                            <p id="estado-gps" class="text-[13.5px] font-black uppercase tracking-wider text-slate-500"><i class="fa-solid fa-location-crosshairs mr-1"></i> Desconectado del Radar</p>
                         </div>
-                        <div class="mt-3 flex gap-2">
-                            <span class="badge-seguridad badge-naranja"><i class="fa-solid fa-peso-sign"></i> $200</span>
+                        <div class="mt-4 flex gap-2">
+                            <span class="badge-seguridad badge-naranja"><i class="fa-solid fa-peso-sign"></i> $200 por viaje</span>
                             <span class="badge-seguridad badge-verde"><i class="fa-solid fa-calendar-week"></i> Pago Lunes</span>
                         </div>
                     </div>
@@ -913,132 +1005,126 @@ a { text-decoration: none; cursor: pointer; }
 
     </div>
 
-    <!-- MODAL CARRITO -->
+    <!-- MODALES -->
     <div id="modal-carrito" class="modal-overlay" onclick="if(event.target===this)cerrarModal('modal-carrito')">
-        <div class="modal-content mt-auto rounded-b-none" style="height:82vh;width:100%;max-width:448px;">
-            <div class="bg-white p-4 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="font-black text-slate-800 text-lg">Tu Pedido</h3>
-                <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center cursor-pointer" onclick="cerrarModal('modal-carrito')"><i class="fa-solid fa-xmark text-sm"></i></div>
+        <div class="modal-content mt-auto rounded-b-none h-[85vh] w-full max-w-md bg-white">
+            <div class="modal-header bg-white p-5 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-black text-slate-800 text-xl">Tu Pedido</h3>
+                <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center cursor-pointer" onclick="cerrarModal('modal-carrito')"><i class="fa-solid fa-xmark"></i></div>
             </div>
-            
-            <div class="p-4 flex flex-col h-full bg-slate-50 overflow-y-auto no-scrollbar pb-36">
-                <div class="step-indicator">
-                    <div class="step-dot active"></div>
-                    <div class="step-dot"></div>
-                    <div class="step-dot"></div>
+            <div class="modal-body p-5 flex flex-col h-full bg-slate-50 overflow-y-auto no-scrollbar pb-40">
+                <div class="step-indicator"><div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div></div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm mb-4">
+                    <h4 class="font-black text-slate-800 text-[14px] mb-3"><i class="fa-solid fa-location-dot text-orange-500 mr-1"></i> Datos de Entrega</h4>
+                    <input type="text" id="checkout-nombre" placeholder="Tu Nombre" class="input-premium mb-3">
+                    <input type="text" id="checkout-direccion" placeholder="Dirección exacta" class="input-premium mb-3">
+                    <input type="tel" id="checkout-celular" placeholder="Celular (WhatsApp)" class="input-premium">
                 </div>
-                
-                <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm mb-3">
-                    <h4 class="font-black text-slate-800 text-[12px] mb-2"><i class="fa-solid fa-location-dot text-orange-500 mr-1 text-sm"></i> Datos de Entrega</h4>
-                    <input type="text" id="checkout-nombre" placeholder="Tu Nombre" class="input-premium mb-2" style="padding:9px 12px;font-size:13px;">
-                    <input type="text" id="checkout-direccion" placeholder="Dirección exacta" class="input-premium" style="padding:9px 12px;font-size:13px;">
-                </div>
-                
-                <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm mb-3">
-                    <h4 class="font-black text-slate-800 text-[12px] mb-2"><i class="fa-solid fa-motorcycle text-orange-500 mr-1 text-sm"></i> Costo de Envío</h4>
-                    <div class="flex justify-between items-center bg-orange-50 p-2.5 rounded-lg border border-orange-100">
-                        <span class="font-bold text-slate-700 text-xs">Tarifa fija de viaje</span>
-                        <span class="font-black text-orange-600 text-base">$200</span>
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm mb-4">
+                    <h4 class="font-black text-slate-800 text-[14px] mb-3"><i class="fa-solid fa-motorcycle text-orange-500 mr-1"></i> Costo de Envío</h4>
+                    <div class="flex justify-between items-center bg-orange-50 p-3 rounded-xl border border-orange-100">
+                        <span class="font-bold text-slate-700 text-sm">Tarifa fija de viaje</span>
+                        <span class="font-black text-orange-500 text-lg">$200</span>
                     </div>
-                    <p class="text-[10px] text-slate-500 mt-1.5 font-medium">Pagable al cadete al recibir</p>
+                    <p class="text-[11px] text-slate-500 mt-2 font-medium">Pagable al cadete en puerta al recibir el pedido</p>
                 </div>
-                
-                <div id="carrito-lista" class="space-y-2"></div>
+                <div id="carrito-lista" class="space-y-3"></div>
+                <div id="carrito-vacio" class="text-center py-10">
+                    <i class="fa-solid fa-cart-shopping text-5xl text-slate-300 mb-3"></i>
+                    <p class="text-slate-400 font-bold text-sm">Tu carrito está vacío</p>
+                    <p class="text-slate-400 text-xs mt-1">Agregá productos para continuar</p>
+                </div>
             </div>
-
-            <div class="absolute bottom-0 w-full bg-white p-4 border-t border-slate-200 shadow-2xl">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-bold text-slate-500 text-xs">Productos</span>
-                    <span class="font-black text-slate-900 text-sm" id="carrito-subtotal-txt">$0</span>
+            <div class="absolute bottom-0 w-full bg-white p-5 border-t border-slate-200 shadow-2xl">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-slate-500 text-sm">Productos</span>
+                    <span class="font-black text-slate-900" id="carrito-subtotal-txt">$0</span>
                 </div>
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-bold text-slate-500 text-xs">Envío</span>
-                    <span class="font-black text-orange-600 text-sm">$200</span>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-slate-500 text-sm">Envío</span>
+                    <span class="font-black text-orange-500">$200</span>
                 </div>
-                <div class="flex justify-between items-center mb-3 pt-2 border-t border-slate-100">
-                    <span class="font-bold text-slate-700 text-sm">TOTAL</span>
-                    <span class="font-black text-xl text-slate-900" id="carrito-total-txt">$0</span>
+                <div class="flex justify-between items-center mb-4 pt-3 border-t border-slate-100">
+                    <span class="font-bold text-slate-700">Total a pagar</span>
+                    <span class="font-black text-2xl text-slate-900" id="carrito-total-txt">$0</span>
                 </div>
-                <button onclick="procesarCheckoutWhatsapp()" class="w-full py-3 bg-[#25D366] text-white font-black rounded-full flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform text-[14px]">
-                    <i class="fa-brands fa-whatsapp text-xl"></i> Pedir por WhatsApp
+                <button onclick="procesarCheckoutWhatsapp()" class="w-full py-4 bg-[#25D366] text-white font-black rounded-full flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform text-[16px]">
+                    <i class="fa-brands fa-whatsapp text-2xl"></i> Confirmar y Pedir por WhatsApp
                 </button>
-                <p class="text-center text-[9px] text-slate-400 mt-1.5 font-medium">
-                    <i class="fa-solid fa-shield-halved mr-1"></i> Al confirmar se contacta al comercio y se busca delivery
+                <p class="text-center text-[11px] text-slate-400 mt-2 font-medium">
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Al confirmar, se contacta al comercio y se busca delivery automáticamente
                 </p>
             </div>
         </div>
     </div>
 
-    <!-- MODAL IA -->
     <div id="modal-ia" class="modal-overlay">
-        <div class="bg-slate-900 rounded-2xl p-6 text-center border-4 border-slate-800 shadow-2xl mx-6 max-w-xs w-full">
-            <div class="w-16 h-16 mx-auto bg-slate-800 rounded-full flex items-center justify-center mb-4 border-2 border-orange-500">
-                <i class="fa-solid fa-robot text-3xl text-white fa-bounce"></i>
+        <div class="bg-slate-900 rounded-[2rem] p-8 text-center border-4 border-slate-800 shadow-2xl mx-6 max-w-xs w-full">
+            <div class="w-20 h-20 mx-auto bg-slate-800 rounded-full flex items-center justify-center mb-5 border-2 border-orange-500">
+                <i class="fa-solid fa-robot text-4xl text-white fa-bounce"></i>
             </div>
-            <h3 class="text-lg font-black text-white mb-2">Auditoría IA</h3>
-            <p id="texto-ia" class="text-[12px] font-medium text-slate-300 mb-4">Verificando credenciales...</p>
-            <div class="w-full bg-slate-800 rounded-full h-1.5 mb-1 overflow-hidden">
-                <div id="barra-ia" class="bg-gradient-to-r from-orange-500 to-amber-500 h-1.5 rounded-full w-0 transition-all duration-500"></div>
+            <h3 class="text-xl font-black text-white mb-2">Auditoría IA Vision</h3>
+            <p id="texto-ia" class="text-[14.5px] font-medium text-slate-300 mb-6">Verificando credenciales...</p>
+            <div class="w-full bg-slate-800 rounded-full h-2 mb-2 overflow-hidden">
+                <div id="barra-ia" class="bg-gradient-to-r from-orange-500 to-amber-500 h-2 rounded-full w-0 transition-all duration-500"></div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL RADAR CADETE -->
     <div id="modal-radar-cadete" class="modal-overlay bg-slate-900/90 backdrop-blur-md">
-        <div class="bg-slate-900 rounded-2xl p-5 text-center border-4 border-orange-500 shadow-2xl mx-6 max-w-xs w-full">
-            <div class="w-16 h-16 mx-auto bg-slate-800 rounded-full flex items-center justify-center mb-3 border-2 border-orange-500">
-                <i class="fa-solid fa-satellite-dish text-2xl text-white fa-bounce"></i>
+        <div class="bg-slate-900 rounded-[2.2rem] p-6 text-center border-4 border-orange-500 shadow-2xl mx-6 max-w-xs w-full">
+            <div class="w-18 h-18 mx-auto bg-slate-800 rounded-full flex items-center justify-center mb-4 border-2 border-orange-500" style="width:72px;height:72px;">
+                <i class="fa-solid fa-satellite-dish text-3xl text-white fa-bounce"></i>
             </div>
-            <h3 class="text-xl font-black text-orange-500 mb-2">¡NUEVO VIAJE!</h3>
-            <div class="bg-slate-800 rounded-xl p-3 mb-3 text-left border border-slate-700">
-                <p class="text-white font-bold text-[12px] truncate mb-1.5"><i class="fa-solid fa-store text-orange-400 mr-2 text-sm"></i> <span id="radar-origen-txt"></span></p>
-                <p class="text-slate-300 font-bold text-[11px] truncate"><i class="fa-solid fa-map-pin text-green-400 mr-2 text-sm"></i> <span id="radar-destino-txt"></span></p>
+            <h3 class="text-2xl font-black text-orange-500 mb-2">¡NUEVO VIAJE!</h3>
+            <div class="bg-slate-800 rounded-2xl p-4 mb-4 text-left border border-slate-700">
+                <p class="text-white font-bold text-[14.5px] truncate mb-2"><i class="fa-solid fa-store text-orange-400 mr-2"></i> <span id="radar-origen-txt"></span></p>
+                <p class="text-slate-300 font-bold text-[13.5px] truncate"><i class="fa-solid fa-map-pin text-green-400 mr-2"></i> <span id="radar-destino-txt"></span></p>
             </div>
-            <p class="text-slate-400 font-bold text-[10px] uppercase tracking-widest mb-0.5">A Cobrar</p>
-            <p id="radar-tarifa" class="text-[32px] font-black text-green-400 mb-4 leading-none">$ 200</p>
-            <button onclick="agarrarViajeAtomic()" class="btn-a w-full py-3 text-[14px] uppercase font-black" style="width:100%;">¡AGARRAR VIAJE!</button>
+            <p class="text-slate-400 font-bold text-xs uppercase tracking-widest mb-1">Tarifa a Cobrar</p>
+            <p id="radar-tarifa" class="text-[38px] font-black text-green-400 mb-6 leading-none">$ 200</p>
+            <button onclick="agarrarViajeAtomic()" class="btn-a w-full py-4 text-[16px] tracking-wider uppercase font-black">¡AGARRAR VIAJE!</button>
         </div>
     </div>
 
-    <!-- MODAL SUPABASE -->
     <div id="modal-supabase" class="modal-overlay" onclick="if(event.target===this)cerrarModal('modal-supabase')">
-        <div class="modal-content p-5 bg-white max-w-sm">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="font-black text-slate-800 text-base">Config Supabase</h3>
-                <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center cursor-pointer" onclick="cerrarModal('modal-supabase')"><i class="fa-solid fa-xmark text-sm"></i></div>
+        <div class="modal-content p-6 bg-white max-w-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-black text-slate-800 text-lg">Configuración Supabase</h3>
+                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center cursor-pointer" onclick="cerrarModal('modal-supabase')"><i class="fa-solid fa-xmark"></i></div>
             </div>
-            <label class="text-[10px] font-black uppercase text-slate-400">URL</label>
-            <input type="text" id="sb-url" placeholder="https://..." class="input-premium mb-2 mt-1" style="padding:8px 10px;font-size:12px;">
-            <label class="text-[10px] font-black uppercase text-slate-400">Anon Key</label>
-            <input type="password" id="sb-key" placeholder="eyJ..." class="input-premium mb-3 mt-1" style="padding:8px 10px;font-size:12px;">
-            <button onclick="guardarSupabaseConfig()" class="btn-a w-full py-2.5 text-xs" style="width:100%;">Conectar</button>
+            <p class="text-xs text-slate-500 mb-4">Conecta tu proyecto de Supabase para almacenar pedidos, comercios y cadetes en tiempo real.</p>
+            <label class="text-[11px] font-black uppercase text-slate-400">Supabase URL</label>
+            <input type="text" id="sb-url" placeholder="https://tu-proyecto.supabase.co" class="input-premium mb-3 mt-1">
+            <label class="text-[11px] font-black uppercase text-slate-400">Supabase Anon Key</label>
+            <input type="password" id="sb-key" placeholder="eyJhbGciOiJIUzI1Ni..." class="input-premium mb-4 mt-1">
+            <button onclick="guardarSupabaseConfig()" class="btn-a w-full py-3 text-sm">Conectar Base de Datos</button>
         </div>
     </div>
 
-    <!-- MODAL PAGO EXITO -->
     <div id="modal-pago-exito" class="modal-overlay">
-        <div class="bg-white rounded-2xl p-6 text-center shadow-2xl mx-6 max-w-sm w-full">
-            <div class="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <i class="fa-solid fa-check text-3xl text-green-600"></i>
+        <div class="bg-white rounded-[2rem] p-8 text-center shadow-2xl mx-6 max-w-sm w-full">
+            <div class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-5">
+                <i class="fa-solid fa-check text-4xl text-green-600"></i>
             </div>
-            <h3 class="text-lg font-black text-slate-800 mb-1">¡Pedido Confirmado!</h3>
-            <p class="text-[12px] text-slate-500 mb-4" id="pago-mensaje">Procesando...</p>
-            <div class="space-y-2 text-left bg-slate-50 p-3 rounded-xl mb-4">
-                <div class="flex justify-between items-center text-xs">
+            <h3 class="text-xl font-black text-slate-800 mb-2">¡Pedido Confirmado!</h3>
+            <p class="text-[14px] text-slate-500 mb-4" id="pago-mensaje">Contactando comercio y buscando cadete...</p>
+            <div class="space-y-3 text-left bg-slate-50 p-4 rounded-2xl mb-5">
+                <div class="flex justify-between text-sm">
                     <span class="text-slate-500 font-medium">1. WhatsApp al comercio</span>
-                    <i class="fa-solid fa-check-circle text-green-500 text-sm" id="paso-1"></i>
+                    <i class="fa-solid fa-check-circle text-green-500" id="paso-1"></i>
                 </div>
-                <div class="flex justify-between items-center text-xs">
+                <div class="flex justify-between text-sm">
                     <span class="text-slate-500 font-medium">2. Solicitando delivery</span>
-                    <i class="fa-solid fa-spinner fa-spin text-orange-500 text-sm" id="paso-2"></i>
+                    <i class="fa-solid fa-spinner fa-spin text-orange-500" id="paso-2"></i>
                 </div>
-                <div class="flex justify-between items-center text-xs">
+                <div class="flex justify-between text-sm">
                     <span class="text-slate-500 font-medium">3. Cadete en camino</span>
-                    <i class="fa-regular fa-circle text-slate-300 text-sm" id="paso-3"></i>
+                    <i class="fa-regular fa-circle text-slate-300" id="paso-3"></i>
                 </div>
             </div>
-            <button onclick="finalizarPedido()" class="btn-verde w-full py-2.5 text-xs font-black" style="width:100%;">
-                <i class="fa-solid fa-house mr-1"></i> Volver al inicio
+            <button onclick="cerrarModal('modal-pago-exito');window.carrito=[];actualizarInterfazCarrito();cambiarPantalla('pantalla-marketplace')" class="btn-verde w-full py-3 text-sm font-black">
+                <i class="fa-solid fa-house mr-2"></i> Volver al inicio
             </button>
         </div>
     </div>
@@ -1046,440 +1132,96 @@ a { text-decoration: none; cursor: pointer; }
 </div>
 
 <script>
-// ================== ESTADO ==================
+// ==========================================
+// ESTADO Y BASE DE DATOS
+// ==========================================
 window.carrito = [];
 window.comercioActual = null;
+window.supabaseClient = null;
 window.estadoCadete = { conectado: false };
 window.comercioLogueado = false;
 window.productosCargados = 0;
 window.fotoProductoTemp = null;
-window.productosExtras = [];
+window.usuarioComprador = JSON.parse(localStorage.getItem('comprador_dm') || 'null');
 
 const ciudadesPorProvincia = {
-    'Tucumán': ['Famaillá', 'San Miguel de Tucumán', 'Monteros', 'Concepción', 'Tafí Viejo', 'Alderetes'],
-    'Buenos Aires': ['La Plata', 'Mar del Plata', 'Bahía Blanca', 'Quilmes', 'Lanús'],
-    'Córdoba': ['Córdoba Capital', 'Río Cuarto', 'Villa María', 'Alta Gracia'],
-    'Santa Fe': ['Rosario', 'Santa Fe Capital', 'Rafaela', 'Venado Tuerto'],
-    'Salta': ['Salta Capital', 'San Ramón de la Nueva Orán', 'Tartagal'],
-    'Jujuy': ['San Salvador de Jujuy', 'Palpalá', 'Perico'],
-    'Mendoza': ['Mendoza Capital', 'San Rafael', 'Godoy Cruz', 'Guaymallén']
+    "Buenos Aires": ["La Plata", "Mar del Plata", "Bahía Blanca", "Quilmes", "Lanús", "Morón", "Lomas de Zamora"],
+    "CABA": ["Palermo", "Recoleta", "Monserrat", "Caballito", "Belgrano", "Núñez"],
+    "Catamarca": ["San Fernando del Valle de Catamarca", "Recreo", "Andalgalá"],
+    "Chaco": ["Resistencia", "Barranqueras", "Fontana"],
+    "Chubut": ["Rawson", "Comodoro Rivadavia", "Trelew", "Puerto Madryn"],
+    "Córdoba": ["Córdoba Capital", "Villa María", "Río Cuarto", "Alta Gracia"],
+    "Corrientes": ["Corrientes Capital", "Resistencia", "Curuzú Cuatiá"],
+    "Entre Ríos": ["Paraná", "Concepción del Uruguay", "Gualeguaychú"],
+    "Formosa": ["Formosa Capital", "Clorinda"],
+    "Jujuy": ["San Salvador de Jujuy", "Palpalá", "Perico"],
+    "La Pampa": ["Santa Rosa", "General Pico"],
+    "La Rioja": ["La Rioja Capital", "Chilecito"],
+    "Mendoza": ["Mendoza Capital", "San Rafael", "Godoy Cruz", "Luján de Cuyo"],
+    "Misiones": ["Posadas", "Oberá", "Puerto Iguazú"],
+    "Neuquén": ["Neuquén Capital", "Cipolletti", "Plottier"],
+    "Río Negro": ["Viedma", "Bariloche", "General Roca"],
+    "Salta": ["Salta Capital", "Orán", "Tartagal", "San Ramón de la Nueva Orán"],
+    "San Juan": ["San Juan Capital", "Rawson", "Rivadavia"],
+    "San Luis": ["San Luis Capital", "Merlo", "La Punta"],
+    "Santa Cruz": ["Río Gallegos", "Caleta Olivia"],
+    "Santa Fe": ["Santa Fe Capital", "Rosario", "Rafaela", "Venado Tuerto"],
+    "Santiago del Estero": ["Santiago del Estero Capital", "La Banda", "Termas de Río Hondo"],
+    "Tierra del Fuego": ["Ushuaia", "Río Grande"],
+    "Tucumán": ["San Miguel de Tucumán", "Famaillá", "Alderetes", "Banda del Río Salí", "Lules", "Concepción", "Monteros"]
 };
 
-const baseDeDatos = [
+const mockupBaseDeDatos = [
     {
-        id: 1, ciudad: "Famaillá", categoria: "Restaurantes", nombre: "Empanadas Famaillá VIP",
-        horario: "Lun a Dom - 19:00 a 00:00", desc: "Empanadas cortadas a cuchillo y especialidades regionales.",
-        wa: "5493815551111", mp_link: "",
-        direccion: "San Martín 456", provincia: "Tucumán",
+        id: 1, ciudad: "Famaillá", provincia: "Tucumán", categoria: "Restaurantes", nombre: "Empanadas Famaillá VIP",
+        horario: "Lunes a Domingo - 19:00 a 00:00", desc: "Empanadas cortadas a cuchillo y especialidades regionales.",
+        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "", 
+        wa: "5493815551111", mp_link: "https://link.mercadopago.com.ar/empanadasfam",
+        direccion: "San Martín 456, Famaillá", gps: "-27.0525, -65.4022",
         secciones: [{ nombre: "Especialidades", productos: [
-            {id: 201, nombre: "Docena Empanadas Matambre", precio: 6500, desc: "Cortadas a cuchillo, jugosas.", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png", cat: "Comidas"},
-            {id: 202, nombre: "Pizza Muzzarella", precio: 5000, desc: "Jamón, morrones y aceitunas.", img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png", cat: "Comidas"},
-            {id: 203, nombre: "Empanada Carne", precio: 650, desc: "Carne, cebolla y aceitunas.", img: "https://cdn-icons-png.flaticon.com/512/2912/2912705.png", cat: "Comidas"},
-            {id: 204, nombre: "Empanada JyQ", precio: 600, desc: "Jamón y muzzarella.", img: "https://cdn-icons-png.flaticon.com/512/2912/2912705.png", cat: "Comidas"},
-            {id: 205, nombre: "Lomito Completo", precio: 4200, desc: "Carne, jamón, queso, huevo.", img: "https://cdn-icons-png.flaticon.com/512/1353/1353325.png", cat: "Comidas"},
-            {id: 206, nombre: "Hamburguesa Clásica", precio: 3500, desc: "Carne, queso, lechuga.", img: "https://cdn-icons-png.flaticon.com/512/1584/1584277.png", cat: "Comidas"},
-            {id: 207, nombre: "Papas Fritas", precio: 1800, desc: "Porción abundante.", img: "https://cdn-icons-png.flaticon.com/512/1892/1892494.png", cat: "Comidas"},
-            {id: 208, nombre: "Gaseosa 1.5L", precio: 1200, desc: "Coca-Cola o Sprite.", img: "https://cdn-icons-png.flaticon.com/512/2613/2613598.png", cat: "Bebidas"}
+            {id: 201, nombre: "Docena Empanadas Matambre", precio: 6500, desc: "Cortadas a cuchillo, jugosas y crujientes.", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"},
+            {id: 202, nombre: "Pizza Especial Muzzarella", precio: 5000, desc: "Jamón, morrones y aceitunas.", img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png"},
+            {id: 203, nombre: "Empanada de Carne Individual", precio: 650, desc: "Carne picada, cebolla y aceitunas.", img: "https://cdn-icons-png.flaticon.com/512/2912/2912705.png"},
+            {id: 204, nombre: "Empanada de Jamón y Queso", precio: 600, desc: "Jamón cocido y muzzarella.", img: "https://cdn-icons-png.flaticon.com/512/2912/2912705.png"},
+            {id: 205, nombre: "Lomito Completo", precio: 4200, desc: "Carne, jamón, queso, huevo, lechuga y tomate.", img: "https://cdn-icons-png.flaticon.com/512/1353/1353325.png"},
+            {id: 206, nombre: "Hamburguesa Clásica", precio: 3500, desc: "Medallón de carne, queso, lechuga y tomate.", img: "https://cdn-icons-png.flaticon.com/512/1584/1584277.png"},
+            {id: 207, nombre: "Papas Fritas Grandes", precio: 1800, desc: "Porción abundante y crujiente.", img: "https://cdn-icons-png.flaticon.com/512/1892/1892494.png"},
+            {id: 208, nombre: "Gaseosa 1.5L", precio: 1200, desc: "Coca-Cola o Sprite.", img: "https://cdn-icons-png.flaticon.com/512/2613/2613598.png"}
         ]}]
     },
     {
-        id: 2, ciudad: "San Miguel de Tucumán", categoria: "Súper", nombre: "Market Centro",
-        horario: "Lun a Lun - 24 Hs", desc: "Supermercado online rápido.",
-        wa: "5493815550000", mp_link: "",
-        direccion: "Av. Sarmiento 123", provincia: "Tucumán",
+        id: 2, ciudad: "Tucumán", provincia: "Tucumán", categoria: "Súper", nombre: "PedidosYa Market Centro",
+        horario: "Lunes a Lunes - 24 Hs", desc: "Supermercado online rápido con entrega en minutos.",
+        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "",
+        wa: "5493815550000", mp_link: "https://link.mercadopago.com.ar/test",
+        direccion: "Av. Sarmiento 123, Tucumán", gps: "-26.8320, -65.2068",
         secciones: [{ nombre: "Almacén", productos: [
-            {id: 101, nombre: "Fideos 500g", precio: 1545, desc: "Tallarines de sémola.", img: "https://cdn-icons-png.flaticon.com/512/1830/1830839.png", cat: "Almacén"},
-            {id: 102, nombre: "Aceite 900ml", precio: 2890, desc: "Aceite de girasol.", img: "https://cdn-icons-png.flaticon.com/512/2867/2867090.png", cat: "Almacén"},
-            {id: 103, nombre: "Arroz 1kg", precio: 1780, desc: "Arroz largo fino.", img: "https://cdn-icons-png.flaticon.com/512/1426/1426061.png", cat: "Almacén"},
-            {id: 104, nombre: "Leche 1L", precio: 1450, desc: "Leche entera.", img: "https://cdn-icons-png.flaticon.com/512/2637/2637915.png", cat: "Almacén"}
+            {id: 101, nombre: "Fideos Matarazzo 500g", precio: 1545, desc: "Tallarines de sémola de trigo.", img: "https://cdn-icons-png.flaticon.com/512/1830/1830839.png"},
+            {id: 102, nombre: "Aceite Cocinero 900ml", precio: 2890, desc: "Aceite de girasol puro.", img: "https://cdn-icons-png.flaticon.com/512/2867/2867090.png"},
+            {id: 103, nombre: "Arroz Gallo 1kg", precio: 1780, desc: "Arroz largo fino tipo 1.", img: "https://cdn-icons-png.flaticon.com/512/1426/1426061.png"},
+            {id: 104, nombre: "Leche La Serenísima 1L", precio: 1450, desc: "Leche entera fortificada.", img: "https://cdn-icons-png.flaticon.com/512/2637/2637915.png"}
+        ]}]
+    },
+    {
+        id: 3, ciudad: "Córdoba Capital", provincia: "Córdoba", categoria: "Restaurantes", nombre: "Pizzería Córdoba Centro",
+        horario: "Martes a Domingo - 18:00 a 01:00", desc: "Auténtica pizza al estilo cordobés con masa casera.",
+        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "",
+        wa: "5493515550000", mp_link: "https://link.mercadopago.com.ar/test",
+        direccion: "Av. Colón 800, Córdoba", gps: "-31.4201, -64.1888",
+        secciones: [{ nombre: "Pizzas", productos: [
+            {id: 301, nombre: "Pizza Muzzarella Grande", precio: 4800, desc: "Muzzarella, salsa de tomate y orégano.", img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png"},
+            {id: 302, nombre: "Pizza Napolitana", precio: 5200, desc: "Muzzarella, tomate y albahaca fresca.", img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png"},
+            {id: 303, nombre: "Faina", precio: 800, desc: "Porción de faina tradicional.", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"},
+            {id: 304, nombre: "Empanada de Jamón y Queso", precio: 700, desc: "Rellena y jugosa.", img: "https://cdn-icons-png.flaticon.com/512/2912/2912705.png"}
         ]}]
     }
 ];
 
-// ================== FUNCIONES BÁSICAS ==================
-window.vibrar = (ms = 35) => { if (navigator.vibrate) navigator.vibrate(ms); };
+window.vibrar = (ms = 40) => { if (navigator.vibrate) navigator.vibrate(ms); };
 
 function mostrarToast(mensaje, tipo = 'success') {
-    vibrar(25);
+    vibrar(30);
     const c = document.getElementById('toast-container'), t = document.createElement('div');
     t.className = 'toast';
     const ic = tipo === 'success' 
-        ? '<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-green-500/20 text-green-400"><i class="fa-solid fa-check text-sm"></i></div>'
-        : '<div class="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0"><i class="fa-solid fa-circle-info text-sm"></i></div>';
-    t.innerHTML = ic + '<span>' + mensaje + '</span>';
-    c.appendChild(t);
-    setTimeout(() => t.classList.add('show'), 10);
-    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3000);
-}
-
-function reproducirAudioLanding() {
-    vibrar(40);
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const m = new SpeechSynthesisUtterance("Bienvenido a Delivery Moto. Tarifa fija de 200 pesos por viaje. Comercios envían, cadetes viajan. Plataforma segura con GPS en vivo.");
-        m.lang = 'es-AR'; m.rate = 1.05;
-        window.speechSynthesis.speak(m);
-    }
-}
-
-function abrirPWA() {
-    vibrar(50);
-    document.getElementById('vista-landing').style.display = 'none';
-    document.getElementById('vista-app').style.display = 'flex';
-    const splash = document.getElementById('splash-screen');
-    splash.style.display = 'flex';
-    setTimeout(() => splash.style.opacity = '1', 10);
-    setTimeout(() => { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 700); }, 1200);
-}
-
-window.cambiarPantalla = (id) => {
-    vibrar(30);
-    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
-    document.getElementById(id).classList.add('activa');
-    if (id === 'pantalla-marketplace') renderizarMarketplace();
-};
-
-window.abrirModal = id => { vibrar(); document.getElementById(id).classList.add('show'); }
-window.cerrarModal = id => { vibrar(); document.getElementById(id).classList.remove('show'); }
-
-window.abrirConfigSupabase = () => { abrirModal('modal-supabase'); }
-window.guardarSupabaseConfig = () => {
-    if (!document.getElementById('sb-url').value) return mostrarToast("Ingresa URL", "info");
-    cerrarModal('modal-supabase');
-    mostrarToast("¡Supabase conectado!", "success");
-}
-
-// ================== LOGIN COMERCIO ==================
-window.loginComercio = function() {
-    vibrar(35);
-    const cel = document.getElementById('login-comercio-celular').value.trim();
-    const pwd = document.getElementById('login-comercio-pwd').value.trim();
-    if (!cel || cel.length < 6) return mostrarToast("Ingresa un WhatsApp válido", "info");
-    if (!pwd || pwd.length < 3) return mostrarToast("Ingresa contraseña de 3 caracteres", "info");
-    
-    window.comercioLogueado = true;
-    window.comercioCelular = cel;
-    document.getElementById('info-wa').textContent = cel;
-    document.getElementById('comercio-nombre-header').textContent = "Panel Activo";
-    mostrarToast("¡Bienvenido! Acceso habilitado", "success");
-    setTimeout(() => cambiarPantalla('pantalla-admin-comercio'), 500);
-};
-
-window.logoutComercio = function() {
-    vibrar(25);
-    window.comercioLogueado = false;
-    cambiarPantalla('pantalla-1');
-    mostrarToast("Sesión cerrada", "success");
-};
-
-// ================== TABS COMERCIO ==================
-window.switchTabComercio = (tab) => {
-    vibrar(25);
-    ['logistica', 'productos', 'config'].forEach(t => {
-        document.getElementById('tab-' + t).classList.remove('active');
-        document.getElementById('seccion-' + t).classList.add('hidden');
-    });
-    document.getElementById('tab-' + tab).classList.add('active');
-    document.getElementById('seccion-' + tab).classList.remove('hidden');
-};
-
-window.actualizarCiudades = function(tipo) {
-    const prov = document.getElementById('select-provincia-' + tipo).value;
-    const select = document.getElementById('select-ciudad-' + tipo);
-    const ciudades = ciudadesPorProvincia[prov] || ['Otra'];
-    select.innerHTML = ciudades.map(c => `<option>${c}</option>`).join('');
-};
-
-window.guardarDatosLocal = function() {
-    vibrar(30);
-    const nombre = document.getElementById('config-nombre').value;
-    document.getElementById('info-local-nombre').textContent = nombre;
-    document.getElementById('info-direccion').textContent = document.getElementById('config-direccion').value;
-    document.getElementById('info-ciudad').textContent = document.getElementById('config-ciudad').value;
-    document.getElementById('info-provincia').textContent = document.getElementById('config-provincia').value;
-    document.getElementById('info-horario').textContent = document.getElementById('config-horario').value;
-    document.getElementById('info-wa').textContent = document.getElementById('config-wa').value;
-    document.getElementById('input-origen-admin').value = document.getElementById('config-direccion').value;
-    document.getElementById('comercio-nombre-header').textContent = nombre;
-    mostrarToast("¡Datos guardados!", "success");
-};
-
-// ================== SUBIR FOTO PRODUCTO ==================
-window.previewFotoProducto = function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            window.fotoProductoTemp = e.target.result;
-            const prev = document.getElementById('preview-foto');
-            prev.src = e.target.result;
-            prev.classList.remove('hidden');
-            document.getElementById('upload-preview-container').classList.add('hidden');
-            document.getElementById('upload-zone').classList.add('has-file');
-        };
-        reader.readAsDataURL(file);
-    }
-};
-
-window.cargarProductoComercio = function() {
-    vibrar(35);
-    const nombre = document.getElementById('add-prod-nombre').value.trim();
-    const precio = parseInt(document.getElementById('add-prod-precio').value);
-    const desc = document.getElementById('add-prod-desc').value.trim() || "Producto disponible";
-    const cat = document.getElementById('add-prod-cat').value;
-    
-    if (!nombre) return mostrarToast("Ingresa el nombre", "info");
-    if (!precio || precio <= 0) return mostrarToast("Ingresa precio válido", "info");
-    
-    const nuevoProd = {
-        id: Date.now(),
-        nombre: nombre,
-        precio: precio,
-        desc: desc,
-        img: window.fotoProductoTemp || "https://cdn-icons-png.flaticon.com/512/1404/1404945.png",
-        cat: cat,
-        fotoReal: !!window.fotoProductoTemp
-    };
-    
-    baseDeDatos[0].secciones[0].productos.unshift(nuevoProd);
-    
-    document.getElementById('add-prod-nombre').value = "";
-    document.getElementById('add-prod-precio').value = "";
-    document.getElementById('add-prod-desc').value = "";
-    document.getElementById('preview-foto').classList.add('hidden');
-    document.getElementById('upload-preview-container').classList.remove('hidden');
-    document.getElementById('upload-zone').classList.remove('has-file');
-    window.fotoProductoTemp = null;
-    document.getElementById('file-foto-producto').value = "";
-    
-    actualizarListaProductosComercio();
-    mostrarToast("¡Producto publicado en marketplace!", "success");
-};
-
-function actualizarListaProductosComercio() {
-    const todos = baseDeDatos[0].secciones[0].productos;
-    document.getElementById('contador-productos').textContent = todos.length + " artículos";
-    const lista = document.getElementById('lista-productos-comercio');
-    if (todos.length === 0) {
-        lista.innerHTML = '<p class="text-center text-slate-400 text-xs py-6 font-medium">Aún no tienes productos</p>';
-        return;
-    }
-    lista.innerHTML = todos.slice(0, 8).map(p => `
-        <div class="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-            <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center overflow-hidden shrink-0">
-                ${p.fotoReal ? `<img src="${p.img}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-utensils text-orange-400 text-sm"></i>`}
-            </div>
-            <div class="flex-1 min-w-0">
-                <p class="font-black text-slate-800 text-xs truncate">${p.nombre}</p>
-                <p class="text-[10px] text-slate-500">${p.cat}</p>
-            </div>
-            <span class="font-black text-orange-600 text-sm">$${p.precio}</span>
-        </div>
-    `).join('');
-}
-
-// ================== SOLICITAR CADETE ==================
-window.solicitarCadeteAdmin = function() {
-    vibrar(50);
-    const wa = document.getElementById('input-wa-admin').value;
-    const dest = document.getElementById('input-destino-admin').value;
-    if (!dest) return mostrarToast("Ingresa dirección destino", "info");
-    
-    mostrarToast("¡Alerta enviada! Buscando cadete...", "success");
-    
-    setTimeout(() => {
-        document.getElementById('radar-origen-txt').textContent = document.getElementById('input-origen-admin').value || "Tu local";
-        document.getElementById('radar-destino-txt').textContent = dest;
-        if (window.estadoCadete.conectado) {
-            abrirModal('modal-radar-cadete');
-        } else {
-            mostrarToast("Cadete asignado. Llegará en ~10 min", "success");
-        }
-    }, 2000);
-};
-
-// ================== MARKETPLACE ==================
-let searchTimeout;
-window.renderizarMarketplace = function(isSearch = false) {
-    const ciudadFiltro = document.getElementById('filtro-ciudad-mkp').value;
-    const textoFiltro = document.getElementById('buscador-global') ? document.getElementById('buscador-global').value.toLowerCase() : "";
-    const grilla = document.getElementById('grilla-locales-dinamica');
-    
-    if (!isSearch) {
-        grilla.innerHTML = '<div class="bg-white rounded-2xl h-36 skeleton"></div><div class="bg-white rounded-2xl h-36 skeleton"></div>';
-    }
-
-    setTimeout(() => {
-        let locales = baseDeDatos;
-        if (ciudadFiltro !== "Todas") locales = locales.filter(l => l.ciudad.includes(ciudadFiltro) || l.provincia.includes(ciudadFiltro));
-        if (textoFiltro) locales = locales.filter(l => l.nombre.toLowerCase().includes(textoFiltro) || l.categoria.toLowerCase().includes(textoFiltro));
-
-        document.getElementById('contador-locales').textContent = locales.length + " locales";
-        if (locales.length === 0) {
-            grilla.innerHTML = '<div class="col-span-2 text-center p-6 bg-white rounded-2xl border"><i class="fa-solid fa-store-slash text-3xl text-slate-300 mb-1"></i><p class="text-slate-500 font-bold text-xs">Sin locales</p></div>';
-            return;
-        }
-
-        grilla.innerHTML = locales.map(local => `
-            <div onclick="abrirCatalogoComercio(${local.id})" class="cat-card animate-slide-in">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-xl shadow mb-1"><i class="fa-solid fa-store"></i></div>
-                <span class="font-black text-slate-800 text-[13px] text-center leading-tight">${local.nombre}</span>
-                <span class="text-[10px] text-slate-400 font-bold bg-slate-100 px-2 py-0.5 rounded-full"><i class="fa-solid fa-location-dot text-[9px]"></i> ${local.ciudad}</span>
-                <div class="flex gap-1 mt-0.5">
-                    <span class="badge-seguridad badge-verde" style="padding:1px 5px;font-size:8px;"><i class="fa-solid fa-circle-check text-[8px]"></i></span>
-                    <span class="badge-seguridad badge-naranja" style="padding:1px 5px;font-size:8px;"><i class="fa-solid fa-star text-[8px]"></i> 4.9</span>
-                </div>
-            </div>
-        `).join('');
-    }, isSearch ? 0 : 400);
-};
-
-window.filtrarPorTexto = () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => renderizarMarketplace(true), 200);
-};
-
-// ================== CATÁLOGO ==================
-window.abrirCatalogoComercio = function(idComercio) {
-    vibrar(35);
-    window.comercioActual = baseDeDatos.find(c => c.id === idComercio);
-    if (!window.comercioActual) return;
-    
-    document.getElementById('cat-nombre').innerText = window.comercioActual.nombre;
-    document.getElementById('cat-ciudad').innerText = window.comercioActual.ciudad;
-    document.getElementById('cat-horario').innerHTML = "<i class='fa-solid fa-clock mr-1'></i> " + window.comercioActual.horario;
-    document.getElementById('cat-desc').innerText = window.comercioActual.desc;
-    
-    window.productosCargados = 0;
-    renderizarProductos();
-    cambiarPantalla('pantalla-catalogo');
-    
-    setTimeout(() => {
-        const pantalla = document.getElementById('pantalla-catalogo');
-        pantalla.onscroll = detectarScrollFinal;
-    }, 100);
-};
-
-function renderizarProductos() {
-    if (!window.comercioActual) return;
-    const container = document.getElementById('contenedor-productos');
-    const todos = window.comercioActual.secciones.flatMap(s => s.productos);
-    
-    const filtro = document.getElementById('buscador-productos') ? document.getElementById('buscador-productos').value.toLowerCase() : "";
-    const filtrados = filtro ? todos.filter(p => p.nombre.toLowerCase().includes(filtro)) : todos;
-    
-    const cant = Math.min(window.productosCargados + 4, filtrados.length);
-    const mostrar = filtrados.slice(0, cant);
-    
-    container.innerHTML = mostrar.map((p, i) => `
-        <div class="producto-card animate-slide-in" style="animation-delay:${i * 0.05}s" onclick="agregarAlCarrito(${p.id}, '${p.nombre.replace(/'/g, "\\'")}', ${p.precio})">
-            ${p.img ? `<img src="${p.img}" class="producto-img" alt="${p.nombre}" onerror="this.outerHTML='<div class=\\'producto-img-placeholder\\'><i class=\\'fa-solid fa-utensils\\'></i></div>'">` : `<div class="producto-img-placeholder"><i class="fa-solid fa-utensils"></i></div>`}
-            <div class="p-2.5">
-                <h4 class="font-bold text-[12px] text-slate-800 leading-tight mb-1 line-clamp-2">${p.nombre}</h4>
-                <p class="text-[10px] text-slate-500 line-clamp-1 mb-2">${p.desc}</p>
-                <div class="flex justify-between items-center">
-                    <span class="font-black text-[15px] text-orange-600 leading-none">$${p.precio}</span>
-                    <div class="w-7 h-7 rounded-full bg-orange-500 text-white flex items-center justify-center shadow active:scale-90">
-                        <i class="fa-solid fa-plus text-[10px]"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `).join('');
-    
-    window.productosCargados = cant;
-    document.getElementById('loader-productos').classList.toggle('hidden', cant >= filtrados.length);
-}
-
-window.filtrarProductosLocal = function() {
-    window.productosCargados = 0;
-    renderizarProductos();
-};
-
-function detectarScrollFinal() {
-    const p = document.getElementById('pantalla-catalogo');
-    const l = document.getElementById('loader-productos');
-    if (p.scrollTop + p.clientHeight >= p.scrollHeight - 100 && !l.classList.contains('hidden')) {
-        renderizarProductos();
-    }
-}
-
-// ================== CARRITO ==================
-window.agregarAlCarrito = (id, nombre, precio) => {
-    vibrar(30);
-    window.carrito.push({ id, nombre, precio });
-    mostrarToast("Añadido al pedido", "success");
-    actualizarInterfazCarrito();
-};
-
-function actualizarInterfazCarrito() {
-    const subtotal = window.carrito.reduce((acc, curr) => acc + curr.precio, 0);
-    const total = subtotal + (window.carrito.length > 0 ? 200 : 0);
-    const barra = document.getElementById('barra-ver-carrito');
-    const badge = document.getElementById('badge-carrito');
-    
-    if (window.carrito.length > 0) { 
-        barra.classList.remove('hidden'); 
-        badge.classList.remove('hidden');
-        badge.innerText = window.carrito.length;
-        document.getElementById('barra-cant').innerText = window.carrito.length + (window.carrito.length === 1 ? " prod" : " prods"); 
-        document.getElementById('barra-total').innerText = "$" + total;
-    } else { 
-        barra.classList.add('hidden'); 
-        badge.classList.add('hidden');
-    }
-    
-    const list = document.getElementById('carrito-lista');
-    list.innerHTML = window.carrito.length ? window.carrito.map((p, i) => `
-        <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
-            <span class="font-bold text-slate-800 text-xs flex-1 truncate mr-2">${p.nombre}</span>
-            <div class="flex items-center gap-2 shrink-0">
-                <span class="font-black text-orange-600 text-xs">$${p.precio}</span>
-                <button onclick="eliminarDelCarrito(${i})" class="bg-red-50 text-red-500 rounded-full w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
-            </div>
-        </div>
-    `).join('') : '<p class="text-center text-slate-400 text-xs py-6 font-medium">Carrito vacío</p>';
-    
-    document.getElementById('carrito-subtotal-txt').innerText = "$" + subtotal;
-    document.getElementById('carrito-total-txt').innerText = "$" + total;
-}
-
-window.eliminarDelCarrito = i => { vibrar(); window.carrito.splice(i, 1); actualizarInterfazCarrito(); };
-
-// ================== CHECKOUT WHATSAPP ==================
-window.procesarCheckoutWhatsapp = () => {
-    vibrar(50);
-    if (window.carrito.length === 0) return mostrarToast("Agrega productos primero", "info");
-    if (!window.comercioActual) return;
-    
-    const nom = document.getElementById('checkout-nombre').value.trim();
-    const dir = document.getElementById('checkout-direccion').value.trim();
-    if (!nom || !dir) return mostrarToast("Ingresa nombre y dirección", "info");
-
-    const subtotal = window.carrito.reduce((a, c) => a + c.precio, 0);
-    const total = subtotal + 200;
-    
-    let msg = `*🛒 NUEVO PEDIDO - ${window.comercioActual.nombre}*\n\n`;
-    msg += `👤 *Cliente:* ${nom}\n`;
-    msg += `📍 *Dirección:* ${dir}\n`;
-    msg += `🏙️ *Ciudad:* ${window.comercioActual.ciudad}\n\n`;
-    msg += `📋 *PEDIDO:*\n`;
-    window.carrito.forEach(p => msg += `• ${p.nombre} - $${p.precio}\n`);
-    msg += `\n💰 *Subtotal:* $${subtotal}\n`;
-    msg += `🏍️ *Envío:* $200\n`;
-    msg += `💵 *TOTAL:* $${total}\n\n`;
-    msg += `📱 *Cliente:* ${nom}\n`;
-    msg += `📍 *Entregar en:* ${dir}, ${window.comercioActual.ciudad}\n\n`;
-    msg += `_Envío coordinado automáticamente con Delivery Moto_\n`;
-    msg += `_Tarifa de envío $200 a cargo del cliente_`;
-    
-    const waUrl = "https://wa.me/" + window.comercioActual.wa + "?text=" + encodeURIComponent(msg);
-    
-    cerrarModal('modal-carrito');
-    abrirModal('modal-pago-exito');
-    
-    setTimeout(() => {
-        document.getElementById('paso-1').outerHTML = '<i class="fa-solid fa-check-circle text-green-500 text-sm"></i>';
-        document.getElementById('pago-mensaje').textContent = "WhatsApp enviado. Buscando cadete...";
-    }, 800);
-    
+        ? '<div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-xl bg-green-500/20 text-green-400
