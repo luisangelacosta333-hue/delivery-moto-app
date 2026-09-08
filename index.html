@@ -9,9 +9,8 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- LLAVE DE GOOGLE MAPS -->
+<!-- LLAVE DE GOOGLE MAPS INYECTADA CON LIBRERIA PLACES PARA AUTOCOMPLETADO RÁPIDO -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLcIDHZkqLfHFdf7gzhlX8&libraries=places"></script>
-<!-- PREPARATIVO PARA SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -20,41 +19,84 @@
 ======================================================== */
 :root{--naranja:#ff6b00;--naranja2:#ff8c00;--naranja3:#cc4400;--verde:#00d13a;--texto:#0f172a;}
 *{box-sizing:border-box}
-body{font-family:'Quicksand',sans-serif; color:var(--texto); margin:0; padding:0; -webkit-font-smoothing:antialiased; overflow-x: hidden; background-color: #f8fafc;}
+body{font-family:'Quicksand',sans-serif; color:var(--texto); margin:0; padding:0; -webkit-font-smoothing:antialiased; overflow-x: hidden;}
 a{text-decoration:none}
 .no-scrollbar::-webkit-scrollbar{display:none}
 .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
 
-/* EFECTO SKELETON LOADER */
-@keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
-.skeleton { background: #e2e8f0; background-image: linear-gradient(to right, #e2e8f0 0%, #f8fafc 20%, #e2e8f0 40%, #e2e8f0 100%); background-repeat: no-repeat; background-size: 1000px 100%; animation: shimmer 1.5s infinite linear forwards; }
+/* EFECTO PREMIUM SKELETON LOADER (CARGA VISUAL) */
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+.skeleton {
+    background: #e2e8f0;
+    background-image: linear-gradient(to right, #e2e8f0 0%, #f8fafc 20%, #e2e8f0 40%, #e2e8f0 100%);
+    background-repeat: no-repeat;
+    background-size: 1000px 100%; 
+    animation: shimmer 1.5s infinite linear forwards;
+}
 
-/* AUTOCOMPLETADO DE GOOGLE MAPS */
-.pac-container { z-index: 1000000 !important; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; font-family: 'Quicksand', sans-serif; padding: 5px; margin-top: 5px; }
-.pac-item { padding: 12px 10px; font-size: 15px; font-weight: 700; color: #1e293b; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+/* AUTOCOMPLETADO DE GOOGLE MAPS POR ENCIMA DE LA APP */
+.pac-container {
+    z-index: 1000000 !important;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    border: 1px solid #e2e8f0;
+    font-family: 'Quicksand', sans-serif;
+    padding: 5px;
+    margin-top: 5px;
+}
+.pac-item {
+    padding: 12px 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+}
 .pac-item:hover { background-color: #fff7ed; }
 .pac-icon { display: none; }
 
-/* ANIMACIONES */
+/* ========================================================
+   CSS ESPECÍFICO - ANIMACIONES
+======================================================== */
 .landing-bg { background:linear-gradient(-45deg,#f8fafc,#e2e8f0,#ffffff,#f1f5f9); background-size:400% 400%; animation:gradientBG 15s ease infinite; }
 @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .ticker-landing{display:inline-block;animation:ticker 40s linear infinite;white-space:nowrap}
+@keyframes fm{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+.fm{animation:fm 3.5s ease-in-out infinite}
 
-.hg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important; }
-.glass-premium {background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border-radius: 1.5rem;}
-.glass{background:rgba(255,255,255,.9);backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.8);box-shadow:0 15px 45px rgba(0,0,0,.09);border-radius:1.5rem}
+.hg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important; }
+
+.glass-premium {background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border-radius: 1.5rem;}
+.glass-dark {background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2); border-radius: 1.5rem;}
+.glass{background:rgba(255,255,255,.9);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.8);box-shadow:0 15px 45px rgba(0,0,0,.09),inset 0 1px 0 rgba(255,255,255,.95);border-radius:1.5rem}
 
 .btn-glow {border-radius: 50px !important; position: relative; z-index: 1; overflow: hidden;}
 .btn-glow::after {content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;background: linear-gradient(45deg, var(--naranja), var(--naranja3), var(--naranja));z-index: -1; border-radius: 50px; filter: blur(12px); opacity: 0.6;animation: pulse-glow 3s linear infinite;}
 @keyframes pulse-glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
 
+@keyframes pg{0%,100%{box-shadow:0 0 0 0 rgba(0,209,58,.8)}50%{box-shadow:0 0 0 6px rgba(0,209,58,0)}}
+.pg{animation:pg 1.8s ease-in-out infinite}
+
+.boton-play-landing{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,var(--naranja2) 100%);border:4px solid white;box-shadow:0 10px 30px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
+.boton-play-landing:active{transform:scale(.92)}
+.boton-play-landing .icono-play{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--naranja2),var(--naranja3));display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
+.boton-play-landing .icono-play i{color:white;font-size:14.5px;margin-left:2px}
+
+.app-bg { background:linear-gradient(135deg,#cbd5e1,#e2e8f0); }
 @keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-150%)}}
 .animate-scroll{display:inline-block;white-space:nowrap;animation:scroll 40s linear infinite}
 @keyframes pulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(0,209,58,.8)}50%{box-shadow:0 0 0 8px rgba(0,209,58,0)}}
 .luz-verde{position:relative}.luz-verde::after{content:'';position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:var(--verde);border-radius:50%;border:2px solid white;animation:pulseGreen 1.8s ease-in-out infinite;z-index:10}
+@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
+.logo-float{animation:logoFloat 3.5s ease-in-out infinite}
 @keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 30px rgba(255,107,0,.3))}50%{filter:drop-shadow(0 0 55px rgba(255,107,0,0.6))}}
 .logo-glow{animation:logoGlow 2.5s ease-in-out infinite}
+@keyframes resplandorGlow{0%,100%{box-shadow:0 0 15px rgba(255,107,0,.4);transform:scale(1)}50%{box-shadow:0 0 30px rgba(255,107,0,.9);transform:scale(1.02);border:2px solid #fff;}}
+.btn-resplandor{animation:resplandorGlow 2s infinite; border-radius: 50px !important;}
 @keyframes radarPlay{0%{transform:scale(.9);opacity:1;border-color:rgba(255,107,0,.9)}100%{transform:scale(2.2);opacity:0;border-color:rgba(255,107,0,0)}}
 .onda-play{position:absolute;border-radius:50%;border:3px solid var(--naranja2);animation:radarPlay 2s cubic-bezier(.1,.5,.5,1)infinite}
 .onda-play-1{animation-delay:0s;width:120px;height:120px}.onda-play-2{animation-delay:.6s;width:120px;height:120px}.onda-play-3{animation-delay:1.2s;width:120px;height:120px}
@@ -64,6 +106,7 @@ a{text-decoration:none}
 
 .titulo-3d{font-family:'Sora',sans-serif;font-weight:800;color:#fff;letter-spacing:-1.5px;text-transform:uppercase;text-shadow:0 1px 0 #e6e6e6,0 2px 0 #d9d9d9,0 3px 0 #cccccc,0 4px 0 #bfbfbf,0 5px 0 #b3b3b3,0 6px 0 #a6a6a6,0 7px 0 #999,0 8px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 6px rgba(0,0,0,.2),0 6px 15px rgba(0,0,0,.25),0 15px 15px rgba(0,0,0,.15);}
 .titulo-3d-dark{font-family:'Sora',sans-serif;font-weight:800;letter-spacing:-1.5px;text-transform:uppercase;text-shadow:0 1px 0 #ccc,0 2px 0 #c9c9c9,0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 6px rgba(0,0,0,.2),0 6px 15px rgba(0,0,0,.25);}
+.frase-moderna{font-family:'Sora',sans-serif;font-weight:700;color:#fff;letter-spacing:-.3px}
 
 .btn-a{background:linear-gradient(135deg,var(--naranja2) 0%,var(--naranja) 50%,var(--naranja3) 100%);color:#fff;font-weight:800;border-radius:50px;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;transition:all .25s;display:flex;justify-content:center;align-items:center;gap:.5rem;box-shadow:0 12px 30px rgba(255,107,0,.45),inset 0 1px 0 rgba(255,255,255,.35);}
 .btn-a:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(255,107,0,.55)}
@@ -99,52 +142,32 @@ a{text-decoration:none}
 .nav-item i { font-size: 22px; }
 .cat-card { cursor:pointer; transition: transform 0.2s; }
 .cat-card:active { transform: scale(0.95); border-color: var(--naranja); }
-
-/* Switch Toggle Custom */
-.switch { position: relative; display: inline-block; width: 50px; height: 28px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-input:checked + .slider { background-color: var(--verde); }
-input:checked + .slider:before { transform: translateX(22px); }
-
-/* UI Premium de Botón Agregar */
-.btn-plus-premium {
-    position: absolute; bottom: -10px; right: 10px; width: 36px; height: 36px;
-    background: white; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    display: flex; align-items: center; justify-content: center;
-    color: #64748b; font-size: 16px; font-weight: bold; border: 1px solid #f1f5f9; transition: all 0.2s; z-index: 20;
-}
-.btn-plus-premium:active { transform: scale(0.85); background: var(--naranja); color: white; }
-
-/* KANBAN SCROLL MOBILE */
-.kanban-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 1rem; padding-bottom: 1rem; }
-.kanban-col { scroll-snap-align: center; min-width: 85%; flex-shrink: 0; background: #e2e8f0; border-radius: 1.5rem; padding: 1rem; }
-.orden-card { background: white; border-radius: 1rem; padding: 1rem; margin-bottom: 0.8rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-left: 4px solid var(--naranja); transition: all 0.3s ease; }
 </style>
 </head>
 <body>
 
 <div id="toast-container"></div>
 
-<!-- ======================================================= -->
-<!-- VISTA DE LA LANDING PAGE (RESTAURADA ORIGINAL) -->
-<!-- ======================================================= -->
-<div id="vista-landing" class="landing-bg w-full min-h-screen text-[17.5px] overflow-x-hidden pb-10">
-    <!-- Navbar Dark -->
-    <nav class="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 rounded-b-3xl shadow-lg mx-2 mt-2">
+<!-- ========================================================== -->
+<!-- 1. VISTA DE LA LANDING PAGE OFICIAL -->
+<!-- ========================================================== -->
+<div id="vista-landing" class="landing-bg w-full min-h-screen text-[17.5px] overflow-x-hidden">
+    <nav class="sticky top-0 z-50 glass-premium border-b-0 rounded-none rounded-b-2xl mx-2 mt-2">
         <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="font-black text-white text-[19.5px] leading-none tracking-tight">DELIVERY MOTO</div>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg overflow-hidden" style="background:linear-gradient(135deg,var(--naranja2),var(--naranja3))">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo">
+                </div>
+                <div><div class="font-black text-[19.5px] leading-none tracking-tight">DELIVERY MOTO</div><div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Energy Software</div></div>
             </div>
-            <span class="inline-flex items-center gap-2 text-[12px] font-bold text-slate-300 uppercase tracking-wide">
-                <span class="w-2.5 h-2.5 rounded-full bg-green-500 pg"></span> Activo
+            <span class="hidden sm:inline-flex items-center gap-2 text-[13.5px] font-bold text-green-600 uppercase tracking-wide">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500 pg"></span>Activo
             </span>
         </div>
     </nav>
 
     <!-- TICKER -->
-    <div class="bg-black border-y border-[var(--naranja)] overflow-hidden my-3 shadow-lg rounded-full mx-2">
+    <div class="bg-slate-900 border-y-2 border-[var(--naranja)] overflow-hidden my-2 shadow-lg rounded-full mx-2">
         <div class="overflow-hidden py-2">
             <div class="ticker-landing">
                 <span class="text-white text-[13.5px] font-black uppercase tracking-widest px-5">DELIVERY MOTO | PEDILOYAA _ COMPRAYA | COMERCIOS Y FAMILIAS | 100% GANANCIAS | VIAJE $200 | COBRO SEMANAL | RADAR INTELIGENTE | </span>
@@ -153,51 +176,80 @@ input:checked + .slider:before { transform: translateX(22px); }
         </div>
     </div>
 
-    <!-- TARJETA PRINCIPAL OSCURA (COMO EN TU FOTO 928307.jpg) -->
-    <section class="hg bg-slate-900 text-white relative overflow-hidden rounded-[2.5rem] mx-3 shadow-2xl mb-4 border border-slate-800">
-        <!-- Efectos de fondo -->
+    <!-- TARJETA PRINCIPAL -->
+    <section class="hg bg-slate-900 text-white relative overflow-hidden rounded-3xl mx-2 shadow-2xl mb-4">
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 mix-blend-overlay"></div>
-        <div class="absolute top-0 right-0 w-[400px] h-[400px] rounded-full" style="background:radial-gradient(circle,rgba(255,107,0,.3),transparent 70%)"></div>
+        <div class="absolute top-0 right-0 w-[400px] h-[400px] rounded-full" style="background:radial-gradient(circle,rgba(255,107,0,.4),transparent 70%)"></div>
+        <div class="max-w-6xl mx-auto px-5 py-6 md:py-8 relative z-10">
+            <div class="text-center mb-3">
+                <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-2 backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-green-400 pg"></span>
+                    <span class="text-[13.5px] font-bold text-green-400 uppercase tracking-wider">Plataforma Operativa Integrada</span>
+                </div>
+                
+                <div class="relative inline-block mb-2">
+                    <div class="absolute inset-0 rounded-full blur-2xl opacity-50" style="background:radial-gradient(circle,rgba(255,107,0,.85),transparent 60%)"></div>
+                    <div class="relative w-40 h-40 mx-auto rounded-[2rem] overflow-hidden border-[3px] border-white/25 shadow-2xl logo-float bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+                        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo 3D">
+                    </div>
+                </div>
 
-        <div class="max-w-6xl mx-auto px-5 py-8 relative z-10 flex flex-col items-center">
-            
-            <!-- Pastilla superior -->
-            <div class="inline-flex items-center justify-center gap-2 border border-slate-700 rounded-full px-5 py-2 mb-6 backdrop-blur-sm bg-slate-800/50 w-full max-w-sm">
-                <span class="w-2 h-2 rounded-full bg-green-500 pg"></span>
-                <span class="text-[12.5px] font-bold text-green-400 uppercase tracking-widest text-center">Plataforma Operativa<br>Integrada</span>
-            </div>
+                <h1 class="titulo-3d text-[32px] md:text-[45px] leading-[1.02] mb-1 text-center tracking-tighter text-white">DELIVERY MOTO</h1>
+                
+                <div class="bg-white/12 backdrop-blur-md border border-white/25 rounded-2xl p-3 w-full max-w-sm mx-auto mb-3">
+                    <p class="frase-moderna text-[15.5px] text-white text-center leading-snug">
+                        <span class="block text-yellow-400 text-[13px] uppercase tracking-widest mb-1">CON PEDILOYAA _ COMPRAYA</span>
+                        <span class="block text-white">COMERCIOS Y FAMILIAS ENVÍAN.</span>
+                        <span class="block text-white mt-1">EL SERVIMOTO NECESITA VIAJAR.</span>
+                    </p>
+                </div>
 
-            <!-- Imagen 3D Moto -->
-            <div class="relative inline-block mb-4">
-                <div class="absolute inset-0 rounded-full blur-2xl opacity-40" style="background:radial-gradient(circle,rgba(255,107,0,.8),transparent 60%)"></div>
-                <div class="relative w-44 h-44 mx-auto rounded-[2rem] overflow-hidden border-[3px] border-slate-700 shadow-2xl logo-float bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
-                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo 3D">
+                <div class="relative inline-flex items-center justify-center mb-2">
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div class="onda-play onda-play-1"></div><div class="onda-play onda-play-2"></div><div class="onda-play onda-play-3"></div>
+                    </div>
+                    <button onclick="reproducirAudioLanding()" class="boton-play-landing" title="Escuchar presentacion">
+                        <div class="icono-play"><i class="fa-solid fa-play"></i></div>
+                    </button>
+                </div>
+                <p class="text-white/90 text-[13.5px] font-bold mb-3 text-center">Escuchar todas las funciones</p>
+
+                <!-- BOTONES PRINCIPALES -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mt-4 z-20 relative">
+                    <a onclick="pedirPermisoNotificaciones(); abrirPWA();" class="btn-a btn-glow px-6 py-3.5 text-[15px] cursor-pointer shadow-lg">
+                        <div class="w-5 h-5 rounded-md overflow-hidden bg-white shrink-0 flex items-center justify-center"><img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)"></div>
+                        INGRESAR A LA WEB APP
+                    </a>
+                    <a href="delivery-moto.apk" download class="btn-d btn-glow px-6 py-3.5 text-[15px] shadow-lg border border-slate-700">
+                        <i class="fa-brands fa-android text-green-500 mr-1 text-lg"></i>
+                        DESCARGAR APK CADETE
+                    </a>
                 </div>
             </div>
-
-            <!-- Título 3D -->
-            <h1 class="titulo-3d text-[38px] leading-[1] mb-5 text-center tracking-tighter text-white">DELIVERY MOTO</h1>
-
-            <!-- Caja de texto descriptivo -->
-            <div class="border border-slate-700 rounded-2xl p-4 w-full max-w-sm mx-auto mb-6 bg-slate-800/30 backdrop-blur-sm">
-                <p class="font-bold text-[15px] text-white text-center leading-relaxed">
-                    <span class="block text-yellow-400 text-[13px] uppercase tracking-widest mb-1.5 font-black">CON PEDILOYAA _ COMPRAYA</span>
-                    <span class="block text-slate-200">COMERCIOS Y FAMILIAS ENVÍAN.</span>
-                    <span class="block text-slate-200 mt-1">EL SERVIMOTO NECESITA VIAJAR.</span>
-                </p>
-            </div>
-
-            <!-- Botón Naranja Principal -->
-            <button onclick="abrirPWA();" class="w-full max-w-sm bg-gradient-to-r from-[var(--naranja2)] to-[var(--naranja)] text-white font-black uppercase tracking-widest text-[15px] py-4 rounded-full shadow-[0_10px_25px_rgba(255,107,0,0.4)] active:scale-95 transition-all border border-orange-400/50">
-                Ingresar a la Web App
-            </button>
         </div>
     </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black text-slate-400 py-6 px-5 mt-2 rounded-t-3xl mx-2 mb-0 border-t-4" style="border-color:var(--naranja)">
+        <div class="max-w-5xl mx-auto flex flex-col gap-4 mb-4">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg bg-slate-800 overflow-hidden">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)">
+                </div>
+                <div><div class="font-black text-white text-[19.5px] leading-none tracking-tight">DELIVERY MOTO</div><div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">La conexión perfecta</div></div>
+            </div>
+            <div>
+                <h4 class="text-white font-black uppercase tracking-widest text-[13.5px] mb-1">Desarrollo</h4>
+                <div class="flex items-center gap-2 text-[15.5px] mb-1"><i class="fa-solid fa-bolt text-[var(--naranja)]"></i><span class="font-black text-white">ENERGY</span><span class="font-bold">SOFTWARE</span></div>
+                <p class="text-[13.5px] font-medium leading-tight">Hecho en Argentina.<br>Tecnología de última generación.</p>
+            </div>
+        </div>
+    </footer>
 </div>
 
-<!-- ======================================================= -->
-<!-- VISTA DE LA APLICACIÓN (PWA MVP) -->
-<!-- ======================================================= -->
+<!-- ========================================================== -->
+<!-- 2. VISTA DE LA APLICACIÓN (PWA) -->
+<!-- ========================================================== -->
 <div id="vista-app" class="hidden fixed inset-0 w-full h-full bg-slate-200 flex flex-col items-center justify-center z-[99999]">
     
     <div id="splash-screen" class="hidden fixed inset-0 bg-white/95 backdrop-blur-sm z-[999999] flex-col items-center justify-center transition-opacity duration-700 ease-in-out opacity-0">
@@ -205,6 +257,7 @@ input:checked + .slider:before { transform: translateX(22px); }
             <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)">
         </div>
         <h1 class="titulo-3d-dark text-[2.2rem] leading-none mb-1 text-center tracking-tighter text-slate-900">DELIVERY MOTO</h1>
+        <p class="text-[12.5px] font-black uppercase tracking-widest text-slate-500 mt-2">pediloyaa _ compraya</p>
     </div>
 
     <!-- CONTENEDOR CELULAR -->
@@ -236,68 +289,13 @@ input:checked + .slider:before { transform: translateX(22px); }
                 <h4 class="text-center font-black text-slate-400 uppercase tracking-widest text-[12.5px] mb-3">¿Cómo deseas ingresar?</h4>
                 <div class="space-y-3">
                     <button onclick="cambiarPantalla('pantalla-marketplace')" class="w-full bg-white border-2 border-orange-200 rounded-[50px] p-4 flex items-center justify-center gap-3 shadow-sm active:scale-95 transition-transform"><i class="fa-solid fa-burger text-[var(--naranja)] text-lg"></i> <span class="font-bold text-slate-800 text-[16.5px]">Soy Cliente (Comprar)</span></button>
-                    <!-- BOTÓN LOGIN COMERCIO CON CONTRASEÑA -->
-                    <button onclick="cambiarPantalla('pantalla-login-comercio')" class="w-full bg-white border-2 border-slate-200 rounded-[50px] p-4 flex items-center justify-center gap-3 shadow-sm active:scale-95 transition-transform"><i class="fa-solid fa-store text-indigo-500 text-lg"></i> <span class="font-bold text-slate-800 text-[16.5px]">Soy Comercio (Vender)</span></button>
+                    <button onclick="cambiarPantalla('pantalla-admin-comercio')" class="w-full bg-white border-2 border-slate-200 rounded-[50px] p-4 flex items-center justify-center gap-3 shadow-sm active:scale-95 transition-transform"><i class="fa-solid fa-store text-indigo-500 text-lg"></i> <span class="font-bold text-slate-800 text-[16.5px]">Soy Comercio (Vender)</span></button>
                     <button onclick="cambiarPantalla('pantalla-login-opciones')" class="btn-a w-full py-4 text-[16.5px] btn-resplandor shadow-xl mt-2"><i class="fa-solid fa-motorcycle text-lg"></i> Soy Servimoto (Viajar)</button>
                 </div>
             </div>
         </div>
 
-        <!-- ===================================================================== -->
-        <!-- PANTALLA PERFIL DEL CLIENTE (AUTOGUARDADO) -->
-        <!-- ===================================================================== -->
-        <div id="pantalla-perfil-cliente" class="pantalla flex-col h-full bg-slate-50 relative overflow-hidden">
-            <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
-                <button onclick="cambiarPantalla('pantalla-marketplace')" class="text-slate-400 hover:text-[var(--naranja)] mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
-                <div><h2 class="text-[26px] font-black text-slate-800 leading-none">Mi Perfil</h2></div>
-            </div>
-            
-            <div class="flex-1 p-5 overflow-y-auto no-scrollbar pb-28">
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 mb-5">
-                    <h3 class="font-black text-slate-800 text-[16px] mb-4"><i class="fa-solid fa-address-card text-[var(--naranja)] mr-1"></i> Mis Datos de Entrega</h3>
-                    <p class="text-[12px] text-slate-500 font-bold mb-4">Guarda tus datos aquí para no tener que escribirlos cada vez que pides.</p>
-                    
-                    <label class="text-[11.5px] font-black uppercase text-slate-400 tracking-wider">Nombre y Apellido</label>
-                    <input type="text" id="perfil-cliente-nombre" placeholder="Ej: Juan Pérez" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 mt-1 outline-none focus:border-[var(--naranja)]">
-                    
-                    <label class="text-[11.5px] font-black uppercase text-slate-400 tracking-wider">Dirección Exacta</label>
-                    <input type="text" id="perfil-cliente-direccion" placeholder="Ej: San Martín 123, Famaillá" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-4 mt-1 outline-none focus:border-[var(--naranja)]">
-                    
-                    <button onclick="guardarPerfilCliente()" class="btn-d w-full py-3.5 text-[15px]">Guardar Mis Datos</button>
-                </div>
-            </div>
-            
-            <div class="bottom-nav">
-                <div onclick="cambiarPantalla('pantalla-marketplace')" class="nav-item"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
-                <div class="nav-item active"><i class="fa-regular fa-user"></i><span>Mi perfil</span></div>
-            </div>
-        </div>
-
-        <!-- ========================================================================================= -->
-        <!-- LOGIN PRIVADO PARA COMERCIOS -->
-        <!-- ========================================================================================= -->
-        <div id="pantalla-login-comercio" class="pantalla flex-col h-full bg-slate-50 relative overflow-hidden">
-            <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
-                <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-[var(--naranja)] mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
-                <div><h2 class="text-[26px] font-black text-slate-800 leading-none">Login Comercio</h2></div>
-            </div>
-            <div class="flex-1 p-5 flex flex-col justify-center pb-20">
-                <div class="glass p-6 mb-6 shadow-xl border-t-4" style="border-color:var(--naranja)">
-                    <div class="w-16 h-16 bg-orange-100 text-[var(--naranja)] rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner"><i class="fa-solid fa-lock"></i></div>
-                    <p class="text-center text-slate-500 font-bold text-[14px] mb-6">Accede a tu panel privado para cargar artículos y emitir alertas de logística.</p>
-                    
-                    <label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Usuario / Celular</label>
-                    <input type="text" id="login-comercio-user" placeholder="Ej: FamaillaVIP" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mb-4 mt-1 focus:border-[var(--naranja)] transition-all">
-                    
-                    <label class="text-[12.5px] font-black uppercase text-slate-500 tracking-wider">Contraseña Segura</label>
-                    <input type="password" id="login-comercio-pwd" placeholder="••••••••" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mb-6 mt-1 focus:border-[var(--naranja)] transition-all">
-                    
-                    <button onclick="validarLoginComercio()" class="btn-a w-full py-4 text-[16.5px] shadow-md"><i class="fa-solid fa-key mr-2"></i> Acceder al Panel</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- DEMAS PANTALLAS LOGIN CADETE -->
+        <!-- PANTALLA LOGIN CADETE / OPCIONES -->
         <div id="pantalla-login-opciones" class="pantalla flex-col h-full bg-slate-50 relative overflow-hidden">
             <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
                 <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-[var(--naranja)] mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
@@ -313,7 +311,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div id="pantalla-login-cadete" class="pantalla flex-col h-full bg-slate-50 relative overflow-hidden">
             <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
                 <button onclick="cambiarPantalla('pantalla-login-opciones')" class="text-slate-400 hover:text-[var(--naranja)] mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
-                <div><h2 class="text-[26px] font-black text-slate-800 leading-none">Ingreso Cadete</h2></div>
+                <div><h2 class="text-[26px] font-black text-slate-800 leading-none">Ingreso</h2></div>
             </div>
             <div class="flex-1 p-5 flex flex-col justify-center pb-20">
                 <div class="glass p-6 mb-6">
@@ -321,43 +319,121 @@ input:checked + .slider:before { transform: translateX(22px); }
                     <input type="tel" id="login-celular" placeholder="Ej: 3815550123" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mb-4 mt-1">
                     <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Contraseña</label>
                     <input type="password" id="login-pwd" placeholder="••••••••" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mb-4 mt-1">
-                    <button onclick="mostrarToast('Iniciando...', 'success'); setTimeout(()=>cambiarPantalla('pantalla-3'), 800);" class="btn-a w-full py-4 text-[16.5px] shadow-md mt-2">Iniciar Sesión</button>
+                    <button onclick="loginCadete()" class="btn-a w-full py-4 text-[16.5px] shadow-md mt-2">Iniciar Sesión</button>
                 </div>
             </div>
         </div>
 
-        <!-- PANTALLA REGISTRO CADETE -->
+        <!-- PANTALLA REGISTRO CADETE (24 OPCIONES: 23 PROVINCIAS + CABA) -->
         <div id="pantalla-registro-cadete" class="pantalla flex-col h-full bg-slate-50 relative overflow-x-hidden">
             <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0 w-full">
                 <button onclick="cambiarPantalla('pantalla-login-opciones')" class="text-slate-400 hover:text-[var(--naranja)] mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
                 <div><h2 class="text-[26px] font-black text-slate-800 leading-none">Alta Cadetes</h2></div>
             </div>
             <div class="flex-1 overflow-y-auto no-scrollbar p-5 pb-32 relative flex flex-col w-full">
+                <div class="bg-slate-900 p-4 rounded-2xl shadow-md border border-slate-800 mb-4 shrink-0">
+                    <h3 class="font-black text-white text-[16px] mb-1"><i class="fa-solid fa-shield-check mr-1" style="color:var(--naranja2)"></i> Auditoría Estricta IA</h3>
+                    <p class="text-[14px] text-slate-300 font-medium">Sube tus datos para que la IA los verifique.</p>
+                </div>
+
                 <div class="glass p-5 mb-4 shadow-sm shrink-0">
                     <div class="mb-4">
                         <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Celular (WhatsApp)</label>
                         <input type="tel" id="reg-celular" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mt-1 focus:border-[var(--naranja)]">
                     </div>
                     <div class="mb-4">
-                        <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Ciudad / Zona</label>
-                        <input type="text" id="reg-ciudad-cadete" placeholder="Ej: Orán, Salta" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mt-1 focus:border-[var(--naranja)]">
+                        <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Provincia</label>
+                        <!-- LISTADO COMPLETO DE PROVINCIAS -->
+                        <select id="reg-prov" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mt-1 focus:border-[var(--naranja)]">
+                            <option value="" disabled selected>Seleccioná tu provincia...</option>
+                            <option value="Buenos Aires">Buenos Aires</option>
+                            <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                            <option value="Catamarca">Catamarca</option>
+                            <option value="Chaco">Chaco</option>
+                            <option value="Chubut">Chubut</option>
+                            <option value="Córdoba">Córdoba</option>
+                            <option value="Corrientes">Corrientes</option>
+                            <option value="Entre Ríos">Entre Ríos</option>
+                            <option value="Formosa">Formosa</option>
+                            <option value="Jujuy">Jujuy</option>
+                            <option value="La Pampa">La Pampa</option>
+                            <option value="La Rioja">La Rioja</option>
+                            <option value="Mendoza">Mendoza</option>
+                            <option value="Misiones">Misiones</option>
+                            <option value="Neuquén">Neuquén</option>
+                            <option value="Río Negro">Río Negro</option>
+                            <option value="Salta">Salta</option>
+                            <option value="San Juan">San Juan</option>
+                            <option value="San Luis">San Luis</option>
+                            <option value="Santa Cruz">Santa Cruz</option>
+                            <option value="Santa Fe">Santa Fe</option>
+                            <option value="Santiago del Estero">Santiago del Estero</option>
+                            <option value="Tierra del Fuego">Tierra del Fuego</option>
+                            <option value="Tucumán">Tucumán</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Ciudad</label>
+                        <input type="text" id="reg-ciudad-cadete" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mt-1 focus:border-[var(--naranja)]">
                     </div>
                     <div class="mb-4">
                         <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Tu Vehículo</label>
                         <input type="text" id="reg-moto" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mt-1 focus:border-[var(--naranja)]">
                     </div>
+                    <div>
+                        <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Contraseña</label>
+                        <input type="password" id="reg-password" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mt-1 focus:border-[var(--naranja)]">
+                    </div>
+                </div>
+
+                <!-- CARGA DE FOTOS -->
+                <div class="space-y-3 shrink-0">
+                    <div class="relative glass p-4 overflow-hidden group">
+                        <input type="file" id="file-selfie-cadete" accept="image/*" capture="user" onchange="marcarArchivoCargado(this)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="flex items-center gap-4 relative z-10 pointer-events-none archivo-status">
+                            <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl icon-container" style="background:rgba(255,107,0,.1);color:var(--naranja)"><i class="fa-solid fa-camera"></i></div>
+                            <div><h4 class="text-slate-800 font-black text-[16.5px]">Selfie</h4></div>
+                        </div>
+                    </div>
+                    <div class="relative glass p-4 overflow-hidden group">
+                        <input type="file" id="file-afip" accept="image/*,application/pdf" onchange="marcarArchivoCargado(this)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="flex items-center gap-4 relative z-10 pointer-events-none archivo-status">
+                            <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-2xl icon-container"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                            <div><h4 class="text-slate-800 font-black text-[16.5px]">AFIP</h4></div>
+                        </div>
+                    </div>
+                    <div class="relative glass p-4 overflow-hidden group">
+                        <input type="file" id="file-policia" accept="image/*,application/pdf" onchange="marcarArchivoCargado(this)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        <div class="flex items-center gap-4 relative z-10 pointer-events-none archivo-status">
+                            <div class="w-14 h-14 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-2xl icon-container"><i class="fa-solid fa-file-shield"></i></div>
+                            <div><h4 class="text-slate-800 font-black text-[16.5px]">Buena Conducta</h4></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-white p-6 rounded-3xl border shadow-md shrink-0 w-full flex flex-col" style="border-color:rgba(255,107,0,.3)">
+                    <h4 class="font-black text-slate-800 text-[17px] mb-3"><i class="fa-solid fa-scale-balanced mr-1" style="color:var(--naranja)"></i> Condiciones</h4>
+                    <ul class="text-[14.5px] text-slate-600 font-medium space-y-2 mb-5 list-none p-0 flex-1">
+                        <li>• Costo fijo de <strong class="text-slate-800 font-black">$200</strong> por viaje asignado.</li>
+                        <li>• Pagos los <strong class="font-black">LUNES</strong>.</li>
+                    </ul>
+                    <label class="flex items-center gap-4 cursor-pointer bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 hover:border-[var(--naranja)] transition-all shadow-inner w-full mt-auto">
+                        <input type="checkbox" id="acepto-terminos" class="w-6 h-6 rounded shrink-0 cursor-pointer" style="accent-color:var(--naranja)">
+                        <span class="text-[16px] font-black text-slate-800 leading-snug select-none">Acepto.</span>
+                    </label>
                 </div>
             </div>
+            
             <div class="absolute bottom-0 left-0 w-full bg-slate-50/95 backdrop-blur-md pt-4 pb-4 px-5 z-30 shrink-0 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] border-t border-slate-200">
-                <button onclick="mostrarToast('¡Alta enviada a revisión!', 'success'); cambiarPantalla('pantalla-1');" class="btn-a w-full py-4 text-[17.5px] tracking-wide shadow-lg"><i class="fa-solid fa-robot"></i> Auditar e Ingresar</button>
+                <button onclick="iniciarAuditoriaIA()" class="btn-a w-full py-4 text-[17.5px] tracking-wide shadow-lg"><i class="fa-solid fa-robot"></i> Auditar e Ingresar</button>
             </div>
         </div>
 
-        <!-- ===================================================================== -->
+        <!-- ========================================================== -->
         <!-- PANTALLA MARKETPLACE (CLIENTE) -->
-        <!-- ===================================================================== -->
+        <!-- ========================================================== -->
         <div id="pantalla-marketplace" class="pantalla flex-col h-full bg-slate-50 relative overflow-y-auto no-scrollbar">
-            <!-- HEADER -->
+            <!-- HEADER CON BUSCADOR Y SELECTOR -->
             <div class="bg-gradient-to-r from-[#ff8c00] to-[#ff6b00] rounded-b-[2rem] pt-8 pb-6 px-5 relative shrink-0 shadow-lg z-20">
                 <div class="flex justify-between items-center mb-4 text-white">
                     <div class="flex items-center gap-1 font-black text-[16px] cursor-pointer bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/30">
@@ -365,11 +441,15 @@ input:checked + .slider:before { transform: translateX(22px); }
                         <select id="filtro-ciudad-mkp" onchange="renderizarMarketplace()" class="bg-transparent text-white outline-none font-black cursor-pointer appearance-none ml-1">
                             <option value="Todas" class="text-slate-800">Todas las Zonas</option>
                             <option value="Famaillá" class="text-slate-800">Famaillá</option>
-                            <option value="Orán" class="text-slate-800">Orán (Salta)</option>
+                            <option value="San Miguel de Tucumán" class="text-slate-800">San Miguel de Tucumán</option>
+                            <option value="Yerba Buena" class="text-slate-800">Yerba Buena</option>
+                            <option value="Monteros" class="text-slate-800">Monteros</option>
+                            <option value="Concepción" class="text-slate-800">Concepción</option>
                         </select>
                         <i class="fa-solid fa-chevron-down text-sm ml-1"></i>
                     </div>
                     <div class="flex items-center gap-5 text-[20px]">
+                        <button class="relative hover:scale-110 transition-transform"><i class="fa-regular fa-bell"></i><span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-white rounded-full"></span></button>
                         <button onclick="abrirModal('modal-carrito')" class="hover:scale-110 transition-transform relative">
                             <i class="fa-solid fa-cart-shopping"></i>
                             <span id="badge-carrito" class="absolute -top-1 -right-2 bg-white text-[var(--naranja)] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
@@ -378,12 +458,12 @@ input:checked + .slider:before { transform: translateX(22px); }
                 </div>
                 <div class="bg-white rounded-full flex items-center px-4 py-3.5 shadow-md">
                     <div class="w-8 h-8 rounded-full text-[var(--naranja)] flex items-center justify-center mr-2 shrink-0"><i class="fa-solid fa-magnifying-glass text-lg"></i></div>
-                    <input type="text" id="buscador-global" placeholder="Locales, platos y productos..." onkeyup="filtrarPorTexto()" class="w-full bg-transparent outline-none text-[15px] font-bold text-slate-700">
+                    <input type="text" id="buscador-global" placeholder="Buscar locales o productos..." onkeyup="filtrarPorTexto()" class="w-full bg-transparent outline-none text-[15px] font-bold text-slate-700">
                 </div>
             </div>
 
             <div class="p-5 flex-1 space-y-6 pb-28">
-                <!-- BANNER -->
+                <!-- BANNER PROMOCIONAL -->
                 <div class="w-full rounded-[1.5rem] overflow-hidden relative shadow-lg" style="background: linear-gradient(135deg, var(--naranja2), var(--naranja));">
                     <div class="p-5 text-white w-2/3 relative z-10">
                         <p class="text-[12px] font-bold uppercase tracking-wider mb-0.5">Hasta</p>
@@ -395,20 +475,24 @@ input:checked + .slider:before { transform: translateX(22px); }
 
                 <!-- GRILLA DINÁMICA -->
                 <div>
-                    <h3 class="font-black text-slate-800 text-[18px] mb-3">Locales en tu zona</h3>
-                    <div id="grilla-locales-dinamica" class="grid grid-cols-2 gap-3"></div>
+                    <h3 class="font-black text-slate-800 text-[18px] mb-3">Locales Disponibles</h3>
+                    <div id="grilla-locales-dinamica" class="grid grid-cols-2 gap-3">
+                        <!-- JS inyecta los locales acá con Skeleton effect -->
+                    </div>
                 </div>
             </div>
 
             <div class="bottom-nav">
                 <div class="nav-item active"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
-                <div onclick="cambiarPantalla('pantalla-perfil-cliente')" class="nav-item"><i class="fa-regular fa-user"></i><span>Mi perfil</span></div>
+                <div class="nav-item" onclick="mostrarToast('Súper pronto disponible','info')"><i class="fa-solid fa-basket-shopping"></i><span>Súper</span></div>
+                <div class="nav-item" onclick="mostrarToast('Sin promos activas','info')"><i class="fa-solid fa-percent"></i><span>Promos</span></div>
+                <div onclick="cambiarPantalla('pantalla-1')" class="nav-item"><i class="fa-regular fa-user"></i><span>Mi perfil</span></div>
             </div>
         </div>
 
-        <!-- ===================================================================== -->
-        <!-- PANTALLA CATÁLOGO DEL COMERCIO (MAPA, DIRECCIÓN, HORARIO) -->
-        <!-- ===================================================================== -->
+        <!-- ========================================================== -->
+        <!-- PANTALLA CATÁLOGO DEL COMERCIO -->
+        <!-- ========================================================== -->
         <div id="pantalla-catalogo" class="pantalla flex-col h-full bg-slate-50 relative overflow-y-auto no-scrollbar">
             <div class="relative shrink-0 bg-slate-800 pb-12">
                 <img id="cat-portada" src="" class="absolute inset-0 w-full h-full object-cover opacity-50">
@@ -431,13 +515,9 @@ input:checked + .slider:before { transform: translateX(22px); }
                             <p class="text-[13px] text-slate-500 font-bold mt-0.5"><i class="fa-solid fa-location-dot text-[var(--naranja)]"></i> <span id="cat-ciudad"></span></p>
                         </div>
                     </div>
-                    <p id="cat-desc" class="text-[13.5px] text-slate-600 font-medium mb-3 italic leading-snug"></p>
-                    
-                    <!-- INFORMACIÓN EXTRA DEL LOCAL Y GOOGLE MAPS -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-3">
-                        <div class="flex items-center gap-2 text-[12.5px] font-bold text-slate-700 mb-1.5"><i class="fa-regular fa-clock text-slate-400"></i> Horario: <span id="cat-horas-texto" class="text-slate-600"></span></div>
-                        <div class="flex items-center gap-2 text-[12.5px] font-bold text-slate-700 mb-2"><i class="fa-solid fa-map-pin text-slate-400"></i> Local: <span id="cat-direccion-texto" class="text-slate-600"></span></div>
-                        <a id="btn-google-maps" href="#" target="_blank" class="w-full bg-slate-800 text-white text-[12px] font-bold py-2 rounded-lg flex items-center justify-center gap-2 active:scale-95 transition-transform"><i class="fa-solid fa-map-location-dot text-green-400"></i> Abrir en Google Maps</a>
+                    <p id="cat-desc" class="text-[13px] text-slate-600 font-medium mb-3 italic"></p>
+                    <div class="flex items-center gap-2 text-[12.5px] font-bold text-slate-700 bg-orange-50 border border-orange-100 p-2 rounded-xl">
+                        <i class="fa-solid fa-motorcycle text-[var(--naranja)] text-lg"></i> Envío a cargo del comprador (pago en puerta)
                     </div>
                 </div>
             </div>
@@ -445,148 +525,100 @@ input:checked + .slider:before { transform: translateX(22px); }
             <div class="flex-1 bg-slate-50 px-4 pb-32" id="contenedor-productos"></div>
             
             <div id="barra-ver-carrito" class="hidden fixed bottom-0 w-full max-w-md bg-white border-t border-slate-200 p-4 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-50">
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center pt-2">
                     <div class="flex flex-col">
-                        <span class="font-black text-[26px] text-slate-900 leading-none" id="barra-total">$ 0</span>
-                        <span class="text-[13px] text-slate-500 font-bold mt-1" id="barra-cant">0 prods</span>
+                        <span class="font-black text-2xl text-slate-900 leading-none" id="barra-total">$0</span>
+                        <span class="text-[12px] text-slate-500 font-medium mt-1" id="barra-cant">0 productos</span>
                     </div>
-                    <button onclick="abrirModal('modal-carrito')" class="bg-[var(--naranja)] text-white font-black text-[17px] py-3.5 px-8 rounded-full shadow-md active:scale-95 transition-transform">
+                    <button onclick="abrirModal('modal-carrito')" class="bg-[var(--naranja)] text-white font-black text-[16px] py-3.5 px-8 rounded-full shadow-md active:scale-95 transition-transform">
                         Ver mi pedido
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- ========================================================================================= -->
-        <!-- PANTALLA COMERCIOS (PANEL ADMIN KANBAN Y MAPA DE 2 CAJAS) -->
-        <!-- ========================================================================================= -->
+        <!-- ========================================================== -->
+        <!-- PANTALLA COMERCIOS (PANEL ADMIN) -->
+        <!-- ========================================================== -->
         <div id="pantalla-admin-comercio" class="pantalla flex-col h-full bg-slate-50 relative overflow-y-auto no-scrollbar">
             <div class="h-24 bg-white flex items-end pb-4 px-6 z-20 shrink-0 border-b border-slate-100 shadow-sm sticky top-0">
                 <button onclick="cambiarPantalla('pantalla-1')" class="text-slate-400 hover:text-[var(--naranja)] mr-4"><i class="fa-solid fa-arrow-left text-2xl"></i></button>
-                <div><h2 class="text-[26px] font-black text-slate-800 leading-none">Mi Local</h2><p class="text-[12.5px] uppercase tracking-widest font-black mt-1" style="color:var(--naranja)">Gestión Inteligente</p></div>
+                <div><h2 class="text-[26px] font-black text-slate-800 leading-none">Mi Local</h2><p class="text-[12.5px] uppercase tracking-widest font-black mt-1" style="color:var(--naranja)">Logística y Configuración</p></div>
             </div>
             
             <div class="flex-1 p-5 pb-32">
-                
-                <!-- TABS DEL COMERCIO -->
                 <div class="flex bg-slate-200 rounded-full p-1 mb-5">
-                    <button onclick="switchTabComercio('pedidos')" id="tab-pedidos" class="flex-1 py-2 text-[13px] font-black rounded-full bg-white shadow-sm text-[var(--naranja)] transition-all">Pedidos</button>
-                    <button onclick="switchTabComercio('logistica')" id="tab-logistica" class="flex-1 py-2 text-[13px] font-black rounded-full text-slate-500 transition-all">Mapa GPS</button>
-                    <button onclick="switchTabComercio('config')" id="tab-config" class="flex-1 py-2 text-[13px] font-black rounded-full text-slate-500 transition-all">Mi Tienda</button>
+                    <button onclick="switchTabComercio('logistica')" id="tab-logistica" class="flex-1 py-2 text-[14px] font-black rounded-full bg-white shadow-sm text-[var(--naranja)] transition-all">Llamar Moto</button>
+                    <button onclick="switchTabComercio('config')" id="tab-config" class="flex-1 py-2 text-[14px] font-black rounded-full text-slate-500 transition-all">Mi Tienda</button>
                 </div>
 
-                <!-- 1. SECCIÓN PEDIDOS KANBAN -->
-                <div id="seccion-pedidos">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-black text-slate-800 text-[18px]">Pedidos en Vivo</h3>
-                        <button onclick="simularNuevoPedido()" class="bg-indigo-100 text-indigo-600 text-[11px] font-black px-3 py-1.5 rounded-full"><i class="fa-solid fa-bolt"></i> Simular Pedido</button>
-                    </div>
-                    <div class="kanban-container">
-                        <!-- COLUMNA NUEVOS -->
-                        <div class="kanban-col">
-                            <div class="flex items-center gap-2 mb-3"><div class="w-3 h-3 rounded-full bg-red-500"></div><h4 class="font-black text-slate-700 text-[14px] uppercase tracking-wider">Nuevos <span id="count-nuevos" class="bg-slate-300 text-slate-700 px-2 py-0.5 rounded-full text-[11px] ml-1">0</span></h4></div>
-                            <div id="kanban-nuevos" class="min-h-[100px]"><p class="text-[12px] text-slate-400 font-bold text-center mt-4" id="empty-nuevos">Esperando pedidos...</p></div>
-                        </div>
-                        <!-- COLUMNA PREPARANDO -->
-                        <div class="kanban-col">
-                            <div class="flex items-center gap-2 mb-3"><div class="w-3 h-3 rounded-full bg-yellow-400"></div><h4 class="font-black text-slate-700 text-[14px] uppercase tracking-wider">En Cocina</h4></div>
-                            <div id="kanban-cocina" class="min-h-[100px]"><p class="text-[12px] text-slate-400 font-bold text-center mt-4">Vacío</p></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. SECCIÓN LOGÍSTICA (MAPA CON CAJAS EXACTAS A y B) -->
-                <div id="seccion-logistica" class="hidden">
+                <!-- SECCIÓN LOGÍSTICA (MAPA FIXEADO Y AUTOCOMPLETADO PREFILLEADO) -->
+                <div id="seccion-logistica">
                     <div class="glass p-4 mb-4 relative z-10" style="border-top:4px solid var(--naranja)">
                         <h3 class="font-black text-slate-800 text-[16.5px] mb-3"><i class="fa-solid fa-motorcycle mr-1" style="color:var(--naranja)"></i> Llamar Repartidor</h3>
 
-                        <div class="flex items-center gap-3 relative z-10 mb-4">
+                        <div class="flex items-center gap-3 relative z-10 mb-3">
                             <div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0"><i class="fa-brands fa-whatsapp"></i></div>
                             <input type="tel" id="input-wa-admin" placeholder="WhatsApp del Cliente" class="w-full bg-white border border-green-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-green-500 transition-all">
                         </div>
 
-                        <!-- LAS DOS CAJAS DE MAPA BIEN DEFINIDAS (A y B) -->
-                        <div class="space-y-4 mb-4 relative z-10 p-4 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner">
-                            <div>
-                                <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1.5 flex items-center"><span class="w-5 h-5 bg-slate-800 text-white rounded-full flex items-center justify-center text-[10px] mr-2">A</span> Desde (Dirección del Local)</label>
-                                <input type="text" id="input-origen-admin" placeholder="Ej: Famaillá, Tucumán" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-[14.5px] font-bold text-slate-800 outline-none shadow-sm focus:border-slate-800">
+                        <div class="space-y-3 mb-4 relative z-10">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i class="fa-solid fa-city"></i></div>
+                                <!-- PRECONFIGURADO POR DEFECTO DESDE JAVASCRIPT LUEGO -->
+                                <input type="text" id="input-origen-admin" placeholder="Ingresa Dirección del Local..." class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-[var(--naranja)]">
                             </div>
-                            <div class="flex justify-center -my-2 relative z-20"><div class="bg-white rounded-full p-1 border border-slate-200 shadow-sm"><i class="fa-solid fa-arrow-down text-slate-300 text-sm"></i></div></div>
-                            <div>
-                                <label class="text-[12px] font-black uppercase text-[var(--naranja)] tracking-wider mb-1.5 flex items-center"><span class="w-5 h-5 bg-[var(--naranja)] text-white rounded-full flex items-center justify-center text-[10px] mr-2">B</span> Hasta (Dirección del Cliente)</label>
-                                <input type="text" id="input-destino-admin" placeholder="Ej: San Martin 123" class="w-full bg-white border-2 border-orange-200 rounded-xl px-4 py-3 text-[14.5px] font-bold text-slate-800 outline-none shadow-sm focus:border-[var(--naranja)]">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-[var(--naranja)] shrink-0"><i class="fa-solid fa-flag-checkered"></i></div>
+                                <input type="text" id="input-destino-admin" placeholder="Ingresa Dirección del Cliente..." class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-[var(--naranja)]">
                             </div>
                         </div>
 
-                        <p class="text-[11px] font-bold text-slate-500 mb-2 text-center"><i class="fa-solid fa-hand-pointer text-[var(--naranja)]"></i> TIP: Puedes arrastrar los pines en el mapa para mayor exactitud.</p>
-
-                        <!-- MAPA DRAGGABLE -->
+                        <!-- MAPA GIGANTE REPARADO -->
                         <div id="mapa-admin" class="w-full h-[350px] bg-slate-200 rounded-2xl mb-4 z-0 border-2 border-slate-300 relative overflow-hidden shadow-inner flex items-center justify-center text-slate-400 font-bold">
                             <i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando radar...
                         </div>
 
-                        <button onclick="calcularRutaNacional()" class="btn-b w-full py-3.5 text-[16px] mb-3 shadow-md"><i class="fa-solid fa-route"></i> Calcular Tarifa Exacta</button>
-                        
+                        <button onclick="calcularRutaNacional()" class="btn-b w-full py-3.5 text-[16px] mb-3 shadow-md"><i class="fa-solid fa-route"></i> Calcular Distancia Exacta</button>
                         <div class="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center hidden transition-all" id="caja-resultado-admin">
                             <p class="text-[13px] uppercase font-black tracking-widest mb-1" id="km-calculados-admin" style="color:var(--naranja)">0.0 KM</p>
                             <p class="text-[46px] font-black text-slate-800 tracking-tight leading-none mb-1" id="resultado-tarifa-admin">$ 0</p>
-                            <p class="text-[13.5px] text-slate-500 font-medium mb-3">Costo de envío (Abona el cliente en puerta).</p>
+                            <p class="text-[13.5px] text-slate-500 font-medium mb-3">Costo de envío a abonar al cadete.</p>
                             <button id="btn-pedir-admin" onclick="solicitarCadeteAdmin()" class="btn-a w-full py-4 text-[17px] tracking-wide uppercase"><i class="fa-solid fa-satellite-dish fa-beat"></i> Emitir Alerta Moto</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. SECCIÓN CONFIG Y CARGA DE PRODUCTOS (CÁMARA INTELIGENTE) -->
                 <div id="seccion-config" class="hidden">
                     <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm mb-4">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-black text-slate-800 text-[18px]"><i class="fa-solid fa-store text-indigo-500 mr-2"></i>Estado del Local</h3>
-                            <label class="switch"><input type="checkbox" id="tienda-estado-toggle" checked onchange="toggleEstadoTienda()"><span class="slider"></span></label>
-                        </div>
+                        <h3 class="font-black text-slate-800 text-[18px] mb-1"><i class="fa-solid fa-store text-indigo-500 mr-2"></i>Datos de Mi Local</h3>
                         
                         <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider">Nombre del Local</label>
                         <input type="text" id="config-nombre" value="Empanadas Famaillá VIP" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 mt-1 focus:border-[var(--naranja)] outline-none">
-                        
-                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider">Horario de Atención</label>
-                        <input type="text" id="config-horario" value="Lunes a Domingo - 19:00 a 00:00" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[14px] font-bold text-slate-800 mb-3 mt-1 focus:border-[var(--naranja)] outline-none">
 
-                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider">Dirección Exacta</label>
-                        <input type="text" id="config-direccion" value="San Martin 450, Famaillá" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[14px] font-bold text-slate-800 mb-4 mt-1 focus:border-[var(--naranja)] outline-none">
+                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider">Horarios</label>
+                        <input type="text" id="config-horario" value="Lunes a Domingo - 08:00 a 14:00" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[14px] font-bold text-slate-800 mb-3 mt-1 outline-none">
+                        
+                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider">Descripción breve</label>
+                        <textarea id="config-desc" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[14px] font-bold text-slate-800 mb-3 mt-1 outline-none" rows="2">Las mejores empanadas cortadas a cuchillo.</textarea>
+                        
+                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider">Link de Pago (MercadoPago)</label>
+                        <input type="url" id="config-mp" placeholder="https://link.mercadopago.com.ar/..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-blue-600 mb-4 mt-1 outline-none">
                         
                         <button onclick="guardarDatosLocal()" class="btn-d w-full py-3.5 text-[15px]">Guardar Cambios</button>
                     </div>
 
                     <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm" style="border-top:4px solid var(--naranja)">
-                        <h3 class="font-black text-slate-800 text-[18px] mb-3"><i class="fa-solid fa-plus-circle text-orange-500 mr-2"></i>Cargar Artículo</h3>
+                        <h3 class="font-black text-slate-800 text-[18px] mb-3"><i class="fa-solid fa-plus-circle text-orange-500 mr-2"></i>Nuevo Producto</h3>
+                        <input type="text" id="add-prod-nombre" placeholder="Nombre (Ej: Pizza Especial)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 outline-none focus:border-[var(--naranja)]">
+                        <input type="number" id="add-prod-precio" placeholder="Precio ($)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 outline-none focus:border-[var(--naranja)]">
+                        <textarea id="add-prod-desc" placeholder="Ingredientes..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[14px] font-bold text-slate-800 mb-3 outline-none" rows="2"></textarea>
                         
-                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Categoría del Artículo</label>
-                        <select id="add-prod-seccion" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-4 outline-none focus:border-[var(--naranja)]">
-                            <option value="Comida">🍔 Comida (Ej: Hamburguesas, Pizzas)</option>
-                            <option value="Bebida">🥤 Bebida (Ej: Gaseosas, Alcohol)</option>
-                            <option value="Kiosco">🍫 Kiosco (Ej: Snacks, Golosinas)</option>
-                            <option value="Farmacia">💊 Farmacia / Perfumería</option>
-                            <option value="Otro">📦 Otro</option>
-                        </select>
-                        
-                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Nombre (Ej: Pizza Especial)</label>
-                        <input type="text" id="add-prod-nombre" placeholder="Escribe aquí..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-4 outline-none focus:border-[var(--naranja)]">
-                        
-                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Precio ($)</label>
-                        <input type="number" id="add-prod-precio" placeholder="Ej: 5000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-4 outline-none focus:border-[var(--naranja)]">
-                        
-                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Ingredientes o descripción</label>
-                        <textarea id="add-prod-desc" placeholder="Ingredientes o descripción breve..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[14px] font-bold text-slate-800 mb-4 outline-none" rows="2"></textarea>
-                        
-                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Foto del Producto (Obligatorio)</label>
-                        <div class="relative bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-4 text-center mb-6 hover:border-[var(--naranja)] transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden h-36" onclick="document.getElementById('add-prod-img').click()">
-                            <input type="file" id="add-prod-img" accept="image/*" class="hidden" onchange="previewImageProduct(event)">
-                            <img id="preview-prod-img" src="" class="hidden absolute inset-0 w-full h-full object-cover z-10">
-                            <div id="upload-icon-container" class="relative z-20 flex flex-col items-center justify-center pointer-events-none bg-white/80 p-2 rounded-xl backdrop-blur-sm transition-all">
-                                <i class="fa-solid fa-camera text-slate-400 text-3xl group-hover:text-[var(--naranja)] mb-1 transition-colors"></i>
-                                <p class="font-bold text-[12.5px] text-slate-500">Toca para subir la foto</p>
-                            </div>
+                        <div class="relative bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-4 text-center mb-4 hover:border-[var(--naranja)] transition-colors cursor-pointer group">
+                            <input type="file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="marcarArchivoCargado(this)">
+                            <div class="icon-container mb-1"><i class="fa-solid fa-camera text-slate-400 text-2xl group-hover:text-[var(--naranja)]"></i></div>
+                            <p class="font-bold text-[12.5px] text-slate-500">Subir foto del producto</p>
                         </div>
-
                         <button onclick="cargarProductoComercio()" class="btn-a w-full py-4 text-[16px] uppercase tracking-wide"><i class="fa-solid fa-upload"></i> Publicar al Menú</button>
                     </div>
                 </div>
@@ -623,78 +655,176 @@ input:checked + .slider:before { transform: translateX(22px); }
     </div>
 </div>
 
-<!-- ================= MODAL CARRITO CON SELFIE CLIENTE ================= -->
+<!-- ================= MODALES Y IA ================= -->
 <div id="modal-carrito" class="modal-overlay" onclick="if(event.target===this)cerrarModal('modal-carrito')">
-    <div class="modal-content mt-auto rounded-b-none h-[90vh] w-full max-w-md bg-white">
-        <div class="modal-header bg-white"><h3 class="font-black text-slate-800 text-xl">Confirmar Pedido</h3><div class="btn-close" onclick="cerrarModal('modal-carrito')"><i class="fa-solid fa-xmark"></i></div></div>
+    <div class="modal-content mt-auto rounded-b-none h-[85vh] w-full max-w-md bg-white">
+        <div class="modal-header bg-white"><h3 class="font-black text-slate-800 text-xl">Tu Pedido</h3><div class="btn-close" onclick="cerrarModal('modal-carrito')"><i class="fa-solid fa-xmark"></i></div></div>
         
-        <div class="modal-body p-0 flex flex-col h-full bg-slate-50 overflow-y-auto no-scrollbar pb-36">
-            <div id="carrito-lista" class="p-5 space-y-3 bg-white mb-2 shadow-sm border-b border-slate-100"></div>
-
-            <div class="p-5">
+        <div class="modal-body p-0 flex flex-col h-full bg-slate-50 overflow-y-auto no-scrollbar pb-32">
+            <div class="p-5 bg-white border-b border-slate-100">
                 <h4 class="font-black text-slate-800 text-[15px] mb-3"><i class="fa-solid fa-location-dot text-[var(--naranja)] mr-1"></i> Datos de Entrega</h4>
-                <input type="text" id="checkout-nombre" placeholder="Tu Nombre y Apellido" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none mb-3 focus:border-[var(--naranja)] shadow-sm">
-                <input type="text" id="checkout-direccion" placeholder="Dirección exacta (Ej: San Martín 123)" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none mb-4 focus:border-[var(--naranja)] shadow-sm">
-                
-                <h4 class="font-black text-slate-800 text-[14px] mb-2"><i class="fa-solid fa-shield-halved text-green-500 mr-1"></i> Foto de Seguridad (Opcional)</h4>
-                <p class="text-[11.5px] text-slate-500 font-bold mb-3 leading-tight">Sube una selfie para que el cadete te identifique rápido y tu pedido viaje seguro por WhatsApp.</p>
-                
-                <!-- CAPTURA SELFIE -->
-                <div class="relative bg-white border-2 border-dashed border-slate-300 rounded-xl p-4 text-center hover:border-[var(--naranja)] transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden h-28" onclick="document.getElementById('checkout-foto').click()">
-                    <input type="file" id="checkout-foto" accept="image/*" capture="user" class="hidden" onchange="previewClienteSelfie(event)">
-                    <img id="preview-cliente-img" src="" class="hidden absolute inset-0 w-full h-full object-cover z-10">
-                    <div id="upload-icon-cliente" class="relative z-20 flex flex-col items-center justify-center pointer-events-none bg-white/80 px-4 py-1 rounded-xl backdrop-blur-sm transition-all">
-                        <i class="fa-solid fa-user-circle text-slate-400 text-3xl group-hover:text-[var(--naranja)] mb-1 transition-colors"></i>
-                        <p class="font-bold text-[12px] text-slate-500">Tocar para tomar Selfie</p>
-                    </div>
-                </div>
+                <input type="text" id="checkout-nombre" placeholder="Tu Nombre" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none mb-3 focus:border-[var(--naranja)]">
+                <input type="text" id="checkout-direccion" placeholder="Dirección exacta (Ej: San Martín 123)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none focus:border-[var(--naranja)]">
             </div>
+            <div id="carrito-lista" class="p-5 space-y-3"></div>
         </div>
 
         <div class="absolute bottom-0 w-full bg-white p-5 border-t border-slate-200 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
-            <div class="flex justify-between items-center mb-4"><span class="font-bold text-slate-500">Total productos</span><span class="font-black text-[24px] text-slate-800" id="carrito-total-txt">$0</span></div>
+            <div class="flex justify-between items-center mb-4"><span class="font-bold text-slate-500">Total a pagar</span><span class="font-black text-2xl text-slate-800" id="carrito-total-txt">$0</span></div>
             <button onclick="procesarCheckoutWhatsapp()" class="w-full py-4 bg-[#25D366] text-white font-black rounded-full flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform text-[16px]">
-                <i class="fa-brands fa-whatsapp text-2xl"></i> Enviar por WhatsApp
+                <i class="fa-brands fa-whatsapp text-2xl"></i> Enviar Pedido por WhatsApp
             </button>
         </div>
     </div>
 </div>
 
+<div id="modal-ia" class="modal-overlay">
+    <div class="bg-slate-900 rounded-[2rem] p-8 text-center border-4 border-slate-800 shadow-[0_0_50px_rgba(255,107,0,0.3)] ia-glow mx-6 max-w-xs w-full transition-all">
+        <div class="w-20 h-20 mx-auto bg-slate-800 rounded-full flex items-center justify-center mb-5 border-2" style="border-color:var(--naranja)">
+            <i class="fa-solid fa-robot text-4xl text-white fa-bounce"></i>
+        </div>
+        <h3 class="text-xl font-black text-white mb-2">IA Vision</h3>
+        <p id="texto-ia" class="text-[15.5px] font-medium text-slate-300 mb-6">Iniciando sistema...</p>
+        <div class="w-full bg-slate-800 rounded-full h-2 mb-2 overflow-hidden">
+            <div id="barra-ia" class="bg-gradient-to-r from-[#ff8c00] to-[#cc4400] h-2 rounded-full w-0 transition-all duration-500"></div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-radar-cadete" class="modal-overlay bg-slate-900/90 backdrop-blur-md">
+    <div class="bg-slate-900 rounded-[2rem] p-8 text-center border-4 border-[var(--naranja)] shadow-[0_0_50px_rgba(255,107,0,0.5)] ia-glow mx-6 max-w-xs w-full transition-all">
+        <div class="w-20 h-20 mx-auto bg-slate-800 rounded-full flex items-center justify-center mb-4 border-2 border-[var(--naranja)]">
+            <i class="fa-solid fa-satellite-dish text-4xl text-white fa-bounce"></i>
+        </div>
+        <h3 class="text-2xl font-black text-white mb-2 animate-pulse text-[var(--naranja)]">¡NUEVO VIAJE!</h3>
+        <div class="bg-slate-800 rounded-xl p-4 mb-4 text-left border border-slate-700">
+            <p class="text-white font-bold text-[15px] truncate mb-2"><i class="fa-solid fa-store text-orange-400 mr-2"></i> <span id="radar-origen-txt"></span></p>
+            <p class="text-slate-300 font-bold text-[14px] truncate"><i class="fa-solid fa-map-pin text-green-500 mr-2"></i> <span id="radar-destino-txt"></span></p>
+        </div>
+        <p class="text-slate-400 font-bold text-xs uppercase tracking-widest mb-1">Costo Envío</p>
+        <p id="radar-tarifa" class="text-[40px] font-black text-[var(--verde)] mb-6 leading-none"></p>
+        <button id="btn-agarrar-viaje" onclick="agarrarViajeAtomic()" class="btn-a w-full py-4 text-[18px] tracking-widest uppercase font-black">¡AGARRAR VIAJE!</button>
+    </div>
+</div>
+
 <script>
-window.vibrar = function(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); };
+// ==========================================
+// FEEDBACK HÁPTICO PREMIUM (VIBRACIÓN)
+// ==========================================
+window.vibrar = function(ms = 40) {
+    if (navigator.vibrate) navigator.vibrate(ms);
+};
+
+// ==========================================
+// MOCKUP EXTENDIDO DE BASE DE DATOS MÚLTIPLES ZONAS
+// ==========================================
 window.carrito = [];
 window.comercioActual = null;
 
-// ==========================================
-// DB LOCAL MVP
-// ==========================================
-const mockupBaseDeDatosDefault = [
+const mockupBaseDeDatos = [
     {
-        id: 1, ciudad: "Famaillá", categoria: "Restaurantes", nombre: "Empanadas Famaillá VIP", abierto: true, horario: "Lunes a Domingo - 19:00 a 00:00", direccion: "San Martin 450, Famaillá", desc: "Las mejores empanadas cortadas a cuchillo de la ciudad.",
-        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80", wa: "5493815551111",
-        secciones: [ { nombre: "Comida", productos: [ {id: 201, nombre: "Docena de Empanadas Matambre", precio: 6500, desc: "Cortada a cuchillo.", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"} ] } ]
+        id: 1, ciudad: "Famaillá", categoria: "Restaurantes", nombre: "Empanadas Famaillá VIP",
+        horario: "Martes a Domingo - 19:00 a 00:00", desc: "Las mejores empanadas cortadas a cuchillo de la ciudad.",
+        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80", wa: "5493815551111", mp_link: "https://link.mercadopago.com.ar/empanadasfam",
+        secciones: [
+            { nombre: "Especialidades", productos: [
+                {id: 201, nombre: "Docena de Empanadas Matambre", precio: 6500, desc: "Cortada a cuchillo, masa casera frita o al horno.", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"},
+                {id: 202, nombre: "Pizza Especial Famaillá", precio: 5000, desc: "Muzzarella, jamón, morrones y huevo.", img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png"}
+            ]}
+        ]
+    },
+    {
+        id: 2, ciudad: "San Miguel de Tucumán", categoria: "Súper", nombre: "PedidosYa Market Centro",
+        horario: "Lunes a Lunes - 24 Hs", desc: "Mercado online. Todo lo que necesitas al instante.",
+        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=800&q=80", wa: "5493815550000", mp_link: "https://link.mercadopago.com.ar/test",
+        secciones: [
+            { nombre: "Almacén", productos: [
+                {id: 101, nombre: "Fideos Matarazzo 500g", precio: 1545, desc: "Tallarines", img: "https://superdepaso.com.ar/wp-content/uploads/2021/06/SINTIT-170.jpg"},
+                {id: 102, nombre: "Salsa de Tomate Pureza", precio: 800, desc: "Puré de tomate 520g", img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png"}
+            ]}
+        ]
+    },
+    {
+        id: 3, ciudad: "Yerba Buena", categoria: "Farmacias", nombre: "Farmacia del Sol",
+        horario: "Lunes a Sabado - 08:00 a 22:00", desc: "Cuidado personal y medicamentos de venta libre.",
+        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&w=800&q=80", wa: "5493815553333", mp_link: "",
+        secciones: [
+            { nombre: "Cuidado Personal", productos: [
+                {id: 301, nombre: "Ibuprofeno Actron 600", precio: 4500, desc: "Cápsulas blandas x10", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"}
+            ]}
+        ]
+    },
+    {
+        id: 4, ciudad: "Concepción", categoria: "Bebidas", nombre: "El Gringo Bebidas",
+        horario: "Viernes a Domingo - 20:00 a 04:00", desc: "Delivery de bebidas frías toda la noche.",
+        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=800&q=80", wa: "5493815554444", mp_link: "",
+        secciones: [
+            { nombre: "Cervezas", productos: [
+                {id: 401, nombre: "Quilmes Clásica 1L", precio: 2200, desc: "Botella de vidrio retornable", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"}
+            ]}
+        ]
+    },
+    {
+        id: 5, ciudad: "Famaillá", categoria: "Kioscos", nombre: "Maxikiosco 24",
+        horario: "Lunes a Lunes - 24 Hs", desc: "Golosinas, snacks y cigarrillos.",
+        logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "https://images.unsplash.com/photo-1551462147-37885acc36f1?auto=format&fit=crop&w=800&q=80", wa: "5493815555555", mp_link: "",
+        secciones: [
+            { nombre: "Snacks", productos: [
+                {id: 501, nombre: "Papas Lays Clásicas", precio: 1800, desc: "Paquete grande 145g", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"}
+            ]}
+        ]
     }
 ];
-
-function initDB() {
-    if (!localStorage.getItem('deliveryDB')) { localStorage.setItem('deliveryDB', JSON.stringify(mockupBaseDeDatosDefault)); }
-    window.db = JSON.parse(localStorage.getItem('deliveryDB'));
-}
-function guardarDB() { localStorage.setItem('deliveryDB', JSON.stringify(window.db)); }
-initDB();
 
 function mostrarToast(mensaje,tipo){
     var c=document.getElementById('toast-container'),t=document.createElement('div');t.className='toast';
     var ic=tipo==='success'?'<div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-2xl" style="background:rgba(0,209,58,.12);color:#00d13a"><i class="fa-solid fa-check"></i></div>':'<div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-2xl" style="color:#ff8c00"><i class="fa-solid fa-circle-info"></i></div>';
     t.innerHTML=ic+'<span>'+mensaje+'</span>';c.appendChild(t);
-    setTimeout(() => t.classList.add('show'), 10);
-    setTimeout(() => {t.classList.remove('show');setTimeout(()=>t.remove(),400)},3500);
+    setTimeout(function(){t.classList.add('show')},10);
+    setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove()},400)},3500);
+}
+window.mostrarToast=mostrarToast;
+
+function reproducirAudioLanding(){
+    vibrar(50);
+    if('speechSynthesis' in window){
+        window.speechSynthesis.cancel();
+        var texto = "Bienvenido a la red logística definitiva. Delivery Moto integra pediloyaa y compraya en una sola aplicación. " +
+                    "Si sos Cliente, podés explorar locales, ver el catálogo en tiempo real y pedir con tracking GPS. " +
+                    "Si sos Comercio, tenés un panel exclusivo para calcular tarifas exactas, subir productos y llamar cadetes con un toque. " +
+                    "Y si sos Servimoto, nuestro radar inteligente te conecta con viajes rentables al instante, con auditoría por Inteligencia Artificial y ganancias del cien por ciento. " +
+                    "Todo automatizado, todo rápido.";
+        var m = new SpeechSynthesisUtterance(texto); 
+        m.lang = 'es-AR'; m.rate = 1.05; m.pitch = 1.0;
+        window.speechSynthesis.speak(m);
+    }
 }
 
 function abrirPWA() {
-    vibrar(60); document.getElementById('vista-landing').style.display = 'none'; document.getElementById('vista-app').classList.remove('hidden'); document.body.style.overflow = 'hidden'; 
-    var splash = document.getElementById('splash-screen'); splash.style.display = 'flex';
-    setTimeout(() => splash.style.opacity = '1', 10); setTimeout(() => { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 700); }, 1500);
+    vibrar(60);
+    document.getElementById('vista-landing').style.display = 'none';
+    document.getElementById('vista-app').classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; 
+    var splash = document.getElementById('splash-screen');
+    splash.style.display = 'flex';
+    setTimeout(() => splash.style.opacity = '1', 10);
+    
+    // LOGICA GEOLOCALIZACION AUTOMATICA
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            setTimeout(() => {
+                let selector = document.getElementById('filtro-ciudad-mkp');
+                if(selector && selector.value !== "Famaillá") {
+                    selector.value = "Famaillá";
+                    mostrarToast("📍 Ubicación detectada: Famaillá", "success");
+                    vibrar(100);
+                    renderizarMarketplace();
+                }
+            }, 1800);
+        });
+    }
+
+    setTimeout(() => { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 700); }, 1500);
 }
 
 window.cambiarPantalla = function(id){
@@ -704,264 +834,240 @@ window.cambiarPantalla = function(id){
     
     if(id==='pantalla-marketplace') window.renderizarMarketplace(); 
     if(id==='pantalla-admin-comercio'){ 
-        document.getElementById('input-origen-admin').value = window.db[0].direccion + ", " + window.db[0].ciudad;
-        setTimeout(() => { if(document.getElementById('seccion-logistica').offsetParent !== null) inicializarMapa(); }, 300);
-    }
-    // Cargar perfil en formulario si existe (Autoguardado)
-    if(id==='pantalla-perfil-cliente') {
-        let perfilGuardado = JSON.parse(localStorage.getItem('perfilCliente'));
-        if(perfilGuardado){
-            document.getElementById('perfil-cliente-nombre').value = perfilGuardado.nombre;
-            document.getElementById('perfil-cliente-direccion').value = perfilGuardado.direccion;
-        }
+        // Solución FINAL para que el mapa NO SE VEA GRIS (Se triggerea y re-centra al hacerse visible)
+        setTimeout(() => { 
+            if(document.getElementById('seccion-logistica').offsetParent !== null) inicializarMapa(); 
+        }, 300);
     }
 };
 
-window.abrirModal = id => { 
-    vibrar(); document.getElementById(id).classList.add('show'); 
-    // Autocompletar datos del carrito si el perfil está guardado
-    if(id === 'modal-carrito') {
-        let perfilGuardado = JSON.parse(localStorage.getItem('perfilCliente'));
-        if(perfilGuardado){
-            if(!document.getElementById('checkout-nombre').value) document.getElementById('checkout-nombre').value = perfilGuardado.nombre;
-            if(!document.getElementById('checkout-direccion').value) document.getElementById('checkout-direccion').value = perfilGuardado.direccion;
-        }
-    }
-}
+window.abrirModal = id => { vibrar(); document.getElementById(id).classList.add('show'); }
 window.cerrarModal = id => { vibrar(); document.getElementById(id).classList.remove('show'); }
 
 // ==========================================
-// PERFIL DEL CLIENTE INTELIGENTE
+// LÓGICA DEL MARKETPLACE VISUAL Y SKELETONS
 // ==========================================
-window.guardarPerfilCliente = function() {
-    vibrar();
-    let n = document.getElementById('perfil-cliente-nombre').value;
-    let d = document.getElementById('perfil-cliente-direccion').value;
-    if(!n || !d) return mostrarToast("Completa tus datos", "info");
-    
-    localStorage.setItem('perfilCliente', JSON.stringify({nombre: n, direccion: d}));
-    mostrarToast("¡Perfil guardado! Comprar será más rápido.", "success");
-};
-
-// ==========================================
-// LOGIN COMERCIO CON CONTRASEÑA
-// ==========================================
-window.validarLoginComercio = function() {
-    vibrar(); let user = document.getElementById('login-comercio-user').value; let pwd = document.getElementById('login-comercio-pwd').value;
-    if(user && pwd.length >= 4) { mostrarToast("Acceso Autorizado", "success"); setTimeout(() => cambiarPantalla('pantalla-admin-comercio'), 800); } 
-    else { mostrarToast("Contraseña incorrecta", "info"); }
-};
-
-// ==========================================
-// MARKETPLACE & CATÁLOGO
-// ==========================================
+let searchTimeout;
 window.renderizarMarketplace = function(isSearch = false) {
-    initDB();
     var ciudadFiltro = document.getElementById('filtro-ciudad-mkp').value;
     var textoFiltro = document.getElementById('buscador-global') ? document.getElementById('buscador-global').value.toLowerCase() : "";
     var grilla = document.getElementById('grilla-locales-dinamica');
     
-    if(!isSearch) grilla.innerHTML = `<div class="bg-white rounded-3xl h-40 shadow-sm border border-slate-100 skeleton"></div><div class="bg-white rounded-3xl h-40 shadow-sm border border-slate-100 skeleton"></div>`;
+    if(!isSearch) {
+        grilla.innerHTML = `
+            <div class="bg-white rounded-3xl h-40 shadow-sm border border-slate-100 skeleton"></div>
+            <div class="bg-white rounded-3xl h-40 shadow-sm border border-slate-100 skeleton"></div>
+            <div class="bg-white rounded-3xl h-40 shadow-sm border border-slate-100 skeleton"></div>
+            <div class="bg-white rounded-3xl h-40 shadow-sm border border-slate-100 skeleton"></div>
+        `;
+    }
 
     setTimeout(() => {
         grilla.innerHTML = '';
-        var localesFiltrados = window.db;
-        if(ciudadFiltro !== "Todas") localesFiltrados = localesFiltrados.filter(l => l.ciudad.includes(ciudadFiltro));
-        if(textoFiltro !== "") localesFiltrados = localesFiltrados.filter(l => l.nombre.toLowerCase().includes(textoFiltro));
+        var localesFiltrados = mockupBaseDeDatos;
+        if(ciudadFiltro !== "Todas") {
+            localesFiltrados = localesFiltrados.filter(l => l.ciudad.includes(ciudadFiltro));
+        }
+        if(textoFiltro !== "") {
+            localesFiltrados = localesFiltrados.filter(l => l.nombre.toLowerCase().includes(textoFiltro) || l.categoria.toLowerCase().includes(textoFiltro));
+        }
 
-        if(localesFiltrados.length === 0) { grilla.innerHTML = `<div class="col-span-2 text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-100"><i class="fa-solid fa-store-slash text-4xl text-slate-300 mb-2"></i><p class="text-slate-500 font-bold">No hay locales para esta búsqueda.</p></div>`; return; }
+        if(localesFiltrados.length === 0) {
+            grilla.innerHTML = `<div class="col-span-2 text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-100"><i class="fa-solid fa-store-slash text-4xl text-slate-300 mb-2"></i><p class="text-slate-500 font-bold">No hay locales para esta búsqueda.</p></div>`;
+            return;
+        }
 
         localesFiltrados.forEach(local => {
-            let estadoUI = local.abierto ? `<span class="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-black px-2 py-1 rounded-full z-20 shadow-sm">ABIERTO</span>` : `<span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-full z-20 shadow-sm">CERRADO</span>`;
             grilla.innerHTML += `
                 <div onclick="abrirCatalogoComercio(${local.id})" class="cat-card bg-white rounded-3xl p-4 flex flex-col items-center shadow-sm border border-slate-100 relative overflow-hidden">
-                    ${estadoUI}
                     <div class="absolute top-0 left-0 right-0 h-10 bg-slate-100"><img src="${local.portada}" class="w-full h-full object-cover opacity-50"></div>
                     <img src="${local.logo}" class="w-16 h-16 object-contain mb-2 drop-shadow-sm rounded-xl relative z-10 bg-white border border-slate-200 mt-2">
                     <span class="font-black text-slate-800 text-[14.5px] text-center leading-tight mb-1">${local.nombre}</span>
-                    <span class="text-[11px] text-slate-400 font-bold bg-slate-100 px-2 py-0.5 rounded-md"><i class="fa-solid fa-location-dot text-[var(--naranja)]"></i> ${local.ciudad}</span>
+                    <span class="text-[11px] text-slate-400 font-bold bg-slate-100 px-2 py-0.5 rounded-md"><i class="fa-solid fa-location-dot"></i> ${local.ciudad}</span>
                 </div>
             `;
         });
-    }, isSearch ? 0 : 400);
+    }, isSearch ? 0 : 600);
 };
 
-let searchTimeout; window.filtrarPorTexto = function() { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => renderizarMarketplace(true), 300); };
+window.filtrarPorTexto = function() { 
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => renderizarMarketplace(true), 300);
+};
 
+// ==========================================
+// CATÁLOGO CON DATOS CARGADOS (HORARIOS, INFO)
+// ==========================================
 window.abrirCatalogoComercio = function(idComercio) {
-    vibrar(); window.comercioActual = window.db.find(c => c.id === idComercio);
+    vibrar();
+    window.comercioActual = mockupBaseDeDatos.find(c => c.id === idComercio);
     if(!window.comercioActual) return;
     
-    document.getElementById('cat-nombre').innerText = window.comercioActual.nombre; document.getElementById('cat-ciudad').innerText = window.comercioActual.ciudad;
-    document.getElementById('cat-logo').src = window.comercioActual.logo; document.getElementById('cat-portada').src = window.comercioActual.portada;
+    document.getElementById('cat-nombre').innerText = window.comercioActual.nombre;
+    document.getElementById('cat-ciudad').innerText = window.comercioActual.ciudad;
+    document.getElementById('cat-logo').src = window.comercioActual.logo;
+    document.getElementById('cat-portada').src = window.comercioActual.portada;
+    document.getElementById('cat-horario').innerText = "Abierto: " + (window.comercioActual.horario || "Consultar");
     document.getElementById('cat-desc').innerText = window.comercioActual.desc || "";
     
-    // Info local Google Maps Premium
-    document.getElementById('cat-horas-texto').innerText = window.comercioActual.horario || "Consultar";
-    let direccionCompleta = (window.comercioActual.direccion || "Centro") + ", " + window.comercioActual.ciudad;
-    document.getElementById('cat-direccion-texto').innerText = window.comercioActual.direccion || "Consultar";
-    document.getElementById('btn-google-maps').href = "https://maps.google.com/?q=" + encodeURIComponent(window.comercioActual.nombre + " " + direccionCompleta);
-
-    let cartelHorario = document.getElementById('cat-horario');
-    if (window.comercioActual.abierto) { cartelHorario.innerText = "Abierto ahora"; cartelHorario.className = "bg-blue-600 text-white text-[12px] font-black text-center py-1.5 rounded-t-[1.5rem] -mt-5 -mx-5 mb-4 shadow-sm"; } 
-    else { cartelHorario.innerText = "Cerrado momentáneamente"; cartelHorario.className = "bg-slate-600 text-white text-[12px] font-black text-center py-1.5 rounded-t-[1.5rem] -mt-5 -mx-5 mb-4 shadow-sm"; }
-
-    var container = document.getElementById('contenedor-productos'); container.innerHTML = ''; 
+    var container = document.getElementById('contenedor-productos');
+    container.innerHTML = ''; 
 
     window.comercioActual.secciones.forEach(seccion => {
         let htmlSeccion = `<h3 class="font-black text-[20px] text-slate-800 leading-none mt-6 mb-4 px-1">${seccion.nombre}</h3><div class="grid grid-cols-2 gap-4">`;
         seccion.productos.forEach(p => {
-            let imgSrc = p.img || "https://cdn-icons-png.flaticon.com/512/1404/1404945.png";
-            // Corrección: Pasar el ID directo al carrito
             htmlSeccion += `
             <div class="bg-white rounded-[1.5rem] p-3 flex flex-col relative shadow-sm border border-slate-100 h-full">
-                <div class="w-full h-32 flex items-center justify-center mb-3 relative rounded-xl overflow-hidden bg-slate-50 border border-slate-100"><img src="${imgSrc}" class="w-full h-full object-cover"><button onclick="agregarAlCarrito(${p.id})" class="btn-plus-premium"><i class="fa-solid fa-plus"></i></button></div>
-                <h4 class="font-bold text-[14px] text-slate-800 leading-tight mb-2 flex-1">${p.nombre}</h4><p class="font-black text-[17px] text-slate-900 leading-none mb-1">$ ${p.precio}</p><p class="text-[11.5px] text-slate-500 font-medium line-clamp-2 leading-snug">${p.desc}</p>
+                <div class="w-full h-32 flex items-center justify-center mb-3 relative rounded-xl overflow-hidden bg-slate-50">
+                    <img src="${p.img}" class="w-full h-full object-cover">
+                    <button onclick="agregarAlCarrito(${p.id}, '${p.nombre}', ${p.precio})" class="absolute bottom-2 right-2 w-10 h-10 bg-white border border-slate-200 rounded-full shadow-lg flex items-center justify-center text-slate-700 hover:text-[var(--naranja)] transition-colors active:scale-90"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <h4 class="font-bold text-[14px] text-slate-800 leading-tight mb-2 flex-1">${p.nombre}</h4>
+                <p class="font-black text-[17px] text-slate-900 leading-none mb-1">$ ${p.precio}</p>
+                <p class="text-[11.5px] text-slate-500 font-medium line-clamp-2 leading-snug">${p.desc}</p>
             </div>`;
         });
-        htmlSeccion += `</div>`; container.innerHTML += htmlSeccion;
+        htmlSeccion += `</div>`;
+        container.innerHTML += htmlSeccion;
     });
     cambiarPantalla('pantalla-catalogo');
 };
 
-// CARRITO CORREGIDO
-window.agregarAlCarrito = function(idProducto) { 
-    vibrar(); let productoEncontrado = null;
-    window.comercioActual.secciones.forEach(sec => { let p = sec.productos.find(prod => prod.id === idProducto); if (p) productoEncontrado = p; });
-    if(productoEncontrado) { window.carrito.push(productoEncontrado); mostrarToast("Agregado al pedido", "success"); actualizarInterfazCarrito(); }
+// CARRITO
+window.agregarAlCarrito = function(id, nombre, precio) { 
+    vibrar();
+    window.carrito.push({id, nombre, precio}); 
+    mostrarToast("Agregado al pedido", "success"); 
+    actualizarInterfazCarrito(); 
 };
 
 function actualizarInterfazCarrito() {
     var total = window.carrito.reduce((acc, curr) => acc + curr.precio, 0);
-    var barra = document.getElementById('barra-ver-carrito'); var badge = document.getElementById('badge-carrito');
-    if(window.carrito.length > 0) { barra.classList.remove('hidden'); badge.classList.remove('hidden'); badge.innerText = window.carrito.length; document.getElementById('barra-cant').innerText = window.carrito.length + (window.carrito.length === 1 ? " prod" : " prods"); document.getElementById('barra-total').innerText = "$ " + total; } 
-    else { barra.classList.add('hidden'); badge.classList.add('hidden'); }
+    var barra = document.getElementById('barra-ver-carrito');
+    var badge = document.getElementById('badge-carrito');
+    
+    if(window.carrito.length > 0) { 
+        barra.classList.remove('hidden'); 
+        badge.classList.remove('hidden');
+        badge.innerText = window.carrito.length;
+        document.getElementById('barra-cant').innerText = window.carrito.length + (window.carrito.length === 1 ? " prod" : " prods"); 
+        document.getElementById('barra-total').innerText = "$ " + total;
+    } else { 
+        barra.classList.add('hidden'); 
+        badge.classList.add('hidden');
+    }
+    
     var list = document.getElementById('carrito-lista'); list.innerHTML = '';
-    window.carrito.forEach((p, index) => { list.innerHTML += `<div class="flex justify-between items-center py-2"><span class="font-bold text-slate-800 text-[15px] flex-1"><span class="text-[var(--naranja)] mr-1 font-black">1x</span> ${p.nombre}</span><div class="flex items-center gap-4 shrink-0"><span class="font-black text-slate-800 text-[16px]">$${p.precio}</span><button onclick="eliminarDelCarrito(${index})" class="text-red-400 w-8 h-8 flex items-center justify-end active:scale-90"><i class="fa-solid fa-trash-can text-sm"></i></button></div></div>`; });
+    window.carrito.forEach((p, index) => { 
+        list.innerHTML += `<div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm"><span class="font-bold text-slate-800 text-[15px] flex-1">${p.nombre}</span><div class="flex items-center gap-4 shrink-0"><span class="font-black text-[var(--naranja)] text-[16px]">$${p.precio}</span><button onclick="eliminarDelCarrito(${index})" class="bg-red-50 text-red-500 rounded-full w-8 h-8 flex items-center justify-center active:scale-90"><i class="fa-solid fa-trash-can text-sm"></i></button></div></div>`; 
+    });
     document.getElementById('carrito-total-txt').innerText = "$" + total;
 }
 window.eliminarDelCarrito = index => { vibrar(); window.carrito.splice(index, 1); actualizarInterfazCarrito(); };
 
-window.clienteSelfieCargada = false;
-window.previewClienteSelfie = function(event) {
-    const file = event.target.files[0]; if(!file) return;
-    const reader = new FileReader(); reader.onload = function(e) { document.getElementById('preview-cliente-img').src = e.target.result; document.getElementById('preview-cliente-img').classList.remove('hidden'); document.getElementById('upload-icon-cliente').classList.add('hidden'); window.clienteSelfieCargada = true; }
-    reader.readAsDataURL(file);
-};
-
 window.procesarCheckoutWhatsapp = function() {
-    vibrar(); if(window.carrito.length === 0 || !window.comercioActual) return;
+    vibrar();
+    if(window.carrito.length === 0 || !window.comercioActual) return;
     var nom = document.getElementById('checkout-nombre').value, dir = document.getElementById('checkout-direccion').value;
     if(!nom || !dir) return mostrarToast("Ingresá tu Nombre y Dirección", "info");
 
     var tot = window.carrito.reduce((a, c) => a + c.precio, 0);
-    var msg = `Hola *${window.comercioActual.nombre}*! 👋 Pedido de la Web App:\n\n`;
+    var msg = `Hola *${window.comercioActual.nombre}*! 👋 Pedido de la Web:\n\n`;
     window.carrito.forEach(p => msg += `🛒 1x ${p.nombre} ($${p.precio})\n`);
-    msg += `\n💰 *Total: $${tot}* (Sin envío)\n📍 *Entrega:* ${dir}, ${window.comercioActual.ciudad}\n👤 *Cliente:* ${nom}\n`;
+    msg += `\n💰 *Total: $${tot}* (Sin envío)\n📍 *Entrega:* ${dir}, ${window.comercioActual.ciudad}\n👤 *Cliente:* ${nom}\n\n`;
+    if(window.comercioActual.mp_link) msg += `💳 *Abonar aquí:* ${window.comercioActual.mp_link}\n`;
+    msg += `Avisame para mandar la moto!`;
     
-    if(window.clienteSelfieCargada) { msg += `📸 _Foto de seguridad validada en App. Enviaré la foto a continuación._\n\n`; } 
-    else { msg += `\n`; }
-
     window.open("https://wa.me/" + window.comercioActual.wa + "?text=" + encodeURIComponent(msg), '_blank');
-    
     cerrarModal('modal-carrito'); window.carrito = []; actualizarInterfazCarrito();
-    document.getElementById('preview-cliente-img').classList.add('hidden'); document.getElementById('upload-icon-cliente').classList.remove('hidden'); window.clienteSelfieCargada = false;
 };
 
 // ==========================================
-// PANEL COMERCIO - KANBAN & LOGÍSTICA
+// TABS Y LOGICA DEL COMERCIO (PANEL ADMIN)
 // ==========================================
 window.switchTabComercio = function(tab) {
     vibrar();
-    ['tab-pedidos', 'tab-logistica', 'tab-config'].forEach(t => { document.getElementById(t).className = 'flex-1 py-2 text-[13px] font-black rounded-full text-slate-500 transition-all'; });
-    ['seccion-pedidos', 'seccion-logistica', 'seccion-config'].forEach(s => { document.getElementById(s).classList.add('hidden'); });
+    document.getElementById('tab-logistica').classList.remove('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); document.getElementById('tab-logistica').classList.add('text-slate-500');
+    document.getElementById('tab-config').classList.remove('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); document.getElementById('tab-config').classList.add('text-slate-500');
+    document.getElementById('seccion-logistica').classList.add('hidden'); document.getElementById('seccion-config').classList.add('hidden');
     
-    document.getElementById('tab-' + tab).classList.add('bg-white', 'shadow-sm', 'text-[var(--naranja)]');
-    document.getElementById('seccion-' + tab).classList.remove('hidden');
-    
-    if(tab === 'logistica') { setTimeout(() => { if (!window.mapaAdmin) { inicializarMapa(); } else { google.maps.event.trigger(window.mapaAdmin, 'resize'); } }, 500); }
-};
-
-// SIMULADOR DE PEDIDO KANBAN
-let pedidosCounter = 0;
-window.simularNuevoPedido = function() {
-    vibrar(200); mostrarToast("¡NUEVO PEDIDO RECIBIDO!", "success"); pedidosCounter++;
-    document.getElementById('empty-nuevos').style.display = 'none'; document.getElementById('count-nuevos').innerText = pedidosCounter;
-    
-    let kanbanCol = document.getElementById('kanban-nuevos');
-    let cardHTML = `
-        <div class="orden-card" id="orden-${pedidosCounter}">
-            <div class="flex justify-between items-start mb-2"><span class="font-black text-slate-800 text-[14px]">#100${pedidosCounter}</span><span class="text-[11px] font-bold text-slate-400">Hace 1 min</span></div>
-            <p class="font-bold text-[13px] text-slate-600 mb-1"><i class="fa-solid fa-user text-slate-400 mr-1"></i> Juan Pérez</p>
-            <p class="font-bold text-[13px] text-slate-600 mb-3 truncate"><i class="fa-solid fa-location-dot text-slate-400 mr-1"></i> San Martín 123</p>
-            <div class="bg-slate-50 p-2 rounded-lg mb-3 border border-slate-100"><p class="text-[12px] font-bold text-slate-700">1x Docena de Empanadas</p><p class="font-black text-[var(--naranja)] mt-1">$6500</p></div>
-            <button onclick="moverAPreparacion(${pedidosCounter})" class="w-full bg-slate-800 text-white font-bold text-[12px] py-2.5 rounded-xl active:scale-95 transition-transform">Cocinar Pedido <i class="fa-solid fa-arrow-right ml-1"></i></button>
-        </div>
-    `;
-    kanbanCol.insertAdjacentHTML('afterbegin', cardHTML);
-};
-
-window.moverAPreparacion = function(id) {
-    vibrar(); let card = document.getElementById(`orden-${id}`);
-    if(card) {
-        card.style.borderLeftColor = "#facc15"; 
-        card.querySelector('button').innerHTML = '¡Despachar Moto! <i class="fa-solid fa-motorcycle ml-1"></i>';
-        card.querySelector('button').className = 'w-full bg-[var(--naranja)] text-white font-black text-[12px] py-2.5 rounded-xl active:scale-95 transition-transform mt-2';
-        card.querySelector('button').setAttribute('onclick', `despacharPedido(${id})`);
-        document.getElementById('kanban-cocina').querySelector('p').style.display = 'none';
-        document.getElementById('kanban-cocina').appendChild(card);
+    if(tab === 'logistica') { 
+        document.getElementById('tab-logistica').classList.add('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); 
+        document.getElementById('tab-logistica').classList.remove('text-slate-500'); 
+        document.getElementById('seccion-logistica').classList.remove('hidden'); 
         
-        pedidosCounter--; document.getElementById('count-nuevos').innerText = pedidosCounter;
-        if(pedidosCounter === 0) document.getElementById('empty-nuevos').style.display = 'block';
+        // REPARAMOS MAPA Y PRE-CARGAMOS EL ORIGEN
+        setTimeout(() => { 
+            if (!mapaAdmin) {
+                inicializarMapa(); 
+            } else {
+                google.maps.event.trigger(mapaAdmin, 'resize');
+                mapaAdmin.setCenter({lat: -27.0525, lng: -65.4022});
+            }
+        }, 500); 
+    } else { 
+        document.getElementById('tab-config').classList.add('bg-white', 'shadow-sm', 'text-[var(--naranja)]'); 
+        document.getElementById('tab-config').classList.remove('text-slate-500'); 
+        document.getElementById('seccion-config').classList.remove('hidden'); 
     }
 };
 
-window.despacharPedido = function(id) {
-    vibrar(); document.getElementById(`orden-${id}`).remove(); mostrarToast("Abriendo Radar GPS...", "success");
-    setTimeout(() => { switchTabComercio('logistica'); }, 500);
+window.guardarDatosLocal = function() { 
+    mockupBaseDeDatos[0].nombre = document.getElementById('config-nombre').value;
+    mockupBaseDeDatos[0].horario = document.getElementById('config-horario').value;
+    mockupBaseDeDatos[0].desc = document.getElementById('config-desc').value;
+    mockupBaseDeDatos[0].mp_link = document.getElementById('config-mp').value;
+    mostrarToast("¡Datos de la tienda actualizados!", "success"); 
+};
+
+window.cargarProductoComercio = function() {
+    vibrar();
+    let nom = document.getElementById('add-prod-nombre').value;
+    let pre = parseInt(document.getElementById('add-prod-precio').value);
+    let desc = document.getElementById('add-prod-desc').value;
+    if(!nom || !pre) return mostrarToast("Llena el nombre y precio", "info");
+    
+    mockupBaseDeDatos[0].secciones[0].productos.push({
+        id: Math.floor(Math.random() * 1000), nombre: nom, precio: pre, desc: desc, img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png"
+    });
+    
+    document.getElementById('add-prod-nombre').value = ""; document.getElementById('add-prod-precio').value = ""; document.getElementById('add-prod-desc').value = "";
+    mostrarToast("Producto cargado al catálogo", "success");
 };
 
 // ==========================================
-// MAPA INTERACTIVO (DRAG & DROP)
+// MAPA GOOGLE, AUTOCOMPLETADO PREFIJADO Y LOGICA DECIMAL DE KMS
 // ==========================================
+var mapaAdmin, dirRendererAdmin, directionsService;
+
 function inicializarMapa() {
     if(typeof google === 'undefined') return;
     var mapDiv = document.getElementById('mapa-admin');
-    if(mapDiv && mapDiv.offsetParent !== null && !window.mapaAdmin) {
+    if(mapDiv && mapDiv.offsetParent !== null && !mapaAdmin) {
+        
         mapDiv.innerHTML = ""; 
-        var mapOptions = { center: {lat: -27.0525, lng: -65.4022}, zoom: 14, mapTypeControl: false, streetViewControl: false };
-        window.mapaAdmin = new google.maps.Map(mapDiv, mapOptions);
-        window.directionsService = new google.maps.DirectionsService();
+        mapOptions = { center: {lat: -27.0525, lng: -65.4022}, zoom: 14, mapTypeControl: false, streetViewControl: false };
+        mapaAdmin = new google.maps.Map(mapDiv, mapOptions);
+        directionsService = new google.maps.DirectionsService();
+        dirRendererAdmin = new google.maps.DirectionsRenderer({map: mapaAdmin, polylineOptions: {strokeColor: '#ff6b00', strokeWeight: 6}});
         
-        window.dirRendererAdmin = new google.maps.DirectionsRenderer({
-            map: window.mapaAdmin, draggable: true, suppressMarkers: false, polylineOptions: {strokeColor: '#ff8c00', strokeWeight: 5, strokeOpacity: 0.8}
-        });
-
-        window.dirRendererAdmin.addListener("directions_changed", function() {
-            var directions = window.dirRendererAdmin.getDirections();
-            if (directions) {
-                var distKm = directions.routes[0].legs[0].distance.value / 1000;
-                var horaActual = new Date().getHours();
-                var esNoche = (horaActual >= 20 || horaActual <= 6);
-                var tarifaFinal = esNoche ? 3000 : 2000;
-                if(distKm > 1) { tarifaFinal += Math.floor((distKm - 1) * 800); }
-
-                document.getElementById('caja-resultado-admin').classList.remove('hidden');
-                document.getElementById('resultado-tarifa-admin').innerText = '$ ' + Math.floor(tarifaFinal);
-                document.getElementById('km-calculados-admin').innerText = distKm.toFixed(1) + ' KM' + (esNoche ? ' (NOCHE)' : '');
-                
-                document.getElementById('input-origen-admin').value = directions.routes[0].legs[0].start_address;
-                document.getElementById('input-destino-admin').value = directions.routes[0].legs[0].end_address;
-            }
-        });
+        // SESGAR A TUCUMÁN PARA QUE SEA SÚPER RÁPIDO
+        var boundsTucuman = new google.maps.LatLngBounds(
+            new google.maps.LatLng(-28.0, -66.0), // Suroeste
+            new google.maps.LatLng(-26.0, -64.0)  // Noreste
+        );
+        var opts = { bounds: boundsTucuman, componentRestrictions: { country: "ar" } };
         
-        var opts = { componentRestrictions: { country: "ar" } };
         if(document.getElementById('input-origen-admin')) {
-            let autocompleteOrigen = new google.maps.places.Autocomplete(document.getElementById('input-origen-admin'), opts);
-            autocompleteOrigen.addListener('place_changed', function() { if(document.getElementById('input-destino-admin').value) calcularRutaNacional(); });
+            // PRECONFIGURAR LA DIRECCION PARA QUE EL DUEÑO NO TENGA QUE TIPEARLA
+            document.getElementById('input-origen-admin').value = "Famaillá, Tucumán";
+            autocompleteOrigen = new google.maps.places.Autocomplete(document.getElementById('input-origen-admin'), opts);
+            autocompleteOrigen.addListener('place_changed', function() { 
+                if(document.getElementById('input-destino-admin').value) calcularRutaNacional(); 
+            });
         }
         if(document.getElementById('input-destino-admin')) {
-            let autocompleteDestino = new google.maps.places.Autocomplete(document.getElementById('input-destino-admin'), opts);
+            autocompleteDestino = new google.maps.places.Autocomplete(document.getElementById('input-destino-admin'), opts);
             autocompleteDestino.addListener('place_changed', calcularRutaNacional);
         }
     }
@@ -971,60 +1077,124 @@ window.calcularRutaNacional = function(){
     vibrar();
     var origen = document.getElementById('input-origen-admin').value;
     var destino = document.getElementById('input-destino-admin').value;
-    if(!origen || !destino) return mostrarToast("Llena las direcciones A y B.", "info");
+    if(!origen || !destino) return mostrarToast("Ingresá origen y destino exactos.", "info");
     
-    window.directionsService.route({ origin: origen, destination: destino, travelMode: google.maps.TravelMode.DRIVING }, function(response, status) {
-        if (status === 'OK') { window.dirRendererAdmin.setDirections(response); } 
-        else { mostrarToast("No se pudo trazar la ruta. Verifica A y B.", "info"); }
+    // Le anexamos Tucumán a la búsqueda si no lo dice para forzar exactitud
+    var origenBusqueda = origen.includes("Tucumán") ? origen : origen + ", Tucumán, Argentina";
+    var destinoBusqueda = destino.includes("Tucumán") ? destino : destino + ", Tucumán, Argentina";
+
+    directionsService.route({ origin: origenBusqueda, destination: destinoBusqueda, travelMode: google.maps.TravelMode.DRIVING }, function(response, status) {
+        if (status === 'OK') {
+            dirRendererAdmin.setDirections(response);
+            
+            if(window.markerMoto) { window.markerMoto.setMap(null); }
+            window.markerMoto = new google.maps.Marker({
+                position: response.routes[0].legs[0].start_location,
+                map: mapaAdmin,
+                icon: { url: 'https://cdn-icons-png.flaticon.com/512/1986/1986958.png', scaledSize: new google.maps.Size(60, 60) },
+                animation: google.maps.Animation.DROP
+            });
+
+            // LÓGICA DECIMAL DE KILÓMETROS (1.1, 1.5, ETC) Y MULTIPLICADOR EXACTO
+            var distKm = response.routes[0].legs[0].distance.value / 1000;
+            var tarifaBase = 1500;
+            var tarifaFinal = tarifaBase;
+            if(distKm > 1) {
+                tarifaFinal = tarifaBase + ((distKm - 1) * 800); // 800 pesos x fraccion de KM extra
+            }
+
+            document.getElementById('caja-resultado-admin').classList.remove('hidden');
+            document.getElementById('resultado-tarifa-admin').innerText = '$ ' + Math.floor(tarifaFinal);
+            document.getElementById('km-calculados-admin').innerText = distKm.toFixed(1) + ' KM';
+        } else {
+            mostrarToast("No se pudo trazar la ruta en el mapa.", "info");
+        }
     });
 };
 
 window.solicitarCadeteAdmin = function() {
-    vibrar(); if(!document.getElementById('input-origen-admin').value || !document.getElementById('input-destino-admin').value) return mostrarToast("Comprueba A y B.", "info");
-    mostrarToast("¡Alerta enviada al Radar!", "success");
-    let btn = document.getElementById('btn-pedir-admin');
-    btn.innerHTML = '<i class="fa-solid fa-check"></i> Moto Asignada'; btn.classList.replace('btn-a', 'bg-green-500'); btn.style.color = "white";
-};
-
-// ==========================================
-// CONFIGURACIÓN DE COMERCIO Y CARGA (CÁMARA INTELIGENTE)
-// ==========================================
-window.toggleEstadoTienda = function() { let estado = document.getElementById('tienda-estado-toggle').checked; window.db[0].abierto = estado; guardarDB(); mostrarToast(estado ? "Tu local ahora está ABIERTO" : "Tu local ahora está CERRADO", "success"); };
-window.guardarDatosLocal = function() { window.db[0].nombre = document.getElementById('config-nombre').value; window.db[0].horario = document.getElementById('config-horario').value; window.db[0].direccion = document.getElementById('config-direccion').value; guardarDB(); mostrarToast("¡Datos de la tienda actualizados!", "success"); };
-
-window.productoImgBase64 = null;
-window.previewImageProduct = function(event) {
-    const file = event.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = new Image(); img.onload = function() {
-            const canvas = document.createElement('canvas'); const MAX_WIDTH = 500; const MAX_HEIGHT = 500; let width = img.width; let height = img.height;
-            if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
-            canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.8); window.productoImgBase64 = dataUrl;
-            let preview = document.getElementById('preview-prod-img'); preview.src = dataUrl; preview.classList.remove('hidden'); document.getElementById('upload-icon-container').classList.add('scale-75', 'opacity-95');
-        }
-        img.src = e.target.result;
-    }
-    reader.readAsDataURL(file);
-};
-
-window.cargarProductoComercio = function() {
     vibrar();
-    let seccionNombre = document.getElementById('add-prod-seccion').value; let nom = document.getElementById('add-prod-nombre').value; let pre = parseInt(document.getElementById('add-prod-precio').value); let desc = document.getElementById('add-prod-desc').value; let foto = window.productoImgBase64;
-    if(!nom || !pre || !foto) return mostrarToast("Llena nombre, precio y sube la foto", "info");
-    
-    let seccionIndex = window.db[0].secciones.findIndex(s => s.nombre.toLowerCase() === seccionNombre.toLowerCase());
-    if (seccionIndex === -1) { window.db[0].secciones.push({ nombre: seccionNombre, productos: [] }); seccionIndex = window.db[0].secciones.length - 1; }
-    window.db[0].secciones[seccionIndex].productos.push({ id: Math.floor(Math.random() * 100000), nombre: nom, precio: pre, desc: desc, img: foto });
-    guardarDB(); 
-    
-    document.getElementById('add-prod-nombre').value = ""; document.getElementById('add-prod-precio').value = ""; document.getElementById('add-prod-desc').value = "";
-    document.getElementById('preview-prod-img').classList.add('hidden'); document.getElementById('upload-icon-container').classList.remove('scale-75', 'opacity-95');
-    window.productoImgBase64 = null; mostrarToast("¡Producto cargado exitosamente!", "success");
+    if(!document.getElementById('input-origen-admin').value) return mostrarToast("Falta Dirección", "info");
+    mostrarToast("¡Radar emitido! Moto en camino", "success");
+    let btn = document.getElementById('btn-pedir-admin');
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Repartidor Asignado';
+    btn.classList.replace('btn-a', 'bg-green-500');
+    btn.style.color = "white";
 };
 
-// Autoiniciar
+// ==========================================
+// FLUJO CADETE (SERVIDOR RADAR)
+// ==========================================
+window.toggleConexion = function() {
+    vibrar();
+    estado.conectado = !estado.conectado;
+    let btn = document.getElementById('btn-conectar'), icono = document.getElementById('icono-conexion'), texto = document.getElementById('texto-conexion'), radar = document.getElementById('efecto-radar'), statusGps = document.getElementById('estado-gps');
+
+    if (estado.conectado) {
+        btn.style.borderColor = 'var(--verde)';
+        icono.classList.replace('text-slate-300', 'text-[var(--verde)]');
+        icono.classList.replace('fa-route', 'fa-motorcycle');
+        texto.innerText = 'ONLINE'; texto.classList.replace('text-slate-400', 'text-[var(--verde)]'); texto.classList.remove('text-[var(--naranja)]');
+        radar.style.opacity = '1';
+        statusGps.innerHTML = '<i class="fa-solid fa-satellite-dish fa-beat mr-1"></i> Buscando viajes...';
+        statusGps.classList.replace('text-slate-500', 'text-[var(--verde)]');
+
+        window.viajePendienteRadar = setTimeout(() => {
+            if(estado.conectado) {
+                vibrar(300); // Vibración ultra fuerte (alerta de viaje)
+                document.getElementById('radar-origen-txt').innerText = "Empanadas Famaillá VIP";
+                document.getElementById('radar-destino-txt').innerText = "San Martín 123";
+                document.getElementById('radar-tarifa').innerText = "$ 1.850";
+                abrirModal('modal-radar-cadete');
+            }
+        }, 4000);
+    } else {
+        clearTimeout(window.viajePendienteRadar);
+        btn.style.borderColor = '';
+        icono.classList.replace('text-[var(--verde)]', 'text-slate-300');
+        texto.innerText = 'OFFLINE'; texto.classList.replace('text-[var(--verde)]', 'text-slate-400'); texto.classList.remove('text-[var(--naranja)]');
+        radar.style.opacity = '0';
+        statusGps.innerHTML = '<i class="fa-solid fa-location-crosshairs mr-1"></i> Desconectado';
+        statusGps.classList.replace('text-[var(--verde)]', 'text-slate-500');
+    }
+};
+
+window.agarrarViajeAtomic = function() {
+    vibrar();
+    cerrarModal('modal-radar-cadete');
+    mostrarToast("¡Viaje asignado! Dirígete al local a buscar el pedido.", "success");
+    document.getElementById('texto-conexion').innerText = 'EN VIAJE';
+    document.getElementById('texto-conexion').classList.add('text-[var(--naranja)]');
+    document.getElementById('icono-conexion').classList.replace('fa-motorcycle', 'fa-route');
+    document.getElementById('icono-conexion').classList.add('text-[var(--naranja)]');
+    document.getElementById('estado-gps').innerHTML = '<i class="fa-solid fa-map-pin mr-1"></i> Navegando al origen...';
+    document.getElementById('estado-gps').classList.add('text-[var(--naranja)]');
+};
+
+window.iniciarAuditoriaIA = function() {
+    vibrar();
+    abrirModal('modal-ia');
+    let barra = document.getElementById('barra-ia'), texto = document.getElementById('texto-ia');
+    barra.style.width = '25%'; texto.innerText = 'Analizando Selfie vs DNI...';
+    setTimeout(() => { barra.style.width = '65%'; texto.innerText = 'Verificando datos en AFIP...'; }, 1500);
+    setTimeout(() => { barra.style.width = '100%'; texto.innerText = '¡Auditoría Exitosa! ✅'; }, 3000);
+    setTimeout(() => { cerrarModal('modal-ia'); mostrarToast('¡Bienvenido! Cuenta aprobada.', 'success'); cambiarPantalla('pantalla-3'); }, 4000);
+};
+
+window.marcarArchivoCargado = function(input) {
+    if (input.files && input.files[0]) {
+        let iconContainer = input.closest('.group').querySelector('.icon-container');
+        if (iconContainer) { iconContainer.style.background = '#00d13a'; iconContainer.style.color = 'white'; iconContainer.innerHTML = '<i class="fa-solid fa-check"></i>'; mostrarToast("Archivo cargado", "success"); }
+    }
+};
+
+window.loginCadete = function() { 
+    vibrar();
+    if(!document.getElementById('login-celular').value) return mostrarToast("Ingresa tus datos", "info"); 
+    mostrarToast("Iniciando sesión...", "success"); setTimeout(() => cambiarPantalla('pantalla-3'), 1000); 
+};
+
+// Auto render inicio
 renderizarMarketplace();
 </script>
 </body>
