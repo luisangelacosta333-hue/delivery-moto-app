@@ -3,29 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Delivery Moto | Energy Software</title>
-<link rel="manifest" href="manifest.json">
+<title>Delivery Moto | La conexion entre comercios y Servimoto</title>
+<link rel="manifest" href="/manifest.json">
+<script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }</script>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
-<!-- MAPAS Y SUPABASE -->
+
+<!-- LLAVE DE GOOGLE MAPS INYECTADA CON LIBRERIA PLACES PARA AUTOCOMPLETADO -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLcIDHZkqLfHFdf7gzhlX8&libraries=places"></script>
+<!-- LIBRERIA OFICIAL SUPABASE JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-/* ========================================================
-   VARIABLES GLOBALES Y RESET
-======================================================== */
+/* VARIABLES GLOBALES APP */
 :root{--naranja:#ff6b00;--naranja2:#ff8c00;--naranja3:#cc4400;--verde:#00d13a;--texto:#0f172a}
 *{box-sizing:border-box}
-body{font-family:'Quicksand',sans-serif; color:var(--texto); margin:0; padding:0; -webkit-font-smoothing:antialiased;}
-a{text-decoration:none}
+body { font-family:'Quicksand',sans-serif; color:var(--texto); margin:0; padding:0; overflow-x:hidden; font-size:17.5px; -webkit-font-smoothing:antialiased; }
+a { text-decoration:none; }
 .no-scrollbar::-webkit-scrollbar{display:none}
 .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
 
-/* ========================================================
-   CSS ESPECÍFICO - LANDING PAGE
-======================================================== */
+/* ESTILOS LANDING PAGE */
 .landing-bg { background:linear-gradient(-45deg,#f8fafc,#e2e8f0,#ffffff,#f1f5f9); background-size:400% 400%; animation:gradientBG 15s ease infinite; }
 @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
@@ -34,42 +33,43 @@ a{text-decoration:none}
 .fm{animation:fm 3.5s ease-in-out infinite}
 .glass-premium {background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border-radius: 1.5rem;}
 .glass-dark {background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2); border-radius: 1.5rem;}
-.btn-glow {border-radius: 50px !important; position: relative; z-index: 1; overflow: hidden;}
-.btn-glow::after {content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;background: linear-gradient(45deg, #ff8c00, #cc4400, #ff8c00);z-index: -1; border-radius: 50px; filter: blur(12px); opacity: 0.6;animation: pulse-glow 3s linear infinite;}
-@keyframes pulse-glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
 .rt{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;font-size:15.5px;font-weight:700;color:#fff;transition:all .2s}
 .rt:hover{border-color:#ff6b00;background:rgba(255,107,0,.15)}
-.ch{transition:all .35s}.ch:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.08)}
-.hg{background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%)}
-@keyframes pg{0%,100%{box-shadow:0 0 0 0 rgba(0,209,58,.8)}50%{box-shadow:0 0 0 6px rgba(0,209,58,0)}}
-.pg{animation:pg 1.8s ease-in-out infinite}
-.boton-play-landing{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,#ff8c00 100%);border:4px solid white;box-shadow:0 10px 30px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
-.boton-play-landing:active{transform:scale(.92)}
-.boton-play-landing .icono-play{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
-.boton-play-landing .icono-play i{color:white;font-size:14.5px;margin-left:2px}
 
-/* ========================================================
-   CSS ESPECÍFICO - APP (PWA)
-======================================================== */
-.app-bg { background:linear-gradient(135deg,#cbd5e1,#e2e8f0); }
+/* ESTILOS APP */
 @keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-150%)}}
 .animate-scroll{display:inline-block;white-space:nowrap;animation:scroll 40s linear infinite}
 @keyframes pulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(0,209,58,.8)}50%{box-shadow:0 0 0 8px rgba(0,209,58,0)}}
 .luz-verde{position:relative}.luz-verde::after{content:'';position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:var(--verde);border-radius:50%;border:2px solid white;animation:pulseGreen 1.8s ease-in-out infinite;z-index:10}
+
 @keyframes logoFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
 .logo-float{animation:logoFloat 3.5s ease-in-out infinite}
 @keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 30px rgba(255,107,0,.7))}50%{filter:drop-shadow(0 0 55px rgba(255,107,0,1))}}
 .logo-glow{animation:logoGlow 2.5s ease-in-out infinite}
+
 @keyframes resplandorGlow{0%,100%{box-shadow:0 0 15px rgba(255,107,0,.4);transform:scale(1)}50%{box-shadow:0 0 30px rgba(255,107,0,.9);transform:scale(1.02);border:2px solid #fff;}}
 .btn-resplandor{animation:resplandorGlow 2s infinite; border-radius: 50px !important;}
+.btn-glow {border-radius: 50px !important; position: relative; z-index: 1; overflow: hidden;}
+.btn-glow::after {content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;background: linear-gradient(45deg, #ff8c00, #cc4400, #ff8c00);z-index: -1; border-radius: 50px; filter: blur(12px); opacity: 0.6;animation: pulse-glow 3s linear infinite;}
+@keyframes pulse-glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
 @keyframes radarPlay{0%{transform:scale(.9);opacity:1;border-color:rgba(255,107,0,.9)}100%{transform:scale(2.2);opacity:0;border-color:rgba(255,107,0,0)}}
 .onda-play{position:absolute;border-radius:50%;border:3px solid var(--naranja2);animation:radarPlay 2s cubic-bezier(.1,.5,.5,1)infinite}
-.onda-play-1{animation-delay:0s;width:120px;height:120px}.onda-play-2{animation-delay:.6s;width:120px;height:120px}.onda-play-3{animation-delay:1.2s;width:120px;height:120px}
+.onda-play-1{animation-delay:0s;width:120px;height:120px}
+.onda-play-2{animation-delay:.6s;width:120px;height:120px}
+.onda-play-3{animation-delay:1.2s;width:120px;height:120px}
+
 @keyframes bouncePlay{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 .boton-play-premium{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,#ff8c00 100%);border:4px solid white;box-shadow:0 15px 40px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8),inset 0 -3px 10px rgba(204,68,0,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
 .boton-play-premium:active{transform:scale(.92)}
 .boton-play-premium .icono-play{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
 .boton-play-premium .icono-play i{color:white;font-size:22px;margin-left:3px}
+
+.boton-play-landing{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,#ff8c00 100%);border:4px solid white;box-shadow:0 10px 30px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
+.boton-play-landing:active{transform:scale(.92)}
+.boton-play-landing .icono-play{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
+.boton-play-landing .icono-play i{color:white;font-size:14.5px;margin-left:2px}
+
 @keyframes radar{0%{transform:scale(.9);opacity:1;border-color:rgba(255,107,0,.9)}100%{transform:scale(3.5);opacity:0;border-color:rgba(255,107,0,0)}}
 .onda{position:absolute;border-radius:50%;border:3px solid var(--naranja2);animation:radar 2.2s cubic-bezier(.1,.5,.5,1)infinite}
 .onda-1{animation-delay:0s;width:140px;height:140px}.onda-2{animation-delay:.7s;width:140px;height:140px}.onda-3{animation-delay:1.4s;width:140px;height:140px}
@@ -81,10 +81,11 @@ a{text-decoration:none}
 
 .titulo-3d{font-family:'Sora',sans-serif;font-weight:800;color:#fff;letter-spacing:-1.5px;text-transform:uppercase;text-shadow:0 1px 0 #e6e6e6,0 2px 0 #d9d9d9,0 3px 0 #cccccc,0 4px 0 #bfbfbf,0 5px 0 #b3b3b3,0 6px 0 #a6a6a6,0 7px 0 #999,0 8px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 6px rgba(0,0,0,.2),0 6px 15px rgba(0,0,0,.25),0 15px 15px rgba(0,0,0,.15);}
 .frase-moderna{font-family:'Sora',sans-serif;font-weight:700;color:#fff;letter-spacing:-.3px}
+
 .btn-a{background:linear-gradient(135deg,#ff8c00 0%,#ff6b00 50%,#cc4400 100%);color:#fff;font-weight:800;border-radius:50px;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;transition:all .25s;display:flex;justify-content:center;align-items:center;gap:.5rem;box-shadow:0 12px 30px rgba(255,107,0,.45),inset 0 1px 0 rgba(255,255,255,.35);}
 .btn-a:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(255,107,0,.55)}
 .btn-a:active{transform:scale(.95)}
-.btn-b{background:#fff;color:#0f172a;font-weight:800;transition:all .3s;border:2px solid #e2e8f0;border-radius:50px;box-shadow:0 4px 12px rgba(0,0,0,.05);display:inline-flex;align-items:center;justify-content:center;gap:.5rem;}
+.btn-b{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);color:#fff;font-weight:800;border-radius:50px;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;transition:all .25s;display:flex;justify-content:center;align-items:center;gap:.5rem;box-shadow:0 12px 28px rgba(15,23,42,.4),inset 0 1px 0 rgba(255,255,255,.1);}
 .btn-b:hover{transform:translateY(-3px);border-color:#ff6b00;box-shadow:0 10px 25px rgba(255,107,0,.15)}
 .btn-b:active{transform:scale(.95)}
 .btn-d{background:#0f172a;color:#fff;font-weight:800;transition:all .3s;border-radius:50px;box-shadow:0 12px 28px rgba(15,23,42,.4),inset 0 1px 0 rgba(255,255,255,.1);display:inline-flex;align-items:center;justify-content:center;gap:.5rem;}
@@ -131,7 +132,7 @@ a{text-decoration:none}
 <!-- ========================================================== -->
 <!-- 1. VISTA DE LA LANDING PAGE OFICIAL -->
 <!-- ========================================================== -->
-<div id="vista-landing" class="landing-bg w-full min-h-screen text-[17.5px] overflow-x-hidden">
+<div id="vista-landing" class="landing-bg w-full min-h-screen text-[17.5px]">
     
     <nav class="sticky top-0 z-50 glass-premium border-b-0 rounded-none rounded-b-2xl mx-2 mt-2">
     <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
@@ -144,6 +145,7 @@ a{text-decoration:none}
     <div class="hidden md:flex items-center gap-7 text-[15.5px] font-bold text-slate-600">
     <a href="#comercios" class="hover:text-[#ff6b00] transition-colors">Comercios</a>
     <a href="#servimoto" class="hover:text-[#ff6b00] transition-colors">Servimoto</a>
+    <a href="#descargar" class="hover:text-[#ff6b00] transition-colors">Descargar</a>
     </div>
     <span class="hidden sm:inline-flex items-center gap-2 text-[13.5px] font-bold text-green-600 uppercase tracking-wide">
     <span class="w-2.5 h-2.5 rounded-full bg-green-500 pg"></span>Activo
@@ -193,7 +195,6 @@ a{text-decoration:none}
     </div>
     <p class="text-white/90 text-[13.5px] font-bold mb-3 text-center">Toca para escuchar TODAS las funciones</p>
 
-    <!-- BOTON PARA INICIAR LA PWA EN EL MISMO ARCHIVO -->
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
     <a onclick="abrirPWA()" class="btn-a btn-glow px-6 py-3.5 text-[15.5px] cursor-pointer">
         <div class="w-5 h-5 rounded-md overflow-hidden bg-white shrink-0 flex items-center justify-center"><img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Icon"></div>
@@ -254,6 +255,35 @@ a{text-decoration:none}
     </div>
     </section>
 
+    <section id="comercios" class="py-4 px-5">
+    <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-3 items-center">
+    <div class="glass-premium p-4 border border-slate-200">
+    <div class="inline-flex items-center gap-2 bg-black text-white rounded-full px-3 py-1 mb-2 shadow-md">
+    <i class="fa-solid fa-store text-[13.5px]"></i><span class="text-[11.5px] font-black uppercase tracking-widest">Para Personas y Comercios</span>
+    </div>
+    <h2 class="text-[26px] md:text-[32px] font-black mb-2 leading-tight tracking-tight text-black">
+    TENES UN PEDIDO<br><span style="color:#ff6b00">PARA ENTREGAR?</span>
+    </h2>
+    <ul class="space-y-1.5 text-[14.5px] font-bold text-slate-700">
+    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Solicita viajes cuando lo necesites.</li>
+    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Seguí el estado en vivo.</li>
+    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Sin descargar apps pesadas.</li>
+    </ul>
+    <a onclick="abrirPWA()" class="mt-4 btn-a btn-glow w-full py-2 text-[15.5px] cursor-pointer"><i class="fa-solid fa-globe"></i> INICIAR PWA AHORA</a>
+    </div>
+    <div class="glass-dark p-4 text-white text-center">
+    <i class="fa-solid fa-users text-[38px] mb-2 opacity-50"></i>
+    <h3 class="font-black text-[19.5px] mb-2">Funciona para TODO tipo de envíos</h3>
+    <div class="flex flex-wrap justify-center gap-2">
+    <span class="rt"><i class="fa-solid fa-house text-blue-400"></i>Familias</span>
+    <span class="rt"><i class="fa-solid fa-user text-green-400"></i>Particulares</span>
+    <span class="rt"><i class="fa-solid fa-utensils" style="color:#ff8c00"></i>Restaurantes</span>
+    <span class="rt"><i class="fa-solid fa-cart-shopping text-indigo-400"></i>Supermercados</span>
+    </div>
+    </div>
+    </div>
+    </section>
+
     <footer class="bg-black text-slate-400 py-6 px-5 mt-2 rounded-t-3xl mx-2 mb-0 border-t-4" style="border-color:#ff6b00">
     <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
     <div class="md:col-span-1">
@@ -277,23 +307,18 @@ a{text-decoration:none}
 <!-- ========================================================== -->
 <!-- 2. VISTA DE LA APLICACIÓN (PWA / NATIVA) OCULTA INICIALMENTE -->
 <!-- ========================================================== -->
-<div id="vista-app" class="hidden fixed inset-0 w-full h-full app-bg flex items-center justify-center z-[99999]">
+<div id="vista-app" class="hidden fixed inset-0 w-full h-full bg-slate-200 flex flex-col items-center justify-center z-[99999]">
     
-    <!-- SPLASH SCREEN INTERNO DE LA APP -->
+    <!-- SPLASH SCREEN INTERNO -->
     <div id="splash-screen" class="hidden fixed inset-0 bg-slate-950 z-[999999] flex-col items-center justify-center transition-opacity duration-700 ease-in-out opacity-0">
         <div class="relative w-44 h-44 rounded-[2.5rem] overflow-hidden border-[3px] border-white/20 shadow-[0_0_50px_rgba(255,107,0,0.5)] logo-glow bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center mb-6">
             <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo">
         </div>
         <h1 class="titulo-3d text-[2.2rem] leading-none mb-1 text-center tracking-tighter text-white">DELIVERY MOTO</h1>
         <p class="text-[12.5px] font-black uppercase tracking-widest text-slate-400 mt-2">Energy Software</p>
-        <div class="mt-8 flex gap-2">
-            <div class="w-3 h-3 rounded-full bg-[#ff6b00] animate-bounce" style="animation-delay: 0s"></div>
-            <div class="w-3 h-3 rounded-full bg-[#ff8c00] animate-bounce" style="animation-delay: 0.2s"></div>
-            <div class="w-3 h-3 rounded-full bg-[#cc4400] animate-bounce" style="animation-delay: 0.4s"></div>
-        </div>
     </div>
 
-    <!-- CONTENEDOR CELULAR -->
+    <!-- CONTENEDOR CELULAR APP -->
     <div class="w-full h-full max-w-md bg-slate-50 relative flex flex-col shadow-2xl sm:rounded-[3rem] sm:h-[95vh] sm:border-[10px] border-slate-900 overflow-hidden">
         
         <!-- FIX 1: TICKER CON ROUNDED-XL FULL WIDTH -->
@@ -369,7 +394,7 @@ a{text-decoration:none}
                 <div class="glass p-4 mb-4 relative z-10" style="border-top:4px solid var(--naranja)">
                     <h3 class="font-black text-slate-800 text-[16.5px] mb-3"><i class="fa-solid fa-map-location-dot mr-1" style="color:var(--naranja)"></i> Trazar Ruta Local</h3>
 
-                    <!-- FIX 2: CAJÓN VERDE WHATSAPP -->
+                    <!-- FIX 2: CAJÓN VERDE WHATSAPP (Viaja directo a Supabase) -->
                     <div class="flex items-center gap-3 relative z-10 mb-3">
                         <div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0"><i class="fa-brands fa-whatsapp"></i></div>
                         <input type="tel" id="input-wa-comercio" placeholder="Tu WhatsApp (Ej: 3815551234)" class="w-full bg-white border border-green-200 rounded-xl px-4 py-2.5 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-green-500 transition-all">
@@ -492,6 +517,7 @@ a{text-decoration:none}
             </div>
             
             <div class="absolute bottom-0 left-0 w-full bg-slate-50/95 backdrop-blur-md pt-4 pb-4 px-5 z-30 shrink-0 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] border-t border-slate-200">
+            <!-- FIX 5: APUNTA A VERCEL -->
             <button onclick="iniciarAuditoriaIA()" class="btn-a w-full py-4 text-[17.5px] tracking-wide shadow-lg"><i class="fa-solid fa-robot"></i> Auditar e Ingresar</button>
             </div>
         </div>
@@ -522,15 +548,15 @@ a{text-decoration:none}
                 </div>
 
                 <!-- PANEL VIAJE ACTIVO CADETE -->
-                <div id="panel-viaje-cadete" class="hidden px-5 shrink-0 mb-4">
-                    <div class="glass p-4 border-l-4 border-blue-500">
+                <div id="panel-viaje-cadete" class="hidden px-5 shrink-0 mb-4 w-full">
+                    <div class="glass p-4 border-l-4 border-blue-500 shadow-md">
                         <h3 class="font-black text-slate-800 text-[16.5px] mb-2"><i class="fa-solid fa-motorcycle text-blue-500 mr-2"></i> Viaje en Curso</h3>
-                        <p id="cadete-viaje-origen" class="font-bold text-[14.5px] text-slate-800"></p>
-                        <p id="cadete-viaje-destino" class="font-medium text-[13.5px] text-slate-500 mb-3"></p>
+                        <p id="cadete-viaje-origen" class="font-bold text-[14.5px] text-slate-800"><i class="fa-solid fa-map-pin text-red-500 mr-2"></i><span></span></p>
+                        <p id="cadete-viaje-destino" class="font-medium text-[13.5px] text-slate-500 mb-3"><i class="fa-solid fa-flag-checkered text-green-500 mr-2"></i><span></span></p>
                         
                         <!-- BOTON WSP DIRECTO AL CLIENTE -->
                         <a id="btn-wa-cadete" href="#" target="_blank" class="w-full py-3.5 mb-2 bg-[#25D366]/10 text-[#128C7E] border border-[#25D366]/30 font-black rounded-[50px] flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-[15.5px]">
-                            <i class="fa-brands fa-whatsapp text-2xl"></i> Escribir al Cliente
+                            <i class="fa-brands fa-whatsapp text-2xl"></i> Mensaje al Cliente
                         </a>
                         <button onclick="finalizarViajeCadete()" class="btn-v w-full py-3.5 text-[15px]"><i class="fa-solid fa-check mr-2"></i> Marcar Entregado</button>
                     </div>
@@ -578,12 +604,13 @@ a{text-decoration:none}
                 </div>
                 <p class="font-bold text-[15.5px] text-slate-700 desc-text">Adjuntar comprobante</p>
             </div>
+            <!-- FIX 5: APUNTA A VERCEL -->
             <button id="btn-procesar-pago" onclick="procesarPagoIA()" class="btn-a w-full py-3.5 text-[16.5px]"><i class="fa-solid fa-robot"></i> Enviar a IA</button>
         </div>
     </div>
 </div>
 
-<!-- FIX 4: RADAR ATÓMICO MODAL -->
+<!-- FIX 4: RADAR ATÓMICO MODAL EN VIVO -->
 <div id="modal-radar-cadete" class="modal-overlay">
     <div class="bg-slate-900 rounded-[2rem] p-8 text-center border-4 border-[var(--naranja)] shadow-[0_0_50px_rgba(255,107,0,0.5)] ia-glow mx-6 max-w-xs w-full transition-all">
         <div class="w-20 h-20 mx-auto bg-slate-800 rounded-full flex items-center justify-center mb-4 border-2 border-[var(--naranja)]">
@@ -591,8 +618,8 @@ a{text-decoration:none}
         </div>
         <h3 class="text-2xl font-black text-white mb-2 animate-pulse">¡NUEVO VIAJE!</h3>
         <div class="bg-slate-800 rounded-xl p-3 mb-4 text-left border border-slate-700">
-            <p id="radar-origen" class="text-white font-bold text-[14px] truncate"><i class="fa-solid fa-map-pin text-red-500 mr-2"></i></p>
-            <p id="radar-destino" class="text-slate-300 font-medium text-[13px] truncate mt-1"><i class="fa-solid fa-flag-checkered text-green-500 mr-2"></i></p>
+            <p id="radar-origen" class="text-white font-bold text-[14px] truncate"><i class="fa-solid fa-map-pin text-red-500 mr-2"></i> <span></span></p>
+            <p id="radar-destino" class="text-slate-300 font-medium text-[13px] truncate mt-1"><i class="fa-solid fa-flag-checkered text-green-500 mr-2"></i> <span></span></p>
         </div>
         <p class="text-slate-400 font-bold text-xs uppercase tracking-widest mb-1">Ganancia Neta</p>
         <p id="radar-tarifa" class="text-[36px] font-black text-[var(--verde)] mb-6 leading-none"></p>
@@ -613,15 +640,15 @@ function reproducirAudioLanding(){
     }
 }
 
-// TRANSICIÓN FLUIDA AL APP
+// TRANSICIÓN FLUIDA AL APP (Ghi Hut)
 function abrirPWA() {
-    document.getElementById('vista-landing').classList.add('hidden');
+    document.getElementById('vista-landing').style.display = 'none';
     document.getElementById('vista-app').classList.remove('hidden');
     document.body.style.overflow = 'hidden'; 
     var splash = document.getElementById('splash-screen');
     if(splash) {
-        splash.style.opacity = '1';
         splash.style.display = 'flex';
+        setTimeout(() => splash.style.opacity = '1', 10);
         setTimeout(function() {
             splash.style.opacity = '0';
             setTimeout(function(){ splash.style.display = 'none'; inicializarMapa(); }, 700);
@@ -761,7 +788,7 @@ window.solicitarCadete = async function() {
 };
 
 // ==========================================
-// FIX 4: RADAR ATOMICO DEL CADETE
+// FIX 4: RADAR ATOMICO DEL CADETE EN VIVO
 // ==========================================
 window.toggleConexion = function(){
     var btn=document.getElementById('btn-conectar'), txt=document.getElementById('texto-conexion'), ico=document.getElementById('icono-conexion'), radar=document.getElementById('efecto-radar'), sb=document.getElementById('status-bar'), eg=document.getElementById('estado-gps');
@@ -774,13 +801,13 @@ window.toggleConexion = function(){
         radar.style.opacity='1'; eg.innerHTML='<i class="fa-solid fa-circle-check mr-1"></i> LUZ VERDE - En servicio';
         eg.style.color='#00d13a'; if(navigator.vibrate) navigator.vibrate(100);
         
-        // WEBSOCKET RADAR EN VIVO
+        // WEBSOCKET RADAR EN VIVO (Escucha pedidos del comercio)
         window.radarChannel = supabase.channel('radar-viajes')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'viajes' }, payload => {
                 if (estado.conectado && payload.new.estado === 'buscando') {
                      window.viajePendienteRadar = payload.new;
-                     document.getElementById('radar-origen').innerHTML = '<i class="fa-solid fa-map-pin text-red-500 mr-2"></i>' + payload.new.direccion_origen;
-                     document.getElementById('radar-destino').innerHTML = '<i class="fa-solid fa-flag-checkered text-green-500 mr-2"></i>' + payload.new.direccion_destino;
+                     document.querySelector('#radar-origen span').innerText = payload.new.direccion_origen;
+                     document.querySelector('#radar-destino span').innerText = payload.new.direccion_destino;
                      document.getElementById('radar-tarifa').innerText = "$" + payload.new.tarifa_calculada;
                      abrirModal('modal-radar-cadete');
                      if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
@@ -802,7 +829,7 @@ window.agarrarViajeAtomic = async function() {
     var btn = document.getElementById('btn-agarrar-viaje');
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Atrapando...';
 
-    // UPDATE ATÓMICO EN SUPABASE
+    // UPDATE ATÓMICO EN SUPABASE (El que toca primero, gana)
     const { data, error } = await supabase.from('viajes')
         .update({ estado: 'asignado', cadete_id: 'CADETE_ACTUAL' })
         .eq('id', window.viajePendienteRadar.id)
@@ -813,8 +840,9 @@ window.agarrarViajeAtomic = async function() {
         cerrarModal('modal-radar-cadete');
         mostrarToast("¡Viaje atrapado con éxito!", "success");
         
-        document.getElementById('cadete-viaje-origen').innerText = data[0].direccion_origen;
-        document.getElementById('cadete-viaje-destino').innerText = data[0].direccion_destino;
+        // Pone la data en el panel del cadete y el link de WhatsApp
+        document.querySelector('#cadete-viaje-origen span').innerText = data[0].direccion_origen;
+        document.querySelector('#cadete-viaje-destino span').innerText = data[0].direccion_destino;
         document.getElementById('panel-viaje-cadete').classList.remove('hidden');
         document.getElementById('btn-wa-cadete').href = "https://wa.me/549" + data[0].cliente_celular + "?text=Hola!%20Soy%20tu%20Servimoto,%20estoy%20en%20camino.";
     } else {
