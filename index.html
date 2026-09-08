@@ -3,12 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
 <title>Delivery Moto | Marketplace Premium</title>
+
+<!-- INYECCIÓN PWA: MANIFEST (Generado Dinámicamente para archivo único) -->
+<link rel="manifest" id="manifest-placeholder">
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 
+<!-- SUPABASE CLIENT -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- GOOGLE MAPS PLACES API (AUTOACOMPLETADO) CON TU LLAVE PRIVADA -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLcIDHZkqLfHFdf7gzhlX8&libraries=places&callback=initGooglePlaces"></script>
+
 <script>
+// ==========================================
+// INYECCIÓN DE SERVICE WORKER Y MANIFEST (PWA)
+// ==========================================
+const manifestJSON = {
+  "name": "Delivery Moto",
+  "short_name": "DeliveryMoto",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+};
+const manifestBlob = new Blob([JSON.stringify(manifestJSON)], {type: 'application/json'});
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
+});
+
+// Service Worker Básico para Instalabilidad Offline
+const swCode = `
+self.addEventListener('install', (e) => { e.waitUntil(caches.open('delivery-moto-v1').then((cache) => cache.addAll(['/']))); });
+self.addEventListener('fetch', (e) => { e.respondWith(caches.match(e.request).then((response) => response || fetch(e.request))); });
+`;
+const swBlob = new Blob([swCode], {type: 'application/javascript'});
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).then(reg => console.log('PWA Service Worker Registrado')).catch(err => console.log('Error SW', err));
+}
+
 (function(){
     var s = document.createElement('style');
     s.textContent = `
@@ -24,7 +73,7 @@
     --azul: #2563eb;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; background: #f8fafc; }
+body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; background: #f8fafc; overflow-x: hidden; }
 a { text-decoration: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -65,11 +114,17 @@ a { text-decoration: none; }
 .input-premium:focus { border-color: var(--naranja); box-shadow: 0 0 0 4px rgba(255,107,0,0.15), inset 0 2px 5px rgba(0,0,0,0.02); }
 .input-premium::placeholder { color: #94a3b8; font-weight: 600; }
 
+/* Estilo Predictivo Google Maps */
+.pac-container { border-radius: 1rem; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 2px solid #e2e8f0; font-family: 'Quicksand', sans-serif; padding: 5px; margin-top: 5px; z-index: 1000000 !important; }
+.pac-item { padding: 12px; font-size: 14px; cursor: pointer; border-radius: 0.5rem; transition: background 0.2s; border-top: none; }
+.pac-item:hover { background: #f8fafc; }
+.pac-item-query { font-size: 15px; font-weight: 800; color: #0f172a; }
+
 .pantalla { display: none; opacity: 0; transition: all .4s ease; transform: translateY(15px); }
 .pantalla.activa { display: flex; opacity: 1; transform: translateY(0); }
 
 #toast-container { position: fixed; top: 0; left: 0; right: 0; z-index: 9999999; pointer-events: none; display: flex; flex-direction: column; align-items: center; padding-top: 25px; gap: 8px; }
-.toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); color: #fff; border-radius: 1.5rem; padding: 16px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); transform: translateY(-100px); opacity: 0; transition: all .4s; display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 15.5px; width: 92%; max-width: 360px; border: 1px solid rgba(255,255,255,0.15); }
+.toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); color: #fff; border-radius: 1.5rem; padding: 16px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); transform: translateY(-100px); opacity: 0; transition: all .4s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 15.5px; width: 92%; max-width: 360px; border: 1px solid rgba(255,255,255,0.15); }
 .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); z-index: 100000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .4s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -81,10 +136,11 @@ a { text-decoration: none; }
 .modal-centered .modal-content { border-radius: 2.25rem; transform: scale(0.92) translateY(20px); width: 90%; max-height: 85vh; }
 .modal-overlay.show .modal-centered .modal-content { transform: scale(1) translateY(0); }
 
-.bottom-nav { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid #f1f5f9; position: absolute; bottom: 0; width: 100%; max-width: 448px; display: flex; justify-content: space-around; padding: 16px 0 24px 0; z-index: 50; border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.06); }
+.bottom-nav { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid #f1f5f9; position: fixed; bottom: 0; width: 100%; max-width: 448px; display: flex; justify-content: space-around; padding: 16px 0 24px 0; z-index: 50; border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.06); }
 .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; color: #94a3b8; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
 .nav-item.active { color: var(--naranja); transform: translateY(-3px); }
-.nav-item i { font-size: 24px; }
+.nav-item i { font-size: 24px; transition: transform 0.2s; }
+.nav-item:active i { transform: scale(0.8); }
 
 .producto-card { background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; transition: all 0.3s; cursor: pointer; }
 .producto-card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: #e2e8f0; }
@@ -92,14 +148,20 @@ a { text-decoration: none; }
 .comercio-card { background: white; border-radius: 1.5rem; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; cursor: pointer; transition: all 0.3s; display: flex; gap: 16px; align-items: center; }
 .comercio-card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: var(--naranja); }
 
-/* TABS CSS (Reflejando diseño del screenshot) */
+/* TABS CSS */
 .tab-btn { padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.2s; border: none; background: transparent; color: #64748b; font-family: 'Quicksand', sans-serif; }
 .tab-btn.active { background: #0f172a; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
 /* GPS y Mapa Premium CSS */
-.map-container { position: relative; border-radius: 1.5rem; overflow: hidden; border: 3px solid var(--naranja); box-shadow: 0 15px 35px rgba(255,107,0,0.15); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); height: 280px; width: 100%; margin-top: 1rem; }
+.map-container { position: relative; border-radius: 1.5rem; overflow: hidden; border: 3px solid var(--naranja); box-shadow: 0 15px 35px rgba(255,107,0,0.15); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); height: 0; opacity: 0; width: 100%; margin-top: 0; }
+.map-container.active { height: 280px; opacity: 1; margin-top: 1rem; }
 .route-line { border-left: 3px dashed #cbd5e1; height: calc(100% - 20px); position: absolute; left: 23px; top: 30px; z-index: 0; }
 .punto-indicador { width: 22px; height: 22px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); position: absolute; left: -30px; top: 50%; transform: translateY(-50%); z-index: 10; }
+
+/* Motito Animada en el Mapa (Supabase Realtime Simulation) */
+.motito-tracker { position: absolute; z-index: 50; transition: top 2s ease-in-out, left 2s ease-in-out; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); transform: translate(-50%, -50%); }
+.motito-pulse { position: absolute; width: 40px; height: 40px; background: rgba(255,107,0,0.4); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: -1; animation: mapPulse 1.5s infinite; }
+@keyframes mapPulse { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
 
 .badge-seguridad { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge-verde { background: rgba(22,163,74,0.1); color: var(--verde2); border: 1px solid rgba(22,163,74,0.2); }
@@ -122,6 +184,74 @@ a { text-decoration: none; }
 `;
     document.head.appendChild(s);
 })();
+
+// ==========================================
+// CONFIGURACIÓN DE SUPABASE Y OPENAI
+// ==========================================
+const SUPABASE_URL = 'https://drpjcmznauposqlhaveo.supabase.co'; // Proveído por el usuario
+const SUPABASE_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4'; // Proveída por el usuario
+const OPENAI_API_KEY = ''; // Reemplazar con la llave privada de OpenAI para producción
+
+// Inicializar cliente Supabase Global
+window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// CANDADOS RLS: Lógica de Autenticación "Fantasma" en Supabase
+async function autenticarSupabaseFantasma(whatsapp, password) {
+    const emailFalso = `${whatsapp}@deliverymoto.com`;
+    try {
+        let { data, error } = await window.supabaseClient.auth.signInWithPassword({
+            email: emailFalso,
+            password: password
+        });
+        
+        if(error) {
+            // Si no existe, lo creamos
+            const res = await window.supabaseClient.auth.signUp({
+                email: emailFalso,
+                password: password
+            });
+            return res.data;
+        }
+        return data;
+    } catch(e) {
+        console.log("Error RLS: ", e);
+    }
+}
+
+// ==========================================
+// GOOGLE PLACES AUTOCOMPLETE
+// ==========================================
+function initGooglePlaces() {
+    console.log("Google Places API Cargada");
+}
+
+function inicializarInputDestino() {
+    const inputDestino = document.getElementById('checkout-destino');
+    if (!inputDestino || !window.google || !window.google.maps) return;
+
+    if (inputDestino.hasAttribute('data-autocomplete-init')) return;
+    inputDestino.setAttribute('data-autocomplete-init', 'true');
+
+    const options = {
+        componentRestrictions: { country: "ar" }, // Restringimos a Argentina
+        fields: ["formatted_address", "geometry", "name"],
+        strictBounds: false,
+    };
+
+    const autocomplete = new google.maps.places.Autocomplete(inputDestino, options);
+
+    autocomplete.addListener("place_changed", () => {
+        vibrar(20);
+        const place = autocomplete.getPlace();
+        if (!place.geometry || !place.geometry.location) {
+            mostrarToast("Por favor, seleccioná una dirección de la lista predictiva.", "info");
+            return;
+        }
+        
+        inputDestino.value = place.formatted_address || place.name;
+        resetearRuta();
+    });
+}
 </script>
 </head>
 <body class="flex justify-center items-start min-h-screen bg-slate-900">
@@ -142,22 +272,20 @@ a { text-decoration: none; }
                 </div>
             </div>
             <span class="inline-flex items-center gap-2 text-[14px] font-bold text-green-400 uppercase tracking-wide bg-green-500/10 px-4 py-1.5 rounded-full border border-green-500/20">
-                <span class="w-2.5 h-2.5 rounded-full bg-green-400 pg"></span>Sistema Activo
+                <span class="w-2.5 h-2.5 rounded-full bg-green-400 pg"></span>Conectado a DB
             </span>
         </div>
     </nav>
 
-    <!-- TICKER -->
     <div class="bg-slate-900 border-y-2 border-orange-500 overflow-hidden my-4 shadow-xl rounded-full mx-3">
         <div class="overflow-hidden py-3">
             <div class="ticker-landing">
-                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTO RADAR | ENVÍO DINÁMICO | PAGO AL CADENTE EN PUERTA | APK ANDROID |</span>
-                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTO RADAR | ENVÍO DINÁMICO | PAGO AL CADENTE EN PUERTA | APK ANDROID |</span>
+                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTO RADAR | ENVÍO DINÁMICO POR CUADRAS | PAGO EN PUERTA | IA INTEGRADA |</span>
+                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTO RADAR | ENVÍO DINÁMICO POR CUADRAS | PAGO EN PUERTA | IA INTEGRADA |</span>
             </div>
         </div>
     </div>
 
-    <!-- HERO SECTION -->
     <section class="bg-slate-900 text-white relative overflow-hidden rounded-[3rem] mx-3 shadow-2xl mb-8 border border-slate-800">
         <div class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(255,107,0,.35),transparent 70%)"></div>
         <div class="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(37,99,235,.25),transparent 70%)"></div>
@@ -165,10 +293,10 @@ a { text-decoration: none; }
         <div class="max-w-5xl mx-auto px-6 py-16 md:py-24 relative z-10 text-center">
             <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-5 py-2 mb-6 backdrop-blur-md shadow-lg">
                 <span class="w-2.5 h-2.5 rounded-full bg-green-400 pg"></span>
-                <span class="text-[14px] font-bold text-green-300 uppercase tracking-wider">Marketplace + Radar GPS Premium</span>
+                <span class="text-[14px] font-bold text-green-300 uppercase tracking-wider">Powered by Supabase & OpenAI</span>
             </div>
             
-            <div class="relative inline-block mb-8">
+            <div class="relative inline-block mb-8 cursor-pointer" onclick="vibrar([50,50,100])">
                 <div class="relative w-40 h-40 md:w-56 md:h-56 mx-auto rounded-[3.5rem] overflow-hidden border-[4px] border-white/20 shadow-[0_0_60px_rgba(255,107,0,0.3)] logo-float bg-slate-900 flex items-center justify-center">
                     <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo">
                 </div>
@@ -179,7 +307,7 @@ a { text-decoration: none; }
             <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-6 md:p-8 w-full max-w-2xl mx-auto mb-10 shadow-xl">
                 <p class="frase-moderna text-[18px] md:text-[22px] text-white leading-snug">
                     <span class="block text-yellow-400 text-[15px] uppercase tracking-widest mb-3">CONECTAMOS TU CIUDAD</span>
-                    <span class="block text-white mb-1">Los comercios exponen. Los clientes compran.</span>
+                    <span class="block text-white mb-1">Comercios venden. Clientes compran seguro.</span>
                     <span class="block text-white font-black">Nuestros Servimotos reparten con GPS exacto.</span>
                 </p>
             </div>
@@ -209,13 +337,13 @@ a { text-decoration: none; }
             <div class="bg-slate-800/50 backdrop-blur-lg border border-slate-700 p-8 rounded-[2.5rem] hover:bg-slate-800 transition-colors text-center group">
                 <div class="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"><i class="fa-solid fa-cart-shopping"></i></div>
                 <h3 class="text-[24px] font-black mb-3 text-white">2. Clientes Felices</h3>
-                <p class="font-medium text-[16px] text-slate-300">Exploran catálogos, calculan el envío exacto por mapa GPS y mandan el pedido por WhatsApp.</p>
+                <p class="font-medium text-[16px] text-slate-300">Exploran catálogos, calculan el envío exacto predictivo por Google Maps y mandan pedido por WhatsApp.</p>
             </div>
             
             <div class="bg-slate-800/50 backdrop-blur-lg border border-slate-700 p-8 rounded-[2.5rem] hover:bg-slate-800 transition-colors text-center group">
                 <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"><i class="fa-solid fa-motorcycle"></i></div>
                 <h3 class="text-[24px] font-black mb-3 text-white">3. Servimoto GPS</h3>
-                <p class="font-medium text-[16px] text-slate-300">Reciben el llamado, usan el Radar para tomar viajes. Ganan dinero calculando $100 la cuadra.</p>
+                <p class="font-medium text-[16px] text-slate-300">Reciben el llamado, usan el Radar para tomar viajes. Cobran usando el algoritmo nocturno/diurno.</p>
             </div>
         </div>
     </section>
@@ -356,7 +484,7 @@ a { text-decoration: none; }
                             <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Provincia</label>
                             <select id="reg-provincia" class="input-premium appearance-none bg-white">
                                 <option value="">Elegir...</option>
-                                <!-- Se llenan dinámicamente con las 24 en init() -->
+                                <!-- Se llenan dinámicamente -->
                             </select>
                         </div>
                         <div>
@@ -422,7 +550,7 @@ a { text-decoration: none; }
                 </div>
                 
                 <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl text-center text-[13px] text-blue-700 font-bold shadow-inner">
-                    <p><i class="fa-solid fa-info-circle mr-1"></i> Demo Comercio: WhatsApp <strong>5493815551111</strong> / Clave <strong>1234</strong></p>
+                    <p><i class="fa-solid fa-info-circle mr-1"></i> Demo Comercio: WhatsApp <strong>5493815110171</strong> / Clave <strong>1234</strong></p>
                 </div>
             </div>
         </div>
@@ -518,10 +646,7 @@ a { text-decoration: none; }
                             <span class="bg-orange-100 text-orange-600 font-black text-[12px] px-3 py-1 rounded-full" id="contador-productos">0 artículos</span>
                         </div>
                         <div id="lista-productos-comercio" class="space-y-4">
-                            <div class="bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm">
-                                <div class="w-16 h-16 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-3"><i class="fa-solid fa-box-open"></i></div>
-                                <p class="text-gray-500 font-bold text-[15px]">Aún no tenés productos publicados</p>
-                            </div>
+                            <!-- Inyectado dinámicamente -->
                         </div>
                     </div>
                 </div>
@@ -535,11 +660,7 @@ a { text-decoration: none; }
                         </div>
                         
                         <div id="lista-pedidos-comercio" class="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar">
-                            <div class="text-center py-10">
-                                <div class="w-20 h-20 bg-green-50 text-green-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4"><i class="fa-brands fa-whatsapp"></i></div>
-                                <h3 class="font-black text-gray-800 text-xl mb-2">Bandeja Vacía</h3>
-                                <p class="text-[14.5px] text-gray-500 font-medium leading-snug">Cuando un cliente finalice un pedido en tu catálogo, aparecerá automáticamente aquí.</p>
-                            </div>
+                            <!-- Inyectado dinámicamente -->
                         </div>
                     </div>
                 </div>
@@ -638,11 +759,9 @@ a { text-decoration: none; }
                 <div class="relative h-40 w-full bg-slate-800">
                     <img id="cat-portada" src="" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
                     
-                    <!-- Botón Volver (Flotante sobre portada) -->
                     <button onclick="cambiarPantalla('pantalla-marketplace')" class="absolute top-10 left-5 w-10 h-10 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/50 transition-colors shadow-lg">
                         <i class="fa-solid fa-chevron-left text-lg"></i>
                     </button>
-                    <!-- Botón Carrito (Flotante sobre portada) -->
                     <button onclick="abrirModal('modal-carrito')" class="absolute top-10 right-5 w-10 h-10 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/50 transition-colors shadow-lg">
                         <i class="fa-solid fa-cart-shopping text-lg"></i>
                         <span id="badge-carrito-cat" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md hidden">0</span>
@@ -650,13 +769,11 @@ a { text-decoration: none; }
                 </div>
 
                 <div class="px-6 relative">
-                    <!-- Avatar superpuesto -->
                     <div class="w-[84px] h-[84px] rounded-[1.5rem] bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-3xl shadow-xl overflow-hidden absolute -top-12 left-6 border-4 border-white">
                         <i class="fa-solid fa-store"></i>
                     </div>
                     
-                    <!-- Botón WhatsApp Contacto Local -->
-                    <a id="btn-wa-local" href="#" target="_blank" class="absolute top-3 right-6 w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl shadow-[0_5px_15px_rgba(34,197,94,0.4)] hover:bg-green-600 transition-transform active:scale-90">
+                    <a id="btn-wa-local" href="#" target="_blank" onclick="vibrar(20)" class="absolute top-3 right-6 w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl shadow-[0_5px_15px_rgba(34,197,94,0.4)] hover:bg-green-600 transition-transform active:scale-90">
                         <i class="fa-brands fa-whatsapp"></i>
                     </a>
 
@@ -671,7 +788,6 @@ a { text-decoration: none; }
                     </div>
                 </div>
 
-                <!-- Buscador Interno -->
                 <div class="px-6 mt-6">
                     <div class="bg-gray-50 border border-gray-200 rounded-2xl flex items-center px-4 py-3 shadow-inner">
                         <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2 text-lg"></i>
@@ -690,7 +806,6 @@ a { text-decoration: none; }
                 </div>
             </div>
             
-            <!-- BARRA VER CARRITO FLOTANTE -->
             <div id="barra-ver-carrito" class="hidden fixed bottom-0 w-full max-w-[448px] bg-white/95 backdrop-blur-xl border-t border-gray-200 p-5 shadow-[0_-15px_40px_rgba(0,0,0,0.1)] z-50 rounded-t-[2rem]">
                 <div class="flex justify-between items-center">
                     <div class="flex flex-col">
@@ -847,7 +962,7 @@ a { text-decoration: none; }
                 </div>
                 
                 <div class="bg-green-50 border border-green-200 p-4 rounded-2xl text-center text-[13px] text-green-700 font-bold shadow-inner">
-                    <p><i class="fa-solid fa-info-circle mr-1"></i> Demo: WhatsApp <strong>5493815559999</strong> / Clave <strong>1234</strong></p>
+                    <p><i class="fa-solid fa-info-circle mr-1"></i> Demo: WhatsApp <strong>5493815110171</strong> / Clave <strong>1234</strong></p>
                 </div>
             </div>
         </div>
@@ -865,9 +980,28 @@ a { text-decoration: none; }
                 <button onclick="logoutServimoto()" class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors"><i class="fa-solid fa-power-off text-xl"></i></button>
             </div>
 
-            <div class="flex-1 overflow-y-auto no-scrollbar pb-32 flex flex-col w-full">
+            <!-- CONTENEDOR FLOTANTE PARA AVISO DE PAGO DE LUNES -->
+            <div id="aviso-pago-lunes" class="hidden px-6 mt-4">
+                <div class="bg-red-50 border-2 border-red-500 rounded-[2rem] p-6 shadow-xl text-center relative overflow-hidden">
+                    <div class="absolute -top-4 -right-4 text-red-100 opacity-20"><i class="fa-solid fa-triangle-exclamation text-8xl"></i></div>
+                    <div class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-4 relative z-10 shadow-lg"><i class="fa-solid fa-wallet"></i></div>
+                    <h3 class="font-black text-red-700 text-xl mb-2 relative z-10">Día de Liquidación</h3>
+                    <p class="text-[14.5px] text-red-600 font-bold mb-5 relative z-10">Hoy es Lunes. Tenés que abonar tu comisión pendiente para poder activar el Radar satelital.</p>
+                    <button class="w-full bg-red-600 text-white font-black rounded-xl py-4 flex items-center justify-center gap-2 shadow-lg hover:bg-red-700 active:scale-95 transition-transform relative z-10 text-[16px]" onclick="vibrar([50,50,50]); alert('Funcionalidad de pasarela de pago en construcción. Comunicate con Soporte.')">
+                        <i class="fa-solid fa-credit-card"></i> Pagar Liquidación ($<span id="btn-monto-pagar-lunes">0</span>)
+                    </button>
+                </div>
+            </div>
+
+            <div id="contenedor-panel-cadete" class="flex-1 overflow-y-auto no-scrollbar pb-32 flex flex-col w-full transition-all duration-300">
                 <!-- Zona Radar Visual -->
                 <div class="px-6 py-10 flex flex-col items-center justify-center relative shrink-0 mt-2" id="contenedor-radar">
+                    <!-- Tracker animado en el fondo si está conectado -->
+                    <div id="motito-tracker-radar" class="motito-tracker hidden">
+                        <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white border-2 border-white shadow-lg relative z-10"><i class="fa-solid fa-motorcycle"></i></div>
+                        <div class="motito-pulse"></div>
+                    </div>
+
                     <div id="efecto-radar" class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-700 pointer-events-none">
                         <div class="onda-play onda-play-1"></div><div class="onda-play onda-play-2"></div><div class="onda-play onda-play-3"></div>
                     </div>
@@ -878,7 +1012,7 @@ a { text-decoration: none; }
                         </button>
                         
                         <div id="status-bar" class="mt-8 bg-white shadow-md px-8 py-4 rounded-full border border-gray-100">
-                            <p id="estado-gps" class="text-[14.5px] font-black uppercase tracking-wider text-gray-500"><i class="fa-solid fa-location-crosshairs mr-2"></i> Desconectado de Satélites</p>
+                            <p id="estado-gps" class="text-[14.5px] font-black uppercase tracking-wider text-gray-500"><i class="fa-solid fa-location-crosshairs mr-2"></i> Desconectado de DB</p>
                         </div>
                     </div>
                 </div>
@@ -912,7 +1046,7 @@ a { text-decoration: none; }
                     </div>
 
                     <!-- Botón Soporte -->
-                    <a href="https://wa.me/5493815110171?text=Hola%20Soporte%20Delivery%20Moto,%20soy%20cadete." target="_blank" class="w-full py-4.5 bg-slate-900 text-white font-black rounded-[1.5rem] flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-transform text-[16px] h-14">
+                    <a href="https://wa.me/5493815110171?text=Hola%20Soporte%20Delivery%20Moto,%20soy%20cadete." target="_blank" onclick="vibrar(20)" class="w-full py-4.5 bg-slate-900 text-white font-black rounded-[1.5rem] flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-transform text-[16px] h-14">
                         <i class="fa-brands fa-whatsapp text-2xl text-green-400"></i> Soporte Central (3815110171)
                     </a>
                 </div>
@@ -999,11 +1133,15 @@ a { text-decoration: none; }
                         <div class="relative">
                             <div class="punto-indicador bg-blue-500"></div>
                             <label class="block text-[12px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Punto B: Tu Dirección Exacta</label>
-                            <input type="text" id="checkout-destino" placeholder="Ej: Av. San Martín 450, Famaillá" class="w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3.5 font-black text-gray-800 text-[15px] focus:border-blue-500 focus:outline-none transition-colors shadow-inner" oninput="resetearRuta()">
+                            
+                            <!-- BÚSQUEDA PREDICTIVA GOOGLE MAPS -->
+                            <input type="text" id="checkout-destino" placeholder="Empezá a escribir tu dirección..." class="w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3.5 font-black text-gray-800 text-[15px] focus:border-blue-500 focus:outline-none transition-colors shadow-inner" oninput="resetearRuta()" onfocus="inicializarInputDestino()">
+                            
+                            <p class="text-[10.5px] text-gray-400 font-bold mt-2"><i class="fa-brands fa-google"></i> Autocompletado potenciado por Google Maps</p>
                         </div>
                     </div>
 
-                    <button id="btn-calcular-ruta" onclick="calcularDistanciaRuta()" class="w-full py-4.5 h-[56px] bg-slate-900 text-white font-black rounded-xl flex items-center justify-center gap-2 shadow-lg hover:bg-slate-800 transition-colors mb-2 text-[16px]">
+                    <button id="btn-calcular-ruta" onclick="calcularDistanciaRuta()" class="w-full py-4.5 h-[56px] bg-slate-900 text-white font-black rounded-xl flex items-center justify-center gap-2 shadow-lg hover:bg-slate-800 transition-colors mb-2 text-[16px] active:scale-95">
                         <i class="fa-solid fa-location-crosshairs text-lg"></i> Cargar Mapa y Precio
                     </button>
 
@@ -1011,7 +1149,7 @@ a { text-decoration: none; }
                     <div id="mapa-contenedor" class="map-container hidden bg-slate-100 relative mt-4">
                         
                         <!-- Botón Abrir Maps -->
-                        <a id="link-abrir-maps" href="#" target="_blank" class="absolute top-3 left-3 bg-white text-blue-600 px-3 py-1.5 rounded shadow-md font-bold text-[13px] flex items-center gap-1.5 z-10 hover:bg-gray-50">
+                        <a id="link-abrir-maps" href="#" target="_blank" onclick="vibrar(20)" class="absolute top-3 left-3 bg-white text-blue-600 px-3 py-1.5 rounded shadow-md font-bold text-[13px] flex items-center gap-1.5 z-10 hover:bg-gray-50 active:scale-95 transition-transform">
                             Abrir en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
 
@@ -1122,7 +1260,7 @@ a { text-decoration: none; }
                 <i class="fa-solid fa-robot text-5xl text-blue-400 fa-fade"></i>
             </div>
             <h3 class="text-2xl font-black text-white mb-3">Auditoría IA en curso</h3>
-            <p id="texto-ia" class="text-[15px] font-medium text-gray-300 mb-8">Escaneando documentos con Inteligencia Artificial...</p>
+            <p id="texto-ia" class="text-[15px] font-medium text-gray-300 mb-8">Conectando con Servidores OpenAI...</p>
             
             <div class="w-full bg-slate-800 rounded-full h-3 mb-2 overflow-hidden border border-slate-700">
                 <div id="barra-ia" class="bg-gradient-to-r from-blue-600 to-blue-400 h-full rounded-full w-0 transition-all duration-500"></div>
@@ -1150,1032 +1288,5 @@ a { text-decoration: none; }
 
 </div>
 
-<script>
-// ==========================================
-// LÓGICA PRINCIPAL (DB, NAVEGACIÓN Y FUNCIONES)
-// ==========================================
-const PROVINCIAS_AR = [
-    "Buenos Aires", "CABA", "Catamarca", "Chaco", "Chubut", "Córdoba", "Corrientes", 
-    "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja", "Mendoza", "Misiones", 
-    "Neuquén", "Río Negro", "Salta", "San Juan", "San Luis", "Santa Cruz", "Santa Fe", 
-    "Santiago del Estero", "Tierra del Fuego", "Tucumán"
-];
-
-window.carrito = [];
-window.comercioActual = null;
-window.comercioLogueado = null;
-window.servimotoLogueado = null;
-
-// Temporales para subidas de imagen base64
-window.fotoProductoTemp = null;
-window.fotoPortadaTemp = null;
-window.selfieClienteTemp = null; 
-
-window.filtroCategoriaActual = 'Todas';
-
-// Variables GPS Premium
-window.rutaCalculada = false;
-window.costoEnvioDinamico = 0;
-window.distanciaSimulada = 0;
-window.cuadrasSimuladas = 0;
-
-// Variables Servimoto Logística
-window.radarConectado = false;
-
-function getDB() {
-    let db = localStorage.getItem('delivery_moto_db_v6_final');
-    if (!db) {
-        db = {
-            comercios: [
-                {
-                    id: 1, nombre: "Kiosco mamoly", provincia: "Tucumán", ciudad: "Famaillá",
-                    direccion: "Azcuénaga 474", horario: "Lun a Sab 09:00 a 23:00", whatsapp: "5493815110171", password: "1234",
-                    portada: "https://images.unsplash.com/photo-1601599561096-f87c95fff1e9?auto=format&fit=crop&w=800&q=80",
-                    productos: [
-                        {id: 101, nombre: "Coca-Cola 2.25L", precio: 2500, categoria: "bebida", desc: "Refresco gaseoso clásico", foto: ""},
-                        {id: 102, nombre: "Cerveza Quilmes 1L", precio: 1800, categoria: "bebida", desc: "Retornable", foto: ""},
-                        {id: 103, nombre: "Papas Lays 150g", precio: 1500, categoria: "almacen", desc: "Snack clásico", foto: ""}
-                    ],
-                    pedidos: [] // Bandeja de pedidos entrantes
-                }
-            ],
-            servimotos: [
-                {id: 1, celular: "5493815110171", password: "1234", nombre: "Cadete Master", provincia: "Tucumán", ciudad: "Famaillá", moto: "Honda Wave", documentos: {selfie: true, afip: true, policia: true}, acepto: true, conectado: false, viajes: []}
-            ]
-        };
-        localStorage.setItem('delivery_moto_db_v6_final', JSON.stringify(db));
-    }
-    return JSON.parse(db);
-}
-
-function saveDB(db) { localStorage.setItem('delivery_moto_db_v6_final', JSON.stringify(db)); }
-
-function iniciarApp() {
-    getDB();
-    llenarSelectsProvincias();
-    cargarFiltrosProvincia();
-}
-iniciarApp();
-
-function llenarSelectsProvincias() {
-    const options = '<option value="">Elegir...</option>' + PROVINCIAS_AR.map(p => `<option value="${p}">${p}</option>`).join('');
-    const selectComercio = document.getElementById('reg-provincia');
-    const selectCadete = document.getElementById('reg-prov');
-    if (selectComercio) selectComercio.innerHTML = options;
-    if (selectCadete) selectCadete.innerHTML = options;
-}
-
-// ----------------------------------------------------
-// NAVEGACIÓN Y TOASTS
-// ----------------------------------------------------
-function vibrar(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); }
-
-function mostrarToast(mensaje, tipo = 'success') {
-    vibrar(30);
-    const c = document.getElementById('toast-container');
-    if (!c) return;
-    const t = document.createElement('div');
-    t.className = 'toast';
-    const ic = tipo === 'success' 
-        ? '<div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-2xl bg-green-500/20 text-green-400"><i class="fa-solid fa-check"></i></div>'
-        : '<div class="w-12 h-12 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 text-2xl"><i class="fa-solid fa-circle-info"></i></div>';
-    t.innerHTML = ic + '<span class="leading-snug">' + mensaje + '</span>';
-    c.appendChild(t);
-    setTimeout(() => t.classList.add('show'), 10);
-    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
-}
-
-function abrirPWA() {
-    vibrar(60);
-    document.getElementById('vista-landing').style.display = 'none';
-    document.getElementById('vista-app').style.display = 'flex';
-    const splash = document.getElementById('splash-screen');
-    splash.style.display = 'flex';
-    setTimeout(() => splash.style.opacity = '1', 10);
-    setTimeout(() => { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 700); }, 1500);
-}
-
-function cambiarPantalla(id) {
-    vibrar(35);
-    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
-    const p = document.getElementById(id);
-    if (p) p.classList.add('activa');
-    if (id === 'pantalla-marketplace') renderizarMarketplace();
-    if (id === 'pantalla-admin-comercio') { actualizarDatosAdmin(); renderizarProductosComercio(); renderizarPedidosComercio(); }
-    if (id === 'pantalla-radar-servimoto') { renderizarLogisticaServimoto(); }
-    window.scrollTo(0,0);
-}
-
-function abrirModal(id) { vibrar(); document.getElementById(id).classList.add('show'); if(id === 'modal-carrito') actualizarInterfazCarrito(); }
-function cerrarModal(id) { vibrar(); document.getElementById(id).classList.remove('show'); }
-
-function irAMarketplace() { vibrar(); cambiarPantalla('pantalla-marketplace'); }
-function irARegistroComercio() { vibrar(); cambiarPantalla('pantalla-registro-comercio'); }
-function irALoginComercio() { vibrar(); cambiarPantalla('pantalla-login-comercio'); }
-function irARegistroServimoto() { vibrar(); cambiarPantalla('pantalla-registro-servimoto'); }
-function irALoginServimoto() { vibrar(); cambiarPantalla('pantalla-login-servimoto'); }
-
-// ----------------------------------------------------
-// REGISTRO Y LOGIN COMERCIO
-// ----------------------------------------------------
-function previewPortadaComercio(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        window.fotoPortadaTemp = e.target.result;
-        document.getElementById('img-portada-preview').src = e.target.result;
-        document.getElementById('img-portada-preview').classList.remove('hidden');
-        document.getElementById('preview-portada-container').style.display = 'none';
-        document.getElementById('upload-portada-comercio').classList.add('has-file');
-    };
-    reader.readAsDataURL(file);
-}
-
-function registrarComercio() {
-    const nombre = document.getElementById('reg-nombre').value.trim();
-    const horario = document.getElementById('reg-horario').value.trim();
-    const provincia = document.getElementById('reg-provincia').value;
-    const ciudad = document.getElementById('reg-ciudad').value.trim();
-    const direccion = document.getElementById('reg-direccion').value.trim();
-    const whatsapp = document.getElementById('reg-whatsapp').value.trim();
-    const password = document.getElementById('reg-password').value;
-
-    if (!nombre || !provincia || !ciudad || !direccion || !whatsapp || !password)
-        return mostrarToast('Faltan completar campos obligatorios', 'info');
-    if (password.length < 4)
-        return mostrarToast('La contraseña debe tener mínimo 4 caracteres', 'info');
-
-    const db = getDB();
-    if (db.comercios.find(c => c.whatsapp === whatsapp))
-        return mostrarToast('Este número de WhatsApp ya tiene un comercio registrado', 'info');
-
-    db.comercios.push({ 
-        id: Date.now(), nombre, horario: horario || "Horario no especificado",
-        provincia, ciudad, direccion, whatsapp, password, 
-        portada: window.fotoPortadaTemp || '', productos: [], pedidos: [] 
-    });
-    saveDB(db);
-    cargarFiltrosProvincia();
-    
-    window.fotoPortadaTemp = null;
-    document.getElementById('img-portada-preview').classList.add('hidden');
-    document.getElementById('preview-portada-container').style.display = 'block';
-    
-    mostrarToast('¡Comercio creado! Ingresá al panel');
-    setTimeout(() => cambiarPantalla('pantalla-login-comercio'), 800);
-}
-
-function loginComercio() {
-    const whatsapp = document.getElementById('login-whatsapp').value.trim();
-    const password = document.getElementById('login-password').value;
-    if (!whatsapp || !password) return mostrarToast('Ingresá tus datos', 'info');
-
-    const db = getDB();
-    const comercio = db.comercios.find(c => c.whatsapp === whatsapp && c.password === password);
-    if (!comercio) return mostrarToast('Credenciales incorrectas', 'info');
-
-    window.comercioLogueado = comercio;
-    mostrarToast('¡Bienvenido a tu Panel de Gestión!');
-    setTimeout(() => cambiarPantalla('pantalla-admin-comercio'), 500);
-}
-
-function logoutComercio() {
-    vibrar(); window.comercioLogueado = null; cambiarPantalla('pantalla-1'); mostrarToast('Sesión cerrada correctamente', 'info');
-}
-
-function actualizarDatosAdmin() {
-    if (!window.comercioLogueado) return;
-    const db = getDB();
-    const c = db.comercios.find(x => x.id === window.comercioLogueado.id);
-    if(!c) return;
-
-    document.getElementById('admin-nombre-comercio').textContent = c.nombre;
-    document.getElementById('admin-ubicacion').textContent = c.ciudad + ', ' + c.provincia;
-    
-    document.getElementById('info-local-nombre').textContent = c.nombre;
-    document.getElementById('info-local-direccion').textContent = c.direccion;
-    document.getElementById('info-local-horario').textContent = c.horario || "Horario no especificado";
-    document.getElementById('info-local-wa').textContent = '+' + c.whatsapp;
-    
-    const portadaImg = document.getElementById('admin-portada-img');
-    if(c.portada) { portadaImg.src = c.portada; portadaImg.style.display = 'block'; } 
-    else { portadaImg.style.display = 'none'; }
-}
-
-function switchTabComercio(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('active', 'bg-slate-900', 'text-white', 'shadow-md');
-        b.classList.add('text-gray-500');
-    });
-    const activeBtn = document.getElementById('tab-' + tab);
-    activeBtn.classList.add('active', 'bg-slate-900', 'text-white', 'shadow-md');
-    activeBtn.classList.remove('text-gray-500');
-    
-    document.getElementById('seccion-productos').style.display = tab === 'productos' ? 'block' : 'none';
-    document.getElementById('seccion-pedidos').style.display = tab === 'pedidos' ? 'block' : 'none';
-    
-    if(tab === 'pedidos') renderizarPedidosComercio();
-}
-
-// ----------------------------------------------------
-// COMERCIO - CARGA DE PRODUCTOS Y PEDIDOS
-// ----------------------------------------------------
-function previewFotoProducto(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        window.fotoProductoTemp = e.target.result;
-        document.getElementById('preview-foto').src = e.target.result;
-        document.getElementById('preview-foto').classList.remove('hidden');
-        document.getElementById('upload-preview-container').style.display = 'none';
-        document.getElementById('upload-zone').classList.add('has-file');
-    };
-    reader.readAsDataURL(file);
-}
-
-function cargarProductoComercio() {
-    if (!window.comercioLogueado) return mostrarToast('Iniciá sesión', 'info');
-
-    const nombre = document.getElementById('add-prod-nombre').value.trim();
-    const categoria = document.getElementById('add-prod-categoria').value;
-    const precio = parseFloat(document.getElementById('add-prod-precio').value);
-    const desc = document.getElementById('add-prod-desc').value.trim();
-
-    if (!nombre || !categoria || isNaN(precio)) return mostrarToast('Faltan completar campos del producto', 'info');
-
-    const db = getDB();
-    const comercio = db.comercios.find(c => c.id === window.comercioLogueado.id);
-    
-    comercio.productos.push({ id: Date.now(), nombre, categoria, precio, desc, foto: window.fotoProductoTemp || '' });
-    saveDB(db);
-    window.comercioLogueado = comercio;
-
-    document.getElementById('add-prod-nombre').value = '';
-    document.getElementById('add-prod-categoria').value = '';
-    document.getElementById('add-prod-precio').value = '';
-    document.getElementById('add-prod-desc').value = '';
-    document.getElementById('preview-foto').classList.add('hidden');
-    document.getElementById('upload-preview-container').style.display = 'block';
-    document.getElementById('upload-zone').classList.remove('has-file');
-    window.fotoProductoTemp = null;
-
-    mostrarToast('¡Producto publicado en tu catálogo!');
-    renderizarProductosComercio();
-}
-
-function renderizarProductosComercio() {
-    if (!window.comercioLogueado) return;
-    const db = getDB();
-    const comercio = db.comercios.find(c => c.id === window.comercioLogueado.id);
-
-    const lista = document.getElementById('lista-productos-comercio');
-    document.getElementById('contador-productos').textContent = comercio.productos.length + ' artículos';
-
-    if (comercio.productos.length === 0) {
-        lista.innerHTML = `
-            <div class="bg-white rounded-[1.5rem] p-8 text-center border border-gray-100 shadow-sm">
-                <div class="w-16 h-16 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-3"><i class="fa-solid fa-box-open"></i></div>
-                <p class="text-gray-500 font-bold text-[15px]">Aún no tenés productos</p>
-            </div>`;
-        return;
-    }
-
-    lista.innerHTML = comercio.productos.map(p => `
-        <div class="flex items-center gap-4 bg-white p-4 rounded-[1.5rem] border border-gray-100 shadow-sm animate-slide-in">
-            ${p.foto ? `<img src="${p.foto}" class="w-16 h-16 rounded-2xl object-cover shadow-sm">` : `<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-400 text-2xl shadow-inner"><i class="fa-solid fa-box"></i></div>`}
-            <div class="flex-1 min-w-0">
-                <h4 class="font-black text-gray-900 text-[15.5px] truncate">${p.nombre}</h4>
-                <span class="badge-categoria cat-${p.categoria} mt-1">${p.categoria}</span>
-                <p class="font-black text-orange-600 text-[16px] mt-1.5">$${p.precio}</p>
-            </div>
-            <button onclick="eliminarProducto(${p.id})" class="w-11 h-11 rounded-full bg-red-50 text-red-500 flex items-center justify-center active:scale-90 transition-transform hover:bg-red-100">
-                <i class="fa-solid fa-trash text-sm"></i>
-            </button>
-        </div>
-    `).join('');
-}
-
-function eliminarProducto(id) {
-    if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
-    const db = getDB();
-    const comercio = db.comercios.find(c => c.id === window.comercioLogueado.id);
-    comercio.productos = comercio.productos.filter(p => p.id !== id);
-    saveDB(db);
-    window.comercioLogueado = comercio;
-    mostrarToast('Producto eliminado', 'info');
-    renderizarProductosComercio();
-}
-
-function renderizarPedidosComercio() {
-    if (!window.comercioLogueado) return;
-    const db = getDB();
-    const comercio = db.comercios.find(c => c.id === window.comercioLogueado.id);
-    if (!comercio.pedidos) comercio.pedidos = [];
-
-    const lista = document.getElementById('lista-pedidos-comercio');
-    document.getElementById('contador-pedidos-comercio').textContent = comercio.pedidos.length;
-
-    if (comercio.pedidos.length === 0) {
-        lista.innerHTML = `
-            <div class="text-center py-10">
-                <div class="w-20 h-20 bg-green-50 text-green-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4"><i class="fa-brands fa-whatsapp"></i></div>
-                <h3 class="font-black text-gray-800 text-xl mb-2">Bandeja Vacía</h3>
-                <p class="text-[14.5px] text-gray-500 font-medium leading-snug">Cuando un cliente finalice un pedido en tu catálogo, aparecerá automáticamente aquí.</p>
-            </div>`;
-        return;
-    }
-
-    lista.innerHTML = [...comercio.pedidos].reverse().map(pedido => `
-        <div class="bg-gray-50 border border-gray-200 rounded-[1.5rem] p-4 flex flex-col gap-3 shadow-sm animate-slide-in">
-            <div class="flex justify-between items-start">
-                <div class="flex items-center gap-3">
-                    ${pedido.selfie ? `<img src="${pedido.selfie}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : `<div class="w-12 h-12 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center text-xl"><i class="fa-solid fa-user"></i></div>`}
-                    <div>
-                        <h4 class="font-black text-gray-900 text-[15px]">${pedido.clienteNombre}</h4>
-                        <p class="text-xs text-gray-500 font-bold uppercase">${new Date(pedido.fecha).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}hs</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <p class="font-black text-orange-600 text-[17px]">$${pedido.totalPedido}</p>
-                </div>
-            </div>
-            
-            <p class="text-[13px] text-gray-600 font-medium line-clamp-2 bg-white p-2 rounded-lg border border-gray-100">
-                <i class="fa-solid fa-location-dot text-orange-400 mr-1"></i> ${pedido.destino}
-            </p>
-            
-            <div class="flex gap-2">
-                <button onclick="verDetallePedido(${pedido.id})" class="flex-1 bg-white border border-gray-200 text-gray-700 py-2 rounded-xl font-bold text-[13px] hover:bg-gray-100">Ver Detalle</button>
-                <a href="https://wa.me/${pedido.clienteWa}?text=Hola%20${encodeURIComponent(pedido.clienteNombre)},%20somos%20${encodeURIComponent(window.comercioLogueado.nombre)}.%20Ya%20vimos%20tu%20pedido%20y%20estamos%20llamando%20al%20cadete." target="_blank" class="flex-1 bg-green-500 text-white py-2 rounded-xl font-bold text-[13px] hover:bg-green-600 flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp"></i> Chat Cliente</a>
-            </div>
-        </div>
-    `).join('');
-}
-
-function verDetallePedido(pedidoId) {
-    const db = getDB();
-    const comercio = db.comercios.find(c => c.id === window.comercioLogueado.id);
-    const pedido = comercio.pedidos.find(p => p.id === pedidoId);
-    if(!pedido) return;
-
-    let itemsHtml = pedido.items.map(i => `
-        <div class="flex justify-between items-center bg-gray-50 p-2 rounded mb-1">
-            <span class="text-sm font-bold text-gray-700">${i.cantidad}x ${i.nombre}</span>
-            <span class="text-sm font-black text-gray-900">$${i.precio * i.cantidad}</span>
-        </div>
-    `).join('');
-
-    const html = `
-        <div class="mb-4">
-            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Cliente</p>
-            <p class="font-black text-gray-900 text-[16px]">${pedido.clienteNombre}</p>
-            <p class="text-sm font-bold text-gray-500"><i class="fa-solid fa-phone text-green-500"></i> ${pedido.clienteWa}</p>
-        </div>
-        <div class="mb-4">
-            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Entrega a:</p>
-            <p class="font-bold text-gray-700 text-sm bg-orange-50 p-2 rounded border border-orange-100">${pedido.destino}</p>
-            <p class="text-[11px] font-bold text-blue-500 mt-1"><i class="fa-solid fa-motorcycle"></i> Envío a cobrar: $${pedido.costoEnvio}</p>
-        </div>
-        <div class="mb-4">
-            <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Productos</p>
-            ${itemsHtml}
-        </div>
-        <div class="border-t pt-3 flex justify-between items-center">
-            <span class="font-bold text-gray-600">Total Productos:</span>
-            <span class="font-black text-2xl text-orange-600">$${pedido.totalPedido}</span>
-        </div>
-    `;
-
-    document.getElementById('detalle-pedido-contenido').innerHTML = html;
-    abrirModal('modal-detalle-pedido');
-}
-
-// ----------------------------------------------------
-// MARKETPLACE Y CATÁLOGO DEL CLIENTE
-// ----------------------------------------------------
-function cargarFiltrosProvincia() {
-    const db = getDB();
-    const provinciasActivas = [...new Set(db.comercios.map(c => c.provincia))].sort();
-    const sp = document.getElementById('filtro-provincia');
-    if (sp) sp.innerHTML = '<option value="Todas">Provincias...</option>' + provinciasActivas.map(p => `<option value="${p}">${p}</option>`).join('');
-}
-
-function cambiarFiltroProvincia() {
-    const prov = document.getElementById('filtro-provincia').value;
-    const db = getDB();
-    const ciudades = prov === 'Todas' 
-        ? [...new Set(db.comercios.map(c => c.ciudad))].sort()
-        : [...new Set(db.comercios.filter(c => c.provincia === prov).map(c => c.ciudad))].sort();
-    
-    const sc = document.getElementById('filtro-ciudad');
-    sc.innerHTML = '<option value="Todas">Ciudades...</option>' + ciudades.map(c => `<option value="${c}">${c}</option>`).join('');
-    renderizarMarketplace();
-}
-
-let searchTimeout;
-function filtrarPorTexto() { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => renderizarMarketplace(), 250); }
-
-function filtrarPorCategoria(btn) {
-    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    window.filtroCategoriaActual = btn.dataset.cat;
-    renderizarMarketplace();
-}
-
-function renderizarMarketplace() {
-    const prov = document.getElementById('filtro-provincia').value;
-    const ciudad = document.getElementById('filtro-ciudad').value;
-    const texto = document.getElementById('buscador-global') ? document.getElementById('buscador-global').value.toLowerCase() : "";
-    const grilla = document.getElementById('grilla-locales-dinamica');
-    if (!grilla) return;
-
-    const db = getDB();
-    let comercios = db.comercios;
-
-    if (prov !== 'Todas') comercios = comercios.filter(c => c.provincia === prov);
-    if (ciudad !== 'Todas') comercios = comercios.filter(c => c.ciudad === ciudad);
-    if (window.filtroCategoriaActual !== 'Todas') 
-        comercios = comercios.filter(c => c.productos.some(p => p.categoria === window.filtroCategoriaActual));
-    if (texto) comercios = comercios.filter(c => 
-        c.nombre.toLowerCase().includes(texto) || c.productos.some(p => p.nombre.toLowerCase().includes(texto))
-    );
-
-    document.getElementById('contador-locales').textContent = comercios.length + (comercios.length === 1 ? ' local' : ' locales');
-
-    if (comercios.length === 0) {
-        grilla.innerHTML = `
-            <div class="text-center py-12 bg-white rounded-[2rem] border border-gray-100 shadow-sm mt-4">
-                <div class="w-16 h-16 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fa-solid fa-store-slash"></i></div>
-                <p class="text-gray-500 font-bold text-[16px]">No encontramos comercios.</p>
-            </div>`;
-        return;
-    }
-
-    grilla.innerHTML = comercios.map(local => `
-        <div onclick="abrirCatalogoComercio(${local.id})" class="comercio-card animate-slide-in relative overflow-hidden">
-            <div class="w-[80px] h-[80px] rounded-[1.5rem] bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-white text-3xl shadow-lg shrink-0 overflow-hidden relative border border-slate-700">
-                ${local.portada ? `<img src="${local.portada}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-store"></i>`}
-            </div>
-            <div class="flex-1 min-w-0">
-                <h4 class="font-black text-gray-900 text-[18px] truncate leading-tight mb-1">${local.nombre}</h4>
-                <p class="text-[12.5px] text-gray-500 font-bold truncate mb-2"><i class="fa-solid fa-location-dot text-orange-500 mr-1"></i> ${local.ciudad}, ${local.provincia}</p>
-                <div class="flex items-center gap-2">
-                    <span class="text-[11px] font-black text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100">${local.productos.length} items</span>
-                    <span class="badge-seguridad badge-verde"><i class="fa-solid fa-check"></i></span>
-                </div>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 shrink-0">
-                <i class="fa-solid fa-chevron-right text-lg"></i>
-            </div>
-        </div>
-    `).join('');
-}
-
-function abrirCatalogoComercio(id) {
-    vibrar(40);
-    const db = getDB();
-    window.comercioActual = db.comercios.find(c => c.id === id);
-    if (!window.comercioActual) return;
-    
-    document.getElementById('cat-nombre').textContent = window.comercioActual.nombre;
-    document.getElementById('cat-ciudad').textContent = window.comercioActual.direccion + ', ' + window.comercioActual.ciudad;
-    document.getElementById('cat-horario').textContent = window.comercioActual.horario || "Horario a convenir";
-    document.getElementById('btn-wa-local').href = `https://wa.me/${window.comercioActual.whatsapp}`;
-    
-    const imgPortada = document.getElementById('cat-portada');
-    if(window.comercioActual.portada) {
-        imgPortada.src = window.comercioActual.portada;
-        imgPortada.style.display = 'block';
-    } else {
-        imgPortada.style.display = 'none';
-        imgPortada.parentElement.classList.add('bg-gradient-to-r', 'from-slate-800', 'to-slate-900');
-    }
-
-    const inputOrigen = document.getElementById('checkout-origen');
-    if (inputOrigen) {
-        inputOrigen.value = window.comercioActual.direccion + ', ' + window.comercioActual.ciudad;
-        resetearRuta();
-    }
-
-    renderizarProductosCatalogo();
-    cambiarPantalla('pantalla-catalogo');
-}
-
-function renderizarProductosCatalogo() {
-    if (!window.comercioActual) return;
-    const container = document.getElementById('contenedor-productos');
-    const sinProd = document.getElementById('sin-productos');
-    const texto = document.getElementById('buscador-productos') ? document.getElementById('buscador-productos').value.toLowerCase() : "";
-    
-    let productos = window.comercioActual.productos;
-    if (texto) productos = productos.filter(p => p.nombre.toLowerCase().includes(texto));
-
-    if (productos.length === 0) {
-        container.innerHTML = '';
-        sinProd.classList.remove('hidden');
-        return;
-    }
-    sinProd.classList.add('hidden');
-    
-    container.innerHTML = productos.map((p, idx) => `
-        <div class="producto-card animate-slide-in flex flex-col h-full bg-white" style="animation-delay:${idx * 0.05}s">
-            ${p.foto ? `<img src="${p.foto}" class="w-full h-[130px] object-cover bg-slate-50">` : `<div class="w-full h-[130px] flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 text-slate-300 text-5xl"><i class="fa-solid fa-box-open"></i></div>`}
-            <div class="p-4 flex flex-col flex-1">
-                <span class="badge-categoria cat-${p.categoria} mb-2 inline-block self-start">${p.categoria}</span>
-                <h4 class="font-black text-[14.5px] text-gray-900 leading-tight mb-1.5 line-clamp-2">${p.nombre}</h4>
-                ${p.desc ? `<p class="text-[12px] text-gray-500 font-medium line-clamp-2 mb-3 flex-1">${p.desc}</p>` : '<div class="flex-1"></div>'}
-                <div class="flex justify-between items-end mt-auto pt-2 border-t border-gray-50">
-                    <span class="font-black text-[19px] text-orange-600 leading-none">$${p.precio}</span>
-                    <button onclick="agregarAlCarrito(${p.id}, '${p.nombre.replace(/'/g, "\\'")}', ${p.precio})" class="w-10 h-10 rounded-[12px] bg-slate-900 text-white flex items-center justify-center shadow-lg hover:bg-orange-500 transition-colors active:scale-90">
-                        <i class="fa-solid fa-plus text-lg"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-function filtrarProductosLocal() { renderizarProductosCatalogo(); }
-
-// ----------------------------------------------------
-// CARRITO Y CHECKOUT MAPA (LÓGICA DE PRECIO POR CUADRAS Y SELFIE)
-// ----------------------------------------------------
-
-function previewSelfieCliente(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        window.selfieClienteTemp = e.target.result;
-        document.getElementById('img-selfie-preview').src = e.target.result;
-        document.getElementById('img-selfie-preview').classList.remove('hidden');
-        document.getElementById('preview-selfie-container').style.display = 'none';
-        document.getElementById('upload-selfie-cliente').classList.add('has-file');
-    };
-    reader.readAsDataURL(file);
-}
-
-function agregarAlCarrito(id, nombre, precio) {
-    vibrar(20);
-    const item = window.carrito.find(c => c.id === id);
-    if (item) item.cantidad++;
-    else window.carrito.push({
-        id, nombre, precio, cantidad: 1,
-        comercioId: window.comercioActual.id,
-        comercioNombre: window.comercioActual.nombre,
-        comercioWhatsapp: window.comercioActual.whatsapp
-    });
-    mostrarToast('Agregado: ' + nombre);
-    actualizarInterfazCarrito();
-}
-
-function quitarDelCarrito(id) {
-    vibrar(15);
-    const item = window.carrito.find(c => c.id === id);
-    if (item) { item.cantidad--; if (item.cantidad <= 0) window.carrito = window.carrito.filter(c => c.id !== id); }
-    actualizarInterfazCarrito();
-}
-
-function vaciarCarrito() { 
-    window.carrito = []; 
-    resetearRuta(); 
-    
-    // Limpiar formulario y foto selfie
-    document.getElementById('checkout-nombre').value = '';
-    document.getElementById('checkout-whatsapp').value = '';
-    document.getElementById('checkout-destino').value = '';
-    window.selfieClienteTemp = null;
-    document.getElementById('img-selfie-preview').classList.add('hidden');
-    document.getElementById('preview-selfie-container').style.display = 'block';
-    document.getElementById('upload-selfie-cliente').classList.remove('has-file');
-
-    actualizarInterfazCarrito(); 
-}
-
-function actualizarInterfazCarrito() {
-    const totalItems = window.carrito.reduce((s, c) => s + c.cantidad, 0);
-    const subtotal = window.carrito.reduce((s, c) => s + (c.precio * c.cantidad), 0);
-    const totalFinal = subtotal + (window.rutaCalculada ? window.costoEnvioDinamico : 0);
-
-    const b1 = document.getElementById('badge-carrito');
-    const b2 = document.getElementById('badge-carrito-cat');
-    if (totalItems > 0) {
-        if (b1) { b1.textContent = totalItems; b1.classList.remove('hidden'); }
-        if (b2) { b2.textContent = totalItems; b2.classList.remove('hidden'); }
-    } else { if (b1) b1.classList.add('hidden'); if (b2) b2.classList.add('hidden'); }
-
-    const barra = document.getElementById('barra-ver-carrito');
-    if (barra) {
-        if (totalItems > 0) {
-            barra.classList.remove('hidden');
-            document.getElementById('barra-total').textContent = '$' + subtotal;
-            document.getElementById('barra-cant').textContent = totalItems + (totalItems === 1 ? ' ítem' : ' ítems');
-        } else barra.classList.add('hidden');
-    }
-
-    const lista = document.getElementById('carrito-lista');
-    const vacio = document.getElementById('carrito-vacio');
-    
-    if (window.carrito.length === 0) {
-        if (lista) lista.innerHTML = '';
-        if (vacio) vacio.classList.remove('hidden');
-    } else {
-        if (vacio) vacio.classList.add('hidden');
-        if (lista) lista.innerHTML = window.carrito.map(item => `
-            <div class="bg-white p-4 rounded-[1.5rem] border border-gray-100 flex items-center gap-4 shadow-sm relative overflow-hidden">
-                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-orange-400"></div>
-                <div class="flex-1 min-w-0 pl-2">
-                    <h4 class="font-black text-gray-900 text-[15px] truncate">${item.nombre}</h4>
-                    <p class="font-black text-orange-600 text-[16px] mt-1.5">$${item.precio} <span class="text-[11px] text-gray-400 font-bold uppercase ml-1">c/u</span></p>
-                </div>
-                <div class="flex items-center gap-3 bg-gray-50 p-1.5 rounded-[1rem] border border-gray-200 shadow-inner">
-                    <button onclick="quitarDelCarrito(${item.id})" class="w-9 h-9 rounded-lg bg-white text-gray-600 flex items-center justify-center shadow-sm active:scale-90 transition-transform">
-                        <i class="fa-solid fa-minus text-sm"></i>
-                    </button>
-                    <span class="font-black text-gray-900 w-5 text-center text-[16px]">${item.cantidad}</span>
-                    <button onclick="agregarAlCarrito(${item.id}, '${item.nombre.replace(/'/g, "\\'")}', ${item.precio})" class="w-9 h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center shadow-md active:scale-90 transition-transform">
-                        <i class="fa-solid fa-plus text-sm"></i>
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    const st = document.getElementById('carrito-subtotal-txt');
-    const tt = document.getElementById('carrito-total-txt');
-    if (st) st.textContent = '$' + subtotal;
-    if (tt) tt.textContent = '$' + totalFinal;
-}
-
-function resetearRuta() {
-    window.rutaCalculada = false;
-    window.costoEnvioDinamico = 0;
-    window.distanciaSimulada = 0;
-    window.cuadrasSimuladas = 0;
-    
-    const mapa = document.getElementById('mapa-contenedor');
-    if (mapa) {
-        mapa.classList.remove('active');
-        setTimeout(() => { mapa.classList.add('hidden'); document.getElementById('iframe-google-map').src = ''; }, 400);
-    }
-    
-    const txtEnvio = document.getElementById('txt-costo-envio-resumen');
-    if (txtEnvio) {
-        txtEnvio.textContent = "Requiere cálculo";
-        txtEnvio.classList.add('text-gray-400');
-        txtEnvio.classList.remove('text-green-600');
-    }
-
-    document.getElementById('aviso-tarifa').classList.add('hidden');
-    
-    const btnWpp = document.getElementById('btn-whatsapp-checkout');
-    if (btnWpp) {
-        btnWpp.disabled = true;
-        btnWpp.classList.add('opacity-50', 'cursor-not-allowed');
-        btnWpp.classList.remove('hover:bg-[#20bd5a]', 'shadow-[0_10px_25px_rgba(37,211,102,0.3)]');
-        btnWpp.innerHTML = '<i class="fa-brands fa-whatsapp text-2xl"></i> Enviar Pedido Seguro';
-    }
-    
-    actualizarInterfazCarrito();
-}
-
-function calcularDistanciaRuta() {
-    if (window.carrito.length === 0) return mostrarToast('Agregá productos al carrito', 'info');
-    
-    const origen = document.getElementById('checkout-origen').value;
-    const destino = document.getElementById('checkout-destino').value.trim();
-    if(!destino) {
-        vibrar([50, 100, 50]);
-        document.getElementById('checkout-destino').focus();
-        return mostrarToast('📍 Ingresá tu dirección de entrega exacta (Punto B)');
-    }
-
-    const btn = document.getElementById('btn-calcular-ruta');
-    btn.innerHTML = '<i class="fa-solid fa-satellite fa-spin"></i> Conectando al Satélite GPS...';
-    btn.classList.add('bg-blue-600');
-    btn.classList.remove('bg-slate-900', 'hover:bg-slate-800');
-
-    setTimeout(() => {
-        // SIMULACIÓN: Al no haber API key directa de Maps Distance Matrix, calculamos cuadras simuladas lógicas para la app.
-        window.distanciaSimulada = (Math.random() * (5.0 - 1.0) + 1.0).toFixed(1);
-        window.cuadrasSimuladas = Math.round(window.distanciaSimulada * 10);
-        
-        // REGLA MATEMÁTICA ESTRICTA PEDIDA:
-        const horaActual = new Date().getHours();
-        const esNoche = (horaActual >= 20 || horaActual < 6);
-        let tarifaBase = esNoche ? 3000 : 1500; // Base $3000 noche, $1500 de día
-        
-        window.costoEnvioDinamico = tarifaBase;
-        
-        // Pasado 1km (10 cuadras), suma $100 por cada cuadra adicional
-        if (window.cuadrasSimuladas > 10) {
-            const cuadrasExtra = window.cuadrasSimuladas - 10;
-            window.costoEnvioDinamico += (cuadrasExtra * 100);
-        }
-        
-        window.rutaCalculada = true;
-        
-        // Update MAPA UI
-        document.getElementById('mapa-distancia').textContent = window.distanciaSimulada + ' km';
-        document.getElementById('mapa-cuadras').textContent = window.cuadrasSimuladas + ' cuadras';
-        document.getElementById('mapa-precio-envio').textContent = '$' + window.costoEnvioDinamico;
-        
-        // API Maps Embebida Universal
-        const ciudadAct = window.comercioActual.ciudad;
-        const provAct = window.comercioActual.provincia;
-        const queryDestino = encodeURIComponent(destino + ', ' + ciudadAct + ', ' + provAct);
-        
-        document.getElementById('iframe-google-map').src = `https://maps.google.com/maps?q=${queryDestino}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-        document.getElementById('link-abrir-maps').href = `https://www.google.com/maps/search/?api=1&query=${queryDestino}`;
-        
-        const mapaContainer = document.getElementById('mapa-contenedor');
-        mapaContainer.classList.remove('hidden');
-        setTimeout(() => mapaContainer.classList.add('active'), 50);
-
-        // Update Textos
-        const txtEnvio = document.getElementById('txt-costo-envio-resumen');
-        txtEnvio.textContent = '$' + window.costoEnvioDinamico;
-        txtEnvio.classList.remove('text-gray-400');
-        txtEnvio.classList.add('text-green-600', 'font-black');
-
-        const aviso = document.getElementById('aviso-tarifa');
-        aviso.classList.remove('hidden');
-        if(esNoche) {
-            aviso.innerHTML = `<span class="text-indigo-600"><i class="fa-solid fa-moon"></i> Tarifa Nocturna (Base $3000 x 1km + $100/cuadra extra)</span>`;
-        } else {
-            aviso.innerHTML = `<span class="text-orange-600"><i class="fa-solid fa-sun"></i> Tarifa Diurna (Base $1500 x 1km + $100/cuadra extra)</span>`;
-        }
-
-        const btnWpp = document.getElementById('btn-whatsapp-checkout');
-        btnWpp.disabled = false;
-        btnWpp.classList.remove('opacity-50', 'cursor-not-allowed');
-        btnWpp.classList.add('hover:bg-[#20bd5a]', 'shadow-[0_10px_25px_rgba(37,211,102,0.3)]');
-        btnWpp.innerHTML = '<i class="fa-brands fa-whatsapp text-2xl fa-bounce"></i> Confirmar Pedido Seguro';
-
-        btn.innerHTML = '<i class="fa-solid fa-check-circle text-green-400 text-xl"></i> Ruta Satelital Trazada';
-        btn.classList.remove('bg-blue-600');
-        btn.classList.add('bg-slate-800');
-        
-        actualizarInterfazCarrito();
-        mostrarToast('¡Ruta trazada! Costo de envío calculado.');
-        vibrar([50, 50, 100]);
-    }, 2000);
-}
-
-function procesarCheckoutWhatsapp() {
-    if (window.carrito.length === 0) return mostrarToast('Carrito vacío', 'info');
-    if (!window.rutaCalculada) { vibrar(); return mostrarToast('⚠️ Calculá la ruta satelital primero.'); }
-    if (!window.selfieClienteTemp) { vibrar(); return mostrarToast('📷 Por seguridad, subí una selfie para que el cadete te reconozca.'); }
-
-    const nombre = document.getElementById('checkout-nombre').value.trim() || 'Cliente Delivery Moto';
-    const whatsappCli = document.getElementById('checkout-whatsapp').value.trim() || 'No especificado';
-    const destino = document.getElementById('checkout-destino').value.trim();
-    const origen = document.getElementById('checkout-origen').value;
-
-    const porComercio = {};
-    window.carrito.forEach(item => {
-        if (!porComercio[item.comercioId]) porComercio[item.comercioId] = { id: item.comercioId, nombre: item.comercioNombre, whatsapp: item.comercioWhatsapp, items: [] };
-        porComercio[item.comercioId].items.push(item);
-    });
-
-    const db = getDB();
-
-    Object.values(porComercio).forEach(comercio => {
-        let subtotal = comercio.items.reduce((s, i) => s + (i.precio * i.cantidad), 0);
-        let total = subtotal + window.costoEnvioDinamico;
-        
-        const cuadrasExtra = window.cuadrasSimuladas > 10 ? window.cuadrasSimuladas - 10 : 0;
-        const extraDesc = cuadrasExtra > 0 ? ` (+ ${cuadrasExtra} cuadras a $100 c/u)` : '';
-
-        // GUARDAR EL PEDIDO EN LA BASE DE DATOS DEL COMERCIO CORRESPONDIENTE
-        const comercioDB = db.comercios.find(c => c.id === comercio.id);
-        if(comercioDB) {
-            if(!comercioDB.pedidos) comercioDB.pedidos = [];
-            comercioDB.pedidos.push({
-                id: Date.now(),
-                fecha: new Date().toISOString(),
-                clienteNombre: nombre,
-                clienteWa: whatsappCli,
-                destino: destino,
-                selfie: window.selfieClienteTemp, // Guardamos la selfie para el panel del comercio
-                items: comercio.items,
-                totalPedido: subtotal,
-                costoEnvio: window.costoEnvioDinamico
-            });
-            saveDB(db);
-        }
-
-        // MENSAJE DE WHATSAPP
-        let msj = `*🚀 NUEVO PEDIDO PREMIUM - DELIVERY MOTO*\n\n`;
-        msj += `*👤 Cliente:* ${nombre}\n`;
-        msj += `*📱 Celular:* ${whatsappCli}\n`;
-        msj += `*📸 Identidad Verificada (Foto guardada en sistema)*\n\n`;
-        
-        msj += `*📍 RUTA DEL CADETE (GPS)*\n`;
-        msj += `*A) Comerco Retira en:* ${origen}\n`;
-        msj += `*B) Entregar a:* ${destino}\n`;
-        msj += `*🛣️ Recorrido:* ${window.distanciaSimulada} km (${window.cuadrasSimuladas} cuadras)\n\n`;
-        
-        msj += `*📦 DETALLE DEL PEDIDO*\n`;
-        comercio.items.forEach(i => { msj += `• ${i.cantidad}x ${i.nombre} - $${i.precio * i.cantidad}\n`; });
-        
-        msj += `\n*💰 Subtotal Productos:* $${subtotal}\n`;
-        msj += `*🛵 Costo de Envío Calculado:* $${window.costoEnvioDinamico} _${extraDesc}_\n`;
-        msj += `*📊 TOTAL A COBRAR AL CLIENTE:* $${total}\n\n`;
-        msj += `_Info Comercial: Solicitá el cadete en el sistema. El cliente abonará el total en puerta._`;
-        
-        const url = `https://wa.me/${comercio.whatsapp}?text=${encodeURIComponent(msj)}`;
-        window.open(url, '_blank');
-    });
-
-    setTimeout(() => simularAlertaRadar(window.costoEnvioDinamico, origen, destino, window.cuadrasSimuladas), 2000);
-    cerrarModal('modal-carrito');
-    setTimeout(() => abrirModal('modal-pago-exito'), 500);
-}
-
-function simularAlertaRadar(costo, origen, destino, cuadras) {
-    if (window.radarConectado) {
-        document.getElementById('radar-origen-txt').textContent = origen;
-        document.getElementById('radar-destino-txt').textContent = destino;
-        document.getElementById('radar-cuadras-txt').textContent = cuadras;
-        document.getElementById('radar-precio-txt').textContent = '$ ' + costo;
-        abrirModal('modal-radar-cadete');
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200, 100, 500]);
-    }
-}
-
-// ----------------------------------------------------
-// CADETE SERVIMOTO: LOGÍSTICA, REGISTRO Y RADAR
-// ----------------------------------------------------
-function marcarDocCargado(idDoc, nombre) {
-    const el = document.getElementById(idDoc);
-    if (!el) return;
-    el.classList.remove('border-dashed', 'border-gray-300');
-    el.classList.add('border-green-500', 'bg-green-50');
-    
-    const iconContainer = el.querySelector('.icon-container');
-    if (iconContainer) {
-        iconContainer.classList.remove('bg-orange-50', 'text-orange-600', 'bg-blue-50', 'text-blue-600', 'bg-green-50', 'text-green-600');
-        iconContainer.classList.add('bg-green-100', 'text-green-700');
-    }
-
-    const status = el.querySelector('.doc-status');
-    const iconCheck = el.querySelector('.doc-icon');
-    if (status) {
-        status.textContent = nombre ? 'Validado: ' + nombre.substring(0, 15) + '...' : 'Documento Cargado';
-        status.classList.remove('text-gray-400');
-        status.classList.add('text-green-600');
-    }
-    if (iconCheck) iconCheck.classList.remove('hidden');
-}
-
-function iniciarAuditoriaIA() {
-    const celular = document.getElementById('reg-celular').value.trim();
-    const provincia = document.getElementById('reg-prov').value;
-    const ciudad = document.getElementById('reg-ciudad-cadete').value.trim();
-    const moto = document.getElementById('reg-moto').value.trim();
-    const password = document.getElementById('reg-password-cadete').value;
-    const acepto = document.getElementById('acepto-terminos').checked;
-
-    if (!celular || !provincia || !ciudad || !moto || !password) return mostrarToast('Completá todos los datos', 'info');
-    if (!acepto) return mostrarToast('Aceptá los términos de trabajo', 'info');
-
-    const db = getDB();
-    if (db.servimotos.find(s => s.celular === celular)) return mostrarToast('Este número ya es Servimoto', 'info');
-
-    abrirModal('modal-ia');
-    const barra = document.getElementById('barra-ia');
-    const texto = document.getElementById('texto-ia');
-    
-    setTimeout(() => { barra.style.width = '35%'; texto.textContent = 'Analizando biometría facial de la Selfie...'; }, 800);
-    setTimeout(() => { barra.style.width = '65%'; texto.textContent = 'Validando constancia fiscal con AFIP...'; }, 1800);
-    setTimeout(() => { barra.style.width = '90%'; texto.textContent = 'Verificando bases de datos policiales...'; }, 2800);
-    setTimeout(() => {
-        barra.style.width = '100%';
-        barra.classList.remove('from-blue-600', 'to-blue-400');
-        barra.classList.add('from-green-600', 'to-green-400');
-        texto.textContent = '¡Auditoría Aprobada Exitosamente!';
-        texto.classList.add('text-green-400', 'font-black');
-        
-        db.servimotos.push({
-            id: Date.now(), celular, password, nombre: 'Cadete ' + moto.split(' ')[0], provincia, ciudad, moto,
-            documentos: { selfie: true, afip: true, policia: true }, acepto: true, conectado: false, viajes: []
-        });
-        saveDB(db);
-        
-        setTimeout(() => {
-            cerrarModal('modal-ia'); barra.style.width = '0';
-            mostrarToast('¡Alta Servimoto Aprobada! Conectate.');
-            setTimeout(() => cambiarPantalla('pantalla-login-servimoto'), 800);
-        }, 1000);
-    }, 3800);
-}
-
-function loginServimoto() {
-    const celular = document.getElementById('login-servi-celular').value.trim();
-    const password = document.getElementById('login-servi-password').value;
-    if (!celular || !password) return mostrarToast('Ingresá datos', 'info');
-
-    const db = getDB();
-    const servi = db.servimotos.find(s => s.celular === celular && s.password === password);
-    if (!servi) return mostrarToast('Credenciales incorrectas', 'info');
-
-    window.servimotoLogueado = servi;
-    document.getElementById('radar-nombre-cadete').textContent = servi.nombre;
-    
-    mostrarToast('¡Acceso concedido al Radar!');
-    setTimeout(() => cambiarPantalla('pantalla-radar-servimoto'), 500);
-}
-
-function logoutServimoto() {
-    vibrar(); window.servimotoLogueado = null;
-    if(window.radarConectado) toggleConexionRadar(); 
-    cambiarPantalla('pantalla-1'); mostrarToast('Sesión de cadete cerrada', 'info');
-}
-
-function renderizarLogisticaServimoto() {
-    if(!window.servimotoLogueado) return;
-    const db = getDB();
-    const cadete = db.servimotos.find(s => s.id === window.servimotoLogueado.id);
-    if(!cadete) return;
-    if(!cadete.viajes) { cadete.viajes = []; saveDB(db); }
-
-    const lista = document.getElementById('lista-viajes-cadete');
-    document.getElementById('contador-viajes').textContent = cadete.viajes.length;
-    
-    const comisionTotal = cadete.viajes.length * 200;
-    document.getElementById('total-adeudado-cadete').textContent = '$' + comisionTotal;
-
-    if(cadete.viajes.length === 0) {
-        lista.innerHTML = `
-            <div class="text-center py-6">
-                <i class="fa-solid fa-motorcycle text-4xl text-gray-200 mb-2"></i>
-                <p class="text-gray-400 font-bold text-sm">No hiciste viajes hoy.</p>
-            </div>`;
-    } else {
-        lista.innerHTML = [...cadete.viajes].reverse().map(v => `
-            <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex justify-between items-center shadow-sm">
-                <div>
-                    <p class="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Viaje #${v.id.toString().slice(-4)}</p>
-                    <p class="font-black text-gray-800 text-[14px] truncate w-40">${v.destino}</p>
-                </div>
-                <div class="text-right">
-                    <p class="font-black text-green-500 text-[15px]">+ $${v.ganancia}</p>
-                    <p class="text-[11px] font-bold text-red-400">-$200 Comis.</p>
-                </div>
-            </div>
-        `).join('');
-    }
-}
-
-function toggleConexionRadar() {
-    vibrar(60); window.radarConectado = !window.radarConectado;
-    
-    const btn = document.getElementById('btn-conectar');
-    const icono = document.getElementById('icono-conexion');
-    const texto = document.getElementById('texto-conexion');
-    const estado = document.getElementById('estado-gps');
-    const radar = document.getElementById('efecto-radar');
-
-    if (window.radarConectado) {
-        btn.classList.add('shadow-[0_0_80px_rgba(34,197,94,0.3)]', 'border-green-50');
-        btn.classList.remove('shadow-[0_20px_50px_rgba(0,0,0,0.1)]', 'border-gray-50');
-        icono.classList.remove('text-gray-300'); icono.classList.add('text-green-500', 'fa-beat-fade');
-        texto.textContent = 'RADAR ONLINE'; texto.classList.replace('text-gray-400', 'text-green-600');
-        estado.innerHTML = '<i class="fa-solid fa-satellite-dish mr-2 text-green-500 fa-fade"></i> Rastreo Satelital Activo';
-        estado.parentElement.classList.add('border-green-200', 'bg-green-50/50');
-        estado.classList.replace('text-gray-500', 'text-green-700');
-        radar.style.opacity = '1';
-        mostrarToast('¡Conectado! Buscando viajes...');
-    } else {
-        btn.classList.remove('shadow-[0_0_80px_rgba(34,197,94,0.3)]', 'border-green-50');
-        btn.classList.add('shadow-[0_20px_50px_rgba(0,0,0,0.1)]', 'border-gray-50');
-        icono.classList.add('text-gray-300'); icono.classList.remove('text-green-500', 'fa-beat-fade');
-        texto.textContent = 'OFFLINE'; texto.classList.replace('text-green-600', 'text-gray-400');
-        estado.innerHTML = '<i class="fa-solid fa-location-crosshairs mr-2"></i> Desconectado de Satélites';
-        estado.parentElement.classList.remove('border-green-200', 'bg-green-50/50');
-        estado.classList.replace('text-green-700', 'text-gray-500');
-        radar.style.opacity = '0';
-        mostrarToast('Desconectado del Radar', 'info');
-    }
-}
-
-function agarrarViaje() {
-    vibrar([100, 50, 100]); cerrarModal('modal-radar-cadete');
-    
-    const db = getDB();
-    const cadete = db.servimotos.find(s => s.id === window.servimotoLogueado.id);
-    const ganancia = document.getElementById('radar-precio-txt').textContent.replace('$ ', '');
-    const destino = document.getElementById('radar-destino-txt').textContent;
-    
-    if(!cadete.viajes) cadete.viajes = [];
-    cadete.viajes.push({ id: Date.now(), ganancia: parseInt(ganancia) || 0, destino: destino || 'Viaje Asignado' });
-    
-    saveDB(db);
-    renderizarLogisticaServimoto();
-    mostrarToast('¡VIAJE ASIGNADO! Dirígete al local a retirar.');
-}
-</script>
 </body>
 </html>
