@@ -699,12 +699,13 @@ a{text-decoration:none}
     </div>
 </div>
 
+<!-- MODAL AUDITORIA IA PARA REGISTRO DE CADETE -->
 <div id="modal-ia" class="modal-overlay">
     <div class="bg-slate-900 rounded-[2rem] p-8 text-center border-4 border-slate-800 shadow-[0_0_50px_rgba(255,107,0,0.3)] ia-glow mx-6 max-w-xs w-full transition-all">
         <div class="w-20 h-20 mx-auto bg-slate-800 rounded-full flex items-center justify-center mb-5 border-2" style="border-color:var(--naranja)">
             <i class="fa-solid fa-robot text-4xl text-white fa-bounce"></i>
         </div>
-        <h3 class="text-xl font-black text-white mb-2">IA Vercel</h3>
+        <h3 class="text-xl font-black text-white mb-2">IA Vision</h3>
         <p id="texto-ia" class="text-[15.5px] font-medium text-slate-300 mb-6">Iniciando sistema...</p>
         <div class="w-full bg-slate-800 rounded-full h-2 mb-2 overflow-hidden">
             <div id="barra-ia" class="bg-gradient-to-r from-[#ff8c00] to-[#cc4400] h-2 rounded-full w-0 transition-all duration-500"></div>
@@ -823,6 +824,133 @@ window.cambiarPantalla = function(id){
 
 window.abrirModal = function(id) { document.getElementById(id).classList.add('show'); };
 window.cerrarModal = function(id) { document.getElementById(id).classList.remove('show'); };
+
+// ==========================================
+// FUNCIONES AGREGADAS (LAS QUE FALTABAN PARA ESTAR AL 100%)
+// ==========================================
+
+// 1. Aceptar viaje del Cadete (Botón Radar)
+window.agarrarViajeAtomic = function() {
+    cerrarModal('modal-radar-cadete');
+    mostrarToast("¡Viaje asignado! Dirígete al local a buscar el pedido.", "success");
+    
+    // Cambiamos el estado visual de la app del cadete para mostrar que está "En Viaje"
+    document.getElementById('texto-conexion').innerText = 'EN VIAJE';
+    document.getElementById('texto-conexion').classList.add('text-[var(--naranja)]');
+    document.getElementById('icono-conexion').classList.replace('fa-motorcycle', 'fa-route');
+    document.getElementById('icono-conexion').classList.add('text-[var(--naranja)]');
+    document.getElementById('estado-gps').innerHTML = '<i class="fa-solid fa-map-pin mr-1"></i> Navegando al origen...';
+    document.getElementById('estado-gps').classList.add('text-[var(--naranja)]');
+};
+
+// 2. Simulación Auditoría IA al registrar un cadete (preparado para API Vision)
+window.iniciarAuditoriaIA = function() {
+    abrirModal('modal-ia');
+    let barra = document.getElementById('barra-ia');
+    let texto = document.getElementById('texto-ia');
+    
+    barra.style.width = '25%';
+    texto.innerText = 'Analizando Selfie vs DNI...';
+    
+    setTimeout(() => {
+        barra.style.width = '65%';
+        texto.innerText = 'Verificando datos en AFIP...';
+    }, 1500);
+    
+    setTimeout(() => {
+        barra.style.width = '100%';
+        texto.innerText = '¡Auditoría Exitosa! ✅';
+    }, 3000);
+    
+    setTimeout(() => {
+        cerrarModal('modal-ia');
+        mostrarToast('¡Bienvenido! Cuenta aprobada.', 'success');
+        // Enviamos al cadete a su panel operativo
+        cambiarPantalla('pantalla-3');
+    }, 4000);
+};
+
+// 3. Procesamiento de comprobantes de pago
+window.procesarPagoIA = function() {
+    mostrarToast("Comprobante subido. La IA lo validará en segundos.", "info");
+    cerrarModal('modal-pago');
+};
+
+// 4. Feedback visual al cargar archivos (Input type file)
+window.marcarArchivoCargado = function(input) {
+    if (input.files && input.files[0]) {
+        let parentGroup = input.closest('.group');
+        let iconContainer = parentGroup.querySelector('.icon-container');
+        
+        if (iconContainer) {
+            iconContainer.style.background = '#00d13a'; // Verde éxito
+            iconContainer.style.color = 'white';
+            iconContainer.innerHTML = '<i class="fa-solid fa-check"></i>';
+            mostrarToast("Archivo cargado correctamente", "success");
+        }
+    }
+};
+
+// Toggle para activar el radar del cadete
+window.toggleConexion = function() {
+    estado.conectado = !estado.conectado;
+    let btn = document.getElementById('btn-conectar');
+    let icono = document.getElementById('icono-conexion');
+    let texto = document.getElementById('texto-conexion');
+    let radar = document.getElementById('efecto-radar');
+    let statusGps = document.getElementById('estado-gps');
+
+    if (estado.conectado) {
+        btn.style.borderColor = 'var(--verde)';
+        icono.classList.replace('text-slate-300', 'text-[var(--verde)]');
+        icono.classList.replace('fa-route', 'fa-motorcycle'); // Por si estaba en viaje
+        texto.innerText = 'ONLINE';
+        texto.classList.replace('text-slate-400', 'text-[var(--verde)]');
+        texto.classList.remove('text-[var(--naranja)]');
+        radar.style.opacity = '1';
+        statusGps.innerHTML = '<i class="fa-solid fa-satellite-dish fa-beat mr-1"></i> Buscando viajes...';
+        statusGps.classList.replace('text-slate-500', 'text-[var(--verde)]');
+        statusGps.classList.remove('text-[var(--naranja)]');
+
+        // Simulamos que a los 5 segundos cae un viaje
+        window.viajePendienteRadar = setTimeout(() => {
+            if(estado.conectado) {
+                document.getElementById('radar-origen-txt').innerText = "Empanadas Famaillá VIP";
+                document.getElementById('radar-destino-txt').innerText = "San Martín 123";
+                document.getElementById('radar-tarifa').innerText = "$ 1.850";
+                abrirModal('modal-radar-cadete');
+            }
+        }, 5000);
+    } else {
+        clearTimeout(window.viajePendienteRadar);
+        btn.style.borderColor = '';
+        icono.classList.replace('text-[var(--verde)]', 'text-slate-300');
+        icono.classList.remove('text-[var(--naranja)]');
+        texto.innerText = 'OFFLINE';
+        texto.classList.replace('text-[var(--verde)]', 'text-slate-400');
+        texto.classList.remove('text-[var(--naranja)]');
+        radar.style.opacity = '0';
+        statusGps.innerHTML = '<i class="fa-solid fa-location-crosshairs mr-1"></i> Desconectado';
+        statusGps.classList.replace('text-[var(--verde)]', 'text-slate-500');
+        statusGps.classList.remove('text-[var(--naranja)]');
+    }
+};
+
+window.loginCadete = function() {
+    let celular = document.getElementById('login-celular').value;
+    let pwd = document.getElementById('login-pwd').value;
+    
+    if(!celular || !pwd) {
+        mostrarToast("Ingresa tus datos", "info");
+        return;
+    }
+    
+    mostrarToast("Iniciando sesión...", "success");
+    setTimeout(() => {
+        cambiarPantalla('pantalla-3');
+    }, 1000);
+};
+
 
 // ==========================================
 // MOCKUP DE BASE DE DATOS PREMIUM (POR CIUDAD)
