@@ -3,28 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Delivery Moto | La conexion entre comercios y Servimoto</title>
-<link rel="manifest" href="/manifest.json">
-<script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }</script>
+<title>Delivery Moto | Pediloyya y Compraya</title>
+<link rel="manifest" href="manifest.json">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
-
-<!-- LLAVE DE GOOGLE MAPS INYECTADA CON LIBRERIA PLACES PARA AUTOCOMPLETADO -->
+<!-- MAPAS Y SUPABASE -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLcIDHZkqLfHFdf7gzhlX8&libraries=places"></script>
-<!-- LIBRERIA OFICIAL SUPABASE JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-/* VARIABLES GLOBALES APP */
+/* ========================================================
+   VARIABLES GLOBALES Y RESET
+======================================================== */
 :root{--naranja:#ff6b00;--naranja2:#ff8c00;--naranja3:#cc4400;--verde:#00d13a;--texto:#0f172a}
 *{box-sizing:border-box}
-body { font-family:'Quicksand',sans-serif; color:var(--texto); margin:0; padding:0; overflow-x:hidden; font-size:17.5px; -webkit-font-smoothing:antialiased; }
-a { text-decoration:none; }
+body{font-family:'Quicksand',sans-serif; color:var(--texto); margin:0; padding:0; -webkit-font-smoothing:antialiased;}
+a{text-decoration:none}
 .no-scrollbar::-webkit-scrollbar{display:none}
 .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
 
-/* ESTILOS LANDING PAGE */
+/* ========================================================
+   CSS ESPECÍFICO - LANDING PAGE
+======================================================== */
 .landing-bg { background:linear-gradient(-45deg,#f8fafc,#e2e8f0,#ffffff,#f1f5f9); background-size:400% 400%; animation:gradientBG 15s ease infinite; }
 @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
@@ -33,43 +34,42 @@ a { text-decoration:none; }
 .fm{animation:fm 3.5s ease-in-out infinite}
 .glass-premium {background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border-radius: 1.5rem;}
 .glass-dark {background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2); border-radius: 1.5rem;}
-.rt{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;font-size:15.5px;font-weight:700;color:#fff;transition:all .2s}
-.rt:hover{border-color:#ff6b00;background:rgba(255,107,0,.15)}
-
-/* ESTILOS APP */
-@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-150%)}}
-.animate-scroll{display:inline-block;white-space:nowrap;animation:scroll 40s linear infinite}
-@keyframes pulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(0,209,58,.8)}50%{box-shadow:0 0 0 8px rgba(0,209,58,0)}}
-.luz-verde{position:relative}.luz-verde::after{content:'';position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:var(--verde);border-radius:50%;border:2px solid white;animation:pulseGreen 1.8s ease-in-out infinite;z-index:10}
-
-@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
-.logo-float{animation:logoFloat 3.5s ease-in-out infinite}
-@keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 30px rgba(255,107,0,.7))}50%{filter:drop-shadow(0 0 55px rgba(255,107,0,1))}}
-.logo-glow{animation:logoGlow 2.5s ease-in-out infinite}
-
-@keyframes resplandorGlow{0%,100%{box-shadow:0 0 15px rgba(255,107,0,.4);transform:scale(1)}50%{box-shadow:0 0 30px rgba(255,107,0,.9);transform:scale(1.02);border:2px solid #fff;}}
-.btn-resplandor{animation:resplandorGlow 2s infinite; border-radius: 50px !important;}
 .btn-glow {border-radius: 50px !important; position: relative; z-index: 1; overflow: hidden;}
 .btn-glow::after {content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;background: linear-gradient(45deg, #ff8c00, #cc4400, #ff8c00);z-index: -1; border-radius: 50px; filter: blur(12px); opacity: 0.6;animation: pulse-glow 3s linear infinite;}
 @keyframes pulse-glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
-
-@keyframes radarPlay{0%{transform:scale(.9);opacity:1;border-color:rgba(255,107,0,.9)}100%{transform:scale(2.2);opacity:0;border-color:rgba(255,107,0,0)}}
-.onda-play{position:absolute;border-radius:50%;border:3px solid var(--naranja2);animation:radarPlay 2s cubic-bezier(.1,.5,.5,1)infinite}
-.onda-play-1{animation-delay:0s;width:120px;height:120px}
-.onda-play-2{animation-delay:.6s;width:120px;height:120px}
-.onda-play-3{animation-delay:1.2s;width:120px;height:120px}
-
-@keyframes bouncePlay{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.boton-play-premium{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,#ff8c00 100%);border:4px solid white;box-shadow:0 15px 40px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8),inset 0 -3px 10px rgba(204,68,0,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
-.boton-play-premium:active{transform:scale(.92)}
-.boton-play-premium .icono-play{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
-.boton-play-premium .icono-play i{color:white;font-size:22px;margin-left:3px}
-
+.rt{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;font-size:15.5px;font-weight:700;color:#fff;transition:all .2s}
+.rt:hover{border-color:#ff6b00;background:rgba(255,107,0,.15)}
+.ch{transition:all .35s}.ch:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.08)}
+.hg{background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%)}
+@keyframes pg{0%,100%{box-shadow:0 0 0 0 rgba(0,209,58,.8)}50%{box-shadow:0 0 0 6px rgba(0,209,58,0)}}
+.pg{animation:pg 1.8s ease-in-out infinite}
 .boton-play-landing{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,#ff8c00 100%);border:4px solid white;box-shadow:0 10px 30px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
 .boton-play-landing:active{transform:scale(.92)}
 .boton-play-landing .icono-play{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
 .boton-play-landing .icono-play i{color:white;font-size:14.5px;margin-left:2px}
 
+/* ========================================================
+   CSS ESPECÍFICO - APP (PWA)
+======================================================== */
+.app-bg { background:linear-gradient(135deg,#cbd5e1,#e2e8f0); }
+@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-150%)}}
+.animate-scroll{display:inline-block;white-space:nowrap;animation:scroll 40s linear infinite}
+@keyframes pulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(0,209,58,.8)}50%{box-shadow:0 0 0 8px rgba(0,209,58,0)}}
+.luz-verde{position:relative}.luz-verde::after{content:'';position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:var(--verde);border-radius:50%;border:2px solid white;animation:pulseGreen 1.8s ease-in-out infinite;z-index:10}
+@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
+.logo-float{animation:logoFloat 3.5s ease-in-out infinite}
+@keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 30px rgba(255,107,0,.7))}50%{filter:drop-shadow(0 0 55px rgba(255,107,0,1))}}
+.logo-glow{animation:logoGlow 2.5s ease-in-out infinite}
+@keyframes resplandorGlow{0%,100%{box-shadow:0 0 15px rgba(255,107,0,.4);transform:scale(1)}50%{box-shadow:0 0 30px rgba(255,107,0,.9);transform:scale(1.02);border:2px solid #fff;}}
+.btn-resplandor{animation:resplandorGlow 2s infinite; border-radius: 50px !important;}
+@keyframes radarPlay{0%{transform:scale(.9);opacity:1;border-color:rgba(255,107,0,.9)}100%{transform:scale(2.2);opacity:0;border-color:rgba(255,107,0,0)}}
+.onda-play{position:absolute;border-radius:50%;border:3px solid var(--naranja2);animation:radarPlay 2s cubic-bezier(.1,.5,.5,1)infinite}
+.onda-play-1{animation-delay:0s;width:120px;height:120px}.onda-play-2{animation-delay:.6s;width:120px;height:120px}.onda-play-3{animation-delay:1.2s;width:120px;height:120px}
+@keyframes bouncePlay{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.boton-play-premium{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#fff 0%,#ffedd5 40%,#ff8c00 100%);border:4px solid white;box-shadow:0 15px 40px rgba(255,107,0,.5),inset 0 2px 10px rgba(255,255,255,.8),inset 0 -3px 10px rgba(204,68,0,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;position:relative;z-index:10;animation:bouncePlay 2.5s ease-in-out infinite;}
+.boton-play-premium:active{transform:scale(.92)}
+.boton-play-premium .icono-play{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 15px rgba(204,68,0,.5);}
+.boton-play-premium .icono-play i{color:white;font-size:22px;margin-left:3px}
 @keyframes radar{0%{transform:scale(.9);opacity:1;border-color:rgba(255,107,0,.9)}100%{transform:scale(3.5);opacity:0;border-color:rgba(255,107,0,0)}}
 .onda{position:absolute;border-radius:50%;border:3px solid var(--naranja2);animation:radar 2.2s cubic-bezier(.1,.5,.5,1)infinite}
 .onda-1{animation-delay:0s;width:140px;height:140px}.onda-2{animation-delay:.7s;width:140px;height:140px}.onda-3{animation-delay:1.4s;width:140px;height:140px}
@@ -81,11 +81,10 @@ a { text-decoration:none; }
 
 .titulo-3d{font-family:'Sora',sans-serif;font-weight:800;color:#fff;letter-spacing:-1.5px;text-transform:uppercase;text-shadow:0 1px 0 #e6e6e6,0 2px 0 #d9d9d9,0 3px 0 #cccccc,0 4px 0 #bfbfbf,0 5px 0 #b3b3b3,0 6px 0 #a6a6a6,0 7px 0 #999,0 8px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 6px rgba(0,0,0,.2),0 6px 15px rgba(0,0,0,.25),0 15px 15px rgba(0,0,0,.15);}
 .frase-moderna{font-family:'Sora',sans-serif;font-weight:700;color:#fff;letter-spacing:-.3px}
-
 .btn-a{background:linear-gradient(135deg,#ff8c00 0%,#ff6b00 50%,#cc4400 100%);color:#fff;font-weight:800;border-radius:50px;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;transition:all .25s;display:flex;justify-content:center;align-items:center;gap:.5rem;box-shadow:0 12px 30px rgba(255,107,0,.45),inset 0 1px 0 rgba(255,255,255,.35);}
 .btn-a:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(255,107,0,.55)}
 .btn-a:active{transform:scale(.95)}
-.btn-b{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);color:#fff;font-weight:800;border-radius:50px;border:none;cursor:pointer;font-family:'Quicksand',sans-serif;transition:all .25s;display:flex;justify-content:center;align-items:center;gap:.5rem;box-shadow:0 12px 28px rgba(15,23,42,.4),inset 0 1px 0 rgba(255,255,255,.1);}
+.btn-b{background:#fff;color:#0f172a;font-weight:800;transition:all .3s;border:2px solid #e2e8f0;border-radius:50px;box-shadow:0 4px 12px rgba(0,0,0,.05);display:inline-flex;align-items:center;justify-content:center;gap:.5rem;}
 .btn-b:hover{transform:translateY(-3px);border-color:#ff6b00;box-shadow:0 10px 25px rgba(255,107,0,.15)}
 .btn-b:active{transform:scale(.95)}
 .btn-d{background:#0f172a;color:#fff;font-weight:800;transition:all .3s;border-radius:50px;box-shadow:0 12px 28px rgba(15,23,42,.4),inset 0 1px 0 rgba(255,255,255,.1);display:inline-flex;align-items:center;justify-content:center;gap:.5rem;}
@@ -132,7 +131,7 @@ a { text-decoration:none; }
 <!-- ========================================================== -->
 <!-- 1. VISTA DE LA LANDING PAGE OFICIAL -->
 <!-- ========================================================== -->
-<div id="vista-landing" class="landing-bg w-full min-h-screen text-[17.5px]">
+<div id="vista-landing" class="landing-bg w-full min-h-screen text-[17.5px] overflow-x-hidden">
     
     <nav class="sticky top-0 z-50 glass-premium border-b-0 rounded-none rounded-b-2xl mx-2 mt-2">
     <div class="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between">
@@ -145,7 +144,6 @@ a { text-decoration:none; }
     <div class="hidden md:flex items-center gap-7 text-[15.5px] font-bold text-slate-600">
     <a href="#comercios" class="hover:text-[#ff6b00] transition-colors">Comercios</a>
     <a href="#servimoto" class="hover:text-[#ff6b00] transition-colors">Servimoto</a>
-    <a href="#descargar" class="hover:text-[#ff6b00] transition-colors">Descargar</a>
     </div>
     <span class="hidden sm:inline-flex items-center gap-2 text-[13.5px] font-bold text-green-600 uppercase tracking-wide">
     <span class="w-2.5 h-2.5 rounded-full bg-green-500 pg"></span>Activo
@@ -153,10 +151,11 @@ a { text-decoration:none; }
     </div>
     </nav>
 
+    <!-- INYECCIÓN: INTEGRACIÓN PEDILOYYA Y COMPRAYA -->
     <div class="bg-slate-900 border-y-2 border-[#ff6b00] overflow-hidden my-2 shadow-lg rounded-full mx-2">
     <div class="overflow-hidden py-2"><div class="ticker-landing">
-    <span class="text-white text-[13.5px] font-black uppercase tracking-widest px-5">DELIVERY MOTO | COMERCIOS, PARTICULARES Y FAMILIAS | 100% GANANCIAS | CERO COMISIONES | VIAJE $200 | COBRO SEMANAL | RADAR INTELIGENTE | </span>
-    <span class="text-white text-[13.5px] font-black uppercase tracking-widest px-5">DELIVERY MOTO | COMERCIOS, PARTICULARES Y FAMILIAS | 100% GANANCIAS | CERO COMISIONES | VIAJE $200 | COBRO SEMANAL | RADAR INTELIGENTE | </span>
+    <span class="text-white text-[13.5px] font-black uppercase tracking-widest px-5">DELIVERY MOTO | PEDILOYYA Y COMPRAYA | COMERCIOS Y FAMILIAS | 100% GANANCIAS | VIAJE $200 | COBRO SEMANAL | RADAR INTELIGENTE | </span>
+    <span class="text-white text-[13.5px] font-black uppercase tracking-widest px-5">DELIVERY MOTO | PEDILOYYA Y COMPRAYA | COMERCIOS Y FAMILIAS | 100% GANANCIAS | VIAJE $200 | COBRO SEMANAL | RADAR INTELIGENTE | </span>
     </div></div>
     </div>
 
@@ -167,7 +166,7 @@ a { text-decoration:none; }
     <div class="text-center mb-3">
     <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-2 backdrop-blur-sm">
     <span class="w-2 h-2 rounded-full bg-green-400 pg"></span>
-    <span class="text-[13.5px] font-bold text-green-400 uppercase tracking-wider">Plataforma Operativa</span>
+    <span class="text-[13.5px] font-bold text-green-400 uppercase tracking-wider">Plataforma Operativa Integrada</span>
     </div>
     <div class="relative inline-block mb-2">
     <div class="absolute inset-0 rounded-full blur-2xl opacity-50" style="background:radial-gradient(circle,rgba(255,107,0,.85),transparent 60%)"></div>
@@ -178,6 +177,7 @@ a { text-decoration:none; }
     <h1 class="titulo-3d text-[32px] md:text-[52px] leading-[1.02] mb-1 text-center tracking-tighter">DELIVERY MOTO</h1>
     <div class="bg-white/12 backdrop-blur-md border border-white/25 rounded-2xl p-3 w-full max-w-sm mx-auto mb-3">
     <p class="frase-moderna text-[15.5px] md:text-[17.5px] text-white text-center leading-snug">
+    <span class="block text-yellow-400 text-[13px] uppercase tracking-widest mb-1">CON PEDILOYYA Y COMPRAYA</span>
     <span class="block">COMERCIOS Y FAMILIAS ENVÍAN.</span>
     <span class="block mt-1">EL SERVIMOTO NECESITA VIAJAR.</span>
     <span class="inline-block mt-2 bg-yellow-400 text-slate-900 px-4 py-1 rounded-full text-[13.5px] font-extrabold shadow-md">
@@ -195,8 +195,9 @@ a { text-decoration:none; }
     </div>
     <p class="text-white/90 text-[13.5px] font-bold mb-3 text-center">Toca para escuchar TODAS las funciones</p>
 
+    <!-- BOTON PARA INICIAR LA PWA EN EL MISMO ARCHIVO -->
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-    <a onclick="abrirPWA()" class="btn-a btn-glow px-6 py-3.5 text-[15.5px] cursor-pointer">
+    <a onclick="pedirPermisoNotificaciones(); abrirPWA();" class="btn-a btn-glow px-6 py-3.5 text-[15.5px] cursor-pointer">
         <div class="w-5 h-5 rounded-md overflow-hidden bg-white shrink-0 flex items-center justify-center"><img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Icon"></div>
         INICIAR PWA AHORA
     </a>
@@ -216,7 +217,7 @@ a { text-decoration:none; }
         <div class="glass-premium p-4 transition-transform hover:-translate-y-1 border border-slate-200">
             <div class="w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center text-[22px] mb-2 shadow-md"><i class="fa-solid fa-globe"></i></div>
             <h3 class="text-[22px] font-black mb-1 text-black">Comercios y Familias: Web App</h3>
-            <p class="font-bold text-[15.5px] text-slate-700 leading-snug">Uso exclusivo para comerciantes, particulares y familias. No requiere descargar nada pesado. Ingresá y solicitá tu viaje.</p>
+            <p class="font-bold text-[15.5px] text-slate-700 leading-snug">Uso exclusivo para comerciantes, particulares y aliados como Pediloyya y Compraya. Ingresá y solicitá tu viaje al instante.</p>
         </div>
         <div class="glass-premium p-4 transition-transform hover:-translate-y-1 border border-slate-200" style="background:rgba(241, 245, 249, 0.8)">
             <div class="w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center text-[22px] mb-2 shadow-md"><i class="fa-brands fa-android"></i></div>
@@ -239,12 +240,12 @@ a { text-decoration:none; }
     <div class="glass-premium p-4 ch">
     <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center text-[19.5px] mb-2 shadow-md">2</div>
     <h4 class="font-black text-[17.5px] text-slate-800 mb-1">Alerta en Radar Local</h4>
-    <p class="text-[14.5px] text-slate-600 font-bold leading-snug">Se difunde a todos los Servimotos disponibles al mismo tiempo.</p>
+    <p class="text-[14.5px] text-slate-600 font-bold leading-snug">Se difunde a todos los Servimotos disponibles con notificaciones en vivo.</p>
     </div>
     <div class="glass-premium p-4 ch">
     <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center text-[19.5px] mb-2 shadow-md">3</div>
     <h4 class="font-black text-[17.5px] text-slate-800 mb-1">Servimoto acepta</h4>
-    <p class="text-[14.5px] text-slate-600 font-bold leading-snug">Con un toque atómico se asigna. Ambos ven sus fotos verificadas.</p>
+    <p class="text-[14.5px] text-slate-600 font-bold leading-snug">Con un toque atómico se asigna. Ambos ven sus fotos verificadas y el mapa.</p>
     </div>
     <div class="glass-premium p-4 ch">
     <div class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center text-[19.5px] mb-2 shadow-md">4</div>
@@ -266,10 +267,10 @@ a { text-decoration:none; }
     </h2>
     <ul class="space-y-1.5 text-[14.5px] font-bold text-slate-700">
     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Solicita viajes cuando lo necesites.</li>
-    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Seguí el estado en vivo.</li>
-    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Sin descargar apps pesadas.</li>
+    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Seguí la "Motito" en el mapa en vivo.</li>
+    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-500"></i> Integración Pediloyya y Compraya.</li>
     </ul>
-    <a onclick="abrirPWA()" class="mt-4 btn-a btn-glow w-full py-2 text-[15.5px] cursor-pointer"><i class="fa-solid fa-globe"></i> INICIAR PWA AHORA</a>
+    <a onclick="pedirPermisoNotificaciones(); abrirPWA();" class="mt-4 btn-a btn-glow w-full py-2 text-[15.5px] cursor-pointer"><i class="fa-solid fa-globe"></i> INICIAR PWA AHORA</a>
     </div>
     <div class="glass-dark p-4 text-white text-center">
     <i class="fa-solid fa-users text-[38px] mb-2 opacity-50"></i>
@@ -293,7 +294,7 @@ a { text-decoration:none; }
     </div>
     <div><div class="font-black text-white text-[19.5px] leading-none tracking-tight">DELIVERY MOTO</div><div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">La conexión perfecta</div></div>
     </div>
-    <p class="text-[13.5px] font-medium leading-tight max-w-sm mb-2">Red logística que impulsa a las familias, comercios y particulares.</p>
+    <p class="text-[13.5px] font-medium leading-tight max-w-sm mb-2">Red logística que impulsa a las familias, comercios y particulares. Plataforma unificada con Pediloyya y Compraya.</p>
     </div>
     <div>
     <h4 class="text-white font-black uppercase tracking-widest text-[13.5px] mb-1">Desarrollo</h4>
@@ -321,11 +322,11 @@ a { text-decoration:none; }
     <!-- CONTENEDOR CELULAR APP -->
     <div class="w-full h-full max-w-md bg-slate-50 relative flex flex-col shadow-2xl sm:rounded-[3rem] sm:h-[95vh] sm:border-[10px] border-slate-900 overflow-hidden">
         
-        <!-- FIX 1: TICKER CON ROUNDED-XL FULL WIDTH -->
+        <!-- FIX 1: TICKER CON ROUNDED-XL FULL WIDTH (INCLUYE PEDILOYYA) -->
         <div class="w-full bg-slate-900 border-b-2 border-[var(--naranja)] overflow-hidden relative z-50 shrink-0 rounded-xl">
             <div class="animate-scroll py-1.5 w-full">
             <span class="text-white text-[13px] font-black uppercase tracking-widest px-2">
-            DELIVERY MOTO | COMERCIOS Y FAMILIAS | ESTRELLAS AUTO | CHAT WSP | RADAR GPS
+            DELIVERY MOTO | PEDILOYYA Y COMPRAYA | COMERCIOS Y FAMILIAS | ESTRELLAS AUTO | CHAT WSP | RADAR GPS
             </span>
             </div>
         </div>
@@ -354,8 +355,8 @@ a { text-decoration:none; }
                 <div class="pt-2">
                     <h4 class="text-center font-black text-slate-400 uppercase tracking-widest text-[12.5px] mb-3">Como deseas ingresar?</h4>
                     <div class="space-y-3">
-                        <button onclick="cambiarPantalla('pantalla-registro-cadete')" class="btn-a w-full py-4 text-[16.5px] btn-resplandor"><i class="fa-solid fa-motorcycle text-lg"></i> Registrarme como Servimoto</button>
-                        <button onclick="cambiarPantalla('pantalla-login-cadete')" class="btn-b w-full py-4 text-[16.5px]"><i class="fa-solid fa-right-to-bracket text-lg"></i> Ya soy Servimoto (Ingresar)</button>
+                        <button onclick="pedirPermisoNotificaciones(); cambiarPantalla('pantalla-registro-cadete');" class="btn-a w-full py-4 text-[16.5px] btn-resplandor"><i class="fa-solid fa-motorcycle text-lg"></i> Registrarme como Servimoto</button>
+                        <button onclick="pedirPermisoNotificaciones(); cambiarPantalla('pantalla-login-cadete');" class="btn-b w-full py-4 text-[16.5px]"><i class="fa-solid fa-right-to-bracket text-lg"></i> Ya soy Servimoto (Ingresar)</button>
                         <button onclick="cambiarPantalla('pantalla-comercio')" class="w-full py-4 text-[16.5px] bg-white text-slate-800 font-bold border-2 border-slate-200 rounded-[50px] flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all"><i class="fa-solid fa-store text-lg text-indigo-500"></i> Panel Comercial / Familia</button>
                     </div>
                 </div>
@@ -400,6 +401,7 @@ a { text-decoration:none; }
                         <input type="tel" id="input-wa-comercio" placeholder="Tu WhatsApp (Ej: 3815551234)" class="w-full bg-white border border-green-200 rounded-xl px-4 py-2.5 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-green-500 transition-all">
                     </div>
 
+                    <!-- FIX DE AUTO-BUSCADOR CON AUTO-CENTRAR EL MAPA -->
                     <div class="space-y-2.5 mb-4 relative">
                         <div class="flex items-center gap-3 relative z-10"><div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i class="fa-solid fa-city"></i></div><input type="text" id="input-ciudad" placeholder="Escribe tu ciudad o zona..." class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-[15px] font-bold text-slate-600 outline-none shadow-inner focus:border-[var(--naranja)] transition-all"></div>
                         <div class="absolute left-[17px] top-[50px] bottom-[22px] w-0.5 bg-slate-200 z-0"></div>
@@ -407,7 +409,8 @@ a { text-decoration:none; }
                         <div class="flex items-center gap-3 relative z-10"><div class="w-4 h-4 rounded-sm border-2 border-white shadow-sm shrink-0 ml-2.5" style="background:var(--naranja)"></div><input type="text" id="input-destino" placeholder="Calle de destino" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm"></div>
                     </div>
 
-                    <div id="mapa-uber" class="w-full h-72 bg-slate-200 rounded-xl mb-3 z-0 border border-slate-300 relative overflow-hidden shadow-inner"></div>
+                    <!-- MAPA GIGANTE h-[400px] -->
+                    <div id="mapa-uber" class="w-full h-[400px] bg-slate-200 rounded-xl mb-3 z-0 border border-slate-300 relative overflow-hidden shadow-inner"></div>
 
                     <button onclick="calcularRutaNacional()" class="btn-b w-full py-3.5 text-[16px] mb-3 shadow-md"><i class="fa-solid fa-route"></i> Calcular Tarifa Exacta</button>
                     <div class="bg-orange-50 border border-orange-100 rounded-xl p-3.5 text-center hidden transition-all" id="caja-resultado">
@@ -554,7 +557,6 @@ a { text-decoration:none; }
                         <p id="cadete-viaje-origen" class="font-bold text-[14.5px] text-slate-800"><i class="fa-solid fa-map-pin text-red-500 mr-2"></i><span></span></p>
                         <p id="cadete-viaje-destino" class="font-medium text-[13.5px] text-slate-500 mb-3"><i class="fa-solid fa-flag-checkered text-green-500 mr-2"></i><span></span></p>
                         
-                        <!-- BOTON WSP DIRECTO AL CLIENTE -->
                         <a id="btn-wa-cadete" href="#" target="_blank" class="w-full py-3.5 mb-2 bg-[#25D366]/10 text-[#128C7E] border border-[#25D366]/30 font-black rounded-[50px] flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all text-[15.5px]">
                             <i class="fa-brands fa-whatsapp text-2xl"></i> Mensaje al Cliente
                         </a>
@@ -604,7 +606,6 @@ a { text-decoration:none; }
                 </div>
                 <p class="font-bold text-[15.5px] text-slate-700 desc-text">Adjuntar comprobante</p>
             </div>
-            <!-- FIX 5: APUNTA A VERCEL -->
             <button id="btn-procesar-pago" onclick="procesarPagoIA()" class="btn-a w-full py-3.5 text-[16.5px]"><i class="fa-solid fa-robot"></i> Enviar a IA</button>
         </div>
     </div>
@@ -629,6 +630,24 @@ a { text-decoration:none; }
 
 <script>
 // ==========================================
+// FIX NOTIFICACIONES SISTEMA
+// ==========================================
+function pedirPermisoNotificaciones() {
+    if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
+    }
+}
+
+function notificarSistema(titulo, cuerpo) {
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(titulo, { 
+            body: cuerpo, 
+            icon: 'https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D' 
+        });
+    }
+}
+
+// ==========================================
 // LOGICA COMBINADA PWA + LANDING
 // ==========================================
 function reproducirAudioLanding(){
@@ -640,7 +659,6 @@ function reproducirAudioLanding(){
     }
 }
 
-// TRANSICIÓN FLUIDA AL APP (Ghi Hut)
 function abrirPWA() {
     document.getElementById('vista-landing').style.display = 'none';
     document.getElementById('vista-app').classList.remove('hidden');
@@ -667,6 +685,7 @@ window.viajesTotales = 99;
 window.ultimoKmCalculado = 1.0;
 window.viajeActivoId = null;
 window.viajePendienteRadar = null;
+window.markerMoto = null; // Marcador en vivo de Supabase
 
 function mostrarToast(mensaje,tipo){
     var c=document.getElementById('toast-container'),t=document.createElement('div');t.className='toast';
@@ -687,18 +706,47 @@ window.abrirModal = function(id) { document.getElementById(id).classList.add('sh
 window.cerrarModal = function(id) { document.getElementById(id).classList.remove('show'); };
 
 // ==========================================
-// MAPAS GOOGLE
+// MAPAS GOOGLE Y BUSCADOR CENTRADO
 // ==========================================
 var miMapa, directionsService, directionsRenderer;
+
+var premiumDarkStyle = [
+  {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
+  {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
+  {elementType: 'labels.text.fill', stylers: [{color: '#746855'}]},
+  {featureType: 'road', elementType: 'geometry', stylers: [{color: '#38414e'}]},
+  {featureType: 'road.highway', elementType: 'geometry', stylers: [{color: '#746855'}]},
+  {featureType: 'water', elementType: 'geometry', stylers: [{color: '#17263c'}]}
+];
+
 function inicializarMapa(){
     if(!miMapa && typeof google !== 'undefined'){
         miMapa = new google.maps.Map(document.getElementById('mapa-uber'), {
-            center: {lat: -27.0525, lng: -65.4022}, zoom: 14, mapTypeControl: false, zoomControl: true, streetViewControl: false
+            center: {lat: -27.0525, lng: -65.4022}, zoom: 14, mapTypeControl: false, zoomControl: true, streetViewControl: false, styles: premiumDarkStyle
         });
         directionsService = new google.maps.DirectionsService();
         directionsRenderer = new google.maps.DirectionsRenderer({ map: miMapa, suppressMarkers: false, polylineOptions: { strokeColor: '#ff6b00', strokeWeight: 5 } });
-        new google.maps.places.Autocomplete(document.getElementById('input-ciudad'));
-        new google.maps.places.Autocomplete(document.getElementById('input-origen'));
+        
+        // FIX: BUSCADOR CENTRA EL MAPA
+        var autoCiudad = new google.maps.places.Autocomplete(document.getElementById('input-ciudad'));
+        autoCiudad.addListener('place_changed', function() {
+            var place = autoCiudad.getPlace();
+            if (place.geometry && place.geometry.location) {
+                miMapa.setCenter(place.geometry.location);
+                miMapa.setZoom(14);
+            }
+        });
+
+        var autoOrigen = new google.maps.places.Autocomplete(document.getElementById('input-origen'));
+        autoOrigen.addListener('place_changed', function() {
+            var place = autoOrigen.getPlace();
+            if (place.geometry && place.geometry.location) {
+                miMapa.setCenter(place.geometry.location);
+                miMapa.setZoom(16);
+                new google.maps.Marker({position: place.geometry.location, map: miMapa});
+            }
+        });
+        
         new google.maps.places.Autocomplete(document.getElementById('input-destino'));
     }
 }
@@ -776,7 +824,26 @@ window.solicitarCadete = async function() {
                     document.getElementById('panel-pedido-activo').classList.remove('hidden');
                     btn.innerHTML = '<i class="fa-solid fa-check"></i> Viaje Asignado';
                     mostrarToast("¡Un Servimoto atrapó tu viaje!", "success");
+                    notificarSistema("¡Moto Asignada!", "El cadete ya está en camino a buscar tu pedido.");
                     supabase.removeChannel(window.canalComercio);
+                    
+                    // FIX: LA MOTITO EN SUPABASE ASÍ APARECE EN EL MAPA
+                    window.canalMoto = supabase.channel('gps-motito')
+                        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'cadetes' }, (payloadMoto) => {
+                            if(payloadMoto.new.latitud && payloadMoto.new.longitud) {
+                                var posMoto = {lat: parseFloat(payloadMoto.new.latitud), lng: parseFloat(payloadMoto.new.longitud)};
+                                if(!window.markerMoto) {
+                                    window.markerMoto = new google.maps.Marker({
+                                        position: posMoto, 
+                                        map: miMapa, 
+                                        icon: {url: 'https://cdn-icons-png.flaticon.com/512/1986/1986958.png', scaledSize: new google.maps.Size(40, 40)}
+                                    });
+                                } else {
+                                    window.markerMoto.setPosition(posMoto);
+                                }
+                                miMapa.setCenter(posMoto); // Sigue a la moto
+                            }
+                        }).subscribe();
                 }
             }).subscribe();
 
@@ -788,9 +855,10 @@ window.solicitarCadete = async function() {
 };
 
 // ==========================================
-// FIX 4: RADAR ATOMICO DEL CADETE EN VIVO
+// FIX 4: RADAR ATOMICO DEL CADETE
 // ==========================================
 window.toggleConexion = function(){
+    pedirPermisoNotificaciones();
     var btn=document.getElementById('btn-conectar'), txt=document.getElementById('texto-conexion'), ico=document.getElementById('icono-conexion'), radar=document.getElementById('efecto-radar'), sb=document.getElementById('status-bar'), eg=document.getElementById('estado-gps');
     
     if(!estado.conectado){
@@ -810,6 +878,9 @@ window.toggleConexion = function(){
                      document.querySelector('#radar-destino span').innerText = payload.new.direccion_destino;
                      document.getElementById('radar-tarifa').innerText = "$" + payload.new.tarifa_calculada;
                      abrirModal('modal-radar-cadete');
+                     
+                     // Notificación celular
+                     notificarSistema("¡NUEVO VIAJE!", "Recogida en: " + payload.new.direccion_origen);
                      if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 500]);
                 }
             }).subscribe();
@@ -864,10 +935,6 @@ window.iniciarAuditoriaIA = async function() {
     var cel = document.getElementById('reg-celular').value;
     if(!cel) { mostrarToast("Completa tus datos", "info"); return; }
 
-    var fileSelfie = document.getElementById('file-selfie-cadete').files[0];
-    var fileAfip = document.getElementById('file-afip').files[0];
-    var filePolicia = document.getElementById('file-policia').files[0];
-
     abrirModal('modal-ia');
     var txt = document.getElementById('texto-ia');
     var barra = document.getElementById('barra-ia');
@@ -905,7 +972,6 @@ window.procesarPagoIA = async function() {
 };
 
 window.loginCadete = function() { cambiarPantalla('pantalla-3'); };
-window.marcarArchivoCargado = function(input) { if(input.files && input.files[0]) mostrarToast("Archivo cargado", "success"); };
 })();
 </script>
 </body>
