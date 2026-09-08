@@ -3,15 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Delivery Moto | Marketplace Premium + Supabase AI</title>
+<meta name="theme-color" content="#0f172a">
+<title>Delivery Moto | Marketplace Premium 100% Cloud</title>
+
+<!-- INYECCIÓN PWA: MANIFEST PARA INSTALACIÓN EN CELULARES -->
+<link rel="manifest" id="manifest-placeholder">
+
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- SUPABASE CLIENT -->
+<!-- SUPABASE CLIENT OFICIAL -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- GOOGLE MAPS API (AUTOACOMPLETADO Y DISTANCIA EXACTA) CON TU LLAVE PRIVADA -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLcIDHZkqLfHFdf7gzhlX8&libraries=places&callback=initGooglePlaces"></script>
+
 <script>
+// ==========================================
+// PWA: MANIFEST Y SERVICE WORKER (CACHÉ Y OFFLINE)
+// ==========================================
+const manifestJSON = {
+  "name": "Delivery Moto Marketplace",
+  "short_name": "DeliveryMoto",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+};
+const manifestBlob = new Blob([JSON.stringify(manifestJSON)], {type: 'application/json'});
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
+});
+
+// Service Worker Básico para Instalabilidad Offline
+const swCode = `
+self.addEventListener('install', (e) => { self.skipWaiting(); });
+self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request))); });
+`;
+const swBlob = new Blob([swCode], {type: 'application/javascript'});
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).then(() => console.log('PWA Service Worker Registrado')).catch(err => console.log('Error SW', err));
+}
+
 (function(){
     var s = document.createElement('style');
     s.textContent = `
@@ -52,7 +98,7 @@ a { text-decoration: none; }
 
 .btn-a { background: linear-gradient(135deg, var(--naranja2) 0%, var(--naranja) 50%, var(--naranja3) 100%); color: #fff; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .25s; display: flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(255,107,0,.35), inset 0 1px 0 rgba(255,255,255,.35); }
 .btn-a:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(255,107,0,.45); }
-.btn-a:active { transform: scale(0.95); }
+.btn-a:active { transform: scale(0.97); }
 
 .btn-b { background: #fff; color: #0f172a; font-weight: 800; transition: all .3s; border: 2px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,.05); display: inline-flex; align-items: center; justify-content: center; gap: .5rem; }
 .btn-b:hover { transform: translateY(-3px); border-color: var(--naranja); box-shadow: 0 10px 25px rgba(255,107,0,.15); }
@@ -62,11 +108,17 @@ a { text-decoration: none; }
 
 .btn-verde { background: linear-gradient(135deg, #10b981 0%, #16a34a 100%); color: #fff; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .25s; display: flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(22,163,74,.3), inset 0 1px 0 rgba(255,255,255,.35); }
 .btn-verde:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(22,163,74,.4); }
-.btn-verde:active { transform: scale(0.95); }
+.btn-verde:active { transform: scale(0.97); }
 
 .input-premium { width: 100%; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 1rem; padding: 16px 20px; font-size: 16px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.3s; font-family: 'Quicksand', sans-serif; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
 .input-premium:focus { border-color: var(--naranja); box-shadow: 0 0 0 4px rgba(255,107,0,0.15), inset 0 2px 5px rgba(0,0,0,0.02); }
 .input-premium::placeholder { color: #94a3b8; font-weight: 600; }
+
+/* Estilo Predictivo Google Maps */
+.pac-container { border-radius: 1rem; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 2px solid #e2e8f0; font-family: 'Quicksand', sans-serif; padding: 5px; margin-top: 5px; z-index: 1000000 !important; }
+.pac-item { padding: 12px; font-size: 14px; cursor: pointer; border-radius: 0.5rem; transition: background 0.2s; border-top: none; }
+.pac-item:hover { background: #f8fafc; }
+.pac-item-query { font-size: 15px; font-weight: 800; color: #0f172a; }
 
 .pantalla { display: none; opacity: 0; transition: all .4s ease; transform: translateY(15px); }
 .pantalla.activa { display: flex; opacity: 1; transform: translateY(0); }
@@ -132,16 +184,6 @@ a { text-decoration: none; }
 `;
     document.head.appendChild(s);
 })();
-
-// ==========================================
-// CONFIGURACIÓN DE SUPABASE Y OPENAI
-// ==========================================
-const SUPABASE_URL = 'https://drpjcmznauposqlhaveo.supabase.co'; // Proveído por el usuario
-const SUPABASE_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4'; // Proveída por el usuario
-const OPENAI_API_KEY = ''; // Reemplazar con la llave privada de OpenAI para producción
-
-// Inicializar cliente Supabase Global
-window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 </script>
 </head>
 <body class="flex justify-center items-start min-h-screen bg-slate-900">
@@ -170,8 +212,8 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     <div class="bg-slate-900 border-y-2 border-orange-500 overflow-hidden my-4 shadow-xl rounded-full mx-3">
         <div class="overflow-hidden py-3">
             <div class="ticker-landing">
-                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTO RADAR | ENVÍO DINÁMICO POR CUADRAS | PAGO EN PUERTA | IA INTEGRADA |</span>
-                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTO RADAR | ENVÍO DINÁMICO POR CUADRAS | PAGO EN PUERTA | IA INTEGRADA |</span>
+                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE CLOUD | MAPAS Y PRECIO POR CUADRAS | PAGO EN PUERTA | IA INTEGRADA |</span>
+                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE CLOUD | MAPAS Y PRECIO POR CUADRAS | PAGO EN PUERTA | IA INTEGRADA |</span>
             </div>
         </div>
     </div>
@@ -206,7 +248,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 <button onclick="abrirPWA()" class="btn-a px-8 py-5 text-[18px] md:text-[20px] cursor-pointer shadow-2xl w-full sm:w-auto h-16 flex-1">
                     <i class="fa-solid fa-store text-2xl"></i> INGRESAR AL MARKETPLACE
                 </button>
-                <a href="delivery-moto-servimoto.apk" download class="btn-d px-8 py-5 text-[18px] md:text-[20px] cursor-pointer shadow-2xl w-full sm:w-auto h-16 flex-1 border-gray-600 hover:border-gray-500">
+                <a href="delivery-moto-servimoto.apk" download class="w-full sm:w-auto h-16 flex-1 bg-slate-800 text-white font-black rounded-2xl flex items-center justify-center gap-3 shadow-lg hover:bg-slate-700 transition-colors border-2 border-slate-600">
                     <i class="fa-brands fa-android text-2xl text-green-500"></i> DESCARGAR APK CADETE
                 </a>
             </div>
@@ -215,25 +257,25 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     <!-- CARACTERÍSTICAS -->
     <section class="max-w-6xl mx-auto px-6 py-12">
-        <h2 class="text-[32px] md:text-[48px] font-black mb-10 text-center tracking-tight text-white titulo-3d">CÓMO FUNCIONA</h2>
+        <h2 class="text-[32px] md:text-[48px] font-black mb-10 text-center tracking-tight text-white titulo-3d">NUEVO MOTOR CLOUD</h2>
         
         <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-slate-800/50 backdrop-blur-lg border border-slate-700 p-8 rounded-[2.5rem] hover:bg-slate-800 transition-colors text-center group">
-                <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"><i class="fa-solid fa-store"></i></div>
-                <h3 class="text-[24px] font-black mb-3 text-white">1. Comercios Locales</h3>
-                <p class="font-medium text-[16px] text-slate-300">Crean su tienda gratis. Suben portada, horarios, dirección y sus productos a la vitrina virtual.</p>
+            <div class="bg-slate-800/50 backdrop-blur-lg border border-slate-700 p-8 rounded-[2.5rem] hover:bg-slate-800 transition-colors text-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg"><i class="fa-solid fa-database"></i></div>
+                <h3 class="text-[24px] font-black mb-3 text-white">Seguridad RLS</h3>
+                <p class="font-medium text-[16px] text-slate-300">Base de datos Supabase con cifrado y salting de contraseñas. Cada negocio es dueño exclusivo de su data.</p>
             </div>
             
-            <div class="bg-slate-800/50 backdrop-blur-lg border border-slate-700 p-8 rounded-[2.5rem] hover:bg-slate-800 transition-colors text-center group">
-                <div class="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"><i class="fa-solid fa-cart-shopping"></i></div>
-                <h3 class="text-[24px] font-black mb-3 text-white">2. Clientes Felices</h3>
-                <p class="font-medium text-[16px] text-slate-300">Exploran catálogos, calculan el envío exacto por mapa GPS de Google y mandan pedido por WhatsApp.</p>
+            <div class="bg-slate-800/50 backdrop-blur-lg border border-slate-700 p-8 rounded-[2.5rem] hover:bg-slate-800 transition-colors text-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg"><i class="fa-solid fa-map-location-dot"></i></div>
+                <h3 class="text-[24px] font-black mb-3 text-white">Google Maps Matrix</h3>
+                <p class="font-medium text-[16px] text-slate-300">Cálculo exacto del costo de envío. $3000 base de noche + $100 por cada cuadra excedente.</p>
             </div>
             
-            <div class="bg-slate-800/50 backdrop-blur-lg border border-slate-700 p-8 rounded-[2.5rem] hover:bg-slate-800 transition-colors text-center group">
-                <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"><i class="fa-solid fa-motorcycle"></i></div>
-                <h3 class="text-[24px] font-black mb-3 text-white">3. Servimoto GPS</h3>
-                <p class="font-medium text-[16px] text-slate-300">Reciben el llamado, usan el Radar para tomar viajes. Cobran usando el algoritmo nocturno/diurno.</p>
+            <div class="bg-slate-800/50 backdrop-blur-lg border border-slate-700 p-8 rounded-[2.5rem] hover:bg-slate-800 transition-colors text-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <h3 class="text-[24px] font-black mb-3 text-white">Storage Buckets</h3>
+                <p class="font-medium text-[16px] text-slate-300">Las fotos de productos y selfies se alojan en la nube para no saturar los celulares.</p>
             </div>
         </div>
     </section>
@@ -339,8 +381,8 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 <div class="bg-orange-50 border border-orange-200 p-5 rounded-2xl flex gap-4 shadow-inner">
                     <div class="w-12 h-12 bg-orange-500 text-white rounded-xl flex items-center justify-center text-2xl shrink-0"><i class="fa-solid fa-store"></i></div>
                     <div>
-                        <h3 class="font-black text-orange-800 text-[16px] mb-1">Creá tu tienda online</h3>
-                        <p class="text-[14px] text-orange-600 font-semibold leading-snug">Cargá todos tus datos. Tus clientes verán tu perfil en el Marketplace.</p>
+                        <h3 class="font-black text-orange-800 text-[16px] mb-1">Registro Cloud RLS</h3>
+                        <p class="text-[14px] text-orange-600 font-semibold leading-snug">Tus datos se encriptan con Supabase Auth usando la técnica de Salting.</p>
                     </div>
                 </div>
                 
@@ -350,10 +392,10 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <div>
                         <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Foto de Portada</label>
                         <div class="upload-zone rounded-2xl border-2" id="upload-portada-comercio" onclick="document.getElementById('file-portada-comercio').click()">
-                            <input type="file" id="file-portada-comercio" accept="image/*" class="hidden" onchange="previewPortadaComercio(event)">
+                            <input type="file" id="file-portada-comercio" accept="image/*" class="hidden" onchange="previewImagenBase(event, 'img-portada-preview', 'preview-portada-container', 'upload-portada-comercio', 'blobPortada')">
                             <div id="preview-portada-container" class="py-2">
                                 <div class="w-14 h-14 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-xl mx-auto mb-2"><i class="fa-solid fa-image"></i></div>
-                                <p class="font-black text-gray-700 text-[14px]">Subir Portada (16:9)</p>
+                                <p class="font-black text-gray-700 text-[14px]">Subir a Storage (16:9)</p>
                             </div>
                             <img id="img-portada-preview" class="hidden portada-preview">
                         </div>
@@ -374,7 +416,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                             <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Provincia</label>
                             <select id="reg-provincia" class="input-premium appearance-none bg-white">
                                 <option value="">Elegir...</option>
-                                <!-- Se llenan dinámicamente con las 24 en init() -->
                             </select>
                         </div>
                         <div>
@@ -394,12 +435,13 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </div>
                     
                     <div>
-                        <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Contraseña de acceso</label>
+                        <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Contraseña Segura</label>
                         <input type="password" id="reg-password" placeholder="Mínimo 4 caracteres" class="input-premium">
+                        <p class="text-[10px] text-gray-400 font-bold mt-2"><i class="fa-solid fa-lock"></i> Será cifrada y combinada con tu celular (Salting).</p>
                     </div>
                     
-                    <button onclick="registrarComercio()" class="btn-a w-full py-5 text-[18px] mt-2 shadow-xl">
-                        <i class="fa-solid fa-check"></i> Finalizar Registro
+                    <button id="btn-reg-comercio" onclick="registrarComercioSupabase()" class="btn-a w-full py-5 text-[18px] mt-2 shadow-xl">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Registrar Comercio Cloud
                     </button>
                 </div>
             </div>
@@ -415,9 +457,9 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             </div>
             <div class="flex-1 p-6 pb-12 flex flex-col justify-center space-y-6">
                 <div class="text-center mb-2">
-                    <div class="w-24 h-24 mx-auto mb-4 rounded-[2rem] bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-4xl shadow-xl"><i class="fa-solid fa-store"></i></div>
-                    <h3 class="font-black text-gray-900 text-2xl">Panel de Gestión</h3>
-                    <p class="text-gray-500 text-[15px] font-medium mt-2">Ingresá para administrar tu catálogo online</p>
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-[2rem] bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-4xl shadow-xl"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3 class="font-black text-gray-900 text-2xl">Auth Supabase</h3>
+                    <p class="text-gray-500 text-[15px] font-medium mt-2">Acceso seguro con token de sesión</p>
                 </div>
                 
                 <div class="bg-white p-7 rounded-[2rem] border border-gray-100 shadow-sm space-y-5">
@@ -430,17 +472,13 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                         <input type="password" id="login-password" placeholder="••••••••" class="input-premium">
                     </div>
                     
-                    <button onclick="loginComercio()" class="btn-a w-full py-5 text-[18px] mt-2 shadow-xl">
-                        <i class="fa-solid fa-right-to-bracket"></i> Ingresar al Panel
+                    <button id="btn-login-comercio" onclick="loginComercioSupabase()" class="btn-a w-full py-5 text-[18px] mt-2 shadow-xl">
+                        <i class="fa-solid fa-right-to-bracket"></i> Ingresar Seguro
                     </button>
                 </div>
                 
                 <div class="text-center">
                     <button onclick="cambiarPantalla('pantalla-registro-comercio')" class="text-orange-600 font-black text-[15px] underline">¿No tenés cuenta? Registrate gratis</button>
-                </div>
-                
-                <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl text-center text-[13px] text-blue-700 font-bold shadow-inner">
-                    <p><i class="fa-solid fa-info-circle mr-1"></i> Demo Comercio: WhatsApp <strong>5493815551111</strong> / Clave <strong>1234</strong></p>
                 </div>
             </div>
         </div>
@@ -452,7 +490,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <h2 class="text-[24px] font-black text-gray-900 leading-none truncate" id="admin-nombre-comercio">Mi Comercio</h2>
                     <p class="text-[12px] uppercase tracking-widest font-black text-orange-500 mt-2 truncate" id="admin-ubicacion">--</p>
                 </div>
-                <button onclick="logoutComercio()" class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors ml-4 shrink-0"><i class="fa-solid fa-right-from-bracket text-xl"></i></button>
+                <button onclick="logoutSupabase()" class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors ml-4 shrink-0"><i class="fa-solid fa-right-from-bracket text-xl"></i></button>
             </div>
             
             <div class="flex-1 p-6 pb-12 space-y-6">
@@ -461,14 +499,13 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <img id="admin-portada-img" src="" class="w-full h-32 object-cover bg-slate-200" onerror="this.style.display='none'">
                     
                     <div class="p-6 relative">
-                        <!-- Avatar superpuesto -->
                         <div class="w-20 h-20 rounded-[1.5rem] bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-3xl shadow-xl overflow-hidden absolute -top-10 left-6 border-4 border-white">
                             <i class="fa-solid fa-store"></i>
                         </div>
                         
                         <div class="mt-10">
                             <h3 class="font-black text-gray-900 text-xl leading-tight truncate mb-1" id="info-local-nombre">--</h3>
-                            <span class="badge-seguridad badge-verde"><i class="fa-solid fa-circle-check"></i> Activo en Marketplace</span>
+                            <span class="badge-seguridad badge-verde"><i class="fa-solid fa-circle-check"></i> DB Sync Sincronizado</span>
                         </div>
                         
                         <div class="space-y-3 mt-5 text-[14.5px] text-gray-600 font-semibold bg-gray-50 p-4 rounded-xl border border-gray-100">
@@ -482,21 +519,23 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 <!-- Tabs -->
                 <div class="flex bg-white rounded-2xl p-1.5 shadow-sm border border-gray-100 sticky top-4 z-10">
                     <button onclick="switchTabComercio('productos')" id="tab-productos" class="tab-btn active flex-1 py-3 text-[14px]">Mi Catálogo</button>
-                    <button onclick="switchTabComercio('pedidos')" id="tab-pedidos" class="tab-btn flex-1 py-3 text-[14px]">Bandeja Pedidos</button>
+                    <button onclick="switchTabComercio('pedidos')" id="tab-pedidos" class="tab-btn flex-1 py-3 text-[14px] relative">
+                        Bandeja Pedidos
+                        <span id="badge-pedidos-nuevos" class="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full hidden"></span>
+                    </button>
                 </div>
 
                 <!-- SECCIÓN PRODUCTOS -->
                 <div id="seccion-productos" class="space-y-6">
-                    <!-- Formulario Nuevo Producto -->
                     <div class="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm border-t-8 border-t-orange-500">
                         <h3 class="font-black text-gray-900 text-[19px] mb-5 flex items-center gap-2"><i class="fa-solid fa-plus-circle text-orange-500"></i> Agregar Producto</h3>
                         
                         <div class="upload-zone mb-5 rounded-2xl border-2" id="upload-zone" onclick="document.getElementById('file-foto-producto').click()">
-                            <input type="file" id="file-foto-producto" accept="image/*" class="hidden" onchange="previewFotoProducto(event)">
+                            <input type="file" id="file-foto-producto" accept="image/*" class="hidden" onchange="previewImagenBase(event, 'preview-foto', 'upload-preview-container', 'upload-zone', 'blobProducto')">
                             <div id="upload-preview-container" class="py-4">
                                 <div class="w-16 h-16 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-2xl mx-auto mb-3"><i class="fa-solid fa-camera"></i></div>
-                                <p class="font-black text-gray-700 text-[15px]">Toca para subir foto del producto</p>
-                                <p class="text-[12px] text-gray-400 font-bold mt-1">PNG o JPG (Máx 5MB)</p>
+                                <p class="font-black text-gray-700 text-[15px]">Toca para subir foto al Storage</p>
+                                <p class="text-[12px] text-gray-400 font-bold mt-1">Soporta alto tráfico</p>
                             </div>
                             <img id="preview-foto" class="hidden w-full max-h-56 object-contain rounded-xl mx-auto">
                         </div>
@@ -523,8 +562,8 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                             
                             <textarea id="add-prod-desc" placeholder="Breve descripción (opcional)..." class="input-premium" rows="2" style="resize:none;"></textarea>
                             
-                            <button onclick="cargarProductoComercio()" class="btn-a w-full py-4 text-[17px] shadow-lg mt-2">
-                                <i class="fa-solid fa-upload"></i> Publicar en el Catálogo
+                            <button id="btn-add-prod" onclick="subirProductoSupabase()" class="btn-a w-full py-4 text-[17px] shadow-lg mt-2">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Publicar en DB
                             </button>
                         </div>
                     </div>
@@ -532,13 +571,12 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <!-- Lista de Productos -->
                     <div>
                         <div class="flex justify-between items-center mb-4 px-1">
-                            <h3 class="font-black text-gray-900 text-[19px]">Mis Productos</h3>
-                            <span class="bg-orange-100 text-orange-600 font-black text-[12px] px-3 py-1 rounded-full" id="contador-productos">0 artículos</span>
+                            <h3 class="font-black text-gray-900 text-[19px]">Catálogo Nube</h3>
+                            <span class="bg-orange-100 text-orange-600 font-black text-[12px] px-3 py-1 rounded-full" id="contador-productos">0</span>
                         </div>
                         <div id="lista-productos-comercio" class="space-y-4">
                             <div class="bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm">
-                                <div class="w-16 h-16 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-3"><i class="fa-solid fa-box-open"></i></div>
-                                <p class="text-gray-500 font-bold text-[15px]">Aún no tenés productos publicados</p>
+                                <i class="fa-solid fa-spinner fa-spin text-3xl text-gray-300"></i>
                             </div>
                         </div>
                     </div>
@@ -548,15 +586,15 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 <div id="seccion-pedidos" class="hidden space-y-4">
                     <div class="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
                         <div class="flex justify-between items-center mb-5">
-                            <h3 class="font-black text-gray-900 text-[19px]"><i class="fa-solid fa-inbox text-blue-500 mr-2"></i> Pedidos Recibidos</h3>
+                            <h3 class="font-black text-gray-900 text-[19px]"><i class="fa-solid fa-satellite-dish text-blue-500 mr-2 fa-fade"></i> Recepción Realtime</h3>
                             <span class="bg-blue-100 text-blue-600 font-black text-[12px] px-3 py-1 rounded-full" id="contador-pedidos-comercio">0</span>
                         </div>
                         
                         <div id="lista-pedidos-comercio" class="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar">
                             <div class="text-center py-10">
-                                <div class="w-20 h-20 bg-green-50 text-green-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4"><i class="fa-brands fa-whatsapp"></i></div>
-                                <h3 class="font-black text-gray-800 text-xl mb-2">Bandeja Vacía</h3>
-                                <p class="text-[14.5px] text-gray-500 font-medium leading-snug">Cuando un cliente finalice un pedido en tu catálogo, aparecerá automáticamente aquí.</p>
+                                <div class="w-20 h-20 bg-blue-50 text-blue-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4"><i class="fa-solid fa-satellite-dish fa-fade"></i></div>
+                                <h3 class="font-black text-gray-800 text-xl mb-2">Escuchando Pedidos...</h3>
+                                <p class="text-[14.5px] text-gray-500 font-medium leading-snug">Conectado al Web Socket de Supabase. Los pedidos aparecerán mágicamente aquí.</p>
                             </div>
                         </div>
                     </div>
@@ -601,18 +639,16 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             <!-- Contenido Principal -->
             <div class="p-6 flex-1 space-y-6 pb-32">
-                <!-- Info Envíos Premium -->
                 <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-[1.5rem] p-5 flex items-center gap-4 shadow-lg text-white">
                     <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl flex-shrink-0 border border-white/30">
                         <i class="fa-solid fa-motorcycle"></i>
                     </div>
                     <div class="flex-1">
-                        <h4 class="font-black text-[16px] leading-tight mb-1">Envíos por Radar GPS</h4>
-                        <p class="text-[13px] font-semibold text-orange-100 leading-snug">Distancia y tarifa calculada dinámicamente con mapas al finalizar.</p>
+                        <h4 class="font-black text-[16px] leading-tight mb-1">Envíos calculados por Google Maps</h4>
+                        <p class="text-[13px] font-semibold text-orange-100 leading-snug">Distancia exacta. $3000 de noche base, y $100 la cuadra extra.</p>
                     </div>
                 </div>
 
-                <!-- Categorías -->
                 <div>
                     <h3 class="font-black text-gray-900 text-[18px] mb-3 px-1">Categorías</h3>
                     <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2" id="filtros-categorias">
@@ -626,13 +662,14 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </div>
                 </div>
 
-                <!-- Listado de Comercios -->
                 <div>
                     <div class="flex justify-between items-end mb-4 px-1">
-                        <h3 class="font-black text-gray-900 text-[19px]">Comercios Locales</h3>
-                        <span class="text-[13px] font-bold text-gray-500 bg-gray-200 px-3 py-1 rounded-full" id="contador-locales">0 locales</span>
+                        <h3 class="font-black text-gray-900 text-[19px]">Comercios DB</h3>
+                        <span class="text-[13px] font-bold text-gray-500 bg-gray-200 px-3 py-1 rounded-full" id="contador-locales">0</span>
                     </div>
-                    <div id="grilla-locales-dinamica" class="space-y-4"></div>
+                    <div id="grilla-locales-dinamica" class="space-y-4">
+                        <div class="text-center py-8"><i class="fa-solid fa-circle-notch fa-spin text-gray-300 text-3xl"></i></div>
+                    </div>
                 </div>
             </div>
 
@@ -646,21 +683,16 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 <div onclick="cambiarPantalla('pantalla-1')" class="nav-item"><i class="fa-solid fa-user"></i><span>Perfil</span></div>
             </div>
         </div>
-
         <!-- ==================== CATALOGO COMERCIO (CLIENTE) ==================== -->
         <div id="pantalla-catalogo" class="pantalla flex-col h-full bg-[#f8fafc] relative overflow-y-auto no-scrollbar">
             
-            <!-- HEADER CON FOTO DE PORTADA Y DATOS DEL LOCAL -->
             <div class="bg-white pb-6 relative shrink-0 z-20 shadow-sm rounded-b-[2rem]">
-                <!-- Portada superior -->
                 <div class="relative h-40 w-full bg-slate-800">
                     <img id="cat-portada" src="" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'">
                     
-                    <!-- Botón Volver (Flotante sobre portada) -->
                     <button onclick="cambiarPantalla('pantalla-marketplace')" class="absolute top-10 left-5 w-10 h-10 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/50 transition-colors shadow-lg">
                         <i class="fa-solid fa-chevron-left text-lg"></i>
                     </button>
-                    <!-- Botón Carrito (Flotante sobre portada) -->
                     <button onclick="abrirModal('modal-carrito')" class="absolute top-10 right-5 w-10 h-10 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/50 transition-colors shadow-lg">
                         <i class="fa-solid fa-cart-shopping text-lg"></i>
                         <span id="badge-carrito-cat" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md hidden">0</span>
@@ -668,19 +700,17 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 </div>
 
                 <div class="px-6 relative">
-                    <!-- Avatar superpuesto -->
                     <div class="w-[84px] h-[84px] rounded-[1.5rem] bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-3xl shadow-xl overflow-hidden absolute -top-12 left-6 border-4 border-white">
                         <i class="fa-solid fa-store"></i>
                     </div>
                     
-                    <!-- Botón WhatsApp Contacto Local -->
-                    <a id="btn-wa-local" href="#" target="_blank" class="absolute top-3 right-6 w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl shadow-[0_5px_15px_rgba(34,197,94,0.4)] hover:bg-green-600 transition-transform active:scale-90">
+                    <a id="btn-wa-local" href="#" target="_blank" onclick="vibrar(20)" class="absolute top-3 right-6 w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl shadow-[0_5px_15px_rgba(34,197,94,0.4)] hover:bg-green-600 transition-transform active:scale-90">
                         <i class="fa-brands fa-whatsapp"></i>
                     </a>
 
                     <div class="mt-[44px]">
                         <h2 id="cat-nombre" class="text-[26px] font-black text-gray-900 leading-tight truncate mb-1">Cargando...</h2>
-                        <span class="badge-seguridad badge-verde mb-3"><i class="fa-solid fa-circle-check"></i> Verificado</span>
+                        <span class="badge-seguridad badge-verde mb-3"><i class="fa-solid fa-circle-check"></i> DB Sync Connect</span>
                         
                         <div class="space-y-1.5">
                             <p class="text-[13.5px] text-gray-600 font-bold truncate flex items-center gap-2"><i class="fa-solid fa-location-dot text-orange-500 w-4"></i> <span id="cat-ciudad"></span></p>
@@ -689,7 +719,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </div>
                 </div>
 
-                <!-- Buscador Interno -->
                 <div class="px-6 mt-6">
                     <div class="bg-gray-50 border border-gray-200 rounded-2xl flex items-center px-4 py-3 shadow-inner">
                         <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2 text-lg"></i>
@@ -700,7 +729,9 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
             <div class="flex-1 px-6 py-8 pb-40">
                 <h3 class="font-black text-[20px] text-gray-900 leading-none mb-5 px-1">Productos</h3>
-                <div id="contenedor-productos" class="grid grid-cols-2 gap-4"></div>
+                <div id="contenedor-productos" class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2 text-center py-8"><i class="fa-solid fa-circle-notch fa-spin text-gray-300 text-3xl"></i></div>
+                </div>
                 
                 <div id="sin-productos" class="hidden text-center py-16 bg-white rounded-[2rem] border border-gray-100 shadow-sm mt-4">
                     <div class="w-16 h-16 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-3xl mx-auto mb-3"><i class="fa-solid fa-box-open"></i></div>
@@ -708,7 +739,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 </div>
             </div>
             
-            <!-- BARRA VER CARRITO FLOTANTE -->
             <div id="barra-ver-carrito" class="hidden fixed bottom-0 w-full max-w-[448px] bg-white/95 backdrop-blur-xl border-t border-gray-200 p-5 shadow-[0_-15px_40px_rgba(0,0,0,0.1)] z-50 rounded-t-[2rem]">
                 <div class="flex justify-between items-center">
                     <div class="flex flex-col">
@@ -738,7 +768,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <div class="w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center text-2xl shrink-0"><i class="fa-solid fa-robot"></i></div>
                     <div>
                         <h3 class="font-black text-green-800 text-[16px] mb-1">Auditoría IA Activada</h3>
-                        <p class="text-[14px] text-green-600 font-semibold leading-snug">Subí tus documentos para verificación automática. Empezá a recibir viajes.</p>
+                        <p class="text-[14px] text-green-600 font-semibold leading-snug">Subí tus documentos para verificación con OpenAI (GPT-4o). Empezá a recibir viajes DB.</p>
                     </div>
                 </div>
 
@@ -765,8 +795,9 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                         <input type="text" id="reg-moto" placeholder="Ej: Honda Wave - ABC123" class="input-premium">
                     </div>
                     <div>
-                        <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Contraseña</label>
+                        <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Contraseña Segura</label>
                         <input type="password" id="reg-password-cadete" placeholder="Clave de acceso" class="input-premium">
+                        <p class="text-[10px] text-gray-400 font-bold mt-2"><i class="fa-solid fa-lock"></i> Se usará Salting para cifrado Supabase.</p>
                     </div>
                 </div>
 
@@ -863,10 +894,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 <div class="text-center">
                     <button onclick="cambiarPantalla('pantalla-registro-servimoto')" class="text-orange-600 font-black text-[15px] underline">¿No tenés cuenta? Postulate como Cadete</button>
                 </div>
-                
-                <div class="bg-green-50 border border-green-200 p-4 rounded-2xl text-center text-[13px] text-green-700 font-bold shadow-inner">
-                    <p><i class="fa-solid fa-info-circle mr-1"></i> Demo: WhatsApp <strong>5493815110171</strong> / Clave <strong>1234</strong></p>
-                </div>
             </div>
         </div>
 
@@ -949,7 +976,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </div>
 
                     <!-- Botón Soporte -->
-                    <a href="https://wa.me/5493815110171?text=Hola%20Soporte%20Delivery%20Moto,%20soy%20cadete." target="_blank" class="w-full py-4.5 bg-slate-900 text-white font-black rounded-[1.5rem] flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-transform text-[16px] h-14">
+                    <a href="https://wa.me/5493815110171?text=Hola%20Soporte%20Delivery%20Moto,%20soy%20cadete." target="_blank" onclick="vibrar(20)" class="w-full py-4.5 bg-slate-900 text-white font-black rounded-[1.5rem] flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-transform text-[16px] h-14">
                         <i class="fa-brands fa-whatsapp text-2xl text-green-400"></i> Soporte Central (3815110171)
                     </a>
                 </div>
@@ -1036,11 +1063,15 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                         <div class="relative">
                             <div class="punto-indicador bg-blue-500"></div>
                             <label class="block text-[12px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Punto B: Tu Dirección Exacta</label>
-                            <input type="text" id="checkout-destino" placeholder="Ej: Av. San Martín 450, Famaillá" class="w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3.5 font-black text-gray-800 text-[15px] focus:border-blue-500 focus:outline-none transition-colors shadow-inner" oninput="resetearRuta()">
+                            
+                            <!-- BÚSQUEDA PREDICTIVA GOOGLE MAPS -->
+                            <input type="text" id="checkout-destino" placeholder="Empezá a escribir tu dirección..." class="w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3.5 font-black text-gray-800 text-[15px] focus:border-blue-500 focus:outline-none transition-colors shadow-inner" oninput="resetearRuta()" onfocus="inicializarInputDestino()">
+                            
+                            <p class="text-[10.5px] text-gray-400 font-bold mt-2"><i class="fa-brands fa-google"></i> Autocompletado potenciado por Google Maps</p>
                         </div>
                     </div>
 
-                    <button id="btn-calcular-ruta" onclick="calcularDistanciaRuta()" class="w-full py-4.5 h-[56px] bg-slate-900 text-white font-black rounded-xl flex items-center justify-center gap-2 shadow-lg hover:bg-slate-800 transition-colors mb-2 text-[16px]">
+                    <button id="btn-calcular-ruta" onclick="calcularDistanciaRuta()" class="w-full py-4.5 h-[56px] bg-slate-900 text-white font-black rounded-xl flex items-center justify-center gap-2 shadow-lg hover:bg-slate-800 transition-colors mb-2 text-[16px] active:scale-95">
                         <i class="fa-solid fa-location-crosshairs text-lg"></i> Cargar Mapa y Precio
                     </button>
 
@@ -1048,7 +1079,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <div id="mapa-contenedor" class="map-container hidden bg-slate-100 relative mt-4">
                         
                         <!-- Botón Abrir Maps -->
-                        <a id="link-abrir-maps" href="#" target="_blank" class="absolute top-3 left-3 bg-white text-blue-600 px-3 py-1.5 rounded shadow-md font-bold text-[13px] flex items-center gap-1.5 z-10 hover:bg-gray-50">
+                        <a id="link-abrir-maps" href="#" target="_blank" onclick="vibrar(20)" class="absolute top-3 left-3 bg-white text-blue-600 px-3 py-1.5 rounded shadow-md font-bold text-[13px] flex items-center gap-1.5 z-10 hover:bg-gray-50 active:scale-95 transition-transform">
                             Abrir en Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
                         </a>
 
@@ -2147,15 +2178,17 @@ async function iniciarAuditoriaIA() {
         texto.classList.add('text-green-400', 'font-black');
         vibrar([50, 50, 100]);
         
+        const credenciales = generarCredencialesSeguras(celular, password);
+        const db = getDB();
         db.servimotos.push({
-            id: Date.now(), celular, password, nombre: 'Cadete ' + moto.split(' ')[0], provincia, ciudad, moto,
-            documentos: { selfie: true, afip: true, policia: true }, acepto: true, conectado: false, viajes: []
+            id: Date.now(), celular, password: credenciales.passSegura, nombre: 'Cadete ' + moto.split(' ')[0], 
+            provincia, ciudad, moto, documentos: { selfie: true, afip: true, policia: true }, acepto: true, conectado: false, viajes: []
         });
         saveDB(db);
         
         setTimeout(() => {
             cerrarModal('modal-ia'); barra.style.width = '0';
-            mostrarToast('¡Alta Servimoto Aprobada! Conectate.');
+            mostrarToast('¡Alta Servimoto Aprobada en DB!');
             setTimeout(() => cambiarPantalla('pantalla-login-servimoto'), 800);
         }, 1200);
 
@@ -2171,9 +2204,10 @@ function loginServimoto() {
     const password = document.getElementById('login-servi-password').value;
     if (!celular || !password) return mostrarToast('Ingresá datos', 'info');
 
+    const credenciales = generarCredencialesSeguras(celular, password);
     const db = getDB();
-    const servi = db.servimotos.find(s => s.celular === celular && s.password === password);
-    if (!servi) return mostrarToast('Credenciales incorrectas', 'error');
+    const servi = db.servimotos.find(s => s.celular === celular && s.password === credenciales.passSegura);
+    if (!servi) return mostrarToast('Credenciales Auth Incorrectas', 'error');
 
     window.servimotoLogueado = servi;
     document.getElementById('radar-nombre-cadete').textContent = servi.nombre;
