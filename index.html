@@ -328,12 +328,14 @@ input:checked + .slider:before { transform: translateX(22px); }
                         <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Provincia</label>
                         <select id="reg-prov" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mt-1 focus:border-[var(--naranja)]">
                             <option value="Tucumán" selected>Tucumán</option>
+                            <option value="Salta">Salta</option>
+                            <option value="Buenos Aires">Buenos Aires</option>
                             <!-- Agrega otras provincias si es necesario -->
                         </select>
                     </div>
                     <div class="mb-4">
-                        <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Ciudad</label>
-                        <input type="text" id="reg-ciudad-cadete" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mt-1 focus:border-[var(--naranja)]">
+                        <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Ciudad / Zona</label>
+                        <input type="text" id="reg-ciudad-cadete" placeholder="Ej: Orán, Salta" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15.5px] font-bold text-slate-800 outline-none shadow-sm mt-1 focus:border-[var(--naranja)]">
                     </div>
                     <div class="mb-4">
                         <label class="text-[13.5px] font-black uppercase text-slate-500 tracking-wider">Tu Vehículo</label>
@@ -374,6 +376,7 @@ input:checked + .slider:before { transform: translateX(22px); }
                             <option value="Todas" class="text-slate-800">Todas las Zonas</option>
                             <option value="Famaillá" class="text-slate-800">Famaillá</option>
                             <option value="San Miguel de Tucumán" class="text-slate-800">San Miguel de Tucumán</option>
+                            <option value="Orán" class="text-slate-800">Orán (Salta)</option>
                         </select>
                         <i class="fa-solid fa-chevron-down text-sm ml-1"></i>
                     </div>
@@ -477,7 +480,7 @@ input:checked + .slider:before { transform: translateX(22px); }
                     <button onclick="switchTabComercio('config')" id="tab-config" class="flex-1 py-2 text-[14px] font-black rounded-full text-slate-500 transition-all">Mi Tienda</button>
                 </div>
 
-                <!-- SECCIÓN LOGÍSTICA (MAPA MEJORADO) -->
+                <!-- SECCIÓN LOGÍSTICA (MAPA MEJORADO - MULTIREGIÓN Y EXACTO) -->
                 <div id="seccion-logistica">
                     <div class="glass p-4 mb-4 relative z-10" style="border-top:4px solid var(--naranja)">
                         <h3 class="font-black text-slate-800 text-[16.5px] mb-3"><i class="fa-solid fa-motorcycle mr-1" style="color:var(--naranja)"></i> Llamar Repartidor</h3>
@@ -487,18 +490,20 @@ input:checked + .slider:before { transform: translateX(22px); }
                             <input type="tel" id="input-wa-admin" placeholder="WhatsApp del Cliente" class="w-full bg-white border border-green-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-green-500 transition-all">
                         </div>
 
-                        <div class="space-y-3 mb-4 relative z-10">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i class="fa-solid fa-city"></i></div>
-                                <input type="text" id="input-origen-admin" placeholder="Ingresa Dirección del Local..." class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-[var(--naranja)]">
+                        <div class="space-y-4 mb-4 relative z-10">
+                            <!-- PUNTO A (RETIRO) -->
+                            <div>
+                                <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block"><i class="fa-solid fa-building text-slate-400 mr-1"></i> A: Desde (Retiro)</label>
+                                <input type="text" id="input-origen-admin" placeholder="Ej: Orán, Salta, Argentina" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-[var(--naranja)]">
                             </div>
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-[var(--naranja)] shrink-0"><i class="fa-solid fa-flag-checkered"></i></div>
-                                <input type="text" id="input-destino-admin" placeholder="Ingresa Dirección del Cliente..." class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-[var(--naranja)]">
+                            <!-- PUNTO B (ENTREGA) -->
+                            <div>
+                                <label class="text-[12px] font-black uppercase text-[var(--naranja)] tracking-wider mb-1 block"><i class="fa-solid fa-flag-checkered text-[var(--naranja)] mr-1"></i> B: Hasta (Entrega)</label>
+                                <input type="text" id="input-destino-admin" placeholder="Ej: San Martin 123" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 outline-none shadow-sm focus:border-[var(--naranja)]">
                             </div>
                         </div>
 
-                        <!-- MAPA -->
+                        <!-- MAPA (SIN RESTRICCIÓN DE TUCUMÁN) -->
                         <div id="mapa-admin" class="w-full h-[350px] bg-slate-200 rounded-2xl mb-4 z-0 border-2 border-slate-300 relative overflow-hidden shadow-inner flex items-center justify-center text-slate-400 font-bold">
                             <i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando radar...
                         </div>
@@ -514,7 +519,7 @@ input:checked + .slider:before { transform: translateX(22px); }
                     </div>
                 </div>
 
-                <!-- SECCIÓN CONFIG Y CARGA DE PRODUCTOS -->
+                <!-- SECCIÓN CONFIG Y CARGA DE PRODUCTOS (FOTOS Y CATEGORÍAS MEJORADAS) -->
                 <div id="seccion-config" class="hidden">
                     <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm mb-4">
                         <div class="flex justify-between items-center mb-3">
@@ -531,15 +536,41 @@ input:checked + .slider:before { transform: translateX(22px); }
                         <button onclick="guardarDatosLocal()" class="btn-d w-full py-3.5 text-[15px]">Guardar Cambios</button>
                     </div>
 
-                    <!-- NUEVO: CARGA DE PRODUCTOS DINÁMICA -->
+                    <!-- NUEVO: CARGA DE PRODUCTOS CON FOTO Y SELECTOR -->
                     <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm" style="border-top:4px solid var(--naranja)">
                         <h3 class="font-black text-slate-800 text-[18px] mb-3"><i class="fa-solid fa-plus-circle text-orange-500 mr-2"></i>Cargar Artículo</h3>
                         
-                        <input type="text" id="add-prod-seccion" placeholder="Categoría (Ej: Pizzas, Bebidas)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 outline-none focus:border-[var(--naranja)]">
-                        <input type="text" id="add-prod-nombre" placeholder="Nombre (Ej: Pizza Especial)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 outline-none focus:border-[var(--naranja)]">
-                        <input type="number" id="add-prod-precio" placeholder="Precio ($)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-3 outline-none focus:border-[var(--naranja)]">
-                        <textarea id="add-prod-desc" placeholder="Ingredientes o descripción breve..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[14px] font-bold text-slate-800 mb-3 outline-none" rows="2"></textarea>
+                        <!-- SELECTOR DE CATEGORÍA PRECONFIGURADO -->
+                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Categoría del Artículo</label>
+                        <select id="add-prod-seccion" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-4 outline-none focus:border-[var(--naranja)]">
+                            <option value="Comida">🍔 Comida (Ej: Hamburguesas, Pizzas)</option>
+                            <option value="Bebida">🥤 Bebida (Ej: Gaseosas, Alcohol)</option>
+                            <option value="Kiosco">🍫 Kiosco (Ej: Snacks, Golosinas)</option>
+                            <option value="Farmacia">💊 Farmacia / Perfumería</option>
+                            <option value="Otro">📦 Otro</option>
+                        </select>
                         
+                        <!-- DATOS DEL PRODUCTO -->
+                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Nombre (Ej: Pizza Especial)</label>
+                        <input type="text" id="add-prod-nombre" placeholder="Escribe aquí..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-4 outline-none focus:border-[var(--naranja)]">
+                        
+                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Precio ($)</label>
+                        <input type="number" id="add-prod-precio" placeholder="Ej: 5000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[15px] font-bold text-slate-800 mb-4 outline-none focus:border-[var(--naranja)]">
+                        
+                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Ingredientes o descripción</label>
+                        <textarea id="add-prod-desc" placeholder="Ingredientes o descripción breve..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[14px] font-bold text-slate-800 mb-4 outline-none" rows="2"></textarea>
+                        
+                        <!-- UPLOAD DE FOTO (VISTA PREVIA Y COMPRESIÓN) -->
+                        <label class="text-[12px] font-black uppercase text-slate-400 tracking-wider mb-1 block">Foto del Producto (Obligatorio)</label>
+                        <div class="relative bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-4 text-center mb-6 hover:border-[var(--naranja)] transition-all cursor-pointer group flex flex-col items-center justify-center overflow-hidden h-36" onclick="document.getElementById('add-prod-img').click()">
+                            <input type="file" id="add-prod-img" accept="image/*" class="hidden" onchange="previewImageProduct(event)">
+                            <img id="preview-prod-img" src="" class="hidden absolute inset-0 w-full h-full object-cover z-10">
+                            <div id="upload-icon-container" class="relative z-20 flex flex-col items-center justify-center pointer-events-none bg-white/80 p-2 rounded-xl backdrop-blur-sm transition-all">
+                                <i class="fa-solid fa-camera text-slate-400 text-3xl group-hover:text-[var(--naranja)] mb-1 transition-colors"></i>
+                                <p class="font-bold text-[12.5px] text-slate-500">Toca para subir la foto</p>
+                            </div>
+                        </div>
+
                         <button onclick="cargarProductoComercio()" class="btn-a w-full py-4 text-[16px] uppercase tracking-wide"><i class="fa-solid fa-upload"></i> Publicar al Menú</button>
                     </div>
                 </div>
@@ -614,7 +645,7 @@ const mockupBaseDeDatosDefault = [
         abierto: true, horario: "Martes a Domingo - 19:00 a 00:00", desc: "Las mejores empanadas cortadas a cuchillo de la ciudad.",
         logo: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png", portada: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80", wa: "5493815551111", mp_link: "https://link.mercadopago.com.ar/empanadasfam",
         secciones: [
-            { nombre: "Especialidades", productos: [
+            { nombre: "Comida", productos: [
                 {id: 201, nombre: "Docena de Empanadas Matambre", precio: 6500, desc: "Cortada a cuchillo.", img: "https://cdn-icons-png.flaticon.com/512/1155/1155280.png"}
             ]}
         ]
@@ -628,9 +659,8 @@ function initDB() {
     window.db = JSON.parse(localStorage.getItem('deliveryDB'));
 }
 function guardarDB() { localStorage.setItem('deliveryDB', JSON.stringify(window.db)); }
-initDB(); // Inicializar base de datos
+initDB();
 
-// Funciones globales UI
 function mostrarToast(mensaje,tipo){
     var c=document.getElementById('toast-container'),t=document.createElement('div');t.className='toast';
     var ic=tipo==='success'?'<div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-2xl" style="background:rgba(0,209,58,.12);color:#00d13a"><i class="fa-solid fa-check"></i></div>':'<div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center shrink-0 text-2xl" style="color:#ff8c00"><i class="fa-solid fa-circle-info"></i></div>';
@@ -669,7 +699,7 @@ window.cerrarModal = id => { vibrar(); document.getElementById(id).classList.rem
 // 2. MARKETPLACE & CATÁLOGO
 // ==========================================
 window.renderizarMarketplace = function(isSearch = false) {
-    initDB(); // Recargar datos frescos
+    initDB();
     var ciudadFiltro = document.getElementById('filtro-ciudad-mkp').value;
     var textoFiltro = document.getElementById('buscador-global') ? document.getElementById('buscador-global').value.toLowerCase() : "";
     var grilla = document.getElementById('grilla-locales-dinamica');
@@ -735,10 +765,12 @@ window.abrirCatalogoComercio = function(idComercio) {
     window.comercioActual.secciones.forEach(seccion => {
         let htmlSeccion = `<h3 class="font-black text-[20px] text-slate-800 leading-none mt-6 mb-4 px-1">${seccion.nombre}</h3><div class="grid grid-cols-2 gap-4">`;
         seccion.productos.forEach(p => {
+            // Icono genérico si por alguna razón falla la imagen base64
+            let imgSrc = p.img || "https://cdn-icons-png.flaticon.com/512/1404/1404945.png";
             htmlSeccion += `
             <div class="bg-white rounded-[1.5rem] p-3 flex flex-col relative shadow-sm border border-slate-100 h-full">
                 <div class="w-full h-32 flex items-center justify-center mb-3 relative rounded-xl overflow-hidden bg-slate-50">
-                    <img src="${p.img}" class="w-full h-full object-cover">
+                    <img src="${imgSrc}" class="w-full h-full object-cover">
                     <button onclick="agregarAlCarrito(${p.id}, '${p.nombre}', ${p.precio})" class="absolute bottom-2 right-2 w-10 h-10 bg-white border border-slate-200 rounded-full shadow-lg flex items-center justify-center text-slate-700 hover:text-[var(--naranja)] transition-colors active:scale-90"><i class="fa-solid fa-plus"></i></button>
                 </div>
                 <h4 class="font-bold text-[14px] text-slate-800 leading-tight mb-2 flex-1">${p.nombre}</h4>
@@ -790,10 +822,8 @@ window.procesarCheckoutWhatsapp = function() {
     
     window.open("https://wa.me/" + window.comercioActual.wa + "?text=" + encodeURIComponent(msg), '_blank');
     
-    // VACIAR CARRITO UNA VEZ ENVIADO
     cerrarModal('modal-carrito'); window.carrito = []; actualizarInterfazCarrito();
 };
-
 
 // ==========================================
 // 3. COMERCIO: LOGÍSTICA MAPA Y CARGA ARTÍCULOS
@@ -816,7 +846,7 @@ window.switchTabComercio = function(tab) {
 
 window.toggleEstadoTienda = function() {
     let estado = document.getElementById('tienda-estado-toggle').checked;
-    window.db[0].abierto = estado; // Usando el ID 1 de Famaillá
+    window.db[0].abierto = estado;
     guardarDB();
     mostrarToast(estado ? "Tu local ahora está ABIERTO" : "Tu local ahora está CERRADO", "success");
 };
@@ -827,36 +857,93 @@ window.guardarDatosLocal = function() {
     mostrarToast("¡Datos de la tienda actualizados!", "success"); 
 };
 
-// CARGA DE PRODUCTOS DINÁMICA
+// -----------------------------------------------------
+// FUNCIÓN PREMIUM: COMPRESIÓN DE FOTO EN TIEMPO REAL
+// -----------------------------------------------------
+window.productoImgBase64 = null; // Almacenará la foto comprimida
+
+window.previewImageProduct = function(event) {
+    const file = event.target.files[0];
+    if(!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Redimensionar la imagen con Canvas para no saturar la memoria local (Premium Feature)
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 500; const MAX_HEIGHT = 500;
+            let width = img.width; let height = img.height;
+
+            if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
+            else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
+
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convertir a JPEG comprimido
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            
+            window.productoImgBase64 = dataUrl; // Guardar lista para la DB
+            
+            // Actualizar Interfaz (Mostrar la previsualización y ocultar el icono grande)
+            let preview = document.getElementById('preview-prod-img');
+            preview.src = dataUrl;
+            preview.classList.remove('hidden');
+            
+            let iconBox = document.getElementById('upload-icon-container');
+            iconBox.classList.add('scale-75', 'opacity-95'); // Efecto visual premium
+        }
+        img.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+};
+
+// -----------------------------------------------------
+// CARGA DEL PRODUCTO FINAL EN LA BASE DE DATOS
+// -----------------------------------------------------
 window.cargarProductoComercio = function() {
     vibrar();
-    let seccionNombre = document.getElementById('add-prod-seccion').value || 'Generales';
+    let seccionNombre = document.getElementById('add-prod-seccion').value; // Valor del <select>
     let nom = document.getElementById('add-prod-nombre').value;
     let pre = parseInt(document.getElementById('add-prod-precio').value);
     let desc = document.getElementById('add-prod-desc').value;
+    let foto = window.productoImgBase64;
     
     if(!nom || !pre) return mostrarToast("Llena el nombre y precio", "info");
+    if(!foto) return mostrarToast("La foto del producto es obligatoria", "info");
     
-    // Buscar si la categoría ya existe en Famaillá VIP (Índice 0)
+    // Buscar si la categoría elegida ya existe, si no, crearla dinámicamente
     let seccionIndex = window.db[0].secciones.findIndex(s => s.nombre.toLowerCase() === seccionNombre.toLowerCase());
     if (seccionIndex === -1) {
-        // Si no existe, la creamos
         window.db[0].secciones.push({ nombre: seccionNombre, productos: [] });
         seccionIndex = window.db[0].secciones.length - 1;
     }
 
-    // Insertar el producto
+    // Insertar producto con su propia foto procesada
     window.db[0].secciones[seccionIndex].productos.push({
-        id: Math.floor(Math.random() * 10000), nombre: nom, precio: pre, desc: desc, img: "https://cdn-icons-png.flaticon.com/512/1404/1404945.png"
+        id: Math.floor(Math.random() * 10000), 
+        nombre: nom, 
+        precio: pre, 
+        desc: desc, 
+        img: foto // <-- Aquí se guarda la foto específica comprimida
     });
     
-    guardarDB(); // Persistir en memoria
+    guardarDB(); 
     
+    // Limpiar el formulario
     document.getElementById('add-prod-nombre').value = ""; document.getElementById('add-prod-precio').value = ""; document.getElementById('add-prod-desc').value = "";
-    mostrarToast("Producto cargado al catálogo en vivo", "success");
+    document.getElementById('preview-prod-img').classList.add('hidden');
+    document.getElementById('upload-icon-container').classList.remove('scale-75', 'opacity-95');
+    window.productoImgBase64 = null;
+    
+    mostrarToast("¡Producto cargado al catálogo en vivo!", "success");
 };
 
-// LOGÍSTICA MAPA - EXACTO Y TARIFA NOCTURNA
+// -----------------------------------------------------
+// MAPA MEJORADO - RUTA GLOBAL EXACTA (A y B)
+// -----------------------------------------------------
 function inicializarMapa() {
     if(typeof google === 'undefined') return;
     var mapDiv = document.getElementById('mapa-admin');
@@ -865,18 +952,16 @@ function inicializarMapa() {
         var mapOptions = { center: {lat: -27.0525, lng: -65.4022}, zoom: 14, mapTypeControl: false, streetViewControl: false };
         window.mapaAdmin = new google.maps.Map(mapDiv, mapOptions);
         window.directionsService = new google.maps.DirectionsService();
-        // Custom Route Color para que coincida con tu diseño
         window.dirRendererAdmin = new google.maps.DirectionsRenderer({
             map: window.mapaAdmin, 
             suppressMarkers: false, 
             polylineOptions: {strokeColor: '#ff8c00', strokeWeight: 5, strokeOpacity: 0.8}
         });
         
-        var boundsTucuman = new google.maps.LatLngBounds(new google.maps.LatLng(-28.0, -66.0), new google.maps.LatLng(-26.0, -64.0));
-        var opts = { bounds: boundsTucuman, componentRestrictions: { country: "ar" } };
+        // Habilitado para toda Argentina, no importa la provincia (Orán, San Martín, etc.)
+        var opts = { componentRestrictions: { country: "ar" } };
         
         if(document.getElementById('input-origen-admin')) {
-            document.getElementById('input-origen-admin').value = "Famaillá, Tucumán";
             let autocompleteOrigen = new google.maps.places.Autocomplete(document.getElementById('input-origen-admin'), opts);
             autocompleteOrigen.addListener('place_changed', function() { if(document.getElementById('input-destino-admin').value) calcularRutaNacional(); });
         }
@@ -891,31 +976,28 @@ window.calcularRutaNacional = function(){
     vibrar();
     var origen = document.getElementById('input-origen-admin').value;
     var destino = document.getElementById('input-destino-admin').value;
-    if(!origen || !destino) return mostrarToast("Ingresá origen y destino exactos.", "info");
+    if(!origen || !destino) return mostrarToast("Ingresá Origen y Destino para el GPS.", "info");
     
-    var origenBusqueda = origen.includes("Tucumán") ? origen : origen + ", Tucumán, Argentina";
-    var destinoBusqueda = destino.includes("Tucumán") ? destino : destino + ", Tucumán, Argentina";
-
-    window.directionsService.route({ origin: origenBusqueda, destination: destinoBusqueda, travelMode: google.maps.TravelMode.DRIVING }, function(response, status) {
+    // Ya no se fuerza "Tucumán". Toma la dirección cruda que el usuario elige de Google Places.
+    window.directionsService.route({ origin: origen, destination: destino, travelMode: google.maps.TravelMode.DRIVING }, function(response, status) {
         if (status === 'OK') {
             window.dirRendererAdmin.setDirections(response);
 
             var distKm = response.routes[0].legs[0].distance.value / 1000;
             
-            // Lógica Tarifa de Día/Noche
+            // Lógica Tarifa (Día/Noche Inteligente)
             var horaActual = new Date().getHours();
             var esNoche = (horaActual >= 20 || horaActual <= 6);
             
-            var tarifaBase = esNoche ? 3000 : 2000;
+            var tarifaBase = esNoche ? 3000 : 2000; // Base nocturna vs diurna
             var tarifaFinal = tarifaBase;
             
-            // Incremento si supera el kilómetro
-            if(distKm > 1) { tarifaFinal += Math.floor((distKm - 1) * 800); }
+            if(distKm > 1) { tarifaFinal += Math.floor((distKm - 1) * 800); } // 800 por km extra
 
             document.getElementById('caja-resultado-admin').classList.remove('hidden');
             document.getElementById('resultado-tarifa-admin').innerText = '$ ' + Math.floor(tarifaFinal);
             
-            let labelNoche = esNoche ? ' (NOCHE)' : '';
+            let labelNoche = esNoche ? ' (TARIFA NOCTURNA)' : '';
             document.getElementById('km-calculados-admin').innerText = distKm.toFixed(1) + ' KM' + labelNoche;
         } else {
             mostrarToast("No se pudo trazar la ruta. Verifica las direcciones.", "info");
@@ -925,7 +1007,7 @@ window.calcularRutaNacional = function(){
 
 window.solicitarCadeteAdmin = function() {
     vibrar();
-    if(!document.getElementById('input-origen-admin').value) return mostrarToast("Falta Dirección", "info");
+    if(!document.getElementById('input-origen-admin').value || !document.getElementById('input-destino-admin').value) return mostrarToast("Comprueba A (Retiro) y B (Entrega).", "info");
     mostrarToast("¡Radar emitido! Moto en camino", "success");
     let btn = document.getElementById('btn-pedir-admin');
     btn.innerHTML = '<i class="fa-solid fa-check"></i> Repartidor Asignado';
