@@ -33,12 +33,12 @@
     --sombra-naranja: 0 12px 35px rgba(255,107,0,.25);
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; background: #f8fafc; overflow-x: hidden; }
+body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; background: #f8fafc; overflow-x: hidden; transition: background .4s ease, color .4s ease; }
+body.dark-mode { background: #0f172a; color: #e2e8f0; }
 a { text-decoration: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ===== ANIMACIONES PREMIUM ===== */
 @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 .landing-bg { background: linear-gradient(-45deg, #0f172a, #1e293b, #111827, #1f2937); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
 @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -65,12 +65,18 @@ a { text-decoration: none; }
 .heart-beat { animation: heartBeat 0.6s ease-in-out; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin { animation: spin 1s linear infinite; }
+@keyframes micPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.7); } 50% { box-shadow: 0 0 0 15px rgba(255,107,0,0); } }
+.mic-pulse { animation: micPulse 1.5s ease-in-out infinite; }
+@keyframes wave { 0%, 100% { height: 8px; } 50% { height: 28px; } }
+.wave-bar { display: inline-block; width: 4px; background: var(--naranja); border-radius: 2px; margin: 0 2px; animation: wave 1s ease-in-out infinite; }
+.wave-bar:nth-child(2) { animation-delay: .1s; }
+.wave-bar:nth-child(3) { animation-delay: .2s; }
+.wave-bar:nth-child(4) { animation-delay: .3s; }
+.wave-bar:nth-child(5) { animation-delay: .4s; }
 
-/* ===== TIPOGRAFIA 3D MEJORADA ===== */
 .titulo-3d { font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; letter-spacing: -1.5px; text-transform: uppercase; text-shadow: 0 1px 0 #e6e6e6, 0 2px 0 #d9d9d9, 0 3px 0 #cccccc, 0 4px 0 #bfbfbf, 0 5px 0 #b3b3b3, 0 6px 1px rgba(0,0,0,.1), 0 0 10px rgba(0,0,0,.3); }
 .frase-moderna { font-family: 'Sora', sans-serif; font-weight: 700; color: #fff; letter-spacing: -.3px; }
 
-/* ===== BOTONES PREMIUM ===== */
 .btn-a { background: linear-gradient(135deg, var(--naranja2) 0%, var(--naranja) 50%, var(--naranja3) 100%); color: #fff; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .25s cubic-bezier(0.16, 1, 0.3, 1); display: flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: var(--sombra-naranja), inset 0 1px 0 rgba(255,255,255,.35); position: relative; overflow: hidden; }
 .btn-a::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent); transition: left .5s; }
 .btn-a:hover::before { left: 100%; }
@@ -90,25 +96,21 @@ a { text-decoration: none; }
 .btn-ghost { background: transparent; color: #64748b; font-weight: 700; border-radius: 0.75rem; border: none; cursor: pointer; transition: all .2s; padding: 8px 12px; }
 .btn-ghost:hover { background: #f1f5f9; color: var(--naranja); }
 
-/* ===== INPUTS PREMIUM ===== */
 .input-premium { width: 100%; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 1rem; padding: 16px 20px; font-size: 16px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Quicksand', sans-serif; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
 .input-premium:focus { border-color: var(--naranja); box-shadow: 0 0 0 4px rgba(255,107,0,0.12), inset 0 2px 5px rgba(0,0,0,0.02); transform: translateY(-1px); }
 .input-premium::placeholder { color: #94a3b8; font-weight: 600; }
 
-/* ===== PANTALLAS ===== */
 .pantalla { display: none; opacity: 0; transition: all .4s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(15px); }
 .pantalla.activa { display: flex; opacity: 1; transform: translateY(0); }
 
-/* ===== TOASTS ===== */
 #toast-container { position: fixed; top: 0; left: 0; right: 0; z-index: 9999999; pointer-events: none; display: flex; flex-direction: column; align-items: center; padding-top: 25px; gap: 8px; }
 .toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); color: #fff; border-radius: 1.5rem; padding: 16px 24px; box-shadow: var(--sombra-fuerte); transform: translateY(-100px); opacity: 0; transition: all .4s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 15.5px; width: 92%; max-width: 360px; border: 1px solid rgba(255,255,255,0.15); }
 .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
 .toast.success .icon-wrap { background: rgba(22,163,74,.2); color: #4ade80; }
 .toast.error .icon-wrap { background: rgba(220,38,38,.2); color: #f87171; }
 .toast.info .icon-wrap { background: rgba(37,99,235,.2); color: #60a5fa; }
-.icon-wrap { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: flex-shrink: 0; }
+.icon-wrap { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-/* ===== MODALES ===== */
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(10px); z-index: 100000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .4s cubic-bezier(0.16, 1, 0.3, 1); }
 .modal-overlay.show { opacity: 1; pointer-events: auto; }
 .modal-content { background: #f8fafc; width: 100%; max-width: 448px; max-height: 92vh; border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -25px 60px rgba(0,0,0,0.25); transform: translateY(100%); transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; overflow: hidden; }
@@ -117,14 +119,12 @@ a { text-decoration: none; }
 .modal-centered .modal-content { border-radius: 2.25rem; transform: scale(0.92) translateY(20px); width: 90%; max-height: 85vh; }
 .modal-overlay.show .modal-centered .modal-content { transform: scale(1) translateY(0); }
 
-/* ===== NAVEGACION INFERIOR ===== */
 .bottom-nav { background: rgba(255,255,255,0.97); backdrop-filter: blur(20px); border-top: 1px solid #f1f5f9; position: fixed; bottom: 0; width: 100%; max-width: 448px; display: flex; justify-content: space-around; padding: 14px 0 22px 0; z-index: 50; border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.06); }
 .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); padding: 6px 10px; border-radius: 14px; }
 .nav-item.active { color: var(--naranja); transform: translateY(-3px); background: var(--naranja-soft); }
 .nav-item i { font-size: 22px; transition: transform 0.2s; }
 .nav-item:active i { transform: scale(0.85); }
 
-/* ===== CARDS ===== */
 .producto-card { background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: var(--sombra-suave); border: 1px solid var(--border); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; position: relative; }
 .producto-card:hover { transform: translateY(-5px); box-shadow: var(--sombra-media); border-color: #e2e8f0; }
 .producto-card .fav-btn { position: absolute; top: 10px; right: 10px; z-index: 10; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.95); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; color: #cbd5e1; cursor: pointer; transition: all .2s; border: none; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
@@ -137,16 +137,13 @@ a { text-decoration: none; }
 .comercio-card .fav-btn-comercio:hover { transform: scale(1.15); }
 .comercio-card .fav-btn-comercio.active { color: #ef4444; }
 
-/* ===== TABS ===== */
 .tab-btn { padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); border: none; background: transparent; color: #64748b; font-family: 'Quicksand', sans-serif; }
 .tab-btn.active { background: #0f172a; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); transform: translateY(-1px); }
 
-/* ===== CATEGORIAS CHIPS ===== */
 .cat-chip { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 999px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); background: #fff; color: #64748b; border: 2px solid #e2e8f0; white-space: nowrap; box-shadow: var(--sombra-suave); font-family: 'Quicksand', sans-serif; }
 .cat-chip:hover { border-color: var(--naranja); color: var(--naranja); transform: translateY(-2px); box-shadow: var(--sombra-media); }
 .cat-chip.active { background: linear-gradient(135deg, var(--naranja2), var(--naranja)); color: #fff; border-color: var(--naranja); box-shadow: var(--sombra-naranja); transform: translateY(-2px); }
 
-/* ===== BADGES CATEGORIA ===== */
 .badge-categoria { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 .cat-bebida { background: rgba(37,99,235,.1); color: #2563eb; }
 .cat-golosina { background: rgba(236,72,153,.1); color: #db2777; }
@@ -157,7 +154,6 @@ a { text-decoration: none; }
 .cat-carniceria { background: rgba(220,38,38,.1); color: #dc2626; }
 .cat-otros { background: rgba(139,92,246,.1); color: #7c3aed; }
 
-/* ===== MAPA ===== */
 .map-container { position: relative; border-radius: 1.5rem; overflow: hidden; border: 3px solid var(--naranja); box-shadow: var(--sombra-naranja); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); height: 0; opacity: 0; width: 100%; margin-top: 0; }
 .map-container.active { height: 280px; opacity: 1; margin-top: 1rem; }
 .route-line { border-left: 3px dashed #cbd5e1; height: calc(100% - 20px); position: absolute; left: 23px; top: 30px; z-index: 0; }
@@ -167,27 +163,23 @@ a { text-decoration: none; }
 .motito-pulse { position: absolute; width: 40px; height: 40px; background: rgba(255,107,0,0.4); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: -1; animation: mapPulse 1.5s infinite; }
 @keyframes mapPulse { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
 
-/* ===== BADGES SEGURIDAD ===== */
 .badge-seguridad { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge-verde { background: var(--verde-soft); color: var(--verde2); border: 1px solid rgba(22,163,74,0.2); }
 .badge-naranja { background: var(--naranja-soft); color: var(--naranja); border: 1px solid rgba(255,107,0,0.2); }
 .badge-azul { background: var(--azul-soft); color: var(--azul); border: 1px solid rgba(37,99,235,0.2); }
 .badge-morado { background: rgba(139,92,246,.1); color: var(--morado); border: 1px solid rgba(139,92,246,0.2); }
 
-/* ===== UPLOAD ZONES ===== */
 .portada-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 1.5rem; background: #e2e8f0; }
 .upload-zone { border: 3px dashed #cbd5e1; border-radius: 1.5rem; padding: 25px; text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); background: #f8fafc; }
 .upload-zone:hover { border-color: var(--naranja); background: #fff7ed; transform: translateY(-2px); }
 .upload-zone.has-file { border-style: solid; border-color: var(--verde); background: rgba(22,163,74,0.05); }
 
-/* ===== ESTRELLAS CALIFICACION ===== */
 .stars { display: inline-flex; gap: 2px; }
 .stars i { color: #e2e8f0; cursor: pointer; transition: all .15s; font-size: 20px; }
 .stars i.active, .stars i:hover { color: #fbbf24; transform: scale(1.15); }
 .stars.readonly i { cursor: default; }
 .stars.readonly i:hover { transform: none; }
 
-/* ===== KPI CARDS ===== */
 .kpi-card { background: linear-gradient(135deg, #fff 0%, #f8fafc 100%); border-radius: 1.25rem; padding: 16px; border: 1px solid var(--border); box-shadow: var(--sombra-suave); transition: all .3s; }
 .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--sombra-media); }
 .kpi-card .kpi-value { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: var(--texto); line-height: 1; }
@@ -197,23 +189,18 @@ a { text-decoration: none; }
 .kpi-card.blue { border-left: 4px solid var(--azul); }
 .kpi-card.purple { border-left: 4px solid var(--morado); }
 
-/* ===== CHAT SIMULADO ===== */
 .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 8px; font-size: 14px; font-weight: 600; line-height: 1.4; }
 .chat-bubble.sent { background: linear-gradient(135deg, var(--naranja2), var(--naranja)); color: white; margin-left: auto; border-bottom-right-radius: 6px; }
 .chat-bubble.received { background: #fff; color: var(--texto); border: 1px solid var(--border); border-bottom-left-radius: 6px; }
 
-/* ===== SCROLLBAR CUSTOM ===== */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-/* ===== GLASS EFFECT ===== */
 .glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 .glass-dark { background: rgba(15,23,42,0.85); backdrop-filter: blur(20px); }
 
-/* ===== MODO OSCURO ===== */
-body.dark-mode { background: #0f172a; color: #e2e8f0; }
 body.dark-mode .pantalla { background: #0f172a !important; }
 body.dark-mode .input-premium { background: #1e293b; border-color: #334155; color: #e2e8f0; }
 body.dark-mode .input-premium:focus { border-color: var(--naranja); }
@@ -224,24 +211,21 @@ body.dark-mode .cat-chip:hover { border-color: var(--naranja); color: var(--nara
 body.dark-mode .bottom-nav { background: rgba(30,41,59,0.95); border-top-color: #334155; }
 body.dark-mode .modal-content { background: #1e293b; }
 body.dark-mode .upload-zone { background: #1e293b; border-color: #475569; }
+body.dark-mode .toast { background: rgba(30, 41, 59, 0.95); }
 
-/* ===== HEADER GRADIENTE ===== */
 .header-gradient { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 35%, #ff4d00 70%, #cc4400 100%); position: relative; overflow: hidden; }
 .header-gradient::before { content: ''; position: absolute; top: -50%; right: -20%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,255,255,.2), transparent 70%); border-radius: 50%; pointer-events: none; }
 .header-gradient::after { content: ''; position: absolute; bottom: -30%; left: -10%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,.1), transparent 70%); border-radius: 50%; pointer-events: none; }
 
-/* ===== LOGO CONTENEDOR MEJORADO ===== */
 .logo-container { position: relative; display: inline-block; }
 .logo-container::before { content: ''; position: absolute; inset: -8px; background: linear-gradient(135deg, var(--naranja2), var(--morado), var(--azul)); border-radius: inherit; opacity: 0.6; filter: blur(15px); z-index: -1; animation: logoGlow 3s ease-in-out infinite; }
 @keyframes logoGlow { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.05); } }
 
-/* ===== CUPON CARD ===== */
 .cupon-card { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 1.25rem; padding: 16px; border: 2px dashed #f59e0b; position: relative; overflow: hidden; }
 .cupon-card::before, .cupon-card::after { content: ''; position: absolute; width: 24px; height: 24px; background: #f8fafc; border-radius: 50%; top: 50%; transform: translateY(-50%); }
 .cupon-card::before { left: -12px; }
 .cupon-card::after { right: -12px; }
 
-/* ===== SWITCH TOGGLE ===== */
 .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider-switch { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 28px; }
@@ -249,19 +233,24 @@ body.dark-mode .upload-zone { background: #1e293b; border-color: #475569; }
 input:checked + .slider-switch { background: linear-gradient(135deg, var(--naranja2), var(--naranja)); }
 input:checked + .slider-switch:before { transform: translateX(22px); }
 
-/* ===== PROGRESS BAR ===== */
 .progress-bar { height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
 .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--naranja2), var(--naranja)); border-radius: 999px; transition: width .5s ease; }
 
-/* ===== TIMER PEDIDO ===== */
 .timer-circle { width: 80px; height: 80px; border-radius: 50%; background: conic-gradient(var(--naranja) var(--progress, 0%), #e2e8f0 0%); display: flex; align-items: center; justify-content: center; position: relative; }
 .timer-circle::before { content: ''; position: absolute; inset: 6px; background: white; border-radius: 50%; }
 .timer-text { position: relative; z-index: 1; font-family: 'Sora', sans-serif; font-weight: 800; font-size: 16px; color: var(--texto); }
+
+/* ===== CERTIFICADO SERVIMOTO ===== */
+.cert-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(22,163,74,.08)); color: #047857; border: 1px solid rgba(22,163,74,.25); }
+.cert-badge i { color: #10b981; }
+
+.cert-card { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-radius: 1.25rem; padding: 14px; border: 1px solid #a7f3d0; }
+.cert-card .cert-title { font-weight: 800; color: #065f46; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.cert-card .cert-desc { font-size: 11px; color: #047857; font-weight: 600; margin-top: 4px; }
 `;
     document.head.appendChild(s);
 })();
 
-// CONFIGURACIÓN
 const SUPABASE_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const OPENAI_API_KEY = '';
@@ -288,8 +277,11 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all" title="Modo oscuro">
+                <button onclick="toggleDarkMode()" id="btn-dark-landing" class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all" title="Cambiar modo">
                     <i class="fa-solid fa-moon"></i>
+                </button>
+                <button onclick="abrirModal('modal-asistente-voz')" class="w-10 h-10 rounded-full bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-300 hover:bg-orange-500/30 transition-all mic-pulse" title="Asistente de voz">
+                    <i class="fa-solid fa-microphone"></i>
                 </button>
                 <span class="hidden sm:inline-flex items-center gap-2 text-[14px] font-bold text-green-400 uppercase tracking-wide bg-green-500/10 px-4 py-1.5 rounded-full border border-green-500/20">
                     <span class="w-2.5 h-2.5 rounded-full bg-green-400 pg"></span>Online
@@ -301,8 +293,8 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     <div class="bg-slate-900/80 border-y-2 border-orange-500/50 overflow-hidden my-4 shadow-xl rounded-full mx-3 backdrop-blur-sm">
         <div class="overflow-hidden py-3">
             <div class="ticker-landing">
-                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTO RADAR | ENVÍO DINÁMICO | PAGO EN PUERTA | IA INTEGRADA | FAVORITOS | CALIFICACIONES | CUPONES |</span>
-                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTO RADAR | ENVÍO DINÁMICO | PAGO EN PUERTA | IA INTEGRADA | FAVORITOS | CALIFICACIONES | CUPONES |</span>
+                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTOS CERTIFICADOS | RADAR GPS | PAGO EN PUERTA | IA INTEGRADA | FAVORITOS | CALIFICACIONES | CUPONES |</span>
+                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">DELIVERY MOTO | MARKETPLACE | SERVIMOTOS CERTIFICADOS | RADAR GPS | PAGO EN PUERTA | IA INTEGRADA | FAVORITOS | CALIFICACIONES | CUPONES |</span>
             </div>
         </div>
     </div>
@@ -331,7 +323,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 <p class="frase-moderna text-[18px] md:text-[22px] text-white leading-snug">
                     <span class="block text-yellow-400 text-[15px] uppercase tracking-widest mb-3">CONECTAMOS TU CIUDAD</span>
                     <span class="block text-white mb-1">Comercios venden. Clientes compran seguro.</span>
-                    <span class="block text-white font-black">Nuestros Servimotos reparten con GPS exacto.</span>
+                    <span class="block text-white font-black">Nuestros Servimotos están certificados con buena conducta.</span>
                 </p>
             </div>
 
@@ -344,7 +336,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 </a>
             </div>
 
-            <!-- NUEVAS FEATURES QUICK -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
                 <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 text-center">
                     <i class="fa-solid fa-heart text-red-400 text-2xl mb-2"></i>
@@ -359,14 +350,39 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <p class="text-[12px] font-bold text-white/80">Cupones</p>
                 </div>
                 <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 text-center">
-                    <i class="fa-solid fa-clock-rotate-left text-blue-400 text-2xl mb-2"></i>
-                    <p class="text-[12px] font-bold text-white/80">Historial</p>
+                    <i class="fa-solid fa-shield-halved text-green-400 text-2xl mb-2"></i>
+                    <p class="text-[12px] font-bold text-white/80">Certificados</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CARACTERÍSTICAS MEJORADAS -->
+    <!-- SERVICIOS CERTIFICADOS - NUEVA SECCION -->
+    <section class="max-w-6xl mx-auto px-6 py-8">
+        <div class="text-center mb-10">
+            <h2 class="text-[32px] md:text-[42px] font-black mb-3 text-white tracking-tight">SERVICIOS <span style="background:linear-gradient(100deg,#ff8c00,#ff6b00);-webkit-background-clip:text;background-clip:text;color:transparent">CERTIFICADOS</span></h2>
+            <p class="text-slate-400 font-bold max-w-2xl mx-auto">Todos nuestros cadetes pasan por un riguroso proceso de verificación para garantizar tu seguridad y la mejor experiencia de entrega.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-5">
+            <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/5 border border-green-500/30 rounded-3xl p-6 backdrop-blur">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-3xl mb-4 shadow-lg"><i class="fa-solid fa-file-shield"></i></div>
+                <h3 class="font-black text-white text-xl mb-2">Certificado de Buena Conducta</h3>
+                <p class="text-slate-300 font-medium text-[14px]">Todos los servimotos cuentan con certificado de antecedentes policiales vigente y verificado por nuestro equipo.</p>
+            </div>
+            <div class="bg-gradient-to-br from-blue-500/10 to-cyan-500/5 border border-blue-500/30 rounded-3xl p-6 backdrop-blur">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center text-white text-3xl mb-4 shadow-lg"><i class="fa-solid fa-id-card"></i></div>
+                <h3 class="font-black text-white text-xl mb-2">DNI y Licencia Verificados</h3>
+                <p class="text-slate-300 font-medium text-[14px]">Verificación automática por IA de documentación: DNI, licencia de conducir y seguro de la moto.</p>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-500/10 to-orange-500/5 border border-yellow-500/30 rounded-3xl p-6 backdrop-blur">
+                <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center text-white text-3xl mb-4 shadow-lg"><i class="fa-solid fa-star"></i></div>
+                <h3 class="font-black text-white text-xl mb-2">Calificación 4.9 ★ Promedio</h3>
+                <p class="text-slate-300 font-medium text-[14px]">Sistema de calificaciones por cada entrega. Solo los mejores cadetes se mantienen activos en la plataforma.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CARACTERÍSTICAS -->
     <section class="max-w-6xl mx-auto px-6 py-12">
         <h2 class="text-[32px] md:text-[48px] font-black mb-4 text-center tracking-tight text-white titulo-3d">CÓMO FUNCIONA</h2>
         <p class="text-center text-slate-400 font-bold mb-10 max-w-xl mx-auto">Tres simples pasos para conectar tu ciudad con entrega rápida y segura</p>
@@ -390,12 +406,12 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform"><i class="fa-solid fa-motorcycle"></i></div>
                 <div class="inline-block bg-green-500/20 text-green-300 text-[11px] font-black px-3 py-1 rounded-full mb-3 uppercase tracking-wider">Paso 3</div>
                 <h3 class="text-[24px] font-black mb-3 text-white">Servimoto GPS</h3>
-                <p class="font-medium text-[16px] text-slate-300">Reciben el llamado, usan el Radar para tomar viajes. Cobran usando el algoritmo nocturno/diurno.</p>
+                <p class="font-medium text-[16px] text-slate-300">Cadetes certificados reciben el llamado, usan el Radar para tomar viajes. Cobran usando el algoritmo nocturno/diurno.</p>
             </div>
         </div>
     </section>
 
-    <!-- STATS NUEVA SECCION -->
+    <!-- STATS -->
     <section class="max-w-6xl mx-auto px-6 py-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 rounded-3xl p-6 text-center backdrop-blur">
@@ -404,7 +420,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             </div>
             <div class="bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/30 rounded-3xl p-6 text-center backdrop-blur">
                 <div class="text-4xl font-black text-green-400 mb-1">1.2K+</div>
-                <div class="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Cadetes Activos</div>
+                <div class="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Cadetes Certificados</div>
             </div>
             <div class="bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 rounded-3xl p-6 text-center backdrop-blur">
                 <div class="text-4xl font-black text-blue-400 mb-1">50K+</div>
@@ -433,7 +449,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     </footer>
 </div>
 
-<!-- ==================== VISTA APP PRINCIPAL (MÓVIL) ==================== -->
+<!-- ==================== VISTA APP PRINCIPAL ==================== -->
 <div id="vista-app" class="hidden" style="position:relative;width:100%;display:flex;align-items:flex-start;justify-content:center;z-index:99999;">
     
     <div id="splash-screen" style="position:absolute;inset:0;background:linear-gradient(135deg,#0f172a,#1e293b);z-index:999999;display:none;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:0;">
@@ -457,8 +473,11 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         <div id="pantalla-1" class="pantalla activa flex-col h-full relative overflow-y-auto no-scrollbar bg-white">
             <div class="header-gradient relative pb-14 pt-10 px-6 rounded-b-[3rem] shadow-2xl flex flex-col items-center justify-center z-10 shrink-0 overflow-hidden">
                 <div class="absolute top-4 right-4 flex gap-2 z-20">
-                    <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white hover:bg-white/30 transition-all">
+                    <button onclick="toggleDarkMode()" id="btn-dark-app" class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white hover:bg-white/30 transition-all" title="Modo oscuro/claro">
                         <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <button onclick="abrirModal('modal-asistente-voz')" class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white hover:bg-white/30 transition-all" title="Asistente de voz">
+                        <i class="fa-solid fa-microphone"></i>
                     </button>
                     <button onclick="abrirModal('modal-notificaciones')" class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-white hover:bg-white/30 transition-all relative">
                         <i class="fa-solid fa-bell"></i>
@@ -475,7 +494,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <h1 class="titulo-3d text-[2.4rem] leading-none mb-3 text-center tracking-tighter">DELIVERY MOTO</h1>
                     <div class="bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl p-3 px-6 w-full max-w-[300px] shadow-lg">
                         <h2 class="font-bold text-[14px] text-white text-center tracking-wide uppercase">
-                            Marketplace + Radar GPS Premium
+                            Marketplace + Radar GPS + Servicios Certificados
                         </h2>
                     </div>
                 </div>
@@ -488,7 +507,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 text-orange-500 flex items-center justify-center text-2xl group-hover:from-orange-500 group-hover:to-orange-600 group-hover:text-white transition-all shadow-md"><i class="fa-solid fa-bag-shopping"></i></div>
                     <div class="text-left flex-1">
                         <span class="font-black text-slate-800 text-[18px] block">QUIERO COMPRAR</span>
-                        <span class="text-[12px] font-bold text-slate-400">Explorar comercios cercanos</span>
+                        <span class="text-[12px] font-bold text-slate-400">Explorar Marketplace</span>
                     </div>
                     <i class="fa-solid fa-chevron-right text-slate-300"></i>
                 </button>
@@ -520,7 +539,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </button>
                 </div>
 
-                <!-- NUEVOS ACCESOS DIRECTOS -->
+                <!-- ACCESOS DIRECTOS -->
                 <div class="mt-4 pt-4 border-t border-slate-100">
                     <h4 class="text-center font-black text-slate-400 uppercase tracking-widest text-[12px] mb-4">Accesos Rápidos</h4>
                     <div class="grid grid-cols-4 gap-3">
@@ -536,9 +555,9 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                             <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-50 text-blue-500 flex items-center justify-center text-lg shadow-sm"><i class="fa-solid fa-clock-rotate-left"></i></div>
                             <span class="text-[10px] font-black text-slate-600 text-center leading-tight">Historial</span>
                         </button>
-                        <button onclick="abrirModal('modal-ayuda')" class="flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-slate-50 transition-all active:scale-95">
-                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-100 to-violet-50 text-purple-500 flex items-center justify-center text-lg shadow-sm"><i class="fa-solid fa-circle-question"></i></div>
-                            <span class="text-[10px] font-black text-slate-600 text-center leading-tight">Ayuda</span>
+                        <button onclick="abrirModal('modal-certificaciones')" class="flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-slate-50 transition-all active:scale-95">
+                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-green-100 to-emerald-50 text-green-600 flex items-center justify-center text-lg shadow-sm"><i class="fa-solid fa-shield-halved"></i></div>
+                            <span class="text-[10px] font-black text-slate-600 text-center leading-tight">Certificados</span>
                         </button>
                     </div>
                 </div>
@@ -663,7 +682,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             </div>
         </div>
 
-        <!-- PANEL ADMIN COMERCIO MEJORADO -->
+        <!-- PANEL ADMIN COMERCIO -->
         <div id="pantalla-admin-comercio" class="pantalla flex-col h-full bg-[#f8fafc] relative overflow-y-auto no-scrollbar">
             <div class="bg-white pt-10 pb-5 px-6 relative shrink-0 z-20 shadow-sm rounded-b-3xl flex justify-between items-center">
                 <div class="flex-1 min-w-0">
@@ -671,6 +690,9 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <p class="text-[12px] uppercase tracking-widest font-black text-orange-500 mt-2 truncate" id="admin-ubicacion">--</p>
                 </div>
                 <div class="flex items-center gap-2 ml-4 shrink-0">
+                    <button onclick="toggleDarkMode()" class="w-10 h-10 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
                     <button onclick="abrirModal('modal-estadisticas')" class="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors" title="Estadísticas">
                         <i class="fa-solid fa-chart-line"></i>
                     </button>
@@ -682,7 +704,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             </div>
             
             <div class="flex-1 p-6 pb-12 space-y-6">
-                <!-- Info Local con Portada -->
                 <div class="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-100">
                     <img id="admin-portada-img" src="" class="w-full h-32 object-cover bg-slate-200" onerror="this.style.display='none'">
                     
@@ -710,7 +731,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </div>
                 </div>
 
-                <!-- KPI CARDS NUEVO -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="kpi-card orange">
                         <div class="kpi-value" id="kpi-pedidos">0</div>
@@ -730,13 +750,11 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </div>
                 </div>
 
-                <!-- Tabs -->
                 <div class="flex bg-white rounded-2xl p-1.5 shadow-sm border border-gray-100 sticky top-4 z-10">
                     <button onclick="switchTabComercio('productos')" id="tab-productos" class="tab-btn active flex-1 py-3 text-[14px]">Mi Catálogo</button>
                     <button onclick="switchTabComercio('pedidos')" id="tab-pedidos" class="tab-btn flex-1 py-3 text-[14px]">Bandeja Pedidos</button>
                 </div>
 
-                <!-- SECCIÓN PRODUCTOS -->
                 <div id="seccion-productos" class="space-y-6">
                     <div class="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm border-t-8 border-t-orange-500">
                         <h3 class="font-black text-gray-900 text-[19px] mb-5 flex items-center gap-2"><i class="fa-solid fa-plus-circle text-orange-500"></i> Agregar Producto</h3>
@@ -793,7 +811,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </div>
                 </div>
 
-                <!-- SECCIÓN PEDIDOS -->
                 <div id="seccion-pedidos" class="hidden space-y-4">
                     <div class="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
                         <div class="flex justify-between items-center mb-5">
@@ -813,7 +830,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             </div>
         </div>
 
-        <!-- ==================== MARKETPLACE CLIENTE MEJORADO ==================== -->
+        <!-- ==================== MARKETPLACE CLIENTE ==================== -->
         <div id="pantalla-marketplace" class="pantalla flex-col h-full bg-[#f8fafc] relative overflow-y-auto no-scrollbar">
             <div class="bg-white pt-10 pb-5 px-6 relative shrink-0 z-20 shadow-sm rounded-b-3xl">
                 <div class="flex justify-between items-center mb-5">
@@ -829,6 +846,9 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                         <span class="font-black text-gray-900 text-[20px] tracking-tight">Delivery Moto</span>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button onclick="toggleDarkMode()" class="w-10 h-10 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                            <i class="fa-solid fa-moon"></i>
+                        </button>
                         <button onclick="abrirModal('modal-favoritos')" class="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center text-red-500 hover:bg-red-100 transition-all">
                             <i class="fa-solid fa-heart"></i>
                         </button>
@@ -855,7 +875,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             </div>
 
             <div class="p-6 flex-1 space-y-6 pb-32">
-                <!-- Cupón Destacado -->
                 <div onclick="abrirModal('modal-cupones')" class="cupon-card cursor-pointer hover:shadow-lg transition-all active:scale-[0.98]">
                     <div class="flex items-center justify-between relative z-10">
                         <div>
@@ -869,18 +888,16 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </div>
                 </div>
 
-                <!-- Info Envíos Premium -->
                 <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-[1.5rem] p-5 flex items-center gap-4 shadow-lg text-white">
                     <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl flex-shrink-0 border border-white/30">
                         <i class="fa-solid fa-motorcycle"></i>
                     </div>
                     <div class="flex-1">
                         <h4 class="font-black text-[16px] leading-tight mb-1">Envíos por Radar GPS</h4>
-                        <p class="text-[13px] font-semibold text-orange-100 leading-snug">Distancia y tarifa calculada dinámicamente con mapas al finalizar.</p>
+                        <p class="text-[13px] font-semibold text-orange-100 leading-snug">Cadetes certificados con buena conducta. Distancia y tarifa calculada dinámicamente.</p>
                     </div>
                 </div>
 
-                <!-- Categorías -->
                 <div>
                     <h3 class="font-black text-gray-900 text-[18px] mb-3 px-1">Categorías</h3>
                     <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2" id="filtros-categorias">
@@ -894,7 +911,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     </div>
                 </div>
 
-                <!-- Listado de Comercios -->
                 <div>
                     <div class="flex justify-between items-end mb-4 px-1">
                         <h3 class="font-black text-gray-900 text-[19px]">Comercios Locales</h3>
@@ -904,7 +920,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 </div>
             </div>
 
-            <!-- Navegación Inferior MEJORADA -->
             <div class="bottom-nav">
                 <div class="nav-item active" onclick="navBottomClick(this,'pantalla-marketplace')"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
                 <div class="nav-item" onclick="navBottomClick(this);abrirModal('modal-favoritos')"><i class="fa-solid fa-heart"></i><span>Favoritos</span></div>
@@ -933,7 +948,6 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                             <i class="fa-solid fa-cart-shopping text-lg"></i>
                             <span id="badge-carrito-cat" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md hidden">0</span>
                         </button>
-                    </button>
                     </div>
                 </div>
 
@@ -948,13 +962,12 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
                     <div class="mt-[44px]">
                         <h2 id="cat-nombre" class="text-[26px] font-black text-gray-900 leading-tight truncate mb-1">Cargando...</h2>
-                        <div class="flex items-center gap-2 mb-3">
+                        <div class="flex items-center gap-2 mb-3 flex-wrap">
                             <span class="badge-seguridad badge-verde"><i class="fa-solid fa-circle-check"></i> Verificado</span>
                             <div class="flex items-center gap-1">
                                 <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
                                 <span class="text-[12px] font-bold text-gray-600">4.8</span>
                             </div>
-                            <span class="text-[11px] font-bold text-gray-400">• Envío rápido</span>
                         </div>
                         
                         <div class="space-y-1.5">
@@ -1011,7 +1024,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-md"><i class="fa-solid fa-robot"></i></div>
                     <div>
                         <h3 class="font-black text-green-800 text-[16px] mb-1">Auditoría IA Activada</h3>
-                        <p class="text-[14px] text-green-600 font-semibold leading-snug">Subí tus documentos para verificación automática. Empezá a recibir viajes.</p>
+                        <p class="text-[14px] text-green-600 font-semibold leading-snug">Subí tus documentos para verificación automática. Certificado de buena conducta requerido.</p>
                     </div>
                 </div>
 
@@ -1072,8 +1085,8 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                             <div class="flex items-center gap-4 relative z-10 pointer-events-none">
                                 <div class="w-14 h-14 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl icon-container"><i class="fa-solid fa-file-shield"></i></div>
                                 <div class="flex-1">
-                                    <h4 class="text-gray-900 font-black text-[16px]">Antecedentes</h4>
-                                    <p class="text-[13px] font-bold text-gray-400 doc-status mt-0.5">Certificado de Policía</p>
+                                    <h4 class="text-gray-900 font-black text-[16px]">Certificado de Buena Conducta</h4>
+                                    <p class="text-[13px] font-bold text-gray-400 doc-status mt-0.5">Antecedentes policiales</p>
                                 </div>
                                 <i class="fa-solid fa-circle-check text-green-500 text-2xl doc-icon hidden"></i>
                             </div>
@@ -1087,6 +1100,7 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                         <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-green-500 mt-1 text-xs"></i> <span>Comisión fija a la app: <strong>$200 por viaje</strong>.</span></li>
                         <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-green-500 mt-1 text-xs"></i> <span>Liquidación: <strong>Todos los lunes tenés que pagar</strong> la comisión.</span></li>
                         <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-green-500 mt-1 text-xs"></i> <span>Cobrás el envío completo en puerta al cliente.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-circle-check text-green-500 mt-1 text-xs"></i> <span>Certificado de buena conducta <strong>obligatorio</strong> para operar.</span></li>
                     </ul>
                     <label class="flex items-center gap-4 cursor-pointer bg-gray-50 p-4 rounded-xl border-2 border-gray-200 hover:border-orange-500 transition-all">
                         <input type="checkbox" id="acepto-terminos" class="w-6 h-6 rounded-md shrink-0 cursor-pointer accent-orange-500">
@@ -1149,7 +1163,9 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white font-black text-xl shadow-md border">SM</div>
                     <div>
                         <h3 class="font-black text-gray-900 text-[20px] leading-none mb-1.5" id="radar-nombre-cadete">Servimoto</h3>
-                        <div class="flex items-center gap-1.5 text-yellow-500 text-[13px] font-bold bg-yellow-50 px-2 py-0.5 rounded-md inline-flex border border-yellow-100"><i class="fa-solid fa-star"></i> 4.9 • Activo</div>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="cert-badge"><i class="fa-solid fa-shield-halved"></i> Certificado</span>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -1196,59 +1212,5 @@ window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
                 <div class="px-6 mt-2 space-y-5">
                     
-                    <div class="bg-orange-50 border border-orange-200 p-5 rounded-2xl shadow-sm text-center">
-                        <h4 class="font-black text-orange-800 text-[16px] mb-1"><i class="fa-solid fa-calendar-check text-orange-500 mr-1"></i> Liquidación Semanal</h4>
-                        <p class="text-[13.5px] text-orange-700 font-semibold leading-snug">Todos los lunes tenés que pagar tu comisión ($200 por viaje) para seguir activo.</p>
-                    </div>
-
-                    <div class="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm">
-                        <div class="flex justify-between items-center mb-5">
-                            <h4 class="font-black text-gray-900 text-[18px]"><i class="fa-solid fa-route text-blue-500 mr-2"></i> Mis Viajes Hoy</h4>
-                            <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-black" id="contador-viajes">0</span>
-                        </div>
-                        
-                        <div id="lista-viajes-cadete" class="space-y-3 mb-5 max-h-[300px] overflow-y-auto no-scrollbar">
-                            <div class="text-center py-6">
-                                <i class="fa-solid fa-motorcycle text-4xl text-gray-200 mb-2"></i>
-                                <p class="text-gray-400 font-bold text-sm">No hiciste viajes hoy.</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 flex justify-between items-center">
-                            <span class="font-black text-gray-600">Comisión a Pagar:</span>
-                            <span class="font-black text-red-500 text-xl" id="total-adeudado-cadete">$0</span>
-                        </div>
-                    </div>
-
-                    <a href="https://wa.me/5493815110171?text=Hola%20Soporte%20Delivery%20Moto,%20soy%20cadete." target="_blank" class="w-full py-4.5 bg-slate-900 text-white font-black rounded-[1.5rem] flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-transform text-[16px] h-14">
-                        <i class="fa-brands fa-whatsapp text-2xl text-green-400"></i> Soporte Central (3815110171)
-                    </a>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ==================== MODALES NUEVOS Y MEJORADOS ==================== -->
-
-    <!-- MODAL CARRITO -->
-    <div id="modal-carrito" class="modal-overlay" onclick="if(event.target===this)cerrarModal('modal-carrito')">
-        <div class="modal-content mt-auto h-[95vh] w-full max-w-md bg-[#f8fafc]">
-            <div class="bg-white p-5 border-b border-gray-100 flex justify-between items-center shrink-0 shadow-sm sticky top-0 z-20 rounded-t-[2.5rem]">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-receipt"></i></div>
-                    <div>
-                        <h3 class="font-black text-gray-900 text-[20px] leading-tight">Checkout</h3>
-                        <p class="text-[12px] font-bold text-gray-500 uppercase tracking-widest">Resumen de tu pedido</p>
-                    </div>
-                </div>
-                <button class="w-12 h-12 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors" onclick="cerrarModal('modal-carrito')"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            
-            <div class="p-6 flex flex-col flex-1 overflow-y-auto no-scrollbar pb-10">
-                
-                <div class="mb-6">
-                    <h4 class="font-black text-gray-900 text-[16px] mb-4 uppercase tracking-wider flex items-center gap-2 px-1"><i class="fa-solid fa-basket-shopping text-orange-500"></i> Mi Carrito</h4>
-                    <div id="carrito-lista" class="space-y-4"></div>
-                    
-                    <div id="carrito-vacio
+                    <div class="cert-card">
+                        <div class="cert-title"><i class="fa-solid fa-shield-halved"></i>
