@@ -1,894 +1,1607 @@
-<html style="margin:0;padding:0;">
+<html lang="es" style="margin:0;padding:0;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#ffffff">
-<title>Delivery Moto | Marketplace Premium Cloud</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Delivery Moto | Marketplace Premium</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 (function(){
-var s=document.createElement('style');
-s.textContent=`
-:root{
-  --accent:#ea580c;--accent2:#16a34a;--accent3:#7c3aed;
-  --accent-soft:rgba(234,88,12,.08);--danger:#dc2626;
-  --bg:#fefcf8;--card:#ffffff;--text:#0f172a;--muted:#64748b;--border:rgba(15,23,42,.06);
-  --glass:rgba(255,255,255,.72);--glass-border:rgba(255,255,255,.9);
+    var s = document.createElement('style');
+    s.textContent = `
+:root {
+    --naranja: #ea580c;
+    --naranja-claro: #fb923c;
+    --naranja-oscuro: #c2410c;
+    --verde: #16a34a;
+    --verde-claro: #22c55e;
+    --azul: #2563eb;
+    --blanco: #ffffff;
+    --fondo: #fefcf8;
+    --fondo-card: #ffffff;
+    --texto: #0f172a;
+    --texto-suave: #64748b;
+    --borde: rgba(15,23,42,.08);
+    --sombra-suave: 0 4px 20px rgba(15,23,42,.06);
+    --sombra-media: 0 10px 40px rgba(15,23,42,.1);
+    --sombra-fuerte: 0 20px 60px rgba(234,88,12,.18);
 }
-*{box-sizing:border-box}
-body{font-family:'Quicksand',sans-serif;color:var(--text);margin:0;padding:0;background:var(--bg);overflow-x:hidden}
-a{text-decoration:none}.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; background: var(--fondo); overflow-x: hidden; }
+a { text-decoration: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}.ticker-landing{display:inline-block;animation:ticker 40s linear infinite;white-space:nowrap}
-@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}.logo-float{animation:logoFloat 4s ease-in-out infinite}
-@keyframes shine{0%{transform:translateX(-150%) skewX(-20deg)}100%{transform:translateX(250%) skewX(-20deg)}}.shine-effect{position:relative;overflow:hidden}.shine-effect::after{content:'';position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shine 3.5s infinite}
-@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}.float-up{animation:floatUp 5s ease-in-out infinite}
-@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 20px rgba(234,88,12,.35))}50%{filter:drop-shadow(0 0 50px rgba(234,88,12,.7))}}.glow-pulse{animation:glowPulse 3s ease-in-out infinite}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}.fade-in-up{animation:fadeInUp .8s cubic-bezier(.16,1,.3,1) both}
-@keyframes pulseRing{0%{transform:scale(.9);opacity:.8}100%{transform:scale(2);opacity:0}}
-@keyframes scanLine{0%{top:0}100%{top:100%}}
-@keyframes iaThinking{0%,100%{transform:rotate(0deg)}25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)}}
-@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+/* ANIMACIONES PREMIUM */
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+.float-anim { animation: float 4s ease-in-out infinite; }
 
-.dot-live{width:8px;height:8px;border-radius:50%;background:var(--accent2);display:inline-block;position:relative}
-.dot-live::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--accent2);animation:pulseRing 1.8s ease-in-out infinite}
+@keyframes pulseRing { 0% { transform: scale(.8); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+.pulse-ring::before { content:''; position:absolute; inset:-8px; border-radius:50%; border:3px solid var(--naranja); animation:pulseRing 2s ease-out infinite; }
 
-.headline-xl{font-family:'Sora',sans-serif;font-weight:800;letter-spacing:-2px;line-height:1;background:linear-gradient(135deg,#0f172a 0%,#1e293b 40%,#334155 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.headline-accent{font-family:'Sora',sans-serif;font-weight:800;letter-spacing:-1.5px;background:linear-gradient(135deg,#ea580c 0%,#f97316 50%,#fb923c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.eyebrow{font-size:11px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+.shimmer-bg { background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent); background-size: 200% 100%; animation: shimmer 2s infinite; }
 
-.btn-primary{position:relative;background:linear-gradient(135deg,#fb923c 0%,#ea580c 50%,#c24105 100%);color:#fff;font-weight:800;font-family:'Quicksand',sans-serif;border:none;border-radius:999px;padding:18px 36px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:all .35s;box-shadow:0 10px 30px rgba(234,88,12,.35),inset 0 1px 0 rgba(255,255,255,.4)}
-.btn-primary:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 20px 50px rgba(234,88,12,.45),0 0 40px rgba(234,88,12,.3)}
-.btn-primary:active{transform:scale(.97)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-ghost{background:var(--glass);backdrop-filter:blur(20px);color:var(--text);font-weight:800;border:1.5px solid rgba(15,23,42,.08);border-radius:999px;padding:18px 32px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:all .35s}
-.btn-ghost:hover{transform:translateY(-4px);border-color:var(--accent);color:var(--accent)}
-.btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:800;border:none;border-radius:999px;padding:16px 28px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:all .35s;box-shadow:0 10px 30px rgba(220,38,38,.3)}
-.btn-danger:hover{transform:translateY(-3px);box-shadow:0 15px 40px rgba(220,38,38,.4)}
+@keyframes slideUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+.slide-up { animation: slideUp .6s cubic-bezier(.16,1,.3,1) both; }
 
-.glass{background:var(--glass);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,.06)}
-.glass-strong{background:rgba(255,255,255,.88);backdrop-filter:blur(30px) saturate(200%);border:1px solid rgba(255,255,255,.95);box-shadow:0 20px 60px rgba(0,0,0,.08)}
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.fade-in { animation: fadeIn .5s ease both; }
 
-.input-premium{width:100%;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:16px 20px;font-size:15px;font-weight:700;color:var(--text);outline:none;transition:all .3s;font-family:'Quicksand',sans-serif}
-.input-premium:focus{border-color:var(--accent);box-shadow:0 0 0 5px rgba(234,88,12,.1)}
+@keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+.gradient-anim { background-size: 200% 200%; animation: gradientMove 8s ease infinite; }
 
-.card-premium{background:#fff;border-radius:28px;border:1px solid var(--border);box-shadow:0 4px 24px rgba(0,0,0,.04);transition:all .4s cubic-bezier(.16,1,.3,1)}
-.card-premium:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.08);border-color:rgba(234,88,12,.2)}
+/* BOTONES PREMIUM */
+.btn-primary {
+    background: linear-gradient(135deg, var(--naranja-claro) 0%, var(--naranja) 50%, var(--naranja-oscuro) 100%);
+    color: #fff; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer;
+    font-family: 'Quicksand', sans-serif; transition: all .3s cubic-bezier(.16,1,.3,1);
+    display: inline-flex; justify-content: center; align-items: center; gap: .5rem;
+    box-shadow: 0 8px 25px rgba(234,88,12,.25), inset 0 1px 0 rgba(255,255,255,.3);
+    position: relative; overflow: hidden;
+}
+.btn-primary::after {
+    content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+    transition: left .5s;
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(234,88,12,.35); }
+.btn-primary:hover::after { left: 100%; }
+.btn-primary:active { transform: scale(0.97); }
 
-.cat-chip{padding:10px 20px;border-radius:999px;font-weight:800;font-size:13px;cursor:pointer;transition:all .3s;border:1.5px solid #e2e8f0;background:#fff;color:var(--muted);white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
-.cat-chip:hover{transform:translateY(-2px);color:var(--text)}
-.cat-chip.active{background:linear-gradient(135deg,#fb923c,#ea580c);color:#fff;border-color:transparent;box-shadow:0 8px 24px rgba(234,88,12,.3)}
+.btn-secondary {
+    background: var(--blanco); color: var(--texto); font-weight: 800; transition: all .3s;
+    border: 2px solid var(--borde); border-radius: 1rem;
+    box-shadow: var(--sombra-suave); display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+}
+.btn-secondary:hover { transform: translateY(-3px); border-color: var(--naranja); box-shadow: var(--sombra-media); }
 
-.bottom-nav{background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);position:absolute;bottom:0;width:100%;max-width:448px;display:flex;justify-content:space-around;padding:14px 0 22px 0;z-index:50;border-radius:28px 28px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.05)}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:5px;color:#94a3b8;font-size:11px;font-weight:800;cursor:pointer;transition:all .25s}
-.nav-item.active{color:var(--accent);transform:translateY(-3px)}
+.btn-dark {
+    background: var(--texto); color: #fff; font-weight: 800; transition: all .3s;
+    border-radius: 1rem; box-shadow: var(--sombra-media);
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    border: 1px solid var(--texto);
+}
+.btn-dark:hover { transform: translateY(-3px); background: var(--naranja); border-color: var(--naranja); box-shadow: var(--sombra-fuerte); }
 
-.pantalla{display:none;opacity:0;transition:all .45s;transform:translateY(15px)}
-.pantalla.activa{display:flex;opacity:1;transform:translateY(0)}
+.btn-green {
+    background: linear-gradient(135deg, var(--verde-claro) 0%, var(--verde) 100%);
+    color: #fff; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer;
+    font-family: 'Quicksand', sans-serif; transition: all .3s;
+    display: inline-flex; justify-content: center; align-items: center; gap: .5rem;
+    box-shadow: 0 8px 25px rgba(22,163,74,.25), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.btn-green:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(22,163,74,.35); }
+.btn-green:active { transform: scale(0.97); }
 
-.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(10px);z-index:100000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:all .4s}
-.modal-overlay.show{opacity:1;pointer-events:auto}
-.modal-content{background:var(--bg);width:92%;max-width:420px;border-radius:32px;box-shadow:0 30px 80px rgba(0,0,0,.2);transform:scale(.92) translateY(20px);transition:transform .45s;display:flex;flex-direction:column;overflow:hidden;max-height:88vh}
-.modal-overlay.show .modal-content{transform:scale(1) translateY(0)}
+/* INPUTS PREMIUM */
+.input-premium {
+    width: 100%; background: var(--blanco); border: 2px solid #e2e8f0; border-radius: 1rem;
+    padding: 16px 20px; font-size: 16px; font-weight: 700; color: var(--texto);
+    outline: none; transition: all 0.3s cubic-bezier(.16,1,.3,1);
+    font-family: 'Quicksand', sans-serif; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+}
+.input-premium:focus { border-color: var(--naranja); box-shadow: 0 0 0 4px rgba(234,88,12,.12), inset 0 2px 5px rgba(0,0,0,0.02); }
+.input-premium::placeholder { color: #94a3b8; font-weight: 600; }
 
-#toast-container{position:fixed;top:0;left:0;right:0;z-index:9999999;display:flex;flex-direction:column;align-items:center;padding-top:20px;gap:8px;pointer-events:none}
-.toast{background:rgba(15,23,42,.92);backdrop-filter:blur(20px);color:#fff;border-radius:999px;padding:14px 24px;transform:translateY(-80px);opacity:0;transition:all .4s;display:flex;align-items:center;gap:12px;font-weight:800;font-size:14px;border:1px solid rgba(255,255,255,.1)}
-.toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+/* PANTALLAS */
+.pantalla { display: none; opacity: 0; transition: all .5s cubic-bezier(.16,1,.3,1); transform: translateY(20px); }
+.pantalla.activa { display: flex; opacity: 1; transform: translateY(0); }
 
-.hero-canvas{position:relative;background:radial-gradient(ellipse 80% 60% at 20% 0%,rgba(234,88,12,.12),transparent 60%),radial-gradient(ellipse 70% 50% at 80% 100%,rgba(22,163,74,.08),transparent 55%),linear-gradient(180deg,#fff 0%,#fefcf8 50%,#fff7ed 100%);overflow:hidden}
-.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;pointer-events:none}
-.orb-1{width:500px;height:500px;background:radial-gradient(circle,rgba(234,88,12,.35),transparent 70%);top:-150px;right:-100px}
-.orb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(22,163,74,.25),transparent 70%);bottom:-100px;left:-80px}
+/* TOAST */
+#toast-container { position: fixed; top: 0; left: 0; right: 0; z-index: 9999999; pointer-events: none; display: flex; flex-direction: column; align-items: center; padding-top: 25px; gap: 8px; }
+.toast {
+    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); color: #fff;
+    border-radius: 1.5rem; padding: 16px 24px; box-shadow: var(--sombra-media);
+    transform: translateY(-100px); opacity: 0; transition: all .4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 15px;
+    width: 92%; max-width: 360px; border: 1px solid rgba(255,255,255,0.15);
+}
+.toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
 
-.logo-master{position:relative;display:inline-block}
-.logo-master::before{content:'';position:absolute;inset:-20px;background:radial-gradient(circle,rgba(234,88,12,.4),transparent 70%);border-radius:50%;z-index:0;animation:glowPulse 3s ease-in-out infinite}
-.logo-ring{position:absolute;inset:-8px;border-radius:50%;border:1.5px solid rgba(234,88,12,.3);z-index:1}
-.logo-ring-2{position:absolute;inset:-18px;border-radius:50%;border:1px solid rgba(234,88,12,.15);z-index:1}
+/* MODALES */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(10px);
+    z-index: 100000; display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: all .4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal-content {
+    background: var(--fondo); width: 100%; max-width: 448px; max-height: 92vh;
+    border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -25px 60px rgba(0,0,0,0.15);
+    transform: translateY(100%); transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; flex-direction: column; overflow: hidden;
+}
+.modal-overlay.show .modal-content { transform: translateY(0); }
+.modal-centered { align-items: center; justify-content: center; }
+.modal-centered .modal-content { border-radius: 2.25rem; transform: scale(0.92) translateY(20px); width: 90%; max-height: 85vh; }
+.modal-overlay.show .modal-centered .modal-content { transform: scale(1) translateY(0); }
 
-.tab-btn{padding:12px 18px;border-radius:999px;font-weight:800;font-size:13px;cursor:pointer;transition:all .25s;border:none;background:transparent;color:var(--muted);font-family:'Quicksand',sans-serif}
-.tab-btn.active{background:var(--text);color:#fff;box-shadow:0 4px 14px rgba(15,23,42,.15)}
+/* NAVEGACION INFERIOR */
+.bottom-nav {
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(15px);
+    border-top: 1px solid var(--borde); position: fixed; bottom: 0; width: 100%; max-width: 448px;
+    display: flex; justify-content: space-around; padding: 14px 0 22px 0; z-index: 50;
+    border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.06);
+}
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.25s; }
+.nav-item.active { color: var(--naranja); transform: translateY(-3px); }
+.nav-item i { font-size: 22px; transition: transform 0.2s; }
 
-.badge-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px}
-.badge-accent{background:rgba(234,88,12,.1);color:var(--accent);border:1px solid rgba(234,88,12,.2)}
-.badge-green{background:rgba(22,163,74,.1);color:var(--accent2);border:1px solid rgba(22,163,74,.2)}
-.badge-red{background:rgba(220,38,38,.1);color:var(--danger);border:1px solid rgba(220,38,38,.2)}
-.badge-purple{background:rgba(124,58,237,.1);color:var(--accent3);border:1px solid rgba(124,58,237,.2)}
+/* CARDS */
+.producto-card {
+    background: var(--blanco); border-radius: 1.5rem; overflow: hidden;
+    box-shadow: var(--sombra-suave); border: 1px solid var(--borde);
+    transition: all 0.35s cubic-bezier(.16,1,.3,1); cursor: pointer;
+}
+.producto-card:hover { transform: translateY(-5px); box-shadow: var(--sombra-media); }
 
-.feature-icon{width:64px;height:64px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:26px;background:linear-gradient(135deg,rgba(234,88,12,.1),rgba(234,88,12,.04));color:var(--accent);border:1px solid rgba(234,88,12,.15)}
-.stat-display{font-family:'Sora',sans-serif;font-weight:800;font-size:42px;line-height:1;background:linear-gradient(135deg,#ea580c,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.comercio-card {
+    background: var(--blanco); border-radius: 1.5rem; padding: 16px;
+    box-shadow: var(--sombra-suave); border: 1px solid var(--borde);
+    cursor: pointer; transition: all 0.35s cubic-bezier(.16,1,.3,1);
+    display: flex; gap: 16px; align-items: center;
+}
+.comercio-card:hover { transform: translateY(-4px); box-shadow: var(--sombra-media); border-color: var(--naranja); }
 
-.producto-card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid var(--border);transition:all .35s;cursor:pointer}
-.producto-card:hover{transform:translateY(-5px);box-shadow:0 15px 35px rgba(0,0,0,.08)}
-.comercio-card{background:#fff;border-radius:24px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid var(--border);cursor:pointer;transition:all .35s;display:flex;gap:16px;align-items:center}
-.comercio-card:hover{transform:translateY(-4px);box-shadow:0 15px 35px rgba(0,0,0,.08);border-color:rgba(234,88,12,.25)}
+/* TABS */
+.tab-btn {
+    padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 14px;
+    cursor: pointer; transition: all 0.25s; border: none; background: transparent;
+    color: var(--texto-suave); font-family: 'Quicksand', sans-serif;
+}
+.tab-btn.active { background: var(--texto); color: white; box-shadow: var(--sombra-suave); }
 
-/* ============ DOC UPLOAD ZONE ============ */
-.doc-upload{position:relative;border:2.5px dashed #cbd5e1;border-radius:24px;padding:24px;text-align:center;cursor:pointer;transition:all .35s;background:#fafafa;overflow:hidden}
-.doc-upload:hover{border-color:var(--accent);background:#fff7ed;transform:translateY(-2px)}
-.doc-upload.cargado{border-style:solid;border-color:var(--accent2);background:rgba(22,163,74,.04)}
-.doc-upload.aprobado{border-style:solid;border-color:var(--accent2);background:rgba(22,163,74,.06)}
-.doc-upload.rechazado{border-style:solid;border-color:var(--danger);background:rgba(220,38,38,.05)}
-.doc-upload .scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,rgba(234,88,12,.6),transparent);animation:scanLine 1.5s linear infinite;display:none}
-.doc-upload.scanning .scan-line{display:block}
+/* CATEGORIAS - ICONOS SVG */
+.cat-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 16px; border-radius: 1rem; font-weight: 800; font-size: 13px;
+    background: var(--blanco); color: var(--texto-suave); border: 1px solid var(--borde);
+    cursor: pointer; transition: all 0.25s; white-space: nowrap;
+    box-shadow: var(--sombra-suave);
+}
+.cat-chip:hover { border-color: var(--naranja); color: var(--naranja); }
+.cat-chip.active { background: linear-gradient(135deg, var(--naranja-claro), var(--naranja)); color: white; border-color: transparent; box-shadow: var(--sombra-fuerte); }
+.cat-chip svg { width: 16px; height: 16px; }
 
-/* ============ IA AUDIT MODAL ============ */
-.ia-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;margin:0 auto 20px;box-shadow:0 15px 40px rgba(124,58,237,.35);position:relative}
-.ia-avatar.thinking{animation:iaThinking .6s ease-in-out infinite}
-.ia-avatar::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(124,58,237,.3);animation:pulseRing 2s ease-in-out infinite}
+.badge-categoria {
+    display: inline-block; padding: 4px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.cat-bebida { background: rgba(37,99,235,.1); color: var(--azul); }
+.cat-golosina { background: rgba(236,72,153,.1); color: #db2777; }
+.cat-cigarrillo { background: rgba(107,114,128,.1); color: #6b7280; }
+.cat-lacteo { background: rgba(250,204,21,.1); color: #ca8a04; }
+.cat-almacen { background: rgba(139,92,246,.1); color: #7c3aed; }
+.cat-limpieza { background: rgba(6,182,212,.1); color: #0891b2; }
+.cat-carniceria { background: rgba(220,38,38,.1); color: #dc2626; }
+.cat-otros { background: rgba(107,114,128,.1); color: #6b7280; }
 
-/* ============ VIAJE CARD ============ */
-.viaje-card{background:#fff;border-radius:20px;padding:18px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;transition:all .3s}
-.viaje-card:hover{border-color:rgba(234,88,12,.2);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+/* BADGES */
+.badge-seguridad {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge-verde { background: rgba(22,163,74,.1); color: var(--verde); border: 1px solid rgba(22,163,74,.2); }
+.badge-naranja { background: rgba(234,88,12,.1); color: var(--naranja); border: 1px solid rgba(234,88,12,.2); }
+.badge-azul { background: rgba(37,99,235,.1); color: var(--azul); border: 1px solid rgba(37,99,235,.2); }
 
-/* ============ M&Eacute;TRICAS ============ */
-.metric-card{background:linear-gradient(135deg,var(--from),var(--to));border-radius:24px;padding:22px;color:#fff;position:relative;overflow:hidden;box-shadow:0 12px 35px var(--shadow)}
-.metric-card::after{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.15)}
+/* MAPA */
+.map-container {
+    position: relative; border-radius: 1.5rem; overflow: hidden;
+    border: 3px solid var(--naranja); box-shadow: var(--sombra-fuerte);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    height: 0; opacity: 0; width: 100%; margin-top: 0;
+}
+.map-container.active { height: 280px; opacity: 1; margin-top: 1rem; }
+.route-line { border-left: 3px dashed #cbd5e1; height: calc(100% - 20px); position: absolute; left: 23px; top: 30px; z-index: 0; }
+.punto-indicador { width: 22px; height: 22px; border-radius: 50%; border: 4px solid white; box-shadow: var(--sombra-suave); position: absolute; left: -30px; top: 50%; transform: translateY(-50%); z-index: 10; }
 
-/* ============ BLOQUEO GPS ============ */
-.bloqueo-overlay{position:absolute;inset:0;background:rgba(15,23,42,.85);backdrop-filter:blur(12px);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;color:#fff}
+/* UPLOAD ZONE */
+.upload-zone {
+    border: 3px dashed #cbd5e1; border-radius: 1.5rem; padding: 25px; text-align: center;
+    cursor: pointer; transition: all 0.3s; background: var(--fondo);
+}
+.upload-zone:hover { border-color: var(--naranja); background: #fff7ed; }
+.upload-zone.has-file { border-style: solid; border-color: var(--verde); background: rgba(22,163,74,.05); }
 
-/* ============ SHIMMER ============ */
-.shimmer{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:800px 100%;animation:shimmer 1.5s infinite}
+/* LANDING BLANCA PREMIUM */
+.landing-white {
+    background: linear-gradient(180deg, #ffffff 0%, #fefcf8 50%, #fff7ed 100%);
+    min-height: 100vh; position: relative; overflow: hidden;
+}
+.landing-white::before {
+    content: ''; position: absolute; top: -20%; right: -10%; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(234,88,12,.08) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+}
+.landing-white::after {
+    content: ''; position: absolute; bottom: -10%; left: -10%; width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(22,163,74,.06) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+}
 
-.soft-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(15,23,42,.08),transparent)}
+.hero-card {
+    background: var(--blanco); border-radius: 3rem; padding: 3rem;
+    box-shadow: 0 30px 80px rgba(15,23,42,.08); border: 1px solid var(--borde);
+    position: relative; overflow: hidden;
+}
+.hero-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, var(--naranja-claro), var(--naranja), var(--verde));
+}
+
+.feature-card {
+    background: var(--blanco); border-radius: 2rem; padding: 2rem;
+    box-shadow: var(--sombra-suave); border: 1px solid var(--borde);
+    transition: all .4s cubic-bezier(.16,1,.3,1);
+}
+.feature-card:hover { transform: translateY(-8px); box-shadow: var(--sombra-media); }
+.feature-icon {
+    width: 64px; height: 64px; border-radius: 1.5rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 1.25rem;
+}
+
+/* TICKER */
+.ticker-wrap { background: var(--texto); overflow: hidden; border-radius: 999px; }
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.ticker-track { display: inline-block; animation: ticker 40s linear infinite; white-space: nowrap; padding: 14px 0; }
+
+/* LOGO CIRCLE */
+.logo-circle {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--naranja-claro), var(--naranja));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 20px 50px rgba(234,88,12,.35);
+    color: white; font-size: 48px; position: relative;
+}
+
+/* RADAR */
+.radar-btn {
+    width: 220px; height: 220px; border-radius: 50%;
+    background: var(--blanco); display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.08);
+    border: 10px solid #f1f5f9; position: relative;
+    transition: all .4s cubic-bezier(.16,1,.3,1); cursor: pointer;
+}
+.radar-btn.active {
+    border-color: rgba(22,163,74,.3);
+    box-shadow: 0 0 0 0 rgba(22,163,74,.4), 0 20px 60px rgba(22,163,74,.15);
+    animation: radarPulse 2s infinite;
+}
+@keyframes radarPulse {
+    0% { box-shadow: 0 0 0 0 rgba(22,163,74,.4), 0 20px 60px rgba(22,163,74,.15); }
+    70% { box-shadow: 0 0 0 30px rgba(22,163,74,0), 0 20px 60px rgba(22,163,74,.15); }
+    100% { box-shadow: 0 0 0 0 rgba(22,163,74,0), 0 20px 60px rgba(22,163,74,.15); }
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* HEADER GRADIENTE */
+.header-gradient {
+    background: linear-gradient(135deg, var(--naranja-claro) 0%, var(--naranja) 50%, var(--naranja-oscuro) 100%);
+    position: relative; overflow: hidden;
+}
+.header-gradient::before {
+    content: ''; position: absolute; top: -50%; right: -20%; width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,.2) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+/* DOCUMENTO CARD */
+.doc-card {
+    background: var(--blanco); border-radius: 1.5rem; padding: 1.25rem;
+    border: 2px dashed #cbd5e1; transition: all .3s; cursor: pointer;
+    position: relative; overflow: hidden;
+}
+.doc-card:hover { border-color: var(--naranja); background: #fff7ed; }
+.doc-card.validado { border-style: solid; border-color: var(--verde); background: rgba(22,163,74,.04); }
+
+/* APK DOWNLOAD BADGE */
+.apk-badge {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--texto); color: white; padding: 14px 24px;
+    border-radius: 1rem; transition: all .3s; cursor: pointer;
+    box-shadow: var(--sombra-media);
+}
+.apk-badge:hover { transform: translateY(-3px); background: var(--naranja); box-shadow: var(--sombra-fuerte); }
 `;
-document.head.appendChild(s);
+    document.head.appendChild(s);
 })();
-</script>
-</head>
-<body>
-<div id="app-container" style="width:100%;display:flex;justify-content:center;position:relative;">
 
-<!-- ============ LANDING PAGE ============ -->
-<div id="vista-landing" style="position:relative;z-index:10;width:100%;">
-  <nav style="padding:16px;position:sticky;top:0;z-index:50;">
-    <div class="glass-strong" style="max-width:1100px;margin:0 auto;border-radius:24px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;">
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div class="logo-master" style="width:48px;height:48px;border-radius:16px;overflow:hidden;box-shadow:0 6px 20px rgba(234,88,12,.25);">
-          <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="">
-        </div>
-        <div><div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;line-height:1;">DELIVERY MOTO</div><div class="eyebrow" style="margin-top:2px;">Energy Software</div></div>
-      </div>
-      <span class="badge-pill badge-green"><span class="dot-live"></span>Supabase RLS Activo</span>
-    </div>
-  </nav>
+// CONFIG
+const SUPABASE_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
+const OPENAI_API_KEY = '';
+window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  <section class="hero-canvas" style="padding:60px 24px 100px;">
-    <div class="hero-orb orb-1"></div><div class="hero-orb orb-2"></div>
-    <div style="max-width:1100px;margin:0 auto;position:relative;z-index:2;text-align:center;">
-      <div class="fade-in-up glass" style="display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:10px 22px;margin-bottom:40px;">
-        <span class="dot-live"></span>
-        <span style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;">PostgreSQL RLS &middot; Supabase Auth &middot; IA Auditor</span>
-      </div>
-      <div class="fade-in-up logo-master" style="display:inline-block;margin-bottom:48px;">
-        <div class="logo-ring"></div><div class="logo-ring-2"></div>
-        <div class="logo-float" style="width:220px;height:220px;border-radius:48px;overflow:hidden;border:3px solid rgba(255,255,255,.9);box-shadow:0 30px 80px rgba(234,88,12,.35);position:relative;z-index:2;">
-          <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="">
-        </div>
-      </div>
-      <h1 class="fade-in-up headline-xl" style="font-size:clamp(48px,9vw,104px);margin-bottom:16px;">DELIVERY <span class="headline-accent">MOTO</span></h1>
-      <p class="fade-in-up" style="font-size:clamp(16px,2.2vw,22px);font-weight:700;color:var(--muted);margin-bottom:48px;">La red de reparto m&aacute;s segura &middot; IA que audita documentos &middot; RLS por usuario</p>
-      <div class="fade-in-up glass-strong" style="max-width:720px;margin:0 auto 56px;border-radius:32px;padding:36px 44px;">
-        <div class="eyebrow" style="margin-bottom:16px;">Arquitectura Producci&oacute;n</div>
-        <p style="font-family:'Sora',sans-serif;font-weight:600;font-size:clamp(15px,1.8vw,18px);line-height:1.7;margin:0;">
-          <strong>Auth:</strong> <code style="background:rgba(234,88,12,.1);padding:3px 10px;border-radius:8px;color:var(--accent);font-size:13px;">{celular}@deliverymoto.app</code> &nbsp;&nbsp;
-          <strong>RLS:</strong> cada usuario ve solo sus datos &nbsp;&nbsp;
-          <strong>Storage:</strong> buckets privados por cadete
-        </p>
-      </div>
-      <div class="fade-in-up" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:72px;">
-        <button onclick="abrirPWA()" class="btn-primary shine-effect" style="font-size:17px;padding:20px 44px;"><i class="fa-solid fa-store"></i>Ingresar al Marketplace</button>
-        <button onclick="descargarAPK()" class="btn-ghost shine-effect" style="font-size:17px;padding:20px 40px;"><i class="fa-brands fa-android" style="color:var(--accent2);"></i>Descargar APK Cadete</button>
-      </div>
-      <div class="fade-in-up" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;max-width:720px;margin:0 auto;">
-        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display">24</div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Provincias</div></div>
-        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display">RLS</div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Seguridad Total</div></div>
-        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display">IA</div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Auditor Docs</div></div>
-        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display" style="font-size:36px;"><i class="fa-solid fa-shield-halved"></i></div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Verificados</div></div>
-      </div>
-    </div>
-  </section>
-
-  <div style="background:linear-gradient(90deg,#fff7ed,#fef3c7,#fff7ed);padding:14px 0;overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
-    <div class="ticker-landing">
-      <span style="font-size:13px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#9a3412;padding:0 24px;"><i class="fa-solid fa-motorcycle" style="color:var(--accent);"></i> Delivery Moto &nbsp;&nbsp; <i class="fa-solid fa-database" style="color:#7c3aed;"></i> Supabase RLS &nbsp;&nbsp; <i class="fa-solid fa-robot" style="color:#7c3aed;"></i> IA Auditor &nbsp;&nbsp; <i class="fa-solid fa-location-crosshairs" style="color:var(--accent2);"></i> GPS Bloqueable &nbsp;&nbsp; <i class="fa-solid fa-calendar-day" style="color:#dc2626;"></i> Pago C/ Lunes &nbsp;&nbsp;</span>
-      <span style="font-size:13px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#9a3412;padding:0 24px;"><i class="fa-solid fa-motorcycle" style="color:var(--accent);"></i> Delivery Moto &nbsp;&nbsp; <i class="fa-solid fa-database" style="color:#7c3aed;"></i> Supabase RLS &nbsp;&nbsp; <i class="fa-solid fa-robot" style="color:#7c3aed;"></i> IA Auditor &nbsp;&nbsp; <i class="fa-solid fa-location-crosshairs" style="color:var(--accent2);"></i> GPS Bloqueable &nbsp;&nbsp; <i class="fa-solid fa-calendar-day" style="color:#dc2626;"></i> Pago C/ Lunes &nbsp;&nbsp;</span>
-    </div>
-  </div>
-
-  <section style="padding:100px 24px;max-width:1100px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:64px;"><div class="eyebrow" style="margin-bottom:16px;">IA + RLS + GPS</div><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(32px,5vw,52px);letter-spacing:-1.5px;line-height:1.1;margin:0 0 16px;">Seguridad de <span class="headline-accent">Nivel Bancario</span></h2><p style="font-size:17px;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.7;">Cada cadete pasa por auditor&iacute;a de IA. Si no paga los lunes, el GPS se bloquea autom&aacute;ticamente.</p></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;">
-      <div class="card-premium" style="padding:40px 32px;"><div class="feature-icon" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(124,58,237,.05));color:var(--accent3);border-color:rgba(124,58,237,.2);"><i class="fa-solid fa-robot"></i></div><h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;">IA Auditora</h3><p style="color:var(--muted);font-size:15px;line-height:1.7;margin:0;">Lee DNI, Buena Conducta y AFIP. Solo aprueba cadetes aut&eacute;nticos.</p></div>
-      <div class="card-premium" style="padding:40px 32px;border:1.5px solid rgba(234,88,12,.2);"><div class="feature-icon" style="margin-bottom:24px;"><i class="fa-solid fa-lock"></i></div><h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;">Row Level Security</h3><p style="color:var(--muted);font-size:15px;line-height:1.7;margin:0;">Cada usuario solo accede a SUS datos. Pol&iacute;ticas RLS en todas las tablas.</p></div>
-      <div class="card-premium" style="padding:40px 32px;"><div class="feature-icon" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(220,38,38,.12),rgba(220,38,38,.04));color:var(--danger);border-color:rgba(220,38,38,.2);"><i class="fa-solid fa-triangle-exclamation"></i></div><h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;">Bloqueo GPS</h3><p style="color:var(--muted);font-size:15px;line-height:1.7;margin:0;">Los lunes sin pago = radar desactivado autom&aacute;ticamente por la IA.</p></div>
-    </div>
-  </section>
-
-  <footer style="background:#0f172a;color:#94a3b8;padding:72px 24px 48px;border-radius:48px 48px 0 0;margin:0 16px;">
-    <div style="max-width:800px;margin:0 auto;text-align:center;">
-      <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:28px;">
-        <div style="width:56px;height:56px;border-radius:18px;overflow:hidden;border:2px solid rgba(234,88,12,.4);box-shadow:0 0 30px rgba(234,88,12,.3);"><img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt=""></div>
-        <div style="font-family:'Sora',sans-serif;font-weight:800;color:#fff;font-size:32px;">DELIVERY MOTO</div>
-      </div>
-      <p style="font-weight:700;color:#cbd5e1;font-size:15px;margin:0 0 24px;">Supabase &middot; PostgreSQL RLS &middot; IA Auditor &middot; Listo para Producci&oacute;n</p>
-      <div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#475569;">&copy; 2026 &middot; Argentina</div>
-    </div>
-  </footer>
-</div>
-
-<!-- ============ VISTA APP MOVIL ============ -->
-<div id="vista-app" style="display:none;position:relative;width:100%;align-items:flex-start;justify-content:center;z-index:9;">
-  <div id="toast-container"></div>
-  <div style="width:100%;max-width:448px;background:var(--bg);position:relative;flex-direction:column;display:flex;min-height:100vh;box-shadow:0 0 60px rgba(0,0,0,.08);overflow-x:hidden;">
-
-    <!-- PANTALLA 1: INICIO -->
-    <div id="pantalla-1" class="pantalla activa flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="position:relative;padding:56px 28px 48px;border-radius:0 0 40px 40px;background:linear-gradient(135deg,#fb923c 0%,#ea580c 50%,#c24105 100%);overflow:hidden;box-shadow:0 20px 50px rgba(234,88,12,.25);">
-        <div style="position:absolute;top:-80px;right:-80px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.12);"></div>
-        <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;">
-          <div class="logo-master" style="margin-bottom:20px;"><div class="logo-ring"></div><div style="width:100px;height:100px;border-radius:28px;overflow:hidden;border:3px solid rgba(255,255,255,.4);box-shadow:0 15px 40px rgba(0,0,0,.2);position:relative;z-index:2;"><img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt=""></div></div>
-          <h1 style="font-family:'Sora',sans-serif;font-weight:800;color:#fff;font-size:34px;letter-spacing:-1.5px;line-height:1;margin:0 0 12px;">DELIVERY MOTO</h1>
-          <div style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:10px 22px;"><span style="color:#fff;font-weight:700;font-size:13px;"><i class="fa-solid fa-motorcycle"></i> Marketplace + Radar GPS</span></div>
-        </div>
-      </div>
-      <div style="padding:32px 24px 48px;display:flex;flex-direction:column;gap:20px;">
-        <h4 style="text-align:center;font-weight:800;color:var(--muted);font-size:12px;letter-spacing:.18em;text-transform:uppercase;margin:0;">Seleccion&aacute; tu perfil</h4>
-        <button onclick="irAMarketplace()" class="shine-effect" style="width:100%;background:#fff;border:1.5px solid rgba(234,88,12,.2);border-radius:24px;padding:22px;display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;transition:all .3s;"><div style="width:48px;height:48px;border-radius:16px;background:rgba(234,88,12,.1);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent);"><i class="fa-solid fa-cart-shopping"></i></div><span style="font-weight:800;color:var(--text);font-size:18px;">QUIERO COMPRAR</span></button>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <button onclick="irARegistroComercio()" style="background:#fff;border:1.5px solid var(--border);border-radius:22px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;"><i class="fa-solid fa-store" style="font-size:26px;color:var(--accent);"></i><span style="font-weight:800;font-size:14px;text-align:center;">Crear<br>Comercio</span></button>
-          <button onclick="irALoginComercio()" style="background:#fff;border:1.5px solid var(--border);border-radius:22px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;"><i class="fa-solid fa-key" style="font-size:26px;color:#6366f1;"></i><span style="font-weight:800;font-size:14px;text-align:center;">Ingreso<br>Comercio</span></button>
-        </div>
-        <div style="display:flex;align-items:center;gap:16px;"><div style="flex:1;height:1px;background:var(--border);"></div><span style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;">Zona Servimoto</span><div style="flex:1;height:1px;background:var(--border);"></div></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <button onclick="irARegistroServimoto()" style="background:var(--text);color:#fff;border:none;border-radius:22px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;box-shadow:0 8px 24px rgba(15,23,42,.2);"><i class="fa-solid fa-clipboard-list" style="font-size:26px;"></i><span style="font-weight:800;font-size:14px;text-align:center;">Alta<br>Cadete</span></button>
-          <button onclick="irALoginServimoto()" style="background:linear-gradient(135deg,#34d399,#16a34a);color:#fff;border:none;border-radius:22px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;box-shadow:0 8px 24px rgba(22,163,74,.3);"><i class="fa-solid fa-satellite-dish" style="font-size:26px;"></i><span style="font-weight:800;font-size:14px;text-align:center;">Radar<br>GPS</span></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANTALLA: MARKETPLACE -->
-    <div id="pantalla-marketplace" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;position:sticky;top:0;z-index:20;box-shadow:0 4px 24px rgba(0,0,0,.04);border-radius:0 0 32px 32px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-          <button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button>
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:38px;height:38px;border-radius:14px;overflow:hidden;background:var(--text);"><img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt=""></div><span style="font-weight:800;font-size:18px;">Delivery Moto</span></div>
-          <button onclick="abrirModal('modal-carrito')" style="position:relative;width:44px;height:44px;border-radius:50%;background:rgba(234,88,12,.08);border:none;cursor:pointer;color:var(--accent);"><i class="fa-solid fa-cart-shopping"></i><span id="badge-carrito" style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:10px;font-weight:900;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;border:2px solid #fff;">0</span></button>
-        </div>
-        <div style="background:#f8fafc;border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;padding:14px 18px;margin-bottom:16px;"><i class="fa-solid fa-magnifying-glass" style="color:var(--muted);"></i><input type="text" id="buscador-global" placeholder="Buscar comercios o productos..." onkeyup="filtrarPorTexto()" style="width:100%;background:transparent;border:none;outline:none;font-size:15px;font-weight:700;margin-left:12px;font-family:'Quicksand',sans-serif;"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <select id="filtro-provincia" onchange="cambiarFiltroProvincia()" class="input-premium appearance-none" style="padding:12px 14px;font-size:13px;"><option value="Todas">Todas las Provincias</option></select>
-          <select id="filtro-ciudad" onchange="renderizarMarketplace()" class="input-premium appearance-none" style="padding:12px 14px;font-size:13px;"><option value="Todas">Todas las Ciudades</option></select>
-        </div>
-      </div>
-      <div style="padding:24px;display:flex;flex-direction:column;gap:28px;padding-bottom:100px;">
-        <div class="glass" style="border-radius:24px;padding:20px;display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(234,88,12,.08),rgba(234,88,12,.02));">
-          <div style="width:52px;height:52px;border-radius:18px;background:rgba(234,88,12,.15);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--accent);flex-shrink:0;"><i class="fa-solid fa-motorcycle"></i></div>
-          <div style="flex:1;"><h4 style="font-weight:800;font-size:15px;margin:0 0 4px;">Env&iacute;os calculados por GPS</h4><p style="font-size:12px;font-weight:600;color:var(--muted);margin:0;">$3000 base noche + $100 por cuadra extra</p></div>
-        </div>
-        <div><h3 style="font-weight:800;font-size:17px;margin:0 0 14px;padding:0 4px;">Categor&iacute;as</h3><div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;" class="no-scrollbar" id="filtros-categorias">
-          <button class="cat-chip active" data-cat="Todas" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-star"></i>Todos</button>
-          <button class="cat-chip" data-cat="bebida" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-mug-saucer"></i>Bebidas</button>
-          <button class="cat-chip" data-cat="golosina" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-candy-cane"></i>Golosinas</button>
-          <button class="cat-chip" data-cat="lacteo" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-cheese"></i>L&aacute;cteos</button>
-          <button class="cat-chip" data-cat="almacen" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-bread-slice"></i>Almac&eacute;n</button>
-          <button class="cat-chip" data-cat="limpieza" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-soap"></i>Limpieza</button>
-          <button class="cat-chip" data-cat="cigarrillo" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-ban-smoking"></i>Cigarrillos</button>
-        </div></div>
-        <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 4px;"><h3 style="font-weight:800;font-size:18px;margin:0;">Comercios</h3><span id="contador-locales" style="font-size:12px;font-weight:800;color:var(--muted);background:#f1f5f9;padding:6px 14px;border-radius:999px;">0</span></div><div id="grilla-locales-dinamica" style="display:flex;flex-direction:column;gap:14px;"></div></div>
-      </div>
-      <div class="bottom-nav">
-        <div class="nav-item active" onclick="cambiarPantalla('pantalla-marketplace')"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
-        <div class="nav-item" onclick="mostrarToast('Navega los locales','info')"><i class="fa-solid fa-store"></i><span>Locales</span></div>
-        <div class="nav-item" onclick="abrirModal('modal-carrito')"><i class="fa-solid fa-cart-shopping"></i><span>Pedido</span></div>
-        <div class="nav-item" onclick="cambiarPantalla('pantalla-1')"><i class="fa-solid fa-user"></i><span>Perfil</span></div>
-      </div>
-    </div>
-
-    <!-- PANTALLA: CATALOGO -->
-    <div id="pantalla-catalogo" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding-bottom:28px;position:sticky;top:0;z-index:20;box-shadow:0 4px 24px rgba(0,0,0,.04);border-radius:0 0 32px 32px;">
-        <div style="position:relative;height:160px;width:100%;background:linear-gradient(135deg,#f1f5f9,#e2e8f0);overflow:hidden;">
-          <button onclick="cambiarPantalla('pantalla-marketplace')" style="position:absolute;top:44px;left:20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.1);"><i class="fa-solid fa-chevron-left"></i></button>
-          <button onclick="abrirModal('modal-carrito')" style="position:absolute;top:44px;right:20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.1);"><i class="fa-solid fa-cart-shopping"></i></button>
-        </div>
-        <div style="padding:0 24px;position:relative;">
-          <div style="width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,#fb923c,#ea580c);display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;box-shadow:0 10px 30px rgba(234,88,12,.35);position:absolute;top:-36px;left:24px;border:4px solid #fff;"><i class="fa-solid fa-store"></i></div>
-          <div style="padding-top:44px;"><h2 id="cat-nombre" style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.5px;line-height:1.2;margin:0 0 10px;">Cargando...</h2><span class="badge-pill badge-green"><span class="dot-live"></span>Abierto</span><div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;"><p style="font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px;margin:0;"><i class="fa-solid fa-location-dot" style="color:var(--accent);"></i><span id="cat-ciudad"></span></p><p style="font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px;margin:0;"><i class="fa-solid fa-clock" style="color:var(--accent2);"></i><span id="cat-horario"></span></p></div></div>
-          <div style="margin-top:20px;background:#f8fafc;border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;padding:12px 16px;"><i class="fa-solid fa-magnifying-glass" style="color:var(--muted);"></i><input type="text" id="buscador-productos" placeholder="Buscar productos..." onkeyup="filtrarProductosLocal()" style="width:100%;background:transparent;border:none;outline:none;font-size:14px;font-weight:700;margin-left:10px;font-family:'Quicksand',sans-serif;"></div>
-        </div>
-      </div>
-      <div style="padding:28px 24px 120px;flex:1;"><h3 style="font-weight:800;font-size:20px;margin:0 0 20px;">Productos</h3><div id="contenedor-productos" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"></div></div>
-      <div id="barra-ver-carrito" style="display:none;position:fixed;bottom:0;width:100%;max-width:448px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:18px 24px 26px;z-index:50;border-radius:28px 28px 0 0;box-shadow:0 -15px 50px rgba(0,0,0,.08);"><div style="display:flex;justify-content:space-between;align-items:center;"><div><span id="barra-cant" style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">0 productos</span><div id="barra-total" style="font-weight:900;font-size:28px;line-height:1;margin-top:4px;">$0</div></div><button onclick="abrirModal('modal-carrito')" style="background:var(--text);color:#fff;font-weight:800;font-size:16px;padding:16px 28px;border-radius:999px;border:none;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(15,23,42,.25);"><i class="fa-solid fa-bag-shopping"></i>Ver Pedido</button></div></div>
-    </div>
-
-    <!-- PANTALLA: REGISTRO COMERCIO -->
-    <div id="pantalla-registro-comercio" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);"><div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;margin:0;">Nuevo Comercio</h2></div></div>
-      <div style="padding:28px 24px 48px;display:flex;flex-direction:column;gap:24px;flex:1;">
-        <div style="background:rgba(234,88,12,.06);border:1px solid rgba(234,88,12,.15);border-radius:22px;padding:20px;display:flex;gap:16px;align-items:center;"><div style="width:48px;height:48px;border-radius:16px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;"><i class="fa-solid fa-lock"></i></div><div><h3 style="font-weight:800;color:var(--accent);font-size:15px;margin:0 0 4px;">Supabase Auth + RLS</h3><p style="font-size:13px;color:#9a3412;font-weight:600;margin:0;">Email: {celular}@deliverymoto.app</p></div></div>
-        <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:20px;">
-          <input type="text" id="reg-nombre" placeholder="Nombre del Local" class="input-premium">
-          <input type="text" id="reg-horario" placeholder="Horario de Atenci&oacute;n" class="input-premium">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><select id="reg-provincia" class="input-premium appearance-none"><option value="">Provincia...</option></select><input type="text" id="reg-ciudad" placeholder="Ciudad" class="input-premium"></div>
-          <input type="text" id="reg-direccion" placeholder="Direcci&oacute;n" class="input-premium">
-          <input type="tel" id="reg-whatsapp" placeholder="WhatsApp (ser&aacute; tu email de login)" class="input-premium">
-          <input type="password" id="reg-password" placeholder="Contrase&ntilde;a (m&iacute;n 6 car&aacute;cteres)" class="input-premium">
-          <button onclick="registrarComercio()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;"><i class="fa-solid fa-cloud-arrow-up"></i>Registrar en Supabase</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANTALLA: LOGIN COMERCIO -->
-    <div id="pantalla-login-comercio" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);"><div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;margin:0;">Ingreso Comercio</h2></div></div>
-      <div style="padding:48px 24px;display:flex;flex-direction:column;gap:28px;flex:1;justify-content:center;">
-        <div style="text-align:center;"><div style="width:88px;height:88px;margin:0 auto 20px;border-radius:28px;background:linear-gradient(135deg,#fb923c,#ea580c);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;box-shadow:0 15px 40px rgba(234,88,12,.3);"><i class="fa-solid fa-store"></i></div><h3 style="font-weight:800;font-size:22px;margin:0 0 8px;">Auth Supabase</h3><p style="color:var(--muted);font-size:14px;margin:0;">Ingres&aacute; tu WhatsApp</p></div>
-        <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:20px;">
-          <input type="tel" id="login-whatsapp" placeholder="WhatsApp registrado" class="input-premium">
-          <input type="password" id="login-password" placeholder="Contrase&ntilde;a" class="input-premium">
-          <button onclick="loginComercio()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;"><i class="fa-solid fa-right-to-bracket"></i>Ingresar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANTALLA: ADMIN COMERCIO -->
-    <div id="pantalla-admin-comercio" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);display:flex;justify-content:space-between;align-items:center;"><div style="flex:1;min-width:0;"><h2 id="admin-nombre" style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Mi Comercio</h2><p style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:6px 0 0;">Panel Admin RLS</p></div><button onclick="logoutComercio()" style="width:44px;height:44px;border-radius:50%;background:rgba(220,38,38,.08);color:#dc2626;border:none;cursor:pointer;margin-left:16px;"><i class="fa-solid fa-right-from-bracket"></i></button></div>
-      <div style="padding:24px;display:flex;flex-direction:column;gap:24px;padding-bottom:48px;flex:1;">
-        <div style="display:flex;background:#fff;border-radius:16px;padding:6px;border:1px solid var(--border);"><button onclick="switchTab('productos')" id="tab-productos" class="tab-btn active" style="flex:1;">Cat&aacute;logo</button><button onclick="switchTab('pedidos')" id="tab-pedidos" class="tab-btn" style="flex:1;">Pedidos</button></div>
-        <div id="seccion-productos" style="display:flex;flex-direction:column;gap:24px;">
-          <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;border-top:4px solid var(--accent);"><h3 style="font-weight:800;font-size:18px;margin:0 0 20px;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-plus-circle" style="color:var(--accent);"></i>Agregar Producto</h3><div style="display:flex;flex-direction:column;gap:16px;"><input type="text" id="add-nombre" placeholder="Nombre" class="input-premium"><select id="add-categoria" class="input-premium appearance-none"><option value="">Categor&iacute;a...</option><option value="bebida">Bebida</option><option value="golosina">Golosina</option><option value="lacteo">L&aacute;cteo</option><option value="almacen">Almac&eacute;n</option><option value="limpieza">Limpieza</option><option value="cigarrillo">Cigarrillo</option></select><input type="number" id="add-precio" placeholder="Precio $" class="input-premium"><button onclick="agregarProducto()" class="btn-primary shine-effect" style="width:100%;padding:16px;font-size:15px;"><i class="fa-solid fa-cloud-arrow-up"></i>Publicar en Storage</button></div></div>
-          <div id="lista-productos-admin" style="display:flex;flex-direction:column;gap:14px;"></div>
-        </div>
-        <div id="seccion-pedidos" style="display:none;"><div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:48px 28px;text-align:center;"><div style="width:72px;height:72px;margin:0 auto 16px;border-radius:50%;background:rgba(37,99,235,.08);display:flex;align-items:center;justify-content:center;font-size:32px;color:#2563eb;"><i class="fa-solid fa-satellite-dish fa-fade"></i></div><h3 style="font-weight:800;font-size:18px;margin:0 0 8px;">Escuchando Pedidos...</h3><p style="color:var(--muted);font-size:14px;margin:0;">Realtime Supabase conectado</p></div></div>
-      </div>
-    </div>
-
-    <!-- PANTALLA: REGISTRO SERVIMOTO COMPLETO -->
-    <div id="pantalla-registro-servimoto" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);"><div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;margin:0;">Alta Servimoto</h2></div></div>
-      <div style="padding:28px 24px 160px;display:flex;flex-direction:column;gap:24px;flex:1;">
-        
-        <div style="background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.2);border-radius:22px;padding:20px;display:flex;gap:16px;align-items:center;"><div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 8px 24px rgba(124,58,237,.3);"><i class="fa-solid fa-robot"></i></div><div><h3 style="font-weight:800;color:var(--accent3);font-size:15px;margin:0 0 4px;">IA Auditora Activada</h3><p style="font-size:13px;color:#6b21a8;font-weight:600;margin:0;">Sub&iacute; los 3 documentos. La IA los leer&aacute; y aprobar&aacute; tu ingreso.</p></div></div>
-
-        <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:20px;">
-          <input type="tel" id="reg-celular" placeholder="Celular WhatsApp (login)" class="input-premium">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><select id="reg-prov" class="input-premium appearance-none"><option value="">Provincia...</option></select><input type="text" id="reg-ciudad-cad" placeholder="Ciudad" class="input-premium"></div>
-          <input type="text" id="reg-moto" placeholder="Veh&iacute;culo y Patente" class="input-premium">
-          <input type="password" id="reg-pass-cad" placeholder="Contrase&ntilde;a" class="input-premium">
-        </div>
-
-        <h4 style="font-weight:800;font-size:18px;margin:0;padding:0 4px;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-file-circle-check" style="color:var(--accent3);"></i>Documentaci&oacute;n Requerida</h4>
-
-        <!-- DOC 1: SELFIE + DNI -->
-        <div class="doc-upload" id="doc-selfie" onclick="document.getElementById('file-selfie').click()">
-          <input type="file" id="file-selfie" accept="image/*" capture="user" class="hidden" onchange="procesarDoc('selfie',this)">
-          <div class="scan-line"></div>
-          <div id="content-selfie"><div style="width:56px;height:56px;border-radius:18px;background:rgba(124,58,237,.1);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--accent3);margin:0 auto 12px;"><i class="fa-solid fa-camera"></i></div><h4 style="font-weight:800;font-size:16px;margin:0 0 6px;">Selfie con DNI</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:0;">Foto de tu rostro sosteniendo tu DNI</p></div>
-        </div>
-
-        <!-- DOC 2: BUENA CONDUCTA -->
-        <div class="doc-upload" id="doc-buena" onclick="document.getElementById('file-buena').click()">
-          <input type="file" id="file-buena" accept="image/*,application/pdf" class="hidden" onchange="procesarDoc('buena',this)">
-          <div class="scan-line"></div>
-          <div id="content-buena"><div style="width:56px;height:56px;border-radius:18px;background:rgba(22,163,74,.1);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--accent2);margin:0 auto 12px;"><i class="fa-solid fa-shield-halved"></i></div><h4 style="font-weight:800;font-size:16px;margin:0 0 6px;">Certificado de Buena Conducta</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:0;">Antecedentes penales / Polic&iacute;a Federal</p></div>
-        </div>
-
-        <!-- DOC 3: AFIP / MONOTRIBUTO -->
-        <div class="doc-upload" id="doc-afip" onclick="document.getElementById('file-afip').click()">
-          <input type="file" id="file-afip" accept="image/*,application/pdf" class="hidden" onchange="procesarDoc('afip',this)">
-          <div class="scan-line"></div>
-          <div id="content-afip"><div style="width:56px;height:56px;border-radius:18px;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;font-size:26px;color:#2563eb;margin:0 auto 12px;"><i class="fa-solid fa-file-invoice-dollar"></i></div><h4 style="font-weight:800;font-size:16px;margin:0 0 6px;">Constancia AFIP / Monotributo</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:0;">PDF o foto de tu constancia fiscal</p></div>
-        </div>
-
-        <label style="display:flex;align-items:center;gap:14px;cursor:pointer;background:#f8fafc;padding:16px;border-radius:16px;border:1.5px solid var(--border);"><input type="checkbox" id="acepto" style="width:22px;height:22px;accent-color:var(--accent);cursor:pointer;"><span style="font-weight:800;font-size:14px;">Acepto: $200 comisi&oacute;n por viaje, pago c/lunes</span></label>
-      </div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);padding:18px 24px 28px;border-top:1px solid var(--border);"><button id="btn-auditar" onclick="iniciarAuditoriaIA()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;" disabled><i class="fa-solid fa-robot"></i>Auditar Documentos (carg&aacute; los 3)</button></div>
-    </div>
-
-    <!-- PANTALLA: LOGIN SERVIMOTO -->
-    <div id="pantalla-login-servimoto" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);"><div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;margin:0;">Acceso Cadete</h2></div></div>
-      <div style="padding:48px 24px;display:flex;flex-direction:column;gap:28px;flex:1;justify-content:center;">
-        <div style="text-align:center;"><div style="width:88px;height:88px;margin:0 auto 20px;border-radius:28px;background:linear-gradient(135deg,#34d399,#16a34a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;box-shadow:0 15px 40px rgba(22,163,74,.3);"><i class="fa-solid fa-motorcycle"></i></div><h3 style="font-weight:800;font-size:22px;margin:0 0 8px;">Conectar al Radar</h3><p style="color:var(--muted);font-size:14px;margin:0;">Ingres&aacute; tu WhatsApp</p></div>
-        <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:20px;">
-          <input type="tel" id="login-cel-cad" placeholder="WhatsApp" class="input-premium">
-          <input type="password" id="login-pass-cad" placeholder="Contrase&ntilde;a" class="input-premium">
-          <button onclick="loginCadete()" style="width:100%;padding:18px;font-size:16px;background:linear-gradient(135deg,#34d399,#16a34a);color:#fff;font-weight:800;border:none;border-radius:999px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 30px rgba(22,163,74,.3);"><i class="fa-solid fa-satellite-dish"></i>Activar Radar GPS</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PANTALLA: PANEL CADETE COMPLETO -->
-    <div id="pantalla-radar-servimoto" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:14px;"><div style="width:52px;height:52px;border-radius:18px;background:linear-gradient(135deg,#34d399,#16a34a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:800;box-shadow:0 6px 18px rgba(22,163,74,.3);">SC</div><div><h3 id="radar-nombre" style="font-weight:800;font-size:18px;margin:0;line-height:1;">Servimoto</h3><span id="radar-status" class="badge-pill badge-green" style="margin-top:6px;display:inline-flex;"><span class="dot-live"></span>Activo</span></div></div><button onclick="logoutCadete()" style="width:44px;height:44px;border-radius:50%;background:rgba(220,38,38,.08);color:#dc2626;border:none;cursor:pointer;"><i class="fa-solid fa-power-off"></i></button></div>
-      
-      <div style="padding:24px;display:flex;flex-direction:column;gap:24px;padding-bottom:48px;flex:1;">
-        
-        <!-- AVISO BLOQUEO LUNES -->
-        <div id="aviso-bloqueo" style="display:none;background:linear-gradient(135deg,rgba(220,38,38,.1),rgba(220,38,38,.04));border:2px solid rgba(220,38,38,.3);border-radius:28px;padding:28px;text-align:center;">
-          <div style="width:72px;height:72px;border-radius:50%;background:rgba(220,38,38,.15);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--danger);margin:0 auto 16px;box-shadow:0 10px 30px rgba(220,38,38,.2);"><i class="fa-solid fa-lock"></i></div>
-          <h3 style="font-weight:800;font-size:20px;color:var(--danger);margin:0 0 8px;">GPS Bloqueado</h3>
-          <p style="font-size:14px;font-weight:600;color:#991b1b;margin:0 0 20px;">Hoy es lunes. Ten&eacute;s que pagar tu comisi&oacute;n pendiente para activar el radar.</p>
-          <button onclick="simularPago()" class="btn-danger shine-effect" style="width:100%;padding:16px;font-size:15px;"><i class="fa-solid fa-credit-card"></i>Pagar $<span id="monto-pagar">0</span></button>
-        </div>
-
-        <!-- M&Eacute;TRICAS -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="metric-card" style="--from:#ea580c;--to:#c24105;--shadow:rgba(234,88,12,.35);"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px;">Viajes Hoy</div><div id="met-viajes" style="font-family:'Sora',sans-serif;font-weight:900;font-size:36px;line-height:1;">0</div><div style="font-size:11px;font-weight:700;opacity:.7;margin-top:6px;"><i class="fa-solid fa-motorcycle"></i> activos</div></div>
-          <div class="metric-card" style="--from:#16a34a;--to:#15803d;--shadow:rgba(22,163,74,.35);"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px;">Ganado Hoy</div><div id="met-ganado" style="font-family:'Sora',sans-serif;font-weight:900;font-size:36px;line-height:1;">$0</div><div style="font-size:11px;font-weight:700;opacity:.7;margin-top:6px;"><i class="fa-solid fa-wallet"></i> neto</div></div>
-          <div class="metric-card" style="--from:#7c3aed;--to:#5b21b6;--shadow:rgba(124,58,237,.35);"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px;">Comisi&oacute;n</div><div id="met-comision" style="font-family:'Sora',sans-serif;font-weight:900;font-size:36px;line-height:1;">$0</div><div style="font-size:11px;font-weight:700;opacity:.7;margin-top:6px;"><i class="fa-solid fa-percent"></i> $200/viaje</div></div>
-          <div class="metric-card" style="--from:#2563eb;--to:#1d4ed8;--shadow:rgba(37,99,235,.35);"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px;">Deuda Sem.</div><div id="met-deuda" style="font-family:'Sora',sans-serif;font-weight:900;font-size:36px;line-height:1;">$0</div><div style="font-size:11px;font-weight:700;opacity:.7;margin-top:6px;"><i class="fa-solid fa-calendar-day"></i> c/lunes</div></div>
-        </div>
-
-        <!-- RADAR GPS -->
-        <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:32px 24px;text-align:center;position:relative;overflow:hidden;">
-          <div id="bloqueo-overlay" class="bloqueo-overlay" style="display:none;border-radius:50%;width:200px;height:200px;left:50%;top:50%;transform:translate(-50%,-50%);">
-            <i class="fa-solid fa-lock" style="font-size:48px;margin-bottom:12px;"></i>
-            <span style="font-weight:800;font-size:14px;">BLOQUEADO</span>
-          </div>
-          <button id="btn-radar" onclick="toggleRadar()" style="width:200px;height:200px;border-radius:50%;background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:8px solid #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .4s;box-shadow:0 20px 50px rgba(0,0,0,.08);position:relative;z-index:1;">
-            <i id="icon-radar" class="fa-solid fa-motorcycle" style="font-size:48px;color:#cbd5e1;margin-bottom:10px;transition:color .3s;"></i>
-            <span id="txt-radar" style="font-weight:900;letter-spacing:.15em;font-size:16px;color:#94a3b8;transition:color .3s;">OFFLINE</span>
-          </button>
-          <div style="margin-top:24px;background:#f8fafc;padding:12px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;border:1px solid var(--border);">
-            <i id="gps-icon" class="fa-solid fa-location-crosshairs" style="color:var(--muted);"></i>
-            <span id="gps-texto" style="font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.05em;">Radar desactivado</span>
-          </div>
-        </div>
-
-        <!-- BOTONES ACCION -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <button onclick="simularViaje()" id="btn-viaje" style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:20px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;transition:all .3s;" onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'"><i class="fa-solid fa-route" style="font-size:24px;color:var(--accent);"></i><span style="font-weight:800;font-size:14px;">Simular Viaje</span></button>
-          <a href="https://wa.me/5493815110171" target="_blank" style="background:linear-gradient(135deg,#34d399,#16a34a);color:#fff;border-radius:20px;padding:20px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;box-shadow:0 10px 30px rgba(22,163,74,.3);"><i class="fa-brands fa-whatsapp" style="font-size:24px;"></i><span style="font-weight:800;font-size:14px;">Soporte</span></a>
-        </div>
-
-        <!-- HISTORIAL VIAJES -->
-        <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:24px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h4 style="font-weight:800;font-size:17px;margin:0;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-clipboard-list" style="color:var(--accent);"></i>Viajes de Hoy</h4><span id="cant-viajes" class="badge-pill badge-accent">0 viajes</span></div>
-          <div id="lista-viajes" style="display:flex;flex-direction:column;gap:12px;max-height:300px;overflow-y:auto;" class="no-scrollbar">
-            <div style="text-align:center;padding:40px 20px;color:var(--muted);"><i class="fa-solid fa-motorcycle" style="font-size:32px;opacity:.4;margin-bottom:12px;display:block;"></i><p style="font-size:14px;font-weight:700;margin:0;">Sin viajes todav&iacute;a</p><p style="font-size:12px;margin:4px 0 0;opacity:.7;">Activ&aacute; el radar para recibir</p></div>
-          </div>
-          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:800;color:var(--muted);font-size:14px;">Total a pagar app:</span><span id="total-pagar" style="font-family:'Sora',sans-serif;font-weight:900;font-size:24px;color:var(--danger);">$0</span></div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- MODAL CARRITO -->
-    <div id="modal-carrito" class="modal-overlay" onclick="if(event.target===this)cerrarModal('modal-carrito')">
-      <div class="modal-content">
-        <div style="background:#fff;padding:24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;border-radius:32px 32px 0 0;"><div style="display:flex;align-items:center;gap:14px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(234,88,12,.1);display:flex;align-items:center;justify-content:center;color:var(--accent);"><i class="fa-solid fa-receipt"></i></div><div><h3 style="font-weight:800;font-size:19px;margin:0;line-height:1;">Checkout</h3><p style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:4px 0 0;">Resumen</p></div></div><button onclick="cerrarModal('modal-carrito')" style="width:40px;height:40px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;color:var(--muted);"><i class="fa-solid fa-xmark"></i></button></div>
-        <div style="padding:24px;display:flex;flex-direction:column;gap:24px;flex:1;overflow-y:auto;">
-          <div><h4 style="font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 16px;">Mi Carrito</h4><div id="carrito-lista" style="display:flex;flex-direction:column;gap:14px;"></div><div id="carrito-vacio" style="display:none;text-align:center;padding:48px 20px;background:#fff;border-radius:24px;border:1px solid var(--border);"><i class="fa-solid fa-cart-shopping" style="font-size:36px;color:#cbd5e1;margin-bottom:16px;display:block;"></i><p style="color:var(--muted);font-weight:700;font-size:16px;margin:0;">Tu carrito est&aacute; vac&iacute;o</p></div></div>
-          <div style="background:#fff;border-radius:24px;border:1px solid var(--border);padding:24px;border-top:4px solid #2563eb;"><h4 style="font-weight:800;font-size:15px;margin:0 0 16px;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-user" style="color:#2563eb;"></i>Tus Datos</h4><div style="display:flex;flex-direction:column;gap:16px;"><input type="text" id="co-nombre" placeholder="Nombre y Apellido" class="input-premium"><input type="tel" id="co-whatsapp" placeholder="WhatsApp" class="input-premium"><input type="text" id="co-direccion" placeholder="Tu direcci&oacute;n" class="input-premium"></div></div>
-        </div>
-        <div style="background:#fff;padding:24px;border-top:1px solid var(--border);border-radius:0 0 32px 32px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border);"><span style="font-weight:800;color:var(--muted);">Total</span><span id="carrito-total" style="font-family:'Sora',sans-serif;font-weight:900;font-size:28px;">$0</span></div><button onclick="confirmarPedido()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;margin-top:16px;"><i class="fa-solid fa-paper-plane"></i>Confirmar Pedido</button></div>
-      </div>
-    </div>
-
-    <!-- MODAL IA AUDITORIA -->
-    <div id="modal-ia" class="modal-overlay">
-      <div class="modal-content" style="padding:36px 28px;text-align:center;">
-        <div id="ia-avatar" class="ia-avatar"><i class="fa-solid fa-robot"></i></div>
-        <h3 id="ia-titulo" style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;margin:0 0 12px;">IA Auditora Analizando</h3>
-        <p id="ia-msg" style="color:var(--muted);font-size:15px;line-height:1.7;margin:0 0 24px;">Leyendo documentos con OCR + GPT-4o...</p>
-        <div id="ia-progress" style="background:#f1f5f9;border-radius:999px;height:8px;overflow:hidden;margin-bottom:24px;"><div id="ia-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7,#ea580c);transition:width .3s;border-radius:999px;"></div></div>
-        <div id="ia-resultados" style="display:none;text-align:left;margin-bottom:24px;"></div>
-        <button id="ia-btn" onclick="cerrarModal('modal-ia')" style="display:none;width:100%;padding:16px;font-size:15px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:800;border:none;border-radius:999px;cursor:pointer;box-shadow:0 10px 30px rgba(124,58,237,.35);"><i class="fa-solid fa-check"></i>Continuar</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-</div>
-
-<script>
-// ============================================
-// SUPABASE CONFIG - LISTO PARA PRODUCCION
-// ============================================
-// const supabase = supabase.createClient('https://TU-PROYECTO.supabase.co', 'TU-ANON-KEY');
-// Email trucho: {celular}@deliverymoto.app
-// RLS: CREATE POLICY "Usuarios ven solo sus datos" ON tabla USING (auth.uid() = user_id);
-
-const PROVINCIAS = ['Buenos Aires','CABA','Catamarca','Chaco','Chubut','C&oacute;rdoba','Corrientes','Entre R&iacute;os','Formosa','Jujuy','La Pampa','La Rioja','Mendoza','Misiones','Neuqu&eacute;n','R&iacute;o Negro','Salta','San Juan','San Luis','Santa Cruz','Santa Fe','Santiago del Estero','Tierra del Fuego','Tucum&aacute;n'];
-
-let comercios = [
-  {id:1,nombre:'Supermercado El Sol',ciudad:'San Miguel de Tucum&aacute;n',provincia:'Tucum&aacute;n',horario:'Lun a S&aacute;b 08:00 - 22:00',direccion:'Av. Roca 1234',whatsapp:'5493815551111',categorias:['almacen','bebida','limpieza','golosina','lacteo']},
-  {id:2,nombre:'Kiosco de la Esquina',ciudad:'Yerba Buena',provincia:'Tucum&aacute;n',horario:'Todos los d&iacute;as 24 hs',direccion:'C&oacute;rdoba 567',whatsapp:'5493815552222',categorias:['golosina','bebida','cigarrillo']},
-  {id:3,nombre:'Lacteos Do&ntilde;a Rosa',ciudad:'Famaill&aacute;',provincia:'Tucum&aacute;n',horario:'Lun a S&aacute;b 07:00 - 20:00',direccion:'San Mart&iacute;n 890',whatsapp:'5493815553333',categorias:['lacteo','almacen']},
-  {id:4,nombre:'Almac&eacute;n Central',ciudad:'Salta Capital',provincia:'Salta',horario:'Lun a S&aacute;b 08:00 - 21:00',direccion:'Av. de los Incas 234',whatsapp:'5493875554444',categorias:['almacen','bebida','limpieza']},
-  {id:5,nombre:'Distribuidora Norte',ciudad:'San Salvador de Jujuy',provincia:'Jujuy',horario:'Lun a Vie 09:00 - 19:00',direccion:'Av. Bolivia 567',whatsapp:'5493885555555',categorias:['bebida','golosina','almacen']}
+const PROVINCIAS_AR = [
+    "Buenos Aires", "CABA", "Catamarca", "Chaco", "Chubut", "Córdoba", "Corrientes",
+    "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja", "Mendoza", "Misiones",
+    "Neuquén", "Río Negro", "Salta", "San Juan", "San Luis", "Santa Cruz", "Santa Fe",
+    "Santiago del Estero", "Tierra del Fuego", "Tucumán"
 ];
 
-let productos = [
-  {id:1,comercioId:1,nombre:'Coca Cola 2.25L',precio:3500,categoria:'bebida'},{id:2,comercioId:1,nombre:'Leche Entera 1L',precio:2800,categoria:'lacteo'},
-  {id:3,comercioId:1,nombre:'Pan Lactal',precio:1800,categoria:'almacen'},{id:4,comercioId:1,nombre:'Detergente 500ml',precio:2200,categoria:'limpieza'},
-  {id:5,comercioId:2,nombre:'Alfajor Jorgito',precio:900,categoria:'golosina'},{id:6,comercioId:2,nombre:'Agua Mineral 1.5L',precio:1500,categoria:'bebida'},
-  {id:7,comercioId:3,nombre:'Queso Cremoso 250g',precio:4200,categoria:'lacteo'},{id:8,comercioId:3,nombre:'Yogur Natural',precio:1900,categoria:'lacteo'},
-  {id:9,comercioId:4,nombre:'Fideos Tallarines',precio:1600,categoria:'almacen'},{id:10,comercioId:4,nombre:'Aceite 1L',precio:3800,categoria:'almacen'},
-  {id:11,comercioId:5,nombre:'Sprite 2.25L',precio:3400,categoria:'bebida'},{id:12,comercioId:5,nombre:'Chocolate KitKat',precio:1200,categoria:'golosina'}
-];
-
-// Estado cadete
-let estadoCadete = {
-  celular:null, aprobado:false, documentos:{selfie:null,buena:null,afip:null},
-  docsCargados:0, viajes:[], deudaSemanal:0, gpsBloqueado:false, radarActivo:false
+// ICONOS SVG PARA CATEGORIAS
+const ICONOS_CAT = {
+    bebida: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8l-1 9h-6L8 2z"/><path d="M9 11v6a3 3 0 0 0 6 0v-6"/><line x1="12" y1="19" x2="12" y2="22"/></svg>',
+    golosina: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0z"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>',
+    cigarrillo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="10" width="18" height="4" rx="1"/><path d="M20 10v4"/><path d="M22 8c0 1-.5 2-2 2s-2-1-2-2 .5-2 2-2 2 1 2 2z"/><path d="M22 16c0 1-.5 2-2 2s-2-1-2-2 .5-2 2-2 2 1 2 2z"/></svg>',
+    lacteo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8l2 5H6l2-5z"/><path d="M6 7v13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7"/><path d="M10 11h4"/></svg>',
+    almacen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    limpieza: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v4"/><path d="M14 2v4"/><path d="M6 6h12l-1 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 6z"/><path d="M9 12h6"/></svg>',
+    carniceria: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>',
+    otros: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>'
 };
 
-let carrito = [];
-let catFiltro = 'Todas';
-let comercioActual = null;
-let comercioLogueado = null;
+// ESTADO GLOBAL
+window.carrito = [];
+window.comercioActual = null;
+window.comercioLogueado = null;
+window.servimotoLogueado = null;
+window.fotoProductoTemp = null;
+window.fotoPortadaTemp = null;
+window.selfieClienteTemp = null;
+window.filtroCategoriaActual = 'Todas';
+window.rutaCalculada = false;
+window.costoEnvioDinamico = 0;
+window.distanciaSimulada = 0;
+window.cuadrasSimuladas = 0;
+window.radarConectado = false;
+window.canalSupabase = null;
 
-// ============================================
-// FUNCIONES GENERALES
-// ============================================
-function cargarProvincias(){
-  ['filtro-provincia','reg-provincia','reg-prov'].forEach(id=>{
-    const s=document.getElementById(id);if(!s)return;
-    PROVINCIAS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;s.appendChild(o);});
-  });
+// BASE DE DATOS
+function getDB() {
+    let db = localStorage.getItem('delivery_moto_db_premium');
+    if (!db) {
+        db = {
+            comercios: [
+                {
+                    id: 1, nombre: "Kiosco Premium", provincia: "Tucumán", ciudad: "Famaillá",
+                    direccion: "Azcuénaga 474", horario: "Lun a Sab 09:00 a 23:00", whatsapp: "5493815110171", password: "1234",
+                    portada: "",
+                    productos: [
+                        {id: 101, nombre: "Coca-Cola 2.25L", precio: 2500, categoria: "bebida", desc: "Refresco gaseoso clásico", foto: ""},
+                        {id: 102, nombre: "Cerveza Quilmes 1L", precio: 1800, categoria: "bebida", desc: "Retornable", foto: ""},
+                        {id: 103, nombre: "Papas Lays 150g", precio: 1500, categoria: "almacen", desc: "Snack clásico", foto: ""},
+                        {id: 104, nombre: "Leche La Serenísima 1L", precio: 1200, categoria: "lacteo", desc: "Entera fresca", foto: ""},
+                        {id: 105, nombre: "Chocolates Milka", precio: 950, categoria: "golosina", desc: "Chocolate suizo", foto: ""}
+                    ],
+                    pedidos: []
+                }
+            ],
+            servimotos: [
+                {
+                    id: 1, celular: "5493815110171", password: "1234", nombre: "Cadete Premium",
+                    provincia: "Tucumán", ciudad: "Famaillá", moto: "Honda Wave - ABC123",
+                    documentos: { selfie: true, dni: true, afip: true, policia: true, seguro: true, patente: true },
+                    acepto: true, conectado: false, viajes: [], comision_pagada: true
+                }
+            ]
+        };
+        localStorage.setItem('delivery_moto_db_premium', JSON.stringify(db));
+    }
+    return JSON.parse(db);
+}
+function saveDB(db) { localStorage.setItem('delivery_moto_db_premium', JSON.stringify(db)); }
+
+// INICIO
+function iniciarApp() { getDB(); llenarSelectsProvincias(); cargarFiltrosProvincia(); }
+iniciarApp();
+
+function llenarSelectsProvincias() {
+    const options = '<option value="">Elegir...</option>' + PROVINCIAS_AR.map(p => `<option value="${p}">${p}</option>`).join('');
+    const s1 = document.getElementById('reg-provincia'); if(s1) s1.innerHTML = options;
+    const s2 = document.getElementById('reg-prov'); if(s2) s2.innerHTML = options;
 }
 
-function cambiarPantalla(id){
-  document.querySelectorAll('.pantalla').forEach(p=>p.classList.remove('activa'));
-  const e=document.getElementById(id);if(e){e.classList.add('activa');window.scrollTo({top:0,behavior:'smooth'});}
+// UTILIDADES
+function vibrar(p = 40) { if(navigator.vibrate) navigator.vibrate(p); }
+function mostrarToast(mensaje, tipo = 'success') {
+    if(tipo === 'error' || tipo === 'info') vibrar([50,100,50]); else vibrar(30);
+    const c = document.getElementById('toast-container'); if(!c) return;
+    const t = document.createElement('div'); t.className = 'toast';
+    const ic = tipo === 'success'
+        ? '<div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-green-500/20 text-green-400"><i class="fa-solid fa-check"></i></div>'
+        : '<div class="w-10 h-10 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0"><i class="fa-solid fa-circle-info"></i></div>';
+    t.innerHTML = ic + '<span class="leading-snug flex-1">' + mensaje + '</span>';
+    c.appendChild(t); setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
 }
 
-function abrirPWA(){
-  document.getElementById('vista-landing').style.display='none';
-  const app=document.getElementById('vista-app');app.style.display='flex';
-  cambiarPantalla('pantalla-marketplace');
-  cargarProvincias();
-  setTimeout(renderizarMarketplace,100);
-  mostrarToast('Bienvenido al Marketplace','success');
+// NAVEGACION
+function abrirPWA() {
+    vibrar([30,30,30]);
+    document.getElementById('vista-landing').style.display = 'none';
+    document.getElementById('vista-app').style.display = 'flex';
+    const sp = document.getElementById('splash-screen');
+    sp.style.display = 'flex'; setTimeout(() => sp.style.opacity = '1', 10);
+    setTimeout(() => { sp.style.opacity = '0'; setTimeout(() => sp.style.display = 'none', 700); }, 1800);
+}
+function cambiarPantalla(id) {
+    vibrar(25);
+    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+    const p = document.getElementById(id); if(p) p.classList.add('activa');
+    if(id === 'pantalla-marketplace') renderizarMarketplace();
+    if(id === 'pantalla-admin-comercio') { actualizarDatosAdmin(); renderizarProductosComercio(); renderizarPedidosComercio(); }
+    if(id === 'pantalla-radar-servimoto') renderizarLogisticaServimoto();
+    window.scrollTo(0,0);
+}
+function abrirModal(id) { vibrar(20); document.getElementById(id).classList.add('show'); if(id === 'modal-carrito') actualizarInterfazCarrito(); }
+function cerrarModal(id) { vibrar(20); document.getElementById(id).classList.remove('show'); }
+function irAMarketplace() { cambiarPantalla('pantalla-marketplace'); }
+function irARegistroComercio() { cambiarPantalla('pantalla-registro-comercio'); }
+function irALoginComercio() { cambiarPantalla('pantalla-login-comercio'); }
+function irARegistroServimoto() { cambiarPantalla('pantalla-registro-servimoto'); }
+function irALoginServimoto() { cambiarPantalla('pantalla-login-servimoto'); }
+
+// DESCARGAR APK
+function descargarAPK() {
+    vibrar([50,50,100]);
+    mostrarToast('Iniciando descarga de Delivery Moto APK...', 'info');
+    setTimeout(() => {
+        mostrarToast('APK descargada. Instalá la aplicación en tu Android.', 'success');
+    }, 2000);
 }
 
-function descargarAPK(){
-  mostrarToast('Descargando APK...','success');
-  const blob=new Blob(['Delivery Moto Servimoto APK v2.0 - Instalar en Android\n\nSupabase RLS + IA Auditor + GPS Bloqueable'],{type:'application/vnd.android.package-archive'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='delivery-moto-servimoto-v2.0.apk';
-  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
-  setTimeout(()=>mostrarToast('APK descargada correctamente','success'),800);
+// REGISTRO COMERCIO
+function previewPortadaComercio(e) {
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = function(ev) {
+        window.fotoPortadaTemp = ev.target.result;
+        document.getElementById('img-portada-preview').src = ev.target.result;
+        document.getElementById('img-portada-preview').classList.remove('hidden');
+        document.getElementById('preview-portada-container').style.display = 'none';
+        document.getElementById('upload-portada-comercio').classList.add('has-file');
+        vibrar(20);
+    }; r.readAsDataURL(f);
 }
-
-function mostrarToast(msg,tipo='info'){
-  const c=document.getElementById('toast-container');if(!c)return;
-  const t=document.createElement('div');t.className='toast';
-  const ic=tipo==='success'?'fa-circle-check':tipo==='error'?'fa-circle-exclamation':'fa-circle-info';
-  const col=tipo==='success'?'color:#34d399':tipo==='error'?'color:#f87171':'color:#60a5fa';
-  t.innerHTML=`<i class="fa-solid ${ic}" style="${col};font-size:18px;"></i><span>${msg}</span>`;
-  c.appendChild(t);setTimeout(()=>t.classList.add('show'),10);
-  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},2800);
-}
-
-function abrirModal(id){document.getElementById(id).classList.add('show');if(id==='modal-carrito')actualizarCarritoUI();}
-function cerrarModal(id){document.getElementById(id).classList.remove('show');}
-
-// Navegacion
-function irAMarketplace(){abrirPWA();}
-function irARegistroComercio(){cargarProvincias();cambiarPantalla('pantalla-registro-comercio');}
-function irALoginComercio(){cambiarPantalla('pantalla-login-comercio');}
-function irARegistroServimoto(){cargarProvincias();cambiarPantalla('pantalla-registro-servimoto');}
-function irALoginServimoto(){cambiarPantalla('pantalla-login-servimoto');}
-
-// ============================================
-// MARKETPLACE
-// ============================================
-function cambiarFiltroProvincia(){
-  const prov=document.getElementById('filtro-provincia').value;
-  const sc=document.getElementById('filtro-ciudad');
-  sc.innerHTML='<option value="Todas">Todas las Ciudades</option>';
-  if(prov!=='Todas'){
-    [...new Set(comercios.filter(c=>c.provincia===prov).map(c=>c.ciudad))].forEach(c=>{
-      const o=document.createElement('option');o.value=c;o.textContent=c;sc.appendChild(o);
+function registrarComercio() {
+    vibrar(30);
+    const nombre = document.getElementById('reg-nombre').value.trim();
+    const horario = document.getElementById('reg-horario').value.trim();
+    const provincia = document.getElementById('reg-provincia').value;
+    const ciudad = document.getElementById('reg-ciudad').value.trim();
+    const direccion = document.getElementById('reg-direccion').value.trim();
+    const whatsapp = document.getElementById('reg-whatsapp').value.trim();
+    const password = document.getElementById('reg-password').value;
+    if(!nombre || !provincia || !ciudad || !direccion || !whatsapp || !password) return mostrarToast('Completá todos los campos obligatorios', 'info');
+    if(password.length < 4) return mostrarToast('La contraseña debe tener mínimo 4 caracteres', 'info');
+    const db = getDB();
+    if(db.comercios.find(c => c.whatsapp === whatsapp)) return mostrarToast('Este WhatsApp ya está registrado', 'info');
+    db.comercios.push({
+        id: Date.now(), nombre, horario: horario || "Horario no especificado",
+        provincia, ciudad, direccion, whatsapp, password,
+        portada: window.fotoPortadaTemp || '', productos: [], pedidos: []
     });
-  }
-  renderizarMarketplace();
+    saveDB(db); cargarFiltrosProvincia();
+    window.fotoPortadaTemp = null;
+    document.getElementById('img-portada-preview').classList.add('hidden');
+    document.getElementById('preview-portada-container').style.display = 'block';
+    mostrarToast('¡Comercio creado exitosamente!');
+    vibrar([50,50,100]);
+    setTimeout(() => cambiarPantalla('pantalla-login-comercio'), 800);
 }
 
-function renderizarMarketplace(){
-  const prov=document.getElementById('filtro-provincia').value;
-  const ciu=document.getElementById('filtro-ciudad').value;
-  const bus=(document.getElementById('buscador-global')?.value||'').toLowerCase();
-  
-  let filt=comercios.filter(c=>{
-    let ok=true;
-    if(prov!=='Todas')ok=ok&&c.provincia===prov;
-    if(ciu!=='Todas')ok=ok&&c.ciudad===ciu;
-    if(catFiltro!=='Todas')ok=ok&&c.categorias.includes(catFiltro);
-    if(bus){
-      const hayProd=productos.some(p=>p.comercioId===c.id&&p.nombre.toLowerCase().includes(bus));
-      ok=ok&&(c.nombre.toLowerCase().includes(bus)||hayProd);
+// LOGIN COMERCIO
+function loginComercio() {
+    vibrar(30);
+    const wa = document.getElementById('login-whatsapp').value.trim();
+    const pw = document.getElementById('login-password').value;
+    if(!wa || !pw) return mostrarToast('Ingresá tus datos', 'info');
+    const db = getDB();
+    const c = db.comercios.find(x => x.whatsapp === wa && x.password === pw);
+    if(!c) return mostrarToast('Credenciales incorrectas', 'error');
+    window.comercioLogueado = c;
+    mostrarToast('¡Bienvenido al Panel de Gestión!');
+    vibrar([50,50,100]);
+    setTimeout(() => cambiarPantalla('pantalla-admin-comercio'), 500);
+}
+function logoutComercio() { vibrar(); window.comercioLogueado = null; cambiarPantalla('pantalla-1'); mostrarToast('Sesión cerrada', 'info'); }
+
+function actualizarDatosAdmin() {
+    if(!window.comercioLogueado) return;
+    const db = getDB();
+    const c = db.comercios.find(x => x.id === window.comercioLogueado.id); if(!c) return;
+    document.getElementById('admin-nombre-comercio').textContent = c.nombre;
+    document.getElementById('admin-ubicacion').textContent = c.ciudad + ', ' + c.provincia;
+    document.getElementById('info-local-nombre').textContent = c.nombre;
+    document.getElementById('info-local-direccion').textContent = c.direccion;
+    document.getElementById('info-local-horario').textContent = c.horario;
+    document.getElementById('info-local-wa').textContent = '+' + c.whatsapp;
+    const pi = document.getElementById('admin-portada-img');
+    if(c.portada) { pi.src = c.portada; pi.style.display = 'block'; } else pi.style.display = 'none';
+}
+
+function switchTabComercio(tab) {
+    vibrar(20);
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('seccion-productos').style.display = tab === 'productos' ? 'block' : 'none';
+    document.getElementById('seccion-pedidos').style.display = tab === 'pedidos' ? 'block' : 'none';
+    if(tab === 'pedidos') renderizarPedidosComercio();
+}
+
+// PRODUCTOS COMERCIO
+function previewFotoProducto(e) {
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = function(ev) {
+        window.fotoProductoTemp = ev.target.result;
+        document.getElementById('preview-foto').src = ev.target.result;
+        document.getElementById('preview-foto').classList.remove('hidden');
+        document.getElementById('upload-preview-container').style.display = 'none';
+        document.getElementById('upload-zone').classList.add('has-file');
+        vibrar(20);
+    }; r.readAsDataURL(f);
+}
+function cargarProductoComercio() {
+    vibrar(30);
+    if(!window.comercioLogueado) return mostrarToast('Iniciá sesión', 'info');
+    const nombre = document.getElementById('add-prod-nombre').value.trim();
+    const categoria = document.getElementById('add-prod-categoria').value;
+    const precio = parseFloat(document.getElementById('add-prod-precio').value);
+    const desc = document.getElementById('add-prod-desc').value.trim();
+    if(!nombre || !categoria || isNaN(precio)) return mostrarToast('Completá los campos del producto', 'info');
+    const db = getDB();
+    const c = db.comercios.find(x => x.id === window.comercioLogueado.id);
+    c.productos.push({ id: Date.now(), nombre, categoria, precio, desc, foto: window.fotoProductoTemp || '' });
+    saveDB(db); window.comercioLogueado = c;
+    document.getElementById('add-prod-nombre').value = '';
+    document.getElementById('add-prod-categoria').value = '';
+    document.getElementById('add-prod-precio').value = '';
+    document.getElementById('add-prod-desc').value = '';
+    document.getElementById('preview-foto').classList.add('hidden');
+    document.getElementById('upload-preview-container').style.display = 'block';
+    document.getElementById('upload-zone').classList.remove('has-file');
+    window.fotoProductoTemp = null;
+    mostrarToast('¡Producto publicado!');
+    vibrar([50,50,100]);
+    renderizarProductosComercio();
+}
+function renderizarProductosComercio() {
+    if(!window.comercioLogueado) return;
+    const db = getDB();
+    const c = db.comercios.find(x => x.id === window.comercioLogueado.id);
+    const lista = document.getElementById('lista-productos-comercio');
+    document.getElementById('contador-productos').textContent = c.productos.length + ' artículos';
+    if(c.productos.length === 0) {
+        lista.innerHTML = '<div class="bg-white rounded-2xl p-8 text-center border border-gray-100"><div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-3xl"><i class="fa-solid fa-box-open"></i></div><p class="text-gray-500 font-bold">Aún no tenés productos</p></div>';
+        return;
     }
-    return ok;
-  });
-
-  const grilla=document.getElementById('grilla-locales-dinamica');
-  document.getElementById('contador-locales').textContent=filt.length;
-
-  if(filt.length===0){
-    grilla.innerHTML=`<div style="text-align:center;padding:60px 20px;background:#fff;border-radius:28px;border:1px solid var(--border);"><div style="width:64px;height:64px;border-radius:50%;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:28px;color:#cbd5e1;margin:0 auto 16px;"><i class="fa-solid fa-store-slash"></i></div><h4 style="font-weight:800;font-size:17px;margin:0 0 8px;">Sin comercios en tu zona</h4><p style="color:var(--muted);font-size:14px;margin:0;">Cambi&aacute; los filtros de provincia o ciudad</p></div>`;
-    return;
-  }
-
-  grilla.innerHTML=filt.map(c=>{
-    const cant=productos.filter(p=>p.comercioId===c.id).length;
-    return `<div class="comercio-card" onclick="abrirCatalogo(${c.id})"><div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,rgba(234,88,12,.15),rgba(234,88,12,.04));display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--accent);flex-shrink:0;border:1px solid rgba(234,88,12,.15);"><i class="fa-solid fa-store"></i></div><div style="flex:1;min-width:0;"><h4 style="font-weight:800;font-size:16px;margin:0 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.nombre}</h4><p style="font-size:12px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px;margin:0 0 4px;"><i class="fa-solid fa-location-dot" style="color:var(--accent);"></i>${c.ciudad}, ${c.provincia}</p><div style="display:flex;gap:8px;"><span class="badge-pill badge-accent" style="font-size:10px;padding:4px 10px;">${cant} productos</span><span class="badge-pill badge-green" style="font-size:10px;padding:4px 10px;"><span class="dot-live" style="width:6px;height:6px;"></span>Abierto</span></div></div><i class="fa-solid fa-chevron-right" style="color:#cbd5e1;"></i></div>`;
-  }).join('');
+    lista.innerHTML = c.productos.map(p => `
+        <div class="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+            ${p.foto ? `<img src="${p.foto}" class="w-16 h-16 rounded-2xl object-cover shadow-sm">` : `<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-gray-400 text-2xl"><i class="fa-solid fa-box"></i></div>`}
+            <div class="flex-1 min-w-0">
+                <h4 class="font-black text-gray-900 truncate">${p.nombre}</h4>
+                <span class="badge-categoria cat-${p.categoria} mt-1 inline-block">${p.categoria}</span>
+                <p class="font-black text-orange-600 mt-1">$${p.precio}</p>
+            </div>
+            <button onclick="eliminarProducto(${p.id})" class="w-11 h-11 rounded-full bg-red-50 text-red-500 flex items-center justify-center active:scale-90 hover:bg-red-100"><i class="fa-solid fa-trash text-sm"></i></button>
+        </div>
+    `).join('');
+}
+function eliminarProducto(id) {
+    vibrar(50); if(!confirm('¿Eliminar este producto?')) return;
+    const db = getDB();
+    const c = db.comercios.find(x => x.id === window.comercioLogueado.id);
+    c.productos = c.productos.filter(p => p.id !== id);
+    saveDB(db); window.comercioLogueado = c;
+    mostrarToast('Producto eliminado', 'info'); renderizarProductosComercio();
 }
 
-function filtrarPorCategoria(btn){
-  document.querySelectorAll('#filtros-categorias .cat-chip').forEach(c=>c.classList.remove('active'));
-  btn.classList.add('active');catFiltro=btn.dataset.cat;renderizarMarketplace();
+// PEDIDOS COMERCIO
+function renderizarPedidosComercio() {
+    if(!window.comercioLogueado) return;
+    const db = getDB();
+    const c = db.comercios.find(x => x.id === window.comercioLogueado.id);
+    if(!c.pedidos) c.pedidos = [];
+    const lista = document.getElementById('lista-pedidos-comercio');
+    document.getElementById('contador-pedidos-comercio').textContent = c.pedidos.length;
+    if(c.pedidos.length === 0) {
+        lista.innerHTML = '<div class="text-center py-10"><div class="w-20 h-20 mx-auto mb-4 rounded-full bg-green-50 text-green-400 flex items-center justify-center text-4xl"><i class="fa-brands fa-whatsapp"></i></div><h3 class="font-black text-xl mb-2">Bandeja Vacía</h3><p class="text-gray-500 font-medium">Los pedidos aparecerán aquí automáticamente</p></div>';
+        return;
+    }
+    lista.innerHTML = [...c.pedidos].reverse().map(p => `
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-3">
+                    ${p.selfie ? `<img src="${p.selfie}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : `<div class="w-12 h-12 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center text-xl"><i class="fa-solid fa-user"></i></div>`}
+                    <div>
+                        <h4 class="font-black text-gray-900">${p.clienteNombre}</h4>
+                        <p class="text-xs text-gray-500 font-bold uppercase">${new Date(p.fecha).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}hs</p>
+                    </div>
+                </div>
+                <p class="font-black text-orange-600 text-lg">$${p.totalPedido}</p>
+            </div>
+            <p class="text-sm text-gray-600 font-medium bg-white p-2 rounded-lg border border-gray-100"><i class="fa-solid fa-location-dot text-orange-400 mr-1"></i> ${p.destino}</p>
+            <div class="flex gap-2">
+                <button onclick="verDetallePedido(${p.id})" class="flex-1 bg-white border border-gray-200 text-gray-700 py-2 rounded-xl font-bold text-sm hover:bg-gray-100 active:scale-95 transition-transform">Ver Detalle</button>
+                <a href="https://wa.me/${p.clienteWa}?text=Hola%20${encodeURIComponent(p.clienteNombre)},%20somos%20${encodeURIComponent(window.comercioLogueado.nombre)}.%20Recibimos%20tu%20pedido." target="_blank" class="flex-1 bg-green-500 text-white py-2 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform"><i class="fa-brands fa-whatsapp"></i> Chat</a>
+            </div>
+        </div>
+    `).join('');
 }
-function filtrarPorTexto(){renderizarMarketplace();}
-
-// ============================================
-// CATALOGO
-// ============================================
-function abrirCatalogo(id){
-  comercioActual=comercios.find(c=>c.id===id);if(!comercioActual)return;
-  document.getElementById('cat-nombre').textContent=comercioActual.nombre;
-  document.getElementById('cat-ciudad').textContent=comercioActual.ciudad+', '+comercioActual.provincia;
-  document.getElementById('cat-horario').textContent=comercioActual.horario;
-  cambiarPantalla('pantalla-catalogo');renderizarProductos();
+function verDetallePedido(pid) {
+    vibrar(20);
+    const db = getDB();
+    const c = db.comercios.find(x => x.id === window.comercioLogueado.id);
+    const p = c.pedidos.find(x => x.id === pid); if(!p) return;
+    const items = p.items.map(i => `<div class="flex justify-between items-center bg-gray-50 p-2 rounded mb-1"><span class="text-sm font-bold text-gray-700">${i.cantidad}x ${i.nombre}</span><span class="text-sm font-black text-gray-900">$${i.precio * i.cantidad}</span></div>`).join('');
+    document.getElementById('detalle-pedido-contenido').innerHTML = `
+        <div class="mb-4 text-center">
+            ${p.selfie ? `<img src="${p.selfie}" class="w-20 h-20 rounded-full mx-auto object-cover border-4 border-gray-100 shadow-md mb-2">` : ''}
+            <p class="font-black text-gray-900 text-lg">${p.clienteNombre}</p>
+            <p class="text-sm font-bold text-gray-500"><i class="fa-solid fa-phone text-green-500"></i> ${p.clienteWa}</p>
+        </div>
+        <div class="mb-4">
+            <p class="text-xs text-gray-400 font-bold uppercase mb-1">Entrega:</p>
+            <p class="font-bold text-gray-700 text-sm bg-orange-50 p-2 rounded-xl border border-orange-100">${p.destino}</p>
+            <p class="text-xs font-bold text-blue-600 mt-1"><i class="fa-solid fa-motorcycle"></i> Envío: $${p.costoEnvio}</p>
+        </div>
+        <div class="mb-4">
+            <p class="text-xs text-gray-400 font-bold uppercase mb-2">Productos</p>
+            ${items}
+        </div>
+        <div class="border-t pt-3 flex justify-between items-center">
+            <span class="font-bold text-gray-600">Total:</span>
+            <span class="font-black text-2xl text-orange-600">$${p.totalPedido}</span>
+        </div>
+    `;
+    abrirModal('modal-detalle-pedido');
 }
 
-function renderizarProductos(){
-  const bus=(document.getElementById('buscador-productos')?.value||'').toLowerCase();
-  const prods=productos.filter(p=>p.comercioId===comercioActual.id&&p.nombre.toLowerCase().includes(bus));
-  const cont=document.getElementById('contenedor-productos');
-  const iconos={bebida:'fa-mug-saucer',golosina:'fa-candy-cane',lacteo:'fa-cheese',almacen:'fa-bread-slice',limpieza:'fa-soap',cigarrillo:'fa-ban-smoking'};
-  cont.innerHTML=prods.map(p=>`
-    <div class="producto-card" onclick="agregarAlCarrito(${p.id})">
-      <div style="height:100px;background:linear-gradient(135deg,#f8fafc,#f1f5f9);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--accent);"><i class="fa-solid ${iconos[p.categoria]||'fa-box'}"></i></div>
-      <div style="padding:14px;"><h4 style="font-weight:800;font-size:14px;margin:0 0 6px;line-height:1.3;">${p.nombre}</h4><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-family:'Sora',sans-serif;font-weight:900;font-size:18px;color:var(--accent);">$${p.precio}</span><span style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;"><i class="fa-solid fa-plus"></i></span></div></div>
-    </div>`).join('');
-  if(prods.length===0)cont.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px 20px;background:#fff;border-radius:24px;border:1px solid var(--border);"><div style="width:64px;height:64px;border-radius:50%;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:28px;color:#cbd5e1;margin:0 auto 16px;"><i class="fa-solid fa-box-open"></i></div><p style="color:var(--muted);font-weight:700;font-size:15px;margin:0;">Sin productos</p></div>`;
+// MARKETPLACE
+function cargarFiltrosProvincia() {
+    const db = getDB();
+    const provs = [...new Set(db.comercios.map(c => c.provincia))].sort();
+    const sp = document.getElementById('filtro-provincia');
+    if(sp) sp.innerHTML = '<option value="Todas">Provincias...</option>' + provs.map(p => `<option value="${p}">${p}</option>`).join('');
 }
-function filtrarProductosLocal(){renderizarProductos();}
+function cambiarFiltroProvincia() {
+    const prov = document.getElementById('filtro-provincia').value;
+    const db = getDB();
+    const ciud = prov === 'Todas' ? [...new Set(db.comercios.map(c => c.ciudad))].sort()
+        : [...new Set(db.comercios.filter(c => c.provincia === prov).map(c => c.ciudad))].sort();
+    const sc = document.getElementById('filtro-ciudad');
+    sc.innerHTML = '<option value="Todas">Ciudades...</option>' + ciud.map(c => `<option value="${c}">${c}</option>`).join('');
+    renderizarMarketplace();
+}
+let st;
+function filtrarPorTexto() { clearTimeout(st); st = setTimeout(() => renderizarMarketplace(), 250); }
+function filtrarPorCategoria(btn) {
+    vibrar(15);
+    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    window.filtroCategoriaActual = btn.dataset.cat;
+    renderizarMarketplace();
+}
+function renderizarMarketplace() {
+    const prov = document.getElementById('filtro-provincia').value;
+    const ciud = document.getElementById('filtro-ciudad').value;
+    const texto = document.getElementById('buscador-global') ? document.getElementById('buscador-global').value.toLowerCase() : '';
+    const grilla = document.getElementById('grilla-locales-dinamica'); if(!grilla) return;
+    const db = getDB();
+    let comercios = db.comercios;
+    if(prov !== 'Todas') comercios = comercios.filter(c => c.provincia === prov);
+    if(ciud !== 'Todas') comercios = comercios.filter(c => c.ciudad === ciud);
+    if(window.filtroCategoriaActual !== 'Todas')
+        comercios = comercios.filter(c => c.productos.some(p => p.categoria === window.filtroCategoriaActual));
+    if(texto) comercios = comercios.filter(c =>
+        c.nombre.toLowerCase().includes(texto) || c.productos.some(p => p.nombre.toLowerCase().includes(texto))
+    );
+    document.getElementById('contador-locales').textContent = comercios.length + (comercios.length === 1 ? ' local' : ' locales');
+    if(comercios.length === 0) {
+        grilla.innerHTML = '<div class="text-center py-12 bg-white rounded-3xl border border-gray-100 mt-4"><div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center text-3xl"><i class="fa-solid fa-store-slash"></i></div><p class="text-gray-500 font-bold">No encontramos comercios</p></div>';
+        return;
+    }
+    grilla.innerHTML = comercios.map(local => `
+        <div onclick="abrirCatalogoComercio(${local.id})" class="comercio-card">
+            <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center text-orange-500 text-3xl shrink-0 overflow-hidden border border-orange-100">
+                ${local.portada ? `<img src="${local.portada}" class="w-full h-full object-cover">` : '<i class="fa-solid fa-store"></i>'}
+            </div>
+            <div class="flex-1 min-w-0">
+                <h4 class="font-black text-gray-900 text-lg truncate leading-tight mb-1">${local.nombre}</h4>
+                <p class="text-xs text-gray-500 font-bold truncate mb-2"><i class="fa-solid fa-location-dot text-orange-500 mr-1"></i> ${local.ciudad}, ${local.provincia}</p>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-black text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100">${local.productos.length} items</span>
+                    <span class="badge-seguridad badge-verde"><i class="fa-solid fa-check"></i></span>
+                </div>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 shrink-0">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+        </div>
+    `).join('');
+}
 
-// ============================================
+// CATALOGO COMERCIO
+function abrirCatalogoComercio(id) {
+    vibrar(40);
+    const db = getDB();
+    window.comercioActual = db.comercios.find(c => c.id === id);
+    if(!window.comercioActual) return;
+    document.getElementById('cat-nombre').textContent = window.comercioActual.nombre;
+    document.getElementById('cat-ciudad').textContent = window.comercioActual.direccion + ', ' + window.comercioActual.ciudad;
+    document.getElementById('cat-horario').textContent = window.comercioActual.horario;
+    document.getElementById('btn-wa-local').href = `https://wa.me/${window.comercioActual.whatsapp}`;
+    const img = document.getElementById('cat-portada');
+    if(window.comercioActual.portada) { img.src = window.comercioActual.portada; img.style.display = 'block'; }
+    else { img.style.display = 'none'; img.parentElement.classList.add('bg-gradient-to-r', 'from-orange-400', 'to-orange-600'); }
+    const io = document.getElementById('checkout-origen');
+    if(io) { io.value = window.comercioActual.direccion + ', ' + window.comercioActual.ciudad; resetearRuta(); }
+    renderizarProductosCatalogo();
+    cambiarPantalla('pantalla-catalogo');
+}
+function renderizarProductosCatalogo() {
+    if(!window.comercioActual) return;
+    const cont = document.getElementById('contenedor-productos');
+    const sin = document.getElementById('sin-productos');
+    const texto = document.getElementById('buscador-productos') ? document.getElementById('buscador-productos').value.toLowerCase() : '';
+    let prods = window.comercioActual.productos;
+    if(texto) prods = prods.filter(p => p.nombre.toLowerCase().includes(texto));
+    if(prods.length === 0) { cont.innerHTML = ''; sin.classList.remove('hidden'); return; }
+    sin.classList.add('hidden');
+    cont.innerHTML = prods.map((p, i) => `
+        <div class="producto-card flex flex-col h-full" style="animation-delay:${i * 0.05}s">
+            ${p.foto ? `<img src="${p.foto}" class="w-full h-32 object-cover bg-slate-50">` : `<div class="w-full h-32 flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100 text-orange-300 text-5xl"><i class="fa-solid fa-box-open"></i></div>`}
+            <div class="p-4 flex flex-col flex-1">
+                <span class="badge-categoria cat-${p.categoria} mb-2 inline-block self-start">${p.categoria}</span>
+                <h4 class="font-black text-sm text-gray-900 leading-tight mb-1 line-clamp-2">${p.nombre}</h4>
+                ${p.desc ? `<p class="text-xs text-gray-500 font-medium line-clamp-2 mb-3 flex-1">${p.desc}</p>` : '<div class="flex-1"></div>'}
+                <div class="flex justify-between items-end mt-auto pt-2 border-t border-gray-50">
+                    <span class="font-black text-xl text-orange-600 leading-none">$${p.precio}</span>
+                    <button onclick="agregarAlCarrito(${p.id}, '${p.nombre.replace(/'/g,"\\\\'")}', ${p.precio})" class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-lg hover:bg-orange-500 transition-colors active:scale-90">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+function filtrarProductosLocal() { renderizarProductosCatalogo(); }
+
 // CARRITO
-// ============================================
-function agregarAlCarrito(prodId){
-  const prod=productos.find(p=>p.id===prodId);if(!prod)return;
-  const ex=carrito.find(i=>i.id===prodId);
-  if(ex)ex.cant++;else carrito.push({...prod,cant:1,comercioNombre:comercioActual.nombre});
-  actualizarBadge();actualizarBarra();
-  mostrarToast(prod.nombre+' agregado','success');
+function previewSelfieCliente(e) {
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = function(ev) {
+        window.selfieClienteTemp = ev.target.result;
+        document.getElementById('img-selfie-preview').src = ev.target.result;
+        document.getElementById('img-selfie-preview').classList.remove('hidden');
+        document.getElementById('preview-selfie-container').style.display = 'none';
+        document.getElementById('upload-selfie-cliente').classList.add('has-file');
+        vibrar(20);
+    }; r.readAsDataURL(f);
 }
-function actualizarBadge(){
-  const t=carrito.reduce((s,i)=>s+i.cant,0);
-  const b=document.getElementById('badge-carrito');
-  if(t>0){b.style.display='flex';b.textContent=t;}else{b.style.display='none';}
+function agregarAlCarrito(id, nombre, precio) {
+    vibrar(20);
+    const item = window.carrito.find(c => c.id === id);
+    if(item) item.cantidad++;
+    else window.carrito.push({ id, nombre, precio, cantidad: 1, comercioId: window.comercioActual.id, comercioNombre: window.comercioActual.nombre, comercioWhatsapp: window.comercioActual.whatsapp });
+    mostrarToast('Agregado: ' + nombre);
+    actualizarInterfazCarrito();
 }
-function actualizarBarra(){
-  const t=carrito.reduce((s,i)=>s+i.cant,0);
-  const suma=carrito.reduce((s,i)=>s+i.precio*i.cant,0);
-  const bar=document.getElementById('barra-ver-carrito');
-  if(t>0){bar.style.display='block';document.getElementById('barra-cant').textContent=t+' producto'+(t>1?'s':'');document.getElementById('barra-total').textContent='$'+suma.toLocaleString();}
-  else bar.style.display='none';
+function quitarDelCarrito(id) {
+    vibrar(15);
+    const item = window.carrito.find(c => c.id === id);
+    if(item) { item.cantidad--; if(item.cantidad <= 0) window.carrito = window.carrito.filter(c => c.id !== id); }
+    actualizarInterfazCarrito();
 }
-function actualizarCarritoUI(){
-  const lista=document.getElementById('carrito-lista');
-  const vacio=document.getElementById('carrito-vacio');
-  if(carrito.length===0){lista.innerHTML='';vacio.style.display='block';document.getElementById('carrito-total').textContent='$0';return;}
-  vacio.style.display='none';
-  lista.innerHTML=carrito.map((item,idx)=>`
-    <div style="background:#fff;border-radius:20px;padding:16px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;">
-      <div style="width:48px;height:48px;border-radius:16px;background:rgba(234,88,12,.08);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent);flex-shrink:0;"><i class="fa-solid fa-box"></i></div>
-      <div style="flex:1;min-width:0;"><h4 style="font-weight:800;font-size:14px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.nombre}</h4><p style="font-size:11px;font-weight:700;color:var(--muted);margin:4px 0 0;">${item.comercioNombre}</p></div>
-      <div style="display:flex;align-items:center;gap:8px;"><button onclick="cambiarCant(${idx},-1)" style="width:28px;height:28px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;font-weight:800;">-</button><span style="font-weight:800;font-size:14px;min-width:20px;text-align:center;">${item.cant}</span><button onclick="cambiarCant(${idx},1)" style="width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:800;">+</button></div>
-      <div style="font-weight:900;font-size:16px;color:var(--accent);min-width:70px;text-align:right;">$${(item.precio*item.cant).toLocaleString()}</div>
-    </div>`).join('');
-  document.getElementById('carrito-total').textContent='$'+carrito.reduce((s,i)=>s+i.precio*i.cant,0).toLocaleString();
+function vaciarCarrito() {
+    window.carrito = []; resetearRuta();
+    document.getElementById('checkout-nombre').value = '';
+    document.getElementById('checkout-whatsapp').value = '';
+    document.getElementById('checkout-destino').value = '';
+    window.selfieClienteTemp = null;
+    document.getElementById('img-selfie-preview').classList.add('hidden');
+    document.getElementById('preview-selfie-container').style.display = 'block';
+    document.getElementById('upload-selfie-cliente').classList.remove('has-file');
+    actualizarInterfazCarrito();
 }
-function cambiarCant(idx,delta){
-  carrito[idx].cant+=delta;
-  if(carrito[idx].cant<=0)carrito.splice(idx,1);
-  actualizarBadge();actualizarBarra();actualizarCarritoUI();
-}
-function confirmarPedido(){
-  if(carrito.length===0){mostrarToast('Carrito vac&iacute;o','error');return;}
-  if(!document.getElementById('co-nombre').value){mostrarToast('Ingres&aacute; tu nombre','error');return;}
-  mostrarToast('Pedido confirmado! El cadete te contactar&aacute;','success');
-  carrito=[];actualizarBadge();actualizarBarra();cerrarModal('modal-carrito');
-}
-
-// ============================================
-// COMERCIO AUTH
-// ============================================
-function generarEmailTrucho(celular){
-  // Email para Supabase Auth: {celular}@deliverymoto.app
-  // RLS: cada usuario ve solo sus filas WHERE user_id = auth.uid()
-  return celular.replace(/\D/g,'')+'@deliverymoto.app';
-}
-
-async function registrarComercio(){
-  const n=document.getElementById('reg-nombre').value;
-  const w=document.getElementById('reg-whatsapp').value;
-  const p=document.getElementById('reg-password').value;
-  if(!n||!w||!p||p.length<6){mostrarToast('Complet&aacute; todos los campos (min 6 car&aacute;cteres)','error');return;}
-  const email=generarEmailTrucho(w);
-  mostrarToast('Registrando en Supabase...','info');
-  // En produccion: const {data,error}=await supabase.auth.signUp({email,password});
-  setTimeout(()=>{
-    mostrarToast('Comercio registrado! Email: '+email,'success');
-    setTimeout(()=>cambiarPantalla('pantalla-login-comercio'),1200);
-  },800);
-}
-
-async function loginComercio(){
-  const w=document.getElementById('login-whatsapp').value;
-  const p=document.getElementById('login-password').value;
-  if(!w||!p){mostrarToast('Complet&aacute; los datos','error');return;}
-  const email=generarEmailTrucho(w);
-  mostrarToast('Autenticando Supabase...','info');
-  // En produccion: const {data,error}=await supabase.auth.signInWithPassword({email,password});
-  setTimeout(()=>{
-    comercioLogueado={nombre:'Mi Comercio Demo',email};
-    document.getElementById('admin-nombre').textContent='Mi Comercio Demo';
-    cambiarPantalla('pantalla-admin-comercio');renderizarProductosAdmin();
-    mostrarToast('Bienvenido! RLS activado','success');
-  },800);
-}
-
-function logoutComercio(){comercioLogueado=null;cambiarPantalla('pantalla-1');mostrarToast('Sesi&oacute;n cerrada','info');}
-
-function switchTab(t){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
-  document.getElementById('seccion-productos').style.display=t==='productos'?'flex':'none';
-  document.getElementById('seccion-pedidos').style.display=t==='pedidos'?'flex':'none';
-}
-
-function agregarProducto(){
-  const n=document.getElementById('add-nombre').value;
-  const p=parseFloat(document.getElementById('add-precio').value);
-  const c=document.getElementById('add-categoria').value;
-  if(!n||!p||!c){mostrarToast('Complet&aacute; todos los campos','error');return;}
-  productos.push({id:Math.max(...productos.map(x=>x.id))+1,comercioId:1,nombre:n,precio:p,categoria:c});
-  document.getElementById('add-nombre').value='';document.getElementById('add-precio').value='';document.getElementById('add-categoria').value='';
-  renderizarProductosAdmin();mostrarToast('Producto publicado!','success');
-}
-
-function renderizarProductosAdmin(){
-  const mis=productos.filter(p=>p.comercioId===1);
-  const cont=document.getElementById('lista-productos-admin');
-  if(mis.length===0){cont.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted);background:#fff;border-radius:24px;border:1px solid var(--border);">Sin productos a&uacute;n</div>`;return;}
-  cont.innerHTML=mis.map(p=>`
-    <div style="background:#fff;border-radius:20px;padding:16px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;">
-      <div style="width:48px;height:48px;border-radius:16px;background:rgba(234,88,12,.08);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent);"><i class="fa-solid fa-box"></i></div>
-      <div style="flex:1;"><h4 style="font-weight:800;font-size:15px;margin:0;">${p.nombre}</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:4px 0 0;text-transform:capitalize;">${p.categoria}</p></div>
-      <div style="font-weight:900;font-size:18px;color:var(--accent);">$${p.precio}</div>
-    </div>`).join('');
-}
-
-// ============================================
-// SERVIMOTO - REGISTRO + IA AUDITORIA
-// ============================================
-function procesarDoc(tipo,input){
-  if(!input.files||!input.files[0])return;
-  const zona=document.getElementById('doc-'+tipo);
-  zona.classList.add('cargado','scanning');
-  zona.classList.remove('rechazado');
-  
-  const content=document.getElementById('content-'+tipo);
-  content.innerHTML=`<div style="width:56px;height:56px;border-radius:18px;background:rgba(22,163,74,.1);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--accent2);margin:0 auto 12px;"><i class="fa-solid fa-file-circle-check"></i></div><h4 style="font-weight:800;font-size:16px;margin:0 0 6px;color:var(--accent2);">Documento cargado</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:0;">${input.files[0].name}</p>`;
-  
-  setTimeout(()=>zona.classList.remove('scanning'),1500);
-  
-  estadoCadete.documentos[tipo]=input.files[0].name;
-  estadoCadete.docsCargados=Object.values(estadoCadete.documentos).filter(Boolean).length;
-  
-  const btn=document.getElementById('btn-auditar');
-  if(estadoCadete.docsCargados>=3){
-    btn.disabled=false;
-    btn.innerHTML='<i class="fa-solid fa-robot"></i>Iniciar Auditor&iacute;a IA';
-  }
-}
-
-function iniciarAuditoriaIA(){
-  if(estadoCadete.docsCargados<3){mostrarToast('Carg&aacute; los 3 documentos','error');return;}
-  if(!document.getElementById('acepto').checked){mostrarToast('Acept&aacute; los t&eacute;rminos','error');return;}
-  if(!document.getElementById('reg-celular').value||!document.getElementById('reg-pass-cad').value){mostrarToast('Complet&aacute; celular y contrase&ntilde;a','error');return;}
-  
-  abrirModal('modal-ia');
-  const avatar=document.getElementById('ia-avatar');
-  const titulo=document.getElementById('ia-titulo');
-  const msg=document.getElementById('ia-msg');
-  const bar=document.getElementById('ia-bar');
-  const resultados=document.getElementById('ia-resultados');
-  const btn=document.getElementById('ia-btn');
-  
-  avatar.classList.add('thinking');
-  titulo.textContent='IA Auditora Analizando';
-  msg.textContent='Extrayendo texto de los documentos con OCR...';
-  resultados.style.display='none';btn.style.display='none';
-  
-  let prog=0;
-  const pasos=[
-    {p:25,m:'Selfie con DNI: verificando coincidencia facial...',r:{doc:'Selfie + DNI',s:'ok',d:'Rostro coincide con DNI. Nombre: Juan P&eacute;rez'}},
-    {p:55,m:'Certificado Buena Conducta: validando n&uacute;mero de tr&aacute;mite...',r:{doc:'Buena Conducta',s:'ok',d:'Certificado v&aacute;lido - Sin antecedentes'}},
-    {p:80,m:'Constancia AFIP: verificando CUIT y estado...',r:{doc:'AFIP / Monotributo',s:'ok',d:'CUIT activo - Monotributo al d&iacute;a'}},
-    {p:100,m:'Auditor&iacute;a completa. Generando credenciales Supabase...',r:null}
-  ];
-  
-  let idx=0;
-  const interval=setInterval(()=>{
-    if(idx>=pasos.length){
-      clearInterval(interval);
-      avatar.classList.remove('thinking');
-      titulo.textContent='Auditor&iacute;a Aprobada';
-      titulo.style.color='var(--accent2)';
-      msg.textContent='Todos los documentos verificados correctamente.';
-      
-      resultados.style.display='block';
-      resultados.innerHTML=pasos.filter(p=>p.r).map(p=>`
-        <div style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(22,163,74,.05);border-radius:16px;margin-bottom:10px;border:1px solid rgba(22,163,74,.15);">
-          <div style="width:36px;height:36px;border-radius:50%;background:var(--accent2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><i class="fa-solid fa-check"></i></div>
-          <div style="flex:1;"><strong style="font-size:14px;display:block;">${p.r.doc}</strong><span style="font-size:12px;color:var(--muted);">${p.r.d}</span></div>
-        </div>`).join('');
-      
-      estadoCadete.aprobado=true;
-      estadoCadete.celular=document.getElementById('reg-celular').value;
-      const email=generarEmailTrucho(estadoCadete.celular);
-      
-      btn.style.display='inline-flex';
-      btn.innerHTML=`<i class="fa-solid fa-arrow-right"></i>Continuar al Login`;
-      btn.onclick=()=>{cerrarModal('modal-ia');mostrarToast('Registro exitoso! Email: '+email,'success');setTimeout(()=>cambiarPantalla('pantalla-login-servimoto'),600);};
-      return;
+function actualizarInterfazCarrito() {
+    const totalItems = window.carrito.reduce((s, c) => s + c.cantidad, 0);
+    const subtotal = window.carrito.reduce((s, c) => s + (c.precio * c.cantidad), 0);
+    const totalFinal = subtotal + (window.rutaCalculada ? window.costoEnvioDinamico : 0);
+    const b1 = document.getElementById('badge-carrito');
+    const b2 = document.getElementById('badge-carrito-cat');
+    if(totalItems > 0) {
+        if(b1) { b1.textContent = totalItems; b1.classList.remove('hidden'); }
+        if(b2) { b2.textContent = totalItems; b2.classList.remove('hidden'); }
+    } else { if(b1) b1.classList.add('hidden'); if(b2) b2.classList.add('hidden'); }
+    const barra = document.getElementById('barra-ver-carrito');
+    if(barra) {
+        if(totalItems > 0) {
+            barra.classList.remove('hidden');
+            document.getElementById('barra-total').textContent = '$' + subtotal;
+            document.getElementById('barra-cant').textContent = totalItems + (totalItems === 1 ? ' ítem' : ' ítems');
+        } else barra.classList.add('hidden');
     }
-    bar.style.width=pasos[idx].p+'%';
-    msg.textContent=pasos[idx].m;
-    idx++;
-  },900);
+    const lista = document.getElementById('carrito-lista');
+    const vacio = document.getElementById('carrito-vacio');
+    if(window.carrito.length === 0) {
+        if(lista) lista.innerHTML = '';
+        if(vacio) vacio.classList.remove('hidden');
+    } else {
+        if(vacio) vacio.classList.add('hidden');
+        if(lista) lista.innerHTML = window.carrito.map(item => `
+            <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center gap-4 shadow-sm relative overflow-hidden">
+                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-orange-400"></div>
+                <div class="flex-1 min-w-0 pl-2">
+                    <h4 class="font-black text-gray-900 truncate">${item.nombre}</h4>
+                    <p class="font-black text-orange-600 mt-1">$${item.precio} <span class="text-xs text-gray-400 font-bold uppercase ml-1">c/u</span></p>
+                </div>
+                <div class="flex items-center gap-3 bg-gray-50 p-1.5 rounded-xl border border-gray-200">
+                    <button onclick="quitarDelCarrito(${item.id})" class="w-9 h-9 rounded-lg bg-white text-gray-600 flex items-center justify-center shadow-sm active:scale-90"><i class="fa-solid fa-minus text-sm"></i></button>
+                    <span class="font-black text-gray-900 w-5 text-center">${item.cantidad}</span>
+                    <button onclick="agregarAlCarrito(${item.id}, '${item.nombre.replace(/'/g,"\\\\'")}', ${item.precio})" class="w-9 h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center shadow-md active:scale-90"><i class="fa-solid fa-plus text-sm"></i></button>
+                </div>
+            </div>
+        `).join('');
+    }
+    const st = document.getElementById('carrito-subtotal-txt');
+    const tt = document.getElementById('carrito-total-txt');
+    if(st) st.textContent = '$' + subtotal;
+    if(tt) tt.textContent = '$' + totalFinal;
+}
+function resetearRuta() {
+    window.rutaCalculada = false; window.costoEnvioDinamico = 0;
+    window.distanciaSimulada = 0; window.cuadrasSimuladas = 0;
+    const mapa = document.getElementById('mapa-contenedor');
+    if(mapa) { mapa.classList.remove('active'); setTimeout(() => { mapa.classList.add('hidden'); document.getElementById('iframe-google-map').src = ''; }, 400); }
+    const te = document.getElementById('txt-costo-envio-resumen');
+    if(te) { te.textContent = 'Requiere cálculo'; te.classList.add('text-gray-400'); te.classList.remove('text-green-600'); }
+    document.getElementById('aviso-tarifa').classList.add('hidden');
+    const bw = document.getElementById('btn-whatsapp-checkout');
+    if(bw) { bw.disabled = true; bw.classList.add('opacity-50', 'cursor-not-allowed'); }
+    actualizarInterfazCarrito();
+}
+function calcularDistanciaRuta() {
+    if(window.carrito.length === 0) return mostrarToast('Agregá productos al carrito', 'info');
+    const destino = document.getElementById('checkout-destino').value.trim();
+    if(!destino) { vibrar([50,100,50]); document.getElementById('checkout-destino').focus(); return mostrarToast('Ingresá tu dirección de entrega', 'error'); }
+    const btn = document.getElementById('btn-calcular-ruta');
+    btn.innerHTML = '<i class="fa-solid fa-satellite fa-spin"></i> Conectando GPS...';
+    btn.classList.add('bg-blue-600'); btn.classList.remove('bg-slate-900');
+    vibrar(30);
+    setTimeout(() => {
+        window.distanciaSimulada = (Math.random() * 4 + 1).toFixed(1);
+        window.cuadrasSimuladas = Math.round(window.distanciaSimulada * 10);
+        const hora = new Date().getHours();
+        const noche = (hora >= 20 || hora < 6);
+        let base = noche ? 3000 : 1500;
+        window.costoEnvioDinamico = base;
+        if(window.cuadrasSimuladas > 10) window.costoEnvioDinamico += (window.cuadrasSimuladas - 10) * 100;
+        window.rutaCalculada = true;
+        document.getElementById('mapa-distancia').textContent = window.distanciaSimulada + ' km';
+        document.getElementById('mapa-cuadras').textContent = window.cuadrasSimuladas + ' cuadras';
+        document.getElementById('mapa-precio-envio').textContent = '$' + window.costoEnvioDinamico;
+        const qd = encodeURIComponent(destino + ', ' + window.comercioActual.ciudad + ', ' + window.comercioActual.provincia);
+        document.getElementById('iframe-google-map').src = `https://maps.google.com/maps?q=${qd}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+        document.getElementById('link-abrir-maps').href = `https://www.google.com/maps/search/?api=1&query=${qd}`;
+        const mc = document.getElementById('mapa-contenedor');
+        mc.classList.remove('hidden'); setTimeout(() => mc.classList.add('active'), 50);
+        const te = document.getElementById('txt-costo-envio-resumen');
+        te.textContent = '$' + window.costoEnvioDinamico; te.classList.remove('text-gray-400'); te.classList.add('text-green-600', 'font-black');
+        const av = document.getElementById('aviso-tarifa'); av.classList.remove('hidden');
+        av.innerHTML = noche ? '<span class="text-indigo-600"><i class="fa-solid fa-moon"></i> Tarifa Nocturna (Base $3000 + $100/cuadra extra)</span>' : '<span class="text-orange-600"><i class="fa-solid fa-sun"></i> Tarifa Diurna (Base $1500 + $100/cuadra extra)</span>';
+        const bw = document.getElementById('btn-whatsapp-checkout');
+        bw.disabled = false; bw.classList.remove('opacity-50', 'cursor-not-allowed');
+        bw.innerHTML = '<i class="fa-brands fa-whatsapp text-xl"></i> Confirmar Pedido';
+        btn.innerHTML = '<i class="fa-solid fa-check-circle text-green-400"></i> Ruta Trazada';
+        btn.classList.remove('bg-blue-600'); btn.classList.add('bg-slate-800');
+        actualizarInterfazCarrito();
+        mostrarToast('¡Ruta calculada exitosamente!');
+        vibrar([50,50,100]);
+    }, 2000);
+}
+function procesarCheckoutWhatsapp() {
+    if(window.carrito.length === 0) return mostrarToast('Carrito vacío', 'info');
+    if(!window.rutaCalculada) return mostrarToast('Calculá la ruta primero', 'error');
+    if(!window.selfieClienteTemp) return mostrarToast('Subí una selfie de seguridad', 'error');
+    vibrar(40);
+    const nombre = document.getElementById('checkout-nombre').value.trim() || 'Cliente';
+    const waCli = document.getElementById('checkout-whatsapp').value.trim() || 'No especificado';
+    const destino = document.getElementById('checkout-destino').value.trim();
+    const origen = document.getElementById('checkout-origen').value;
+    const porComercio = {};
+    window.carrito.forEach(item => {
+        if(!porComercio[item.comercioId]) porComercio[item.comercioId] = { id: item.comercioId, nombre: item.comercioNombre, whatsapp: item.comercioWhatsapp, items: [] };
+        porComercio[item.comercioId].items.push(item);
+    });
+    const db = getDB();
+    Object.values(porComercio).forEach(comercio => {
+        const subtotal = comercio.items.reduce((s, i) => s + (i.precio * i.cantidad), 0);
+        const cDB = db.comercios.find(c => c.id === comercio.id);
+        if(cDB) {
+            if(!cDB.pedidos) cDB.pedidos = [];
+            cDB.pedidos.push({
+                id: Date.now(), fecha: new Date().toISOString(),
+                clienteNombre: nombre, clienteWa: waCli, destino,
+                selfie: window.selfieClienteTemp, items: comercio.items,
+                totalPedido: subtotal, costoEnvio: window.costoEnvioDinamico
+            });
+            saveDB(db);
+        }
+        const extra = window.cuadrasSimuladas > 10 ? ` (+ ${window.cuadrasSimuladas - 10} cuadras extra)` : '';
+        let msj = `*DELIVERY MOTO - NUEVO PEDIDO*\n\n`;
+        msj += `*Cliente:* ${nombre}\n*Celular:* ${waCli}\n*Foto:* Verificada en sistema\n\n`;
+        msj += `*RUTA*\nA) Retiro: ${origen}\nB) Entrega: ${destino}\nDistancia: ${window.distanciaSimulada} km (${window.cuadrasSimuladas} cuadras)\n\n`;
+        msj += `*PRODUCTOS*\n`;
+        comercio.items.forEach(i => { msj += `• ${i.cantidad}x ${i.nombre} - $${i.precio * i.cantidad}\n`; });
+        msj += `\n*Subtotal:* $${subtotal}\n*Envío:* $${window.costoEnvioDinamico}${extra}\n*TOTAL:* $${subtotal + window.costoEnvioDinamico}\n\n`;
+        msj += `_El cliente abona en puerta_`;
+        window.open(`https://wa.me/${comercio.whatsapp}?text=${encodeURIComponent(msj)}`, '_blank');
+    });
+    setTimeout(() => simularAlertaRadar(window.costoEnvioDinamico, origen, destino, window.cuadrasSimuladas), 2000);
+    cerrarModal('modal-carrito');
+    setTimeout(() => abrirModal('modal-pago-exito'), 500);
+}
+function simularAlertaRadar(costo, origen, destino, cuadras) {
+    if(window.radarConectado) {
+        document.getElementById('radar-origen-txt').textContent = origen;
+        document.getElementById('radar-destino-txt').textContent = destino;
+        document.getElementById('radar-cuadras-txt').textContent = cuadras;
+        document.getElementById('radar-precio-txt').textContent = '$ ' + costo;
+        abrirModal('modal-radar-cadete');
+        vibrar([200,100,200,100,200]);
+    }
 }
 
-// ============================================
-// SERVIMOTO - LOGIN + PANEL
-// ============================================
-async function loginCadete(){
-  const c=document.getElementById('login-cel-cad').value;
-  const p=document.getElementById('login-pass-cad').value;
-  if(!c||!p){mostrarToast('Complet&aacute; los datos','error');return;}
-  const email=generarEmailTrucho(c);
-  mostrarToast('Autenticando Supabase...','info');
-  // En produccion: await supabase.auth.signInWithPassword({email,password:p});
-  setTimeout(()=>{
-    estadoCadete.celular=c;
-    estadoCadete.aprobado=true;
-    document.getElementById('radar-nombre').textContent='Cadete '+c.slice(-4);
-    cambiarPantalla('pantalla-radar-servimoto');
-    verificarDiaLunes();
-    actualizarMetricas();
-    mostrarToast('Bienvenido cadete!','success');
-  },800);
+// SERVIMOTO - REGISTRO Y AUDITORIA IA
+function marcarDocCargado(idDoc, nombre) {
+    const el = document.getElementById(idDoc); if(!el) return;
+    el.classList.remove('border-dashed', 'border-gray-300');
+    el.classList.add('border-green-500', 'bg-green-50', 'validado');
+    const status = el.querySelector('.doc-status');
+    const iconCheck = el.querySelector('.doc-icon');
+    if(status) { status.textContent = nombre ? '✓ ' + nombre.substring(0, 18) + '...' : 'Documento Cargado'; status.classList.remove('text-gray-400'); status.classList.add('text-green-600'); }
+    if(iconCheck) iconCheck.classList.remove('hidden');
+    vibrar(20);
+}
+async function iniciarAuditoriaIA() {
+    vibrar(30);
+    const celular = document.getElementById('reg-celular').value.trim();
+    const provincia = document.getElementById('reg-prov').value;
+    const ciudad = document.getElementById('reg-ciudad-cadete').value.trim();
+    const moto = document.getElementById('reg-moto').value.trim();
+    const password = document.getElementById('reg-password-cadete').value;
+    const acepto = document.getElementById('acepto-terminos').checked;
+    if(!celular || !provincia || !ciudad || !moto || !password) return mostrarToast('Completá todos los datos', 'error');
+    if(!acepto) return mostrarToast('Aceptá los términos de trabajo', 'error');
+    const db = getDB();
+    if(db.servimotos.find(s => s.celular === celular)) return mostrarToast('Este número ya es Servimoto', 'error');
+    
+    // Verificar documentos cargados
+    const docsRequeridos = ['doc-selfie', 'doc-dni', 'doc-afip', 'doc-policia', 'doc-seguro', 'doc-patente'];
+    const docsCargados = docsRequeridos.filter(id => document.getElementById(id)?.classList.contains('validado'));
+    if(docsCargados.length < docsRequeridos.length)
+        return mostrarToast(`Cargá los ${docsRequeridos.length} documentos obligatorios`, 'error');
+    
+    abrirModal('modal-ia');
+    const barra = document.getElementById('barra-ia');
+    const texto = document.getElementById('texto-ia');
+    
+    try {
+        barra.style.width = '20%';
+        texto.textContent = 'Paso 1/6: Analizando Selfie con DNI...';
+        await new Promise(r => setTimeout(r, 900)); vibrar(30);
+        
+        barra.style.width = '35%';
+        texto.textContent = 'Paso 2/6: Verificando DNI frontal...';
+        await new Promise(r => setTimeout(r, 800));
+        
+        barra.style.width = '50%';
+        texto.textContent = 'Paso 3/6: Validando Constancia AFIP...';
+        await new Promise(r => setTimeout(r, 800)); vibrar(30);
+        
+        barra.style.width = '65%';
+        texto.textContent = 'Paso 4/6: Certificado de Antecedentes Policiales...';
+        await new Promise(r => setTimeout(r, 800));
+        
+        barra.style.width = '80%';
+        texto.textContent = 'Paso 5/6: Verificando Seguro y Patente...';
+        await new Promise(r => setTimeout(r, 800)); vibrar(30);
+        
+        barra.style.width = '100%';
+        barra.classList.remove('from-blue-600', 'to-blue-400');
+        barra.classList.add('from-green-600', 'to-green-400');
+        texto.textContent = '✓ Auditoría IA Aprobada - Todos los documentos válidos';
+        texto.classList.add('text-green-400', 'font-black');
+        vibrar([50,50,100]);
+        
+        db.servimotos.push({
+            id: Date.now(), celular, password, nombre: 'Cadete ' + moto.split(' ')[0],
+            provincia, ciudad, moto,
+            documentos: { selfie: true, dni: true, afip: true, policia: true, seguro: true, patente: true },
+            acepto: true, conectado: false, viajes: [], comision_pagada: true
+        });
+        saveDB(db);
+        
+        setTimeout(() => {
+            cerrarModal('modal-ia'); barra.style.width = '0';
+            mostrarToast('¡Alta Servimoto Aprobada! Conectate al Radar');
+            setTimeout(() => cambiarPantalla('pantalla-login-servimoto'), 800);
+        }, 1200);
+    } catch(e) { mostrarToast('Error de auditoría', 'error'); cerrarModal('modal-ia'); }
 }
 
-function logoutCadete(){
-  estadoCadete.radarActivo=false;
-  estadoCadete={celular:null,aprobado:false,documentos:{selfie:null,buena:null,afip:null},docsCargados:0,viajes:[],deudaSemanal:0,gpsBloqueado:false,radarActivo:false};
-  cambiarPantalla('pantalla-1');
-  mostrarToast('Desconectado','info');
+// LOGIN SERVIMOTO
+function loginServimoto() {
+    vibrar(30);
+    const cel = document.getElementById('login-servi-celular').value.trim();
+    const pw = document.getElementById('login-servi-password').value;
+    if(!cel || !pw) return mostrarToast('Ingresá tus datos', 'info');
+    const db = getDB();
+    const s = db.servimotos.find(x => x.celular === cel && x.password === pw);
+    if(!s) return mostrarToast('Credenciales incorrectas', 'error');
+    window.servimotoLogueado = s;
+    document.getElementById('radar-nombre-cadete').textContent = s.nombre;
+    mostrarToast('¡Acceso al Radar concedido!');
+    vibrar([50,50,100]);
+    setTimeout(() => cambiarPantalla('pantalla-radar-servimoto'), 500);
+}
+function logoutServimoto() {
+    vibrar(); window.servimotoLogueado = null;
+    if(window.radarConectado) toggleConexionRadar();
+    cambiarPantalla('pantalla-1'); mostrarToast('Sesión cerrada', 'info');
 }
 
-function verificarDiaLunes(){
-  const hoy=new Date().getDay();
-  // 0=dom, 1=lun, 2=mar...
-  // Para demo: si es lunes (1) y tiene deuda -> bloquear
-  // Para probar siempre: comentar la condicion y usar solo deudaSemanal>0
-  if(estadoCadete.deudaSemanal>0 && (hoy===1 || true)){
-    estadoCadete.gpsBloqueado=true;
-    document.getElementById('aviso-bloqueo').style.display='block';
-    document.getElementById('bloqueo-overlay').style.display='flex';
-    document.getElementById('monto
+// LOGISTICA SERVIMOTO
+function renderizarLogisticaServimoto() {
+    if(!window.servimotoLogueado) return;
+    const db = getDB();
+    const c = db.servimotos.find(s => s.id === window.servimotoLogueado.id);
+    if(!c) return;
+    if(!c.viajes) { c.viajes = []; saveDB(db); }
+    
+    const lista = document.getElementById('lista-viajes-cadete');
+    document.getElementById('contador-viajes').textContent = c.viajes.length;
+    const comision = c.viajes.length * 200;
+    document.getElementById('total-adeudado-cadete').textContent = '$' + comision;
+    
+    // SISTEMA DE LIQUIDACION LUNES
+    const dia = new Date().getDay(); // 1 = Lunes
+    const aviso = document.getElementById('aviso-pago-lunes');
+    
+    if(dia === 1 && comision > 0 && !c.comision_pagada) {
+        aviso.classList.remove('hidden');
+        document.getElementById('btn-monto-pagar-lunes').textContent = comision;
+    } else {
+        aviso.classList.add('hidden');
+        // Resetear pago si no es lunes
+        if(dia !== 1 && !c.comision_pagada) {
+            c.comision_pagada = true; saveDB(db);
+        }
+    }
+    
+    if(c.viajes.length === 0) {
+        lista.innerHTML = '<div class="text-center py-6"><i class="fa-solid fa-motorcycle text-4xl text-gray-200 mb-2"></i><p class="text-gray-400 font-bold text-sm">No hiciste viajes hoy</p></div>';
+    } else {
+        lista.innerHTML = [...c.viajes].reverse().map(v => `
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex justify-between items-center shadow-sm">
+                <div>
+                    <p class="text-xs font-black text-gray-400 uppercase mb-0.5">Viaje #${v.id.toString().slice(-4)}</p>
+                    <p class="font-black text-gray-800 text-sm truncate w-40">${v.destino}</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-black text-green-500">+ $${v.ganancia}</p>
+                    <p class="text-xs font-bold text-red-400">-$200 Comisión</p>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Renderizar documentos validados
+    const docsContainer = document.getElementById('docs-validados-container');
+    if(docsContainer && c.documentos) {
+        const docLabels = {
+            selfie: 'Selfie con DNI', dni: 'DNI', afip: 'Constancia AFIP',
+            policia: 'Antecedentes Policiales', seguro: 'Seguro Moto', patente: 'Patente/Vehículo'
+        };
+        docsContainer.innerHTML = Object.entries(c.documentos).filter(([k,v]) => v).map(([k]) => `
+            <div class="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                <i class="fa-solid fa-check-circle text-green-500 text-sm"></i>
+                <span class="text-xs font-bold text-green-700">${docLabels[k] || k}</span>
+            </div>
+        `).join('');
+    }
+}
+
+// RADAR CONEXION
+function toggleConexionRadar() {
+    vibrar(60);
+    const dia = new Date().getDay();
+    const db = getDB();
+    const c = db.servimotos.find(s => s.id === window.servimotoLogueado.id);
+    const comision = (c.viajes?.length || 0) * 200;
+    
+    if(dia === 1 && comision > 0 && !c.comision_pagada && !window.radarConectado) {
+        vibrar([100,50,100,50,100]);
+        return mostrarToast('⚠️ Pagá tu comisión para activar el Radar los Lunes', 'error');
+    }
+    
+    window.radarConectado = !window.radarConectado;
+    const btn = document.getElementById('btn-conectar');
+    const icono = document.getElementById('icono-conexion');
+    const texto = document.getElementById('texto-conexion');
+    const estado = document.getElementById('estado-gps');
+    
+    if(window.radarConectado) {
+        btn.classList.add('active');
+        icono.classList.remove('text-gray-400'); icono.classList.add('text-green-500', 'fa-beat-fade');
+        texto.textContent = 'RADAR ONLINE'; texto.classList.replace('text-gray-500', 'text-green-600');
+        estado.innerHTML = '<i class="fa-solid fa-satellite-dish mr-2 text-green-500"></i> Supabase Activa';
+        estado.parentElement.classList.add('bg-green-50', 'border-green-200');
+        estado.classList.replace('text-gray-500', 'text-green-700');
+        mostrarToast('¡Conectado! Buscando viajes...');
+    } else {
+        btn.classList.remove('active');
+        icono.classList.add('text-gray-400'); icono.classList.remove('text-green-500', 'fa-beat-fade');
+        texto.textContent = 'OFFLINE'; texto.classList.replace('text-green-600', 'text-gray-500');
+        estado.innerHTML = '<i class="fa-solid fa-location-crosshairs mr-2"></i> Desconectado';
+        estado.parentElement.classList.remove('bg-green-50', 'border-green-200');
+        estado.classList.replace('text-green-700', 'text-gray-500');
+        mostrarToast('Desconectado del Radar', 'info');
+    }
+}
+
+function agarrarViaje() {
+    vibrar([100,50,100]); cerrarModal('modal-radar-cadete');
+    const db = getDB();
+    const c = db.servimotos.find(s => s.id === window.servimotoLogueado.id);
+    const ganancia = parseInt(document.getElementById('radar-precio-txt').textContent.replace('$ ', '')) || 0;
+    const destino = document.getElementById('radar-destino-txt').textContent;
+    if(!c.viajes) c.viajes = [];
+    c.viajes.push({ id: Date.now(), ganancia, destino: destino || 'Viaje Asignado' });
+    saveDB(db); renderizarLogisticaServimoto();
+    mostrarToast('¡VIAJE ASIGNADO! Retirá en el local');
+}
+
+// PAGAR COMISION
+function pagarComision() {
+    vibrar([50,50,100]);
+    const db = getDB();
+    const c = db.servimotos.find(s => s.id === window.servimotoLogueado.id);
+    c.comision_pagada = true;
+    saveDB(db);
+    document.getElementById('aviso-pago-lunes').classList.add('hidden');
+    mostrarToast('¡Comisión abonada! Radar habilitado');
+}
+</script>
+</head>
+<body class="flex justify-center items-start" style="background:#fefcf8;">
+
+<div id="app-container" style="background-color:transparent;box-sizing:border-box;position:relative;width:100%;display:flex;justify-content:center;">
+
+<!-- ==================== LANDING PAGE BLANCA PREMIUM ==================== -->
+<div id="vista-landing" class="landing-white w-full" style="position:relative;z-index:100000;">
+    
+    <!-- NAV -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 mx-4 mt-4 rounded-3xl" style="box-shadow:0 4px 30px rgba(15,23,42,.05);">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden" style="background:linear-gradient(135deg,#fb923c,#ea580c);">
+                    <i class="fa-solid fa-motorcycle text-white text-2xl"></i>
+                </div>
+                <div>
+                    <div class="font-black text-xl leading-none tracking-tight" style="font-family:'Sora',sans-serif;">DELIVERY MOTO</div>
+                    <div class="text-xs font-bold uppercase tracking-widest mt-1" style="color:var(--naranja);">Energy Software</div>
+                </div>
+            </div>
+            <span class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide px-4 py-1.5 rounded-full" style="background:rgba(22,163,74,.08);color:var(--verde);border:1px solid rgba(22,163,74,.15);">
+                <span class="w-2.5 h-2.5 rounded-full" style="background:var(--verde);"></span>Sistema Activo
+            </span>
+        </div>
+    </nav>
+
+    <!-- TICKER -->
+    <div class="mx-4 my-6 overflow-hidden rounded-full" style="background:var(--texto);">
+        <div class="py-3 overflow-hidden">
+            <div class="ticker-track">
+                <span class="text-white text-sm font-black uppercase tracking-widest px-6">MARKETPLACE • RADAR GPS • AUDITORÍA IA • 24 PROVINCIAS • PAGO EN PUERTA • APK ANDROID • </span>
+                <span class="text-white text-sm font-black uppercase tracking-widest px-6">MARKETPLACE • RADAR GPS • AUDITORÍA IA • 24 PROVINCIAS • PAGO EN PUERTA • APK ANDROID • </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO PREMIUM -->
+    <section class="max-w-6xl mx-auto px-6 py-16 relative z-10">
+        <div class="hero-card slide-up text-center">
+            <div class="inline-flex items-center gap-2 px-5 py-2 mb-8 rounded-full" style="background:rgba(234,88,12,.08);border:1px solid rgba(234,88,12,.15);">
+                <span class="w-2 h-2 rounded-full" style="background:var(--naranja);"></span>
+                <span class="text-sm font-bold uppercase tracking-wider" style="color:var(--naranja);">Versión Premium 2026</span>
+            </div>
+            
+            <div class="logo-circle mx-auto mb-8 float-anim">
+                <i class="fa-solid fa-motorcycle"></i>
+            </div>
+            
+            <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(36px,6vw,64px);line-height:1.05;margin-bottom:1.5rem;letter-spacing:-1.5px;">
+                <span style="background:linear-gradient(135deg,var(--naranja-claro),var(--naranja),var(--naranja-oscuro));-webkit-background-clip:text;background-clip:text;color:transparent;">DELIVERY</span>
+                <span style="color:var(--texto);"> MOTO</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl mb-4 font-semibold" style="color:var(--texto-suave);max-width:600px;margin:0 auto;">
+                Conectamos tu ciudad. Comercios venden, clientes compran seguro,<br class="hidden md:block">
+                nuestros Servimotos reparten con GPS exacto.
+            </p>
+            
+            <div class="inline-flex items-center gap-2 px-4 py-2 mb-10 rounded-full" style="background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.15);">
+                <i class="fa-solid fa-shield-halved text-sm" style="color:var(--verde);"></i>
+                <span class="text-sm font-bold" style="color:var(--verde);">Auditoría IA de documentos certificada</span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-5 justify-center max-w-2xl mx-auto">
+                <button onclick="abrirPWA()" class="btn-primary px-8 py-5 text-lg cursor-pointer h-16 flex-1">
+                    <i class="fa-solid fa-store text-xl"></i> Ingresar al Marketplace
+                </button>
+                <button onclick="descargarAPK()" class="btn-dark px-8 py-5 text-lg cursor-pointer h-16 flex-1">
+                    <i class="fa-brands fa-android text-2xl" style="color:var(--verde-claro);"></i> Descargar APK Cadete
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CARACTERISTICAS -->
+    <section class="max-w-6xl mx-auto px-6 py-16">
+        <div class="text-center mb-14">
+            <p class="text-sm font-bold uppercase tracking-widest mb-3" style="color:var(--naranja);">Cómo Funciona</p>
+            <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(28px,4vw,42px);color:var(--texto);">Tres pasos. Infinitas entregas.</h2>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="feature-card slide-up" style="animation-delay:.1s">
+                <div class="feature-icon" style="background:linear-gradient(135deg,rgba(37,99,235,.12),rgba(37,99,235,.06));color:var(--azul);">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+                <h3 class="font-black text-xl mb-3" style="color:var(--texto);">1. Comercios Locales</h3>
+                <p class="font-medium" style="color:var(--texto-suave);line-height:1.7;">Creá tu tienda gratis. Subí portada, horarios, dirección y productos a la vitrina virtual premium.</p>
+            </div>
+            
+            <div class="feature-card slide-up" style="animation-delay:.2s">
+                <div class="feature-icon" style="background:linear-gradient(135deg,rgba(234,88,12,.12),rgba(234,88,12,.06));color:var(--naranja);">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+                <h3 class="font-black text-xl mb-3" style="color:var(--texto);">2. Clientes Felices</h3>
+                <p class="font-medium" style="color:var(--texto-suave);line-height:1.7;">Explorá catálogos, calculá envío por GPS y confirmá el pedido por WhatsApp de forma segura.</p>
+            </div>
+            
+            <div class="feature-card slide-up" style="animation-delay:.3s">
+                <div class="feature-icon" style="background:linear-gradient(135deg,rgba(22,163,74,.12),rgba(22,163,74,.06));color:var(--verde);">
+                    <i class="fa-solid fa-motorcycle"></i>
+                </div>
+                <h3 class="font-black text-xl mb-3" style="color:var(--texto);">3. Servimoto GPS</h3>
+                <p class="font-medium" style="color:var(--texto-suave);line-height:1.7;">Recibí alertas en el Radar. Usá tarifa diurna/nocturna. Comisión de $200 por viaje, liquidación los Lunes.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DOCUMENTOS REQUERIDOS SERVIMOTO -->
+    <section class="max-w-6xl mx-auto px-6 py-16">
+        <div class="text-center mb-14">
+            <p class="text-sm font-bold uppercase tracking-widest mb-3" style="color:var(--verde);">Auditoría IA</p>
+            <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(28px,4vw,42px);color:var(--texto);">6 Documentos Certificados</h2>
+            <p class="mt-4 font-medium" style="color:var(--texto-suave);">Todos validados por inteligencia artificial para máxima seguridad</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="feature-card text-center p-6">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center text-2xl" style="background:rgba(234,88,12,.1);color:var(--naranja);"><i class="fa-solid fa-camera"></i></div>
+                <h4 class="font-black mb-1">Selfie con DNI</h4>
+                <p class="text-xs font-bold" style="color:var(--texto-suave);">Verificación facial</p>
+            </div>
+            <div class="feature-card text-center p-6">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center text-2xl" style="background:rgba(37,99,235,.1);color:var(--azul);"><i class="fa-solid fa-id-card"></i></div>
+                <h4 class="font-black mb-1">DNI</h4>
+                <p class="text-xs font-bold" style="color:var(--texto-suave);">Documento nacional</p>
+            </div>
+            <div class="feature-card text-center p-6">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center text-2xl" style="background:rgba(22,163,74,.1);color:var(--verde);"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                <h4 class="font-black mb-1">Constancia AFIP</h4>
+                <p class="text-xs font-bold" style="color:var(--texto-suave);">Situación impositiva</p>
+            </div>
+            <div class="feature-card text-center p-6">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center text-2xl" style="background:rgba(139,92,246,.1);color:#7c3aed;"><i class="fa-solid fa-file-shield"></i></div>
+                <h4 class="font-black mb-1">Antecedentes</h4>
+                <p class="text-xs font-bold" style="color:var(--texto-suave);">Certificado Policial</p>
+            </div>
+            <div class="feature-card text-center p-6">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center text-2xl" style="background:rgba(236,72,153,.1);color:#db2777;"><i class="fa-solid fa-shield-heart"></i></div>
+                <h4 class="font-black mb-1">Seguro Moto</h4>
+                <p class="text-xs font-bold" style="color:var(--texto-suave);">Cobertura activa</p>
+            </div>
+            <div class="feature-card text-center p-6">
+                <div class="w-14 h-14 mx-auto mb-4 rounded-2xl flex items-center justify-center text-2xl" style="background:rgba(6,182,212,.1);color:#0891b2;"><i class="fa-solid fa-motorcycle"></i></div>
+                <h4 class="font-black mb-1">Patente</h4>
+                <p class="text-xs font-bold" style="color:var(--texto-suave);">Datos del vehículo</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROVINCIAS -->
+    <section class="max-w-6xl mx-auto px-6 py-16">
+        <div class="text-center mb-14">
+            <p class="text-sm font-bold uppercase tracking-widest mb-3" style="color:var(--azul);">Cobertura Nacional</p>
+            <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(28px,4vw,42px);color:var(--texto);">24 Provincias Argentinas</h2>
+            <p class="mt-4 font-medium" style="color:var(--texto-suave);">Registro completo con ciudades en todo el país</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            ${PROVINCIAS_AR.map(p => `
+                <div class="text-center px-3 py-4 rounded-2xl font-bold text-sm transition-all hover:scale-105" style="background:var(--blanco);border:1px solid var(--borde);box-shadow:var(--sombra-suave);color:var(--texto-suave);">
+                    ${p}
+                </div>
+            `).join('')}
+        </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="max-w-4xl mx-auto px-6 py-16">
+        <div class="hero-card text-center" style="background:linear-gradient(135deg,var(--naranja-claro),var(--naranja),var(--naranja-oscuro));">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center text-4xl" style="background:rgba(255,255,255,.2);color:white;">
+                <i class="fa-solid fa-rocket"></i>
+            </div>
+            <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(28px,4vw,40px);color:white;margin-bottom:1rem;">¿Listo para empezar?</h2>
+            <p class="text-lg mb-8 font-medium" style="color:rgba(255,255,255,.9);">Unite a la red de delivery más completa de Argentina</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="abrirPWA()" class="px-8 py-4 rounded-2xl font-black cursor-pointer transition-all hover:scale-105" style="background:white;color:var(--naranja);box-shadow:0 10px 30px rgba(0,0,0,.15);">
+                    <i class="fa-solid fa-play mr-2"></i> Abrir App Web
+                </button>
+                <button onclick="descargarAPK()" class="px-8 py-4 rounded-2xl font-black cursor-pointer transition-all hover:scale-105" style="background:var(--texto);color:white;border:2px solid rgba(255,255,255,.2);">
+                    <i class="fa-brands fa-android mr-2" style="color:var(--verde-claro);"></i> Descargar APK
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t mx-4 mb-4 rounded-t-3xl" style="background:var(--blanco);border-color:var(--borde);">
+        <div class="max-w-5xl mx-auto px-6 py-10 text-center">
+            <div class="flex items-center justify-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg" style="background:linear-gradient(135deg,#fb923c,#ea580c);">
+                    <i class="fa-solid fa-motorcycle text-white text-xl"></i>
+                </div>
+                <div class="font-black text-2xl" style="font-family:'Sora',sans-serif;color:var(--texto);">DELIVERY MOTO</div>
+            </div>
+            <p class="text-sm font-bold mb-2" style="color:var(--texto-suave);">Desarrollado por Energy Software</p>
+            <div class="text-xs font-bold uppercase tracking-widest" style="color:#94a3b8;">© 2026 • Argentina • APK + PWA • Versión Premium</div>
+        </div>
+    </footer>
+</div>
+
+<!-- ==================== VISTA APP PRINCIPAL ==================== -->
+<div id="vista-app" class="hidden" style="position:relative;width:100%;display:flex;align-items:flex-start;justify-content:center;z-index:99999;">
+    
+    <!-- SPLASH -->
+    <div id="splash-screen" style="position:absolute;inset:0;background:var(--fondo);z-index:999999;display:none;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:0;">
+        <div class="logo-circle mb-6 float-anim"><i class="fa-solid fa-motorcycle"></i></div>
+        <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:2.5rem;line-height:1;margin-bottom:.5rem;color:var(--texto);">DELIVERY MOTO</h1>
+        <p class="text-sm font-black uppercase tracking-widest mt-2" style="color:var(--naranja);">Conectando a Supabase...</p>
+    </div>
+
+    <div style="width:100%;max-width:448px;background:var(--fondo);position:relative;flex-direction:column;display:flex;min-height:100vh;box-shadow:0 0 60px rgba(0,0,0,.08);overflow-x:hidden;">
+        
+        <div id="toast-container"></div>
+
+        <!-- PANTALLA 1: INICIO -->
+        <div id="pantalla-1" class="pantalla activa flex-col h-full relative overflow-y-auto no-scrollbar bg-white">
+            <div class="header-gradient pb-12 pt-10 px-6 rounded-b-[3rem] shadow-2xl flex flex-col items-center justify-center z-10 shrink-0 overflow-hidden">
+                <div class="relative z-10 flex flex-col items-center w-full">
+                    <div class="logo-circle mb-5 mt-2 float-anim" style="width:100px;height:100px;font-size:40px;border:4px solid rgba(255,255,255,.3);"><i class="fa-solid fa-motorcycle"></i></div>
+                    <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:2rem;color:white;line-height:1;margin-bottom:.75rem;letter-spacing:-.5px;text-shadow:0 2px 10px rgba(0,0,0,.15);">DELIVERY MOTO</h1>
+                    <div class="bg-white/20 backdrop-blur-xl border border-white/30 rounded-2xl p-3 px-6 w-full max-w-[300px] shadow-lg">
+                        <h2 class="font-bold text-sm text-white text-center tracking-wide uppercase">Marketplace + Radar GPS</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex-1 px-6 pt-8 pb-12 flex flex-col justify-center space-y-5">
+                <h4 class="text-center font-black uppercase tracking-widest text-xs mb-2" style="color:var(--texto-suave);">Seleccioná tu perfil</h4>
+                
+                <button onclick="irAMarketplace()" class="w-full bg-white border-2 rounded-2xl p-5 flex items-center justify-center gap-4 shadow-sm hover:shadow-md active:scale-95 transition-all group" style="border-color:rgba(234,88,12,.2);">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl group-hover:text-white transition-colors" style="background:rgba(234,88,12,.08);color:var(--naranja);"><i class="fa-solid fa-bag-shopping"></i></div>
+                    <span class="font-black text-lg" style="color:var(--texto);">QUIERO COMPRAR</span>
+                </button>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="irARegistroComercio()" class="bg-white border-2 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all" style="border-color:var(--borde);">
+                        <i class="fa-solid fa-store text-2xl mb-1" style="color:var(--azul);"></i>
+                        <span class="font-black text-sm text-center leading-tight" style="color:var(--texto);">Crear<br>Comercio</span>
+                    </button>
+                    <button onclick="irALoginComercio()" class="bg-white border-2 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 shadow-sm active:scale-95 transition-all" style="border-color:var(--borde);">
+                        <i class="fa-solid fa-right-to-bracket text-2xl mb-1" style="color:var(--texto-suave);"></i>
+                        <span class="font-black text-sm text-center leading-tight" style="color:var(--texto);">Ingreso<br>Comercio</span>
+                    </button>
+                </div>
+
+                <div class="relative py-4 flex items-center justify-center">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full" style="border-top:1px solid var(--borde);"></div></div>
+                    <span class="relative bg-white px-4 text-xs font-bold uppercase tracking-widest" style="color:var(--texto-suave);">Zona Servimoto</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="irARegistroServimoto()" class="rounded-2xl p-4 flex flex-col items-center justify-center gap-2 shadow-lg active:scale-95 transition-all" style="background:var(--texto);color:white;">
+                        <i class="fa-solid fa-motorcycle text-2xl mb-1" style="color:var(--verde-claro);"></i>
+                        <span class="font-black text-sm text-center leading-tight">Alta<br>Cadete</span>
+                    </button>
+                    <button onclick="irALoginServimoto()" class="btn-green rounded-2xl p-4 flex flex-col items-center justify-center gap-2 active:scale-95 transition-all">
+                        <i class="fa-solid fa-satellite-dish text-2xl mb-1 text-white"></i>
+                        <span class="font-black text-sm text-center text-white leading-tight">Radar<br>GPS</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- REGISTRO COMERCIO -->
+        <div id="pantalla-registro-comercio" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar" style="background:var(--fondo);">
+            <div class="bg-white pt-10 pb-5 px-6 relative shrink-0 z-20 shadow-sm rounded-b-3xl">
+                <div class="flex items-center gap-4">
+                    <button onclick="cambiarPantalla('pantalla-1')" class="w-12 h-12 rounded-full flex items-center justify-center transition-colors" style="background:#f8fafc;color:var(--texto);"><i class="fa-solid fa-arrow-left text-xl"></i></button>
+                    <h2 class="text-2xl font-black leading-none" style="color:var(--texto);">Nuevo Comercio</h2>
+                </div>
+            </div>
+            
+            <div class="flex-1 p-6 pb-12 space-y-6">
+                <div class="p-5 rounded-2xl flex gap-4" style="background:rgba(234,88,12,.06);border:1px solid rgba(234,88,12,.15);">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0" style="background:var(--naranja);color:white;"><i class="fa-solid fa-store"></i></div>
+                    <div>
+                        <h3 class="font-black mb-1" style="color:var(--naranja-oscuro);">Creá tu tienda online</h3>
+                        <p class="text-sm font-semibold leading-snug" style="color:var(--naranja);">Cargá tus datos. Tus clientes verán tu perfil en el Marketplace.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-3xl space-y-5" style="border:1px solid var(--borde);box-shadow:var(--sombra-suave);">
+                    <div>
+                        <label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">Foto de Portada</label>
+                        <div class="upload-zone rounded-2xl border-2" id="upload-portada-comercio" onclick="document.getElementById('file-portada-comercio').click()">
+                            <input type="file" id="file-portada-comercio" accept="image/*" class="hidden" onchange="previewPortadaComercio(event)">
+                            <div id="preview-portada-container" class="py-2">
+                                <div class="w-14 h-14 mx-auto mb-2 rounded-full flex items-center justify-center text-xl" style="background:rgba(234,88,12,.08);color:var(--naranja);"><i class="fa-solid fa-image"></i></div>
+                                <p class="font-black text-sm" style="color:var(--texto-suave);">Subir Portada (16:9)</p>
+                            </div>
+                            <img id="img-portada-preview" class="hidden portada-preview" style="width:100%;height:160px;object-fit:cover;border-radius:1.5rem;">
+                        </div>
+                    </div>
+                    <div><label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">Nombre del Local</label><input type="text" id="reg-nombre" placeholder="Ej: Pizzería Don Carlos" class="input-premium"></div>
+                    <div><label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">Horario de Atención</label><input type="text" id="reg-horario" placeholder="Ej: Lun a Sáb 20:00 a 00:00" class="input-premium"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">Provincia</label><select id="reg-provincia" class="input-premium appearance-none bg-white"><option value="">Elegir...</option></select></div>
+                        <div><label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">Ciudad</label><input type="text" id="reg-ciudad" placeholder="Ej: Famaillá" class="input-premium"></div>
+                    </div>
+                    <div><label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">Dirección Exacta</label><input type="text" id="reg-direccion" placeholder="Calle y número" class="input-premium"></div>
+                    <div><label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">WhatsApp</label><input type="tel" id="reg-whatsapp" placeholder="Ej: 5493815551234" class="input-premium"></div>
+                    <div><label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">Contraseña</label><input type="password" id="reg-password" placeholder="Mínimo 4 caracteres" class="input-premium"></div>
+                    <button onclick="registrarComercio()" class="btn-primary w-full py-5 text-lg mt-2 shadow-xl"><i class="fa-solid fa-check"></i> Finalizar Registro</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOGIN COMERCIO -->
+        <div id="pantalla-login-comercio" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar" style="background:var(--fondo);">
+            <div class="bg-white pt-10 pb-5 px-6 relative shrink-0 z-20 shadow-sm rounded-b-3xl">
+                <div class="flex items-center gap-4">
+                    <button onclick="cambiarPantalla('pantalla-1')" class="w-12 h-12 rounded-full flex items-center justify-center" style="background:#f8fafc;color:var(--texto);"><i class="fa-solid fa-arrow-left text-xl"></i></button>
+                    <h2 class="text-2xl font-black leading-none" style="color:var(--texto);">Ingreso Comercio</h2>
+                </div>
+            </div>
+            <div class="flex-1 p-6 pb-12 flex flex-col justify-center space-y-6">
+                <div class="text-center mb-2">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-3xl flex items-center justify-center text-white text-4xl shadow-xl" style="background:linear-gradient(135deg,#fb923c,#ea580c);"><i class="fa-solid fa-store"></i></div>
+                    <h3 class="font-black text-2xl" style="color:var(--texto);">Panel de Gestión</h3>
+                    <p class="mt-2 font-medium" style="color:var(--texto-suave);">Ingresá para administrar tu catálogo</p>
+                </div>
+                <div class="bg-white p-7 rounded-3xl space-y-5" style="border:1px solid var(--borde);box-shadow:var(--sombra-suave);">
+                    <div><label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">WhatsApp Registrado</label><input type="tel" id="login-whatsapp" placeholder="Ej: 5493815551111" class="input-premium"></div>
+                    <div><label class="block text-xs font-black uppercase tracking-widest mb-2 ml-1" style="color:var(--texto-suave);">Contraseña</label><input type="password" id="login-password" placeholder="••••••••" class="input-premium"></div>
+                    <button onclick="loginComercio()" class="btn-primary w-full py-5 text-lg mt-2 shadow-xl"><i class="fa-solid fa-right-to-bracket"></i> Ingresar al Panel</button>
+                </div>
+                <div class="text-center"><button onclick="cambiarPantalla('pantalla-registro-comercio')" class="font-black underline" style="color:var(--naranja);">¿No tenés cuenta? Registrate gratis</button></div>
+                <div class="p-4 rounded-2xl text-center text-sm font-bold" style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.15);color:var(--azul);">Demo: WhatsApp <strong>5493815110171</strong> / Clave <strong>1234</strong></div>
+            </div>
+        </div>
+
+        <!-- PANEL ADMIN COMERCIO -->
+        <div id="pantalla-admin-comercio" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar" style="background:var(--fondo);">
+            <div class="bg-white pt-10 pb-5 px-6 relative shrink-0 z-20 shadow-sm rounded-b-3xl flex justify-between items-center">
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-2xl font-black leading-none truncate" id="admin-nombre-comercio" style="color:var(--texto);">Mi Comercio</h2>
+                    <p class="text-xs uppercase tracking-widest font-black mt-2 truncate" style="color:var(--naranja);" id="admin-ubicacion">--</p>
+                </div>
+                <button onclick="logoutComercio()" class="w-12 h-12 rounded-full flex items-center justify-center ml-4 shrink-0 transition-colors" style="background:rgba(220,38,38,.08);color:#dc2626;"><i class="fa-solid fa-right-from-bracket text-xl"></i></button>
+            </div>
+            
+            <div class="flex-1 p-6 pb-12 space-y-6">
+                <div class="bg-white rounded-3xl overflow-hidden" style="border:1px solid var(--borde);box-shadow:var(--sombra-suave);">
+                    <img id="admin-portada-img" src="" class="w-full h-32 object-cover bg-slate-200" onerror="this.style.display='none'" style="display:none;">
+                    <div class="p-6 relative">
+                        <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-white text-3xl shadow-xl absolute -top-10 left-6 border-4 border-white" style="background:linear-gradient(135deg,#fb923c,#ea580c);"><i class="fa-solid fa-store"></i></div>
+                        <div class="mt-10">
+                            <h3 class="font-black text-xl leading-tight truncate mb-1" id="info-local-nombre" style="color:var(--texto);">--</h3>
+                            <span class="badge-seguridad badge-verde"><i class="fa-solid fa-circle-check"></i> Activo en Marketplace</span>
+                        </div>
+                        <div class="space-y-3 mt-5 text-sm font-semibold p-4 rounded-xl" style="background:#f8fafc;color:var(--texto-suave);border:1px solid var(--borde);">
+                            <p class="flex items-start gap-3"><i class="fa-solid fa-location-dot mt-1 shrink-0" style="color:var(--naranja);"></i> <span id="info-local-direccion" class="leading-snug">--</span></p>
+                            <p class="flex items-center gap-3"><i class="fa-solid fa-clock shrink-0" style="color:var(--azul);"></i> <span id="info-local-horario">--</span></p>
+                            <p class="flex items-center gap-3"><i class="fa-brands fa-whatsapp shrink-0" style="color:var(--verde);"></i> <span id="info-local-wa">--</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex bg-white rounded-2xl p-1.5" style="border:1px solid var(--borde);box-shadow:var(--sombra-suave);">
+                    <button onclick="switchTabComercio('productos')" id="tab-productos" class="tab-btn active flex-1 py-3">Mi Catálogo</button>
+                    <button onclick="switchTabComercio('pedidos')" id="tab-pedidos" class="tab-btn flex-1 py-3">Bandeja Pedidos</button>
+                </div>
+
+                <div id="seccion-productos" class="space-y-6">
+                    <div class="bg-white p-6 rounded-3xl" style="border:1px solid var(--borde);box-shadow:var(--sombra-suave);border-top:4px solid var(--naranja);">
+                        <h3 class="font-black mb-5 flex items-center gap-2" style="color:var(--texto);"><i class="fa-solid fa-plus-circle" style="color:var(--naranja);"></i> Agregar Producto</h3>
+                        <div class="upload-zone mb-5 rounded-2xl border-2" id="upload-zone" onclick="document.getElementById('file-foto-producto').click()">
+                            <input type="file" id="file-foto-producto" accept="image/*" class="hidden" onchange="previewFotoProducto(event)">
+                            <div id="upload-preview-container" class="py-4">
+                                <div class="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center text-2xl" style="background:rgba(234,88,12,.08);color:var(--naranja);"><i class="fa-solid fa-camera"></i></div>
+                                <p class="font-black" style="color:var(--texto-suave);">Toca para subir foto</p>
+                            </div>
+                            <img id="preview-foto" class="hidden w-full max-h-56 object-contain rounded-xl mx-auto">
+                        </div>
+                        <div class="space-y-4">
+                            <input type="text" id="add-prod-nombre" placeholder="Nombre del producto" class="input-premium">
+                            <select id="add-prod-categoria" class="input-premium appearance-none bg-white">
+                                <option value="">Seleccionar categoría...</option>
+                                <option value="bebida">Bebida</option>
+                                <option value="golosina">Golosina</option>
+                                <option value="cigarrillo">Cigarrillo</option>
+                                <option value="lacteo">Lácteo</option>
+                                <option value="almacen">Almacén</option>
+                                <option value="limpieza">Limpieza</option>
+                                <option value="carniceria">Carnicería</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                            <div class="relative"><span class="absolute left-5 top-1/2 -translate-y-1/2 font-black text-lg" style="color:var(--texto-suave);">$</span><input type="number" id="add-prod-precio" placeholder="Precio final" class="input-premium pl-10"></div>
+                            <textarea id="add-prod-desc" placeholder="Breve descripción (opcional)..." class="input-premium" rows="2" style="resize:none;"></textarea>
+                            <button onclick="cargarProductoComercio()" class="btn-primary w-full py-4 shadow-lg mt-2"><i class="fa-solid fa-upload"></i> Publicar en el Catálogo</button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-4 px-1">
+                            <h3 class="font-black" style="color:var(--texto);">Mis Productos</h3>
+                            <span class="text-xs font-black px-3 py-1 rounded-full" id="contador-productos" style="background:rgba(234,88,12,.1);color:var(--naranja);">0 artículos</span>
+                        </div>
+                        <div id="lista-productos-comercio" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <div id="seccion-pedidos" class="hidden space-y-4">
+                    <div class="bg-white p-6 rounded-3xl" style="
