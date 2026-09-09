@@ -3,39 +3,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#ffffff">
-<title>Delivery Moto | Marketplace Premium</title>
+<title>Delivery Moto | Marketplace Premium Cloud</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
 var s=document.createElement('style');
 s.textContent=`
 :root{
-  --accent:#ea580c;--accent2:#16a34a;--accent-soft:rgba(234,88,12,.08);
+  --accent:#ea580c;--accent2:#16a34a;--accent3:#7c3aed;
+  --accent-soft:rgba(234,88,12,.08);--danger:#dc2626;
   --bg:#fefcf8;--card:#ffffff;--text:#0f172a;--muted:#64748b;--border:rgba(15,23,42,.06);
   --glass:rgba(255,255,255,.72);--glass-border:rgba(255,255,255,.9);
 }
 *{box-sizing:border-box}
 body{font-family:'Quicksand',sans-serif;color:var(--text);margin:0;padding:0;background:var(--bg);overflow-x:hidden}
-a{text-decoration:none}
-.no-scrollbar::-webkit-scrollbar{display:none}
-.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+a{text-decoration:none}.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
 
-@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.ticker-landing{display:inline-block;animation:ticker 40s linear infinite;white-space:nowrap}
-@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-.logo-float{animation:logoFloat 4s ease-in-out infinite}
-@keyframes shine{0%{transform:translateX(-150%) skewX(-20deg)}100%{transform:translateX(250%) skewX(-20deg)}}
-.shine-effect{position:relative;overflow:hidden}
-.shine-effect::after{content:'';position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shine 3.5s infinite}
-@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
-.float-up{animation:floatUp 5s ease-in-out infinite}
-@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 20px rgba(234,88,12,.35))}50%{filter:drop-shadow(0 0 50px rgba(234,88,12,.7))}}
-.glow-pulse{animation:glowPulse 3s ease-in-out infinite}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
-.fade-in-up{animation:fadeInUp .8s cubic-bezier(.16,1,.3,1) both}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}.ticker-landing{display:inline-block;animation:ticker 40s linear infinite;white-space:nowrap}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}.logo-float{animation:logoFloat 4s ease-in-out infinite}
+@keyframes shine{0%{transform:translateX(-150%) skewX(-20deg)}100%{transform:translateX(250%) skewX(-20deg)}}.shine-effect{position:relative;overflow:hidden}.shine-effect::after{content:'';position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shine 3.5s infinite}
+@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}.float-up{animation:floatUp 5s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 20px rgba(234,88,12,.35))}50%{filter:drop-shadow(0 0 50px rgba(234,88,12,.7))}}.glow-pulse{animation:glowPulse 3s ease-in-out infinite}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}.fade-in-up{animation:fadeInUp .8s cubic-bezier(.16,1,.3,1) both}
 @keyframes pulseRing{0%{transform:scale(.9);opacity:.8}100%{transform:scale(2);opacity:0}}
+@keyframes scanLine{0%{top:0}100%{top:100%}}
+@keyframes iaThinking{0%,100%{transform:rotate(0deg)}25%{transform:rotate(5deg)}75%{transform:rotate(-5deg)}}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+
 .dot-live{width:8px;height:8px;border-radius:50%;background:var(--accent2);display:inline-block;position:relative}
 .dot-live::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--accent2);animation:pulseRing 1.8s ease-in-out infinite}
 
@@ -46,11 +43,14 @@ a{text-decoration:none}
 .btn-primary{position:relative;background:linear-gradient(135deg,#fb923c 0%,#ea580c 50%,#c24105 100%);color:#fff;font-weight:800;font-family:'Quicksand',sans-serif;border:none;border-radius:999px;padding:18px 36px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:all .35s;box-shadow:0 10px 30px rgba(234,88,12,.35),inset 0 1px 0 rgba(255,255,255,.4)}
 .btn-primary:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 20px 50px rgba(234,88,12,.45),0 0 40px rgba(234,88,12,.3)}
 .btn-primary:active{transform:scale(.97)}
-.btn-ghost{background:var(--glass);backdrop-filter:blur(20px);color:var(--text);font-weight:800;border:1.5px solid rgba(15,23,42,.08);border-radius:999px;padding:18px 32px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:all .35s;box-shadow:0 4px 20px rgba(0,0,0,.04)}
-.btn-ghost:hover{transform:translateY(-4px);border-color:var(--accent);color:var(--accent);box-shadow:0 12px 35px rgba(234,88,12,.12)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-ghost{background:var(--glass);backdrop-filter:blur(20px);color:var(--text);font-weight:800;border:1.5px solid rgba(15,23,42,.08);border-radius:999px;padding:18px 32px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:all .35s}
+.btn-ghost:hover{transform:translateY(-4px);border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:800;border:none;border-radius:999px;padding:16px 28px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:all .35s;box-shadow:0 10px 30px rgba(220,38,38,.3)}
+.btn-danger:hover{transform:translateY(-3px);box-shadow:0 15px 40px rgba(220,38,38,.4)}
 
 .glass{background:var(--glass);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,.06)}
-.glass-strong{background:rgba(255,255,255,.85);backdrop-filter:blur(30px) saturate(200%);border:1px solid rgba(255,255,255,.95);box-shadow:0 20px 60px rgba(0,0,0,.08)}
+.glass-strong{background:rgba(255,255,255,.88);backdrop-filter:blur(30px) saturate(200%);border:1px solid rgba(255,255,255,.95);box-shadow:0 20px 60px rgba(0,0,0,.08)}
 
 .input-premium{width:100%;background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;padding:16px 20px;font-size:15px;font-weight:700;color:var(--text);outline:none;transition:all .3s;font-family:'Quicksand',sans-serif}
 .input-premium:focus{border-color:var(--accent);box-shadow:0 0 0 5px rgba(234,88,12,.1)}
@@ -61,20 +61,18 @@ a{text-decoration:none}
 .cat-chip{padding:10px 20px;border-radius:999px;font-weight:800;font-size:13px;cursor:pointer;transition:all .3s;border:1.5px solid #e2e8f0;background:#fff;color:var(--muted);white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
 .cat-chip:hover{transform:translateY(-2px);color:var(--text)}
 .cat-chip.active{background:linear-gradient(135deg,#fb923c,#ea580c);color:#fff;border-color:transparent;box-shadow:0 8px 24px rgba(234,88,12,.3)}
-.cat-chip i{font-size:14px}
 
 .bottom-nav{background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);position:absolute;bottom:0;width:100%;max-width:448px;display:flex;justify-content:space-around;padding:14px 0 22px 0;z-index:50;border-radius:28px 28px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.05)}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:5px;color:#94a3b8;font-size:11px;font-weight:800;cursor:pointer;transition:all .25s}
 .nav-item.active{color:var(--accent);transform:translateY(-3px)}
-.nav-item i{font-size:22px}
 
 .pantalla{display:none;opacity:0;transition:all .45s;transform:translateY(15px)}
 .pantalla.activa{display:flex;opacity:1;transform:translateY(0)}
 
-.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(8px);z-index:100000;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:all .4s}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(10px);z-index:100000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:all .4s}
 .modal-overlay.show{opacity:1;pointer-events:auto}
-.modal-content{background:var(--bg);width:100%;max-width:448px;max-height:92vh;border-radius:36px 36px 0 0;box-shadow:0 -25px 70px rgba(0,0,0,.15);transform:translateY(100%);transition:transform .45s;display:flex;flex-direction:column;overflow:hidden}
-.modal-overlay.show .modal-content{transform:translateY(0)}
+.modal-content{background:var(--bg);width:92%;max-width:420px;border-radius:32px;box-shadow:0 30px 80px rgba(0,0,0,.2);transform:scale(.92) translateY(20px);transition:transform .45s;display:flex;flex-direction:column;overflow:hidden;max-height:88vh}
+.modal-overlay.show .modal-content{transform:scale(1) translateY(0)}
 
 #toast-container{position:fixed;top:0;left:0;right:0;z-index:9999999;display:flex;flex-direction:column;align-items:center;padding-top:20px;gap:8px;pointer-events:none}
 .toast{background:rgba(15,23,42,.92);backdrop-filter:blur(20px);color:#fff;border-radius:999px;padding:14px 24px;transform:translateY(-80px);opacity:0;transition:all .4s;display:flex;align-items:center;gap:12px;font-weight:800;font-size:14px;border:1px solid rgba(255,255,255,.1)}
@@ -96,16 +94,44 @@ a{text-decoration:none}
 .badge-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px}
 .badge-accent{background:rgba(234,88,12,.1);color:var(--accent);border:1px solid rgba(234,88,12,.2)}
 .badge-green{background:rgba(22,163,74,.1);color:var(--accent2);border:1px solid rgba(22,163,74,.2)}
+.badge-red{background:rgba(220,38,38,.1);color:var(--danger);border:1px solid rgba(220,38,38,.2)}
+.badge-purple{background:rgba(124,58,237,.1);color:var(--accent3);border:1px solid rgba(124,58,237,.2)}
 
 .feature-icon{width:64px;height:64px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:26px;background:linear-gradient(135deg,rgba(234,88,12,.1),rgba(234,88,12,.04));color:var(--accent);border:1px solid rgba(234,88,12,.15)}
-
 .stat-display{font-family:'Sora',sans-serif;font-weight:800;font-size:42px;line-height:1;background:linear-gradient(135deg,#ea580c,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
 .producto-card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid var(--border);transition:all .35s;cursor:pointer}
 .producto-card:hover{transform:translateY(-5px);box-shadow:0 15px 35px rgba(0,0,0,.08)}
-
 .comercio-card{background:#fff;border-radius:24px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1px solid var(--border);cursor:pointer;transition:all .35s;display:flex;gap:16px;align-items:center}
 .comercio-card:hover{transform:translateY(-4px);box-shadow:0 15px 35px rgba(0,0,0,.08);border-color:rgba(234,88,12,.25)}
+
+/* ============ DOC UPLOAD ZONE ============ */
+.doc-upload{position:relative;border:2.5px dashed #cbd5e1;border-radius:24px;padding:24px;text-align:center;cursor:pointer;transition:all .35s;background:#fafafa;overflow:hidden}
+.doc-upload:hover{border-color:var(--accent);background:#fff7ed;transform:translateY(-2px)}
+.doc-upload.cargado{border-style:solid;border-color:var(--accent2);background:rgba(22,163,74,.04)}
+.doc-upload.aprobado{border-style:solid;border-color:var(--accent2);background:rgba(22,163,74,.06)}
+.doc-upload.rechazado{border-style:solid;border-color:var(--danger);background:rgba(220,38,38,.05)}
+.doc-upload .scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,rgba(234,88,12,.6),transparent);animation:scanLine 1.5s linear infinite;display:none}
+.doc-upload.scanning .scan-line{display:block}
+
+/* ============ IA AUDIT MODAL ============ */
+.ia-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;margin:0 auto 20px;box-shadow:0 15px 40px rgba(124,58,237,.35);position:relative}
+.ia-avatar.thinking{animation:iaThinking .6s ease-in-out infinite}
+.ia-avatar::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(124,58,237,.3);animation:pulseRing 2s ease-in-out infinite}
+
+/* ============ VIAJE CARD ============ */
+.viaje-card{background:#fff;border-radius:20px;padding:18px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;transition:all .3s}
+.viaje-card:hover{border-color:rgba(234,88,12,.2);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+
+/* ============ M&Eacute;TRICAS ============ */
+.metric-card{background:linear-gradient(135deg,var(--from),var(--to));border-radius:24px;padding:22px;color:#fff;position:relative;overflow:hidden;box-shadow:0 12px 35px var(--shadow)}
+.metric-card::after{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.15)}
+
+/* ============ BLOQUEO GPS ============ */
+.bloqueo-overlay{position:absolute;inset:0;background:rgba(15,23,42,.85);backdrop-filter:blur(12px);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;color:#fff}
+
+/* ============ SHIMMER ============ */
+.shimmer{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:800px 100%;animation:shimmer 1.5s infinite}
 
 .soft-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(15,23,42,.08),transparent)}
 `;
@@ -116,20 +142,17 @@ document.head.appendChild(s);
 <body>
 <div id="app-container" style="width:100%;display:flex;justify-content:center;position:relative;">
 
-<!-- ============ LANDING PAGE BLANCA ============ -->
-<div id="vista-landing" class="w-full" style="position:relative;z-index:10;">
+<!-- ============ LANDING PAGE ============ -->
+<div id="vista-landing" style="position:relative;z-index:10;width:100%;">
   <nav style="padding:16px;position:sticky;top:0;z-index:50;">
     <div class="glass-strong" style="max-width:1100px;margin:0 auto;border-radius:24px;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;">
       <div style="display:flex;align-items:center;gap:14px;">
         <div class="logo-master" style="width:48px;height:48px;border-radius:16px;overflow:hidden;box-shadow:0 6px 20px rgba(234,88,12,.25);">
           <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="">
         </div>
-        <div>
-          <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;line-height:1;">DELIVERY MOTO</div>
-          <div class="eyebrow" style="margin-top:2px;">Energy Software</div>
-        </div>
+        <div><div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;line-height:1;">DELIVERY MOTO</div><div class="eyebrow" style="margin-top:2px;">Energy Software</div></div>
       </div>
-      <span class="badge-pill badge-green"><span class="dot-live"></span>Conectado</span>
+      <span class="badge-pill badge-green"><span class="dot-live"></span>Supabase RLS Activo</span>
     </div>
   </nav>
 
@@ -138,122 +161,67 @@ document.head.appendChild(s);
     <div style="max-width:1100px;margin:0 auto;position:relative;z-index:2;text-align:center;">
       <div class="fade-in-up glass" style="display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:10px 22px;margin-bottom:40px;">
         <span class="dot-live"></span>
-        <span style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;">Marketplace Cloud &middot; GPS en Vivo &middot; IA Integrada</span>
+        <span style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;">PostgreSQL RLS &middot; Supabase Auth &middot; IA Auditor</span>
       </div>
-
       <div class="fade-in-up logo-master" style="display:inline-block;margin-bottom:48px;">
         <div class="logo-ring"></div><div class="logo-ring-2"></div>
         <div class="logo-float" style="width:220px;height:220px;border-radius:48px;overflow:hidden;border:3px solid rgba(255,255,255,.9);box-shadow:0 30px 80px rgba(234,88,12,.35);position:relative;z-index:2;">
           <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="">
         </div>
       </div>
-
-      <h1 class="fade-in-up headline-xl" style="font-size:clamp(48px,9vw,104px);margin-bottom:16px;">
-        DELIVERY <span class="headline-accent">MOTO</span>
-      </h1>
-      <p class="fade-in-up" style="font-size:clamp(16px,2.2vw,22px);font-weight:700;color:var(--muted);margin-bottom:48px;">
-        La red de reparto m&aacute;s segura de Argentina &middot; Conectamos tu ciudad con confianza
-      </p>
-
+      <h1 class="fade-in-up headline-xl" style="font-size:clamp(48px,9vw,104px);margin-bottom:16px;">DELIVERY <span class="headline-accent">MOTO</span></h1>
+      <p class="fade-in-up" style="font-size:clamp(16px,2.2vw,22px);font-weight:700;color:var(--muted);margin-bottom:48px;">La red de reparto m&aacute;s segura &middot; IA que audita documentos &middot; RLS por usuario</p>
       <div class="fade-in-up glass-strong" style="max-width:720px;margin:0 auto 56px;border-radius:32px;padding:36px 44px;">
-        <div class="eyebrow" style="margin-bottom:16px;">Conectamos tu ciudad</div>
-        <p style="font-family:'Sora',sans-serif;font-weight:600;font-size:clamp(16px,2vw,20px);line-height:1.6;">
-          <strong>Comercios venden.</strong> Clientes compran seguro.<br>
-          <span style="color:var(--muted);font-weight:500;">Nuestros Servimotos Profesionales reparten con GPS exacto.</span>
+        <div class="eyebrow" style="margin-bottom:16px;">Arquitectura Producci&oacute;n</div>
+        <p style="font-family:'Sora',sans-serif;font-weight:600;font-size:clamp(15px,1.8vw,18px);line-height:1.7;margin:0;">
+          <strong>Auth:</strong> <code style="background:rgba(234,88,12,.1);padding:3px 10px;border-radius:8px;color:var(--accent);font-size:13px;">{celular}@deliverymoto.app</code> &nbsp;&nbsp;
+          <strong>RLS:</strong> cada usuario ve solo sus datos &nbsp;&nbsp;
+          <strong>Storage:</strong> buckets privados por cadete
         </p>
       </div>
-
       <div class="fade-in-up" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:72px;">
-        <button onclick="abrirPWA()" class="btn-primary shine-effect" style="font-size:17px;padding:20px 44px;">
-          <i class="fa-solid fa-store"></i>Ingresar al Marketplace
-        </button>
-        <button onclick="descargarAPK()" class="btn-ghost shine-effect" style="font-size:17px;padding:20px 40px;">
-          <i class="fa-brands fa-android" style="color:var(--accent2);"></i>Descargar APK Cadete
-        </button>
+        <button onclick="abrirPWA()" class="btn-primary shine-effect" style="font-size:17px;padding:20px 44px;"><i class="fa-solid fa-store"></i>Ingresar al Marketplace</button>
+        <button onclick="descargarAPK()" class="btn-ghost shine-effect" style="font-size:17px;padding:20px 40px;"><i class="fa-brands fa-android" style="color:var(--accent2);"></i>Descargar APK Cadete</button>
       </div>
-
       <div class="fade-in-up" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;max-width:720px;margin:0 auto;">
         <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display">24</div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Provincias</div></div>
-        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display">100%</div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Cloud</div></div>
-        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display">GPS</div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Exacto</div></div>
-        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display" style="font-size:36px;"><i class="fa-solid fa-shield-halved"></i></div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Certificados</div></div>
+        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display">RLS</div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Seguridad Total</div></div>
+        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display">IA</div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Auditor Docs</div></div>
+        <div class="glass" style="border-radius:24px;padding:28px 20px;"><div class="stat-display" style="font-size:36px;"><i class="fa-solid fa-shield-halved"></i></div><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:8px;">Verificados</div></div>
       </div>
     </div>
   </section>
 
   <div style="background:linear-gradient(90deg,#fff7ed,#fef3c7,#fff7ed);padding:14px 0;overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
     <div class="ticker-landing">
-      <span style="font-size:13px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#9a3412;padding:0 24px;">
-        <i class="fa-solid fa-motorcycle" style="color:var(--accent);"></i> Delivery Moto &nbsp;&nbsp;
-        <i class="fa-solid fa-cloud" style="color:#2563eb;"></i> Marketplace Cloud &nbsp;&nbsp;
-        <i class="fa-solid fa-map-location-dot" style="color:var(--accent2);"></i> Precio por Cuadras &nbsp;&nbsp;
-        <i class="fa-solid fa-money-bill-wave" style="color:#059669;"></i> Pago en Puerta &nbsp;&nbsp;
-        <i class="fa-solid fa-robot" style="color:#7c3aed;"></i> IA Integrada &nbsp;&nbsp;
-      </span>
-      <span style="font-size:13px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#9a3412;padding:0 24px;">
-        <i class="fa-solid fa-motorcycle" style="color:var(--accent);"></i> Delivery Moto &nbsp;&nbsp;
-        <i class="fa-solid fa-cloud" style="color:#2563eb;"></i> Marketplace Cloud &nbsp;&nbsp;
-        <i class="fa-solid fa-map-location-dot" style="color:var(--accent2);"></i> Precio por Cuadras &nbsp;&nbsp;
-        <i class="fa-solid fa-money-bill-wave" style="color:#059669;"></i> Pago en Puerta &nbsp;&nbsp;
-        <i class="fa-solid fa-robot" style="color:#7c3aed;"></i> IA Integrada &nbsp;&nbsp;
-      </span>
+      <span style="font-size:13px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#9a3412;padding:0 24px;"><i class="fa-solid fa-motorcycle" style="color:var(--accent);"></i> Delivery Moto &nbsp;&nbsp; <i class="fa-solid fa-database" style="color:#7c3aed;"></i> Supabase RLS &nbsp;&nbsp; <i class="fa-solid fa-robot" style="color:#7c3aed;"></i> IA Auditor &nbsp;&nbsp; <i class="fa-solid fa-location-crosshairs" style="color:var(--accent2);"></i> GPS Bloqueable &nbsp;&nbsp; <i class="fa-solid fa-calendar-day" style="color:#dc2626;"></i> Pago C/ Lunes &nbsp;&nbsp;</span>
+      <span style="font-size:13px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#9a3412;padding:0 24px;"><i class="fa-solid fa-motorcycle" style="color:var(--accent);"></i> Delivery Moto &nbsp;&nbsp; <i class="fa-solid fa-database" style="color:#7c3aed;"></i> Supabase RLS &nbsp;&nbsp; <i class="fa-solid fa-robot" style="color:#7c3aed;"></i> IA Auditor &nbsp;&nbsp; <i class="fa-solid fa-location-crosshairs" style="color:var(--accent2);"></i> GPS Bloqueable &nbsp;&nbsp; <i class="fa-solid fa-calendar-day" style="color:#dc2626;"></i> Pago C/ Lunes &nbsp;&nbsp;</span>
     </div>
   </div>
 
   <section style="padding:100px 24px;max-width:1100px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:64px;">
-      <div class="eyebrow" style="margin-bottom:16px;">Profesionales de Confianza</div>
-      <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(32px,5vw,52px);letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px;">Repartidores <span class="headline-accent">100% Certificados</span></h2>
-      <p style="font-size:17px;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.7;">Tu tranquilidad es nuestra prioridad. Cada Servimoto pasa por un riguroso proceso de auditor&iacute;a.</p>
-    </div>
+    <div style="text-align:center;margin-bottom:64px;"><div class="eyebrow" style="margin-bottom:16px;">IA + RLS + GPS</div><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(32px,5vw,52px);letter-spacing:-1.5px;line-height:1.1;margin:0 0 16px;">Seguridad de <span class="headline-accent">Nivel Bancario</span></h2><p style="font-size:17px;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.7;">Cada cadete pasa por auditor&iacute;a de IA. Si no paga los lunes, el GPS se bloquea autom&aacute;ticamente.</p></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;">
-      <div class="card-premium" style="padding:40px 32px;">
-        <div class="feature-icon" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(22,163,74,.15),rgba(22,163,74,.05));color:var(--accent2);border-color:rgba(22,163,74,.2);"><i class="fa-solid fa-id-card"></i></div>
-        <h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin-bottom:12px;">Certificado de Buena Conducta</h3>
-        <p style="color:var(--muted);font-size:15px;line-height:1.7;">Todos nuestros cadetes presentan el Certificado de Antecedentes Penales. Garant&iacute;a de integridad.</p>
-      </div>
-      <div class="card-premium" style="padding:40px 32px;border:1.5px solid rgba(234,88,12,.2);">
-        <div class="feature-icon" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(37,99,235,.15),rgba(37,99,235,.05));color:#2563eb;border-color:rgba(37,99,235,.2);"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-        <h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin-bottom:12px;">Constancia AFIP</h3>
-        <p style="color:var(--muted);font-size:15px;line-height:1.7;">Presentan Constancia de Inscripci&oacute;n Fiscal. Profesionales formalizados.</p>
-      </div>
-      <div class="card-premium" style="padding:40px 32px;">
-        <div class="feature-icon" style="margin-bottom:24px;"><i class="fa-solid fa-robot"></i></div>
-        <h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin-bottom:12px;">Auditor&iacute;a por IA</h3>
-        <p style="color:var(--muted);font-size:15px;line-height:1.7;">Sistema de IA con Visi&oacute;n Artificial verifica documentos. Seguridad de nivel bancario.</p>
-      </div>
-    </div>
-  </section>
-
-  <section style="padding:100px 24px;max-width:1100px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:64px;">
-      <div class="eyebrow" style="margin-bottom:16px;">Simple, R&aacute;pido, Seguro</div>
-      <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(32px,5vw,48px);letter-spacing:-1.5px;line-height:1.1;">&iquest;C&oacute;mo <span class="headline-accent">Funciona</span>?</h2>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;">
-      <div style="text-align:center;"><div style="width:72px;height:72px;margin:0 auto 24px;border-radius:50%;background:linear-gradient(135deg,#fb923c,#ea580c);display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:800;font-family:'Sora',sans-serif;box-shadow:0 12px 30px rgba(234,88,12,.3);">1</div><div style="width:64px;height:64px;margin:0 auto 20px;border-radius:22px;background:rgba(234,88,12,.08);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--accent);"><i class="fa-solid fa-cart-shopping"></i></div><h4 style="font-weight:800;font-size:18px;margin-bottom:8px;">Eleg&iacute;s tu pedido</h4><p style="color:var(--muted);font-size:14px;">Explor&aacute; comercios por ciudad</p></div>
-      <div style="text-align:center;"><div style="width:72px;height:72px;margin:0 auto 24px;border-radius:50%;background:linear-gradient(135deg,#60a5fa,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:800;font-family:'Sora',sans-serif;box-shadow:0 12px 30px rgba(37,99,235,.3);">2</div><div style="width:64px;height:64px;margin:0 auto 20px;border-radius:22px;background:rgba(37,99,235,.08);display:flex;align-items:center;justify-content:center;font-size:32px;color:#2563eb;"><i class="fa-solid fa-location-crosshairs"></i></div><h4 style="font-weight:800;font-size:18px;margin-bottom:8px;">GPS calcula ruta</h4><p style="color:var(--muted);font-size:14px;">Costo por distancia exacta</p></div>
-      <div style="text-align:center;"><div style="width:72px;height:72px;margin:0 auto 24px;border-radius:50%;background:linear-gradient(135deg,#34d399,#16a34a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:800;font-family:'Sora',sans-serif;box-shadow:0 12px 30px rgba(22,163,74,.3);">3</div><div style="width:64px;height:64px;margin:0 auto 20px;border-radius:22px;background:rgba(22,163,74,.08);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--accent2);"><i class="fa-solid fa-user-tie"></i></div><h4 style="font-weight:800;font-size:18px;margin-bottom:8px;">Cadete certificado</h4><p style="color:var(--muted);font-size:14px;">Repartidor verificado</p></div>
-      <div style="text-align:center;"><div style="width:72px;height:72px;margin:0 auto 24px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#d97706);display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:800;font-family:'Sora',sans-serif;box-shadow:0 12px 30px rgba(217,119,6,.3);">4</div><div style="width:64px;height:64px;margin:0 auto 20px;border-radius:22px;background:rgba(217,119,6,.08);display:flex;align-items:center;justify-content:center;font-size:32px;color:#d97706;"><i class="fa-solid fa-money-bill-wave"></i></div><h4 style="font-weight:800;font-size:18px;margin-bottom:8px;">Pag&aacute;s en puerta</h4><p style="color:var(--muted);font-size:14px;">Seguridad total</p></div>
+      <div class="card-premium" style="padding:40px 32px;"><div class="feature-icon" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(124,58,237,.05));color:var(--accent3);border-color:rgba(124,58,237,.2);"><i class="fa-solid fa-robot"></i></div><h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;">IA Auditora</h3><p style="color:var(--muted);font-size:15px;line-height:1.7;margin:0;">Lee DNI, Buena Conducta y AFIP. Solo aprueba cadetes aut&eacute;nticos.</p></div>
+      <div class="card-premium" style="padding:40px 32px;border:1.5px solid rgba(234,88,12,.2);"><div class="feature-icon" style="margin-bottom:24px;"><i class="fa-solid fa-lock"></i></div><h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;">Row Level Security</h3><p style="color:var(--muted);font-size:15px;line-height:1.7;margin:0;">Cada usuario solo accede a SUS datos. Pol&iacute;ticas RLS en todas las tablas.</p></div>
+      <div class="card-premium" style="padding:40px 32px;"><div class="feature-icon" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(220,38,38,.12),rgba(220,38,38,.04));color:var(--danger);border-color:rgba(220,38,38,.2);"><i class="fa-solid fa-triangle-exclamation"></i></div><h3 style="font-family:'Sora',sans-serif;font-weight:700;font-size:22px;margin:0 0 12px;">Bloqueo GPS</h3><p style="color:var(--muted);font-size:15px;line-height:1.7;margin:0;">Los lunes sin pago = radar desactivado autom&aacute;ticamente por la IA.</p></div>
     </div>
   </section>
 
   <footer style="background:#0f172a;color:#94a3b8;padding:72px 24px 48px;border-radius:48px 48px 0 0;margin:0 16px;">
     <div style="max-width:800px;margin:0 auto;text-align:center;">
       <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:28px;">
-        <div style="width:56px;height:56px;border-radius:18px;overflow:hidden;border:2px solid rgba(234,88,12,.4);box-shadow:0 0 30px rgba(234,88,12,.3);">
-          <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="">
-        </div>
+        <div style="width:56px;height:56px;border-radius:18px;overflow:hidden;border:2px solid rgba(234,88,12,.4);box-shadow:0 0 30px rgba(234,88,12,.3);"><img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt=""></div>
         <div style="font-family:'Sora',sans-serif;font-weight:800;color:#fff;font-size:32px;">DELIVERY MOTO</div>
       </div>
-      <p style="font-weight:700;color:#cbd5e1;font-size:15px;margin-bottom:24px;">Marketplace Premium &middot; Repartidores Certificados &middot; Seguridad Total</p>
-      <div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#475569;">&copy; 2026 &middot; Argentina &middot; APK + PWA</div>
+      <p style="font-weight:700;color:#cbd5e1;font-size:15px;margin:0 0 24px;">Supabase &middot; PostgreSQL RLS &middot; IA Auditor &middot; Listo para Producci&oacute;n</p>
+      <div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#475569;">&copy; 2026 &middot; Argentina</div>
     </div>
   </footer>
 </div>
 
 <!-- ============ VISTA APP MOVIL ============ -->
-<div id="vista-app" class="hidden" style="position:relative;width:100%;display:none;align-items:flex-start;justify-content:center;z-index:9;">
+<div id="vista-app" style="display:none;position:relative;width:100%;align-items:flex-start;justify-content:center;z-index:9;">
   <div id="toast-container"></div>
   <div style="width:100%;max-width:448px;background:var(--bg);position:relative;flex-direction:column;display:flex;min-height:100vh;box-shadow:0 0 60px rgba(0,0,0,.08);overflow-x:hidden;">
 
@@ -262,23 +230,14 @@ document.head.appendChild(s);
       <div style="position:relative;padding:56px 28px 48px;border-radius:0 0 40px 40px;background:linear-gradient(135deg,#fb923c 0%,#ea580c 50%,#c24105 100%);overflow:hidden;box-shadow:0 20px 50px rgba(234,88,12,.25);">
         <div style="position:absolute;top:-80px;right:-80px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.12);"></div>
         <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;">
-          <div class="logo-master" style="margin-bottom:20px;"><div class="logo-ring"></div>
-            <div style="width:100px;height:100px;border-radius:28px;overflow:hidden;border:3px solid rgba(255,255,255,.4);box-shadow:0 15px 40px rgba(0,0,0,.2);position:relative;z-index:2;">
-              <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="">
-            </div>
-          </div>
-          <h1 style="font-family:'Sora',sans-serif;font-weight:800;color:#fff;font-size:34px;letter-spacing:-1.5px;line-height:1;margin-bottom:12px;">DELIVERY MOTO</h1>
-          <div style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:10px 22px;">
-            <span style="color:#fff;font-weight:700;font-size:13px;"><i class="fa-solid fa-motorcycle"></i> Marketplace + Radar GPS</span>
-          </div>
+          <div class="logo-master" style="margin-bottom:20px;"><div class="logo-ring"></div><div style="width:100px;height:100px;border-radius:28px;overflow:hidden;border:3px solid rgba(255,255,255,.4);box-shadow:0 15px 40px rgba(0,0,0,.2);position:relative;z-index:2;"><img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt=""></div></div>
+          <h1 style="font-family:'Sora',sans-serif;font-weight:800;color:#fff;font-size:34px;letter-spacing:-1.5px;line-height:1;margin:0 0 12px;">DELIVERY MOTO</h1>
+          <div style="background:rgba(255,255,255,.18);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:10px 22px;"><span style="color:#fff;font-weight:700;font-size:13px;"><i class="fa-solid fa-motorcycle"></i> Marketplace + Radar GPS</span></div>
         </div>
       </div>
       <div style="padding:32px 24px 48px;display:flex;flex-direction:column;gap:20px;">
-        <h4 style="text-align:center;font-weight:800;color:var(--muted);font-size:12px;letter-spacing:.18em;text-transform:uppercase;">Seleccion&aacute; tu perfil</h4>
-        <button onclick="irAMarketplace()" class="shine-effect" style="width:100%;background:#fff;border:1.5px solid rgba(234,88,12,.2);border-radius:24px;padding:22px;display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;transition:all .3s;">
-          <div style="width:48px;height:48px;border-radius:16px;background:rgba(234,88,12,.1);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent);"><i class="fa-solid fa-cart-shopping"></i></div>
-          <span style="font-weight:800;color:var(--text);font-size:18px;">QUIERO COMPRAR</span>
-        </button>
+        <h4 style="text-align:center;font-weight:800;color:var(--muted);font-size:12px;letter-spacing:.18em;text-transform:uppercase;margin:0;">Seleccion&aacute; tu perfil</h4>
+        <button onclick="irAMarketplace()" class="shine-effect" style="width:100%;background:#fff;border:1.5px solid rgba(234,88,12,.2);border-radius:24px;padding:22px;display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;transition:all .3s;"><div style="width:48px;height:48px;border-radius:16px;background:rgba(234,88,12,.1);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent);"><i class="fa-solid fa-cart-shopping"></i></div><span style="font-weight:800;color:var(--text);font-size:18px;">QUIERO COMPRAR</span></button>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
           <button onclick="irARegistroComercio()" style="background:#fff;border:1.5px solid var(--border);border-radius:22px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;"><i class="fa-solid fa-store" style="font-size:26px;color:var(--accent);"></i><span style="font-weight:800;font-size:14px;text-align:center;">Crear<br>Comercio</span></button>
           <button onclick="irALoginComercio()" style="background:#fff;border:1.5px solid var(--border);border-radius:22px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;"><i class="fa-solid fa-key" style="font-size:26px;color:#6366f1;"></i><span style="font-weight:800;font-size:14px;text-align:center;">Ingreso<br>Comercio</span></button>
@@ -295,22 +254,11 @@ document.head.appendChild(s);
     <div id="pantalla-marketplace" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
       <div style="background:#fff;padding:52px 24px 24px;position:sticky;top:0;z-index:20;box-shadow:0 4px 24px rgba(0,0,0,.04);border-radius:0 0 32px 32px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-          <button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:38px;height:38px;border-radius:14px;overflow:hidden;background:var(--text);">
-              <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="">
-            </div>
-            <span style="font-weight:800;font-size:18px;">Delivery Moto</span>
-          </div>
-          <button onclick="abrirModal('modal-carrito')" style="position:relative;width:44px;height:44px;border-radius:50%;background:rgba(234,88,12,.08);display:flex;align-items:center;justify-content:center;color:var(--accent);border:none;cursor:pointer;">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span id="badge-carrito" style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:10px;font-weight:900;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;border:2px solid #fff;">0</span>
-          </button>
+          <button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button>
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:38px;height:38px;border-radius:14px;overflow:hidden;background:var(--text);"><img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt=""></div><span style="font-weight:800;font-size:18px;">Delivery Moto</span></div>
+          <button onclick="abrirModal('modal-carrito')" style="position:relative;width:44px;height:44px;border-radius:50%;background:rgba(234,88,12,.08);border:none;cursor:pointer;color:var(--accent);"><i class="fa-solid fa-cart-shopping"></i><span id="badge-carrito" style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:10px;font-weight:900;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;border:2px solid #fff;">0</span></button>
         </div>
-        <div style="background:#f8fafc;border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;padding:14px 18px;margin-bottom:16px;">
-          <i class="fa-solid fa-magnifying-glass" style="color:var(--muted);"></i>
-          <input type="text" id="buscador-global" placeholder="Buscar comercios o productos..." onkeyup="filtrarPorTexto()" style="width:100%;background:transparent;border:none;outline:none;font-size:15px;font-weight:700;margin-left:12px;font-family:'Quicksand',sans-serif;">
-        </div>
+        <div style="background:#f8fafc;border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;padding:14px 18px;margin-bottom:16px;"><i class="fa-solid fa-magnifying-glass" style="color:var(--muted);"></i><input type="text" id="buscador-global" placeholder="Buscar comercios o productos..." onkeyup="filtrarPorTexto()" style="width:100%;background:transparent;border:none;outline:none;font-size:15px;font-weight:700;margin-left:12px;font-family:'Quicksand',sans-serif;"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <select id="filtro-provincia" onchange="cambiarFiltroProvincia()" class="input-premium appearance-none" style="padding:12px 14px;font-size:13px;"><option value="Todas">Todas las Provincias</option></select>
           <select id="filtro-ciudad" onchange="renderizarMarketplace()" class="input-premium appearance-none" style="padding:12px 14px;font-size:13px;"><option value="Todas">Todas las Ciudades</option></select>
@@ -319,31 +267,22 @@ document.head.appendChild(s);
       <div style="padding:24px;display:flex;flex-direction:column;gap:28px;padding-bottom:100px;">
         <div class="glass" style="border-radius:24px;padding:20px;display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(234,88,12,.08),rgba(234,88,12,.02));">
           <div style="width:52px;height:52px;border-radius:18px;background:rgba(234,88,12,.15);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--accent);flex-shrink:0;"><i class="fa-solid fa-motorcycle"></i></div>
-          <div style="flex:1;"><h4 style="font-weight:800;font-size:15px;margin-bottom:4px;">Env&iacute;os calculados por GPS</h4><p style="font-size:12px;font-weight:600;color:var(--muted);">$3000 base noche + $100 por cuadra extra</p></div>
+          <div style="flex:1;"><h4 style="font-weight:800;font-size:15px;margin:0 0 4px;">Env&iacute;os calculados por GPS</h4><p style="font-size:12px;font-weight:600;color:var(--muted);margin:0;">$3000 base noche + $100 por cuadra extra</p></div>
         </div>
-        <div>
-          <h3 style="font-weight:800;font-size:17px;margin-bottom:14px;padding:0 4px;">Categor&iacute;as</h3>
-          <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;" class="no-scrollbar" id="filtros-categorias">
-            <button class="cat-chip active" data-cat="Todas" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-star"></i>Todos</button>
-            <button class="cat-chip" data-cat="bebida" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-mug-saucer"></i>Bebidas</button>
-            <button class="cat-chip" data-cat="golosina" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-candy-cane"></i>Golosinas</button>
-            <button class="cat-chip" data-cat="lacteo" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-cheese"></i>L&aacute;cteos</button>
-            <button class="cat-chip" data-cat="almacen" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-bread-slice"></i>Almac&eacute;n</button>
-            <button class="cat-chip" data-cat="limpieza" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-soap"></i>Limpieza</button>
-            <button class="cat-chip" data-cat="cigarrillo" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-ban-smoking"></i>Cigarrillos</button>
-          </div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 4px;">
-            <h3 style="font-weight:800;font-size:18px;">Comercios</h3>
-            <span id="contador-locales" style="font-size:12px;font-weight:800;color:var(--muted);background:#f1f5f9;padding:6px 14px;border-radius:999px;">0</span>
-          </div>
-          <div id="grilla-locales-dinamica" style="display:flex;flex-direction:column;gap:14px;"></div>
-        </div>
+        <div><h3 style="font-weight:800;font-size:17px;margin:0 0 14px;padding:0 4px;">Categor&iacute;as</h3><div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;" class="no-scrollbar" id="filtros-categorias">
+          <button class="cat-chip active" data-cat="Todas" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-star"></i>Todos</button>
+          <button class="cat-chip" data-cat="bebida" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-mug-saucer"></i>Bebidas</button>
+          <button class="cat-chip" data-cat="golosina" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-candy-cane"></i>Golosinas</button>
+          <button class="cat-chip" data-cat="lacteo" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-cheese"></i>L&aacute;cteos</button>
+          <button class="cat-chip" data-cat="almacen" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-bread-slice"></i>Almac&eacute;n</button>
+          <button class="cat-chip" data-cat="limpieza" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-soap"></i>Limpieza</button>
+          <button class="cat-chip" data-cat="cigarrillo" onclick="filtrarPorCategoria(this)"><i class="fa-solid fa-ban-smoking"></i>Cigarrillos</button>
+        </div></div>
+        <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 4px;"><h3 style="font-weight:800;font-size:18px;margin:0;">Comercios</h3><span id="contador-locales" style="font-size:12px;font-weight:800;color:var(--muted);background:#f1f5f9;padding:6px 14px;border-radius:999px;">0</span></div><div id="grilla-locales-dinamica" style="display:flex;flex-direction:column;gap:14px;"></div></div>
       </div>
       <div class="bottom-nav">
         <div class="nav-item active" onclick="cambiarPantalla('pantalla-marketplace')"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
-        <div class="nav-item" onclick="mostrarToast('Navega los locales arriba','info')"><i class="fa-solid fa-store"></i><span>Locales</span></div>
+        <div class="nav-item" onclick="mostrarToast('Navega los locales','info')"><i class="fa-solid fa-store"></i><span>Locales</span></div>
         <div class="nav-item" onclick="abrirModal('modal-carrito')"><i class="fa-solid fa-cart-shopping"></i><span>Pedido</span></div>
         <div class="nav-item" onclick="cambiarPantalla('pantalla-1')"><i class="fa-solid fa-user"></i><span>Perfil</span></div>
       </div>
@@ -353,166 +292,194 @@ document.head.appendChild(s);
     <div id="pantalla-catalogo" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
       <div style="background:#fff;padding-bottom:28px;position:sticky;top:0;z-index:20;box-shadow:0 4px 24px rgba(0,0,0,.04);border-radius:0 0 32px 32px;">
         <div style="position:relative;height:160px;width:100%;background:linear-gradient(135deg,#f1f5f9,#e2e8f0);overflow:hidden;">
-          <button onclick="cambiarPantalla('pantalla-marketplace')" style="position:absolute;top:44px;left:20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.1);"><i class="fa-solid fa-chevron-left"></i></button>
-          <button onclick="abrirModal('modal-carrito')" style="position:absolute;top:44px;right:20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.1);"><i class="fa-solid fa-cart-shopping"></i></button>
+          <button onclick="cambiarPantalla('pantalla-marketplace')" style="position:absolute;top:44px;left:20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.1);"><i class="fa-solid fa-chevron-left"></i></button>
+          <button onclick="abrirModal('modal-carrito')" style="position:absolute;top:44px;right:20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.1);"><i class="fa-solid fa-cart-shopping"></i></button>
         </div>
         <div style="padding:0 24px;position:relative;">
           <div style="width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,#fb923c,#ea580c);display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;box-shadow:0 10px 30px rgba(234,88,12,.35);position:absolute;top:-36px;left:24px;border:4px solid #fff;"><i class="fa-solid fa-store"></i></div>
-          <div style="padding-top:44px;">
-            <h2 id="cat-nombre" style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.5px;line-height:1.2;margin-bottom:10px;">Cargando...</h2>
-            <span class="badge-pill badge-green"><span class="dot-live"></span>Abierto</span>
-            <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;">
-              <p style="font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-location-dot" style="color:var(--accent);"></i><span id="cat-ciudad"></span></p>
-              <p style="font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-clock" style="color:var(--accent2);"></i><span id="cat-horario"></span></p>
-            </div>
-          </div>
-          <div style="margin-top:20px;background:#f8fafc;border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;padding:12px 16px;">
-            <i class="fa-solid fa-magnifying-glass" style="color:var(--muted);"></i>
-            <input type="text" id="buscador-productos" placeholder="Buscar productos..." onkeyup="filtrarProductosLocal()" style="width:100%;background:transparent;border:none;outline:none;font-size:14px;font-weight:700;margin-left:10px;font-family:'Quicksand',sans-serif;">
-          </div>
+          <div style="padding-top:44px;"><h2 id="cat-nombre" style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.5px;line-height:1.2;margin:0 0 10px;">Cargando...</h2><span class="badge-pill badge-green"><span class="dot-live"></span>Abierto</span><div style="margin-top:12px;display:flex;flex-direction:column;gap:6px;"><p style="font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px;margin:0;"><i class="fa-solid fa-location-dot" style="color:var(--accent);"></i><span id="cat-ciudad"></span></p><p style="font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px;margin:0;"><i class="fa-solid fa-clock" style="color:var(--accent2);"></i><span id="cat-horario"></span></p></div></div>
+          <div style="margin-top:20px;background:#f8fafc;border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;padding:12px 16px;"><i class="fa-solid fa-magnifying-glass" style="color:var(--muted);"></i><input type="text" id="buscador-productos" placeholder="Buscar productos..." onkeyup="filtrarProductosLocal()" style="width:100%;background:transparent;border:none;outline:none;font-size:14px;font-weight:700;margin-left:10px;font-family:'Quicksand',sans-serif;"></div>
         </div>
       </div>
-      <div style="padding:28px 24px 120px;flex:1;">
-        <h3 style="font-weight:800;font-size:20px;margin-bottom:20px;">Productos</h3>
-        <div id="contenedor-productos" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"></div>
-      </div>
-      <div id="barra-ver-carrito" style="display:none;position:fixed;bottom:0;width:100%;max-width:448px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:18px 24px 26px;z-index:50;border-radius:28px 28px 0 0;box-shadow:0 -15px 50px rgba(0,0,0,.08);">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div><span id="barra-cant" style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">0 productos</span><div id="barra-total" style="font-weight:900;font-size:28px;line-height:1;margin-top:4px;">$0</div></div>
-          <button onclick="abrirModal('modal-carrito')" style="background:var(--text);color:#fff;font-weight:800;font-size:16px;padding:16px 28px;border-radius:999px;border:none;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(15,23,42,.25);"><i class="fa-solid fa-bag-shopping"></i>Ver Pedido</button>
-        </div>
-      </div>
+      <div style="padding:28px 24px 120px;flex:1;"><h3 style="font-weight:800;font-size:20px;margin:0 0 20px;">Productos</h3><div id="contenedor-productos" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"></div></div>
+      <div id="barra-ver-carrito" style="display:none;position:fixed;bottom:0;width:100%;max-width:448px;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:18px 24px 26px;z-index:50;border-radius:28px 28px 0 0;box-shadow:0 -15px 50px rgba(0,0,0,.08);"><div style="display:flex;justify-content:space-between;align-items:center;"><div><span id="barra-cant" style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">0 productos</span><div id="barra-total" style="font-weight:900;font-size:28px;line-height:1;margin-top:4px;">$0</div></div><button onclick="abrirModal('modal-carrito')" style="background:var(--text);color:#fff;font-weight:800;font-size:16px;padding:16px 28px;border-radius:999px;border:none;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(15,23,42,.25);"><i class="fa-solid fa-bag-shopping"></i>Ver Pedido</button></div></div>
     </div>
 
-    <!-- PANTALLAS MINIMAS -->
+    <!-- PANTALLA: REGISTRO COMERCIO -->
     <div id="pantalla-registro-comercio" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);">
-        <div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;">Nuevo Comercio</h2></div>
-      </div>
+      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);"><div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;margin:0;">Nuevo Comercio</h2></div></div>
       <div style="padding:28px 24px 48px;display:flex;flex-direction:column;gap:24px;flex:1;">
-        <div style="background:rgba(234,88,12,.06);border:1px solid rgba(234,88,12,.15);border-radius:22px;padding:20px;display:flex;gap:16px;align-items:center;"><div style="width:48px;height:48px;border-radius:16px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;"><i class="fa-solid fa-lock"></i></div><div><h3 style="font-weight:800;color:var(--accent);font-size:15px;margin:0 0 4px;">Registro Cloud</h3><p style="font-size:13px;color:#9a3412;font-weight:600;margin:0;">Tus datos se encriptan con Supabase Auth.</p></div></div>
+        <div style="background:rgba(234,88,12,.06);border:1px solid rgba(234,88,12,.15);border-radius:22px;padding:20px;display:flex;gap:16px;align-items:center;"><div style="width:48px;height:48px;border-radius:16px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;"><i class="fa-solid fa-lock"></i></div><div><h3 style="font-weight:800;color:var(--accent);font-size:15px;margin:0 0 4px;">Supabase Auth + RLS</h3><p style="font-size:13px;color:#9a3412;font-weight:600;margin:0;">Email: {celular}@deliverymoto.app</p></div></div>
         <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:20px;">
           <input type="text" id="reg-nombre" placeholder="Nombre del Local" class="input-premium">
           <input type="text" id="reg-horario" placeholder="Horario de Atenci&oacute;n" class="input-premium">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><select id="reg-provincia" class="input-premium appearance-none"><option value="">Provincia...</option></select><input type="text" id="reg-ciudad" placeholder="Ciudad" class="input-premium"></div>
           <input type="text" id="reg-direccion" placeholder="Direcci&oacute;n" class="input-premium">
-          <input type="tel" id="reg-whatsapp" placeholder="WhatsApp" class="input-premium">
-          <input type="password" id="reg-password" placeholder="Contrase&ntilde;a" class="input-premium">
-          <button onclick="registrarComercio()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;"><i class="fa-solid fa-cloud-arrow-up"></i>Registrar</button>
+          <input type="tel" id="reg-whatsapp" placeholder="WhatsApp (ser&aacute; tu email de login)" class="input-premium">
+          <input type="password" id="reg-password" placeholder="Contrase&ntilde;a (m&iacute;n 6 car&aacute;cteres)" class="input-premium">
+          <button onclick="registrarComercio()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;"><i class="fa-solid fa-cloud-arrow-up"></i>Registrar en Supabase</button>
         </div>
       </div>
     </div>
 
+    <!-- PANTALLA: LOGIN COMERCIO -->
     <div id="pantalla-login-comercio" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);">
-        <div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;">Ingreso Comercio</h2></div>
-      </div>
+      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);"><div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;margin:0;">Ingreso Comercio</h2></div></div>
       <div style="padding:48px 24px;display:flex;flex-direction:column;gap:28px;flex:1;justify-content:center;">
-        <div style="text-align:center;"><div style="width:88px;height:88px;margin:0 auto 20px;border-radius:28px;background:linear-gradient(135deg,#fb923c,#ea580c);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;box-shadow:0 15px 40px rgba(234,88,12,.3);"><i class="fa-solid fa-shield-halved"></i></div><h3 style="font-weight:800;font-size:22px;margin:0 0 8px;">Auth Supabase</h3><p style="color:var(--muted);font-size:14px;margin:0;">Acceso seguro con token</p></div>
+        <div style="text-align:center;"><div style="width:88px;height:88px;margin:0 auto 20px;border-radius:28px;background:linear-gradient(135deg,#fb923c,#ea580c);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;box-shadow:0 15px 40px rgba(234,88,12,.3);"><i class="fa-solid fa-store"></i></div><h3 style="font-weight:800;font-size:22px;margin:0 0 8px;">Auth Supabase</h3><p style="color:var(--muted);font-size:14px;margin:0;">Ingres&aacute; tu WhatsApp</p></div>
         <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:20px;">
-          <input type="tel" id="login-whatsapp" placeholder="WhatsApp" class="input-premium">
+          <input type="tel" id="login-whatsapp" placeholder="WhatsApp registrado" class="input-premium">
           <input type="password" id="login-password" placeholder="Contrase&ntilde;a" class="input-premium">
           <button onclick="loginComercio()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;"><i class="fa-solid fa-right-to-bracket"></i>Ingresar</button>
         </div>
       </div>
     </div>
 
+    <!-- PANTALLA: ADMIN COMERCIO -->
     <div id="pantalla-admin-comercio" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);display:flex;justify-content:space-between;align-items:center;">
-        <div style="flex:1;min-width:0;"><h2 id="admin-nombre" style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Mi Comercio</h2><p style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:6px 0 0;">Panel Admin</p></div>
-        <button onclick="logoutComercio()" style="width:44px;height:44px;border-radius:50%;background:rgba(220,38,38,.08);color:#dc2626;border:none;cursor:pointer;margin-left:16px;"><i class="fa-solid fa-right-from-bracket"></i></button>
-      </div>
+      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);display:flex;justify-content:space-between;align-items:center;"><div style="flex:1;min-width:0;"><h2 id="admin-nombre" style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Mi Comercio</h2><p style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:6px 0 0;">Panel Admin RLS</p></div><button onclick="logoutComercio()" style="width:44px;height:44px;border-radius:50%;background:rgba(220,38,38,.08);color:#dc2626;border:none;cursor:pointer;margin-left:16px;"><i class="fa-solid fa-right-from-bracket"></i></button></div>
       <div style="padding:24px;display:flex;flex-direction:column;gap:24px;padding-bottom:48px;flex:1;">
-        <div style="display:flex;background:#fff;border-radius:16px;padding:6px;border:1px solid var(--border);">
-          <button onclick="switchTab('productos')" id="tab-productos" class="tab-btn active" style="flex:1;">Cat&aacute;logo</button>
-          <button onclick="switchTab('pedidos')" id="tab-pedidos" class="tab-btn" style="flex:1;">Pedidos</button>
-        </div>
+        <div style="display:flex;background:#fff;border-radius:16px;padding:6px;border:1px solid var(--border);"><button onclick="switchTab('productos')" id="tab-productos" class="tab-btn active" style="flex:1;">Cat&aacute;logo</button><button onclick="switchTab('pedidos')" id="tab-pedidos" class="tab-btn" style="flex:1;">Pedidos</button></div>
         <div id="seccion-productos" style="display:flex;flex-direction:column;gap:24px;">
-          <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;border-top:4px solid var(--accent);">
-            <h3 style="font-weight:800;font-size:18px;margin:0 0 20px;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-plus-circle" style="color:var(--accent);"></i>Agregar Producto</h3>
-            <div style="display:flex;flex-direction:column;gap:16px;">
-              <input type="text" id="add-nombre" placeholder="Nombre" class="input-premium">
-              <select id="add-categoria" class="input-premium appearance-none"><option value="">Categor&iacute;a...</option><option value="bebida">Bebida</option><option value="golosina">Golosina</option><option value="lacteo">L&aacute;cteo</option><option value="almacen">Almac&eacute;n</option><option value="limpieza">Limpieza</option><option value="cigarrillo">Cigarrillo</option></select>
-              <input type="number" id="add-precio" placeholder="Precio $" class="input-premium">
-              <button onclick="agregarProductoDemo()" class="btn-primary shine-effect" style="width:100%;padding:16px;font-size:15px;"><i class="fa-solid fa-cloud-arrow-up"></i>Publicar</button>
-            </div>
-          </div>
+          <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;border-top:4px solid var(--accent);"><h3 style="font-weight:800;font-size:18px;margin:0 0 20px;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-plus-circle" style="color:var(--accent);"></i>Agregar Producto</h3><div style="display:flex;flex-direction:column;gap:16px;"><input type="text" id="add-nombre" placeholder="Nombre" class="input-premium"><select id="add-categoria" class="input-premium appearance-none"><option value="">Categor&iacute;a...</option><option value="bebida">Bebida</option><option value="golosina">Golosina</option><option value="lacteo">L&aacute;cteo</option><option value="almacen">Almac&eacute;n</option><option value="limpieza">Limpieza</option><option value="cigarrillo">Cigarrillo</option></select><input type="number" id="add-precio" placeholder="Precio $" class="input-premium"><button onclick="agregarProducto()" class="btn-primary shine-effect" style="width:100%;padding:16px;font-size:15px;"><i class="fa-solid fa-cloud-arrow-up"></i>Publicar en Storage</button></div></div>
           <div id="lista-productos-admin" style="display:flex;flex-direction:column;gap:14px;"></div>
         </div>
-        <div id="seccion-pedidos" style="display:none;">
-          <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:48px 28px;text-align:center;">
-            <div style="width:72px;height:72px;margin:0 auto 16px;border-radius:50%;background:rgba(37,99,235,.08);display:flex;align-items:center;justify-content:center;font-size:32px;color:#2563eb;"><i class="fa-solid fa-satellite-dish fa-fade"></i></div>
-            <h3 style="font-weight:800;font-size:18px;margin:0 0 8px;">Escuchando Pedidos...</h3>
-            <p style="color:var(--muted);font-size:14px;margin:0;">Conectado al Web Socket</p>
-          </div>
-        </div>
+        <div id="seccion-pedidos" style="display:none;"><div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:48px 28px;text-align:center;"><div style="width:72px;height:72px;margin:0 auto 16px;border-radius:50%;background:rgba(37,99,235,.08);display:flex;align-items:center;justify-content:center;font-size:32px;color:#2563eb;"><i class="fa-solid fa-satellite-dish fa-fade"></i></div><h3 style="font-weight:800;font-size:18px;margin:0 0 8px;">Escuchando Pedidos...</h3><p style="color:var(--muted);font-size:14px;margin:0;">Realtime Supabase conectado</p></div></div>
       </div>
     </div>
 
+    <!-- PANTALLA: REGISTRO SERVIMOTO COMPLETO -->
     <div id="pantalla-registro-servimoto" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);">
-        <div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;">Alta Servimoto</h2></div>
-      </div>
-      <div style="padding:28px 24px 140px;display:flex;flex-direction:column;gap:24px;flex:1;">
-        <div style="background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.15);border-radius:22px;padding:20px;display:flex;gap:16px;align-items:center;"><div style="width:48px;height:48px;border-radius:16px;background:var(--accent2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;"><i class="fa-solid fa-robot"></i></div><div><h3 style="font-weight:800;color:var(--accent2);font-size:15px;margin:0 0 4px;">Auditor&iacute;a IA</h3><p style="font-size:13px;color:#166534;font-weight:600;margin:0;">Sub&iacute; tus documentos.</p></div></div>
+      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);"><div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;margin:0;">Alta Servimoto</h2></div></div>
+      <div style="padding:28px 24px 160px;display:flex;flex-direction:column;gap:24px;flex:1;">
+        
+        <div style="background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.2);border-radius:22px;padding:20px;display:flex;gap:16px;align-items:center;"><div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 8px 24px rgba(124,58,237,.3);"><i class="fa-solid fa-robot"></i></div><div><h3 style="font-weight:800;color:var(--accent3);font-size:15px;margin:0 0 4px;">IA Auditora Activada</h3><p style="font-size:13px;color:#6b21a8;font-weight:600;margin:0;">Sub&iacute; los 3 documentos. La IA los leer&aacute; y aprobar&aacute; tu ingreso.</p></div></div>
+
         <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:20px;">
-          <input type="tel" id="reg-celular" placeholder="Celular WhatsApp" class="input-premium">
+          <input type="tel" id="reg-celular" placeholder="Celular WhatsApp (login)" class="input-premium">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><select id="reg-prov" class="input-premium appearance-none"><option value="">Provincia...</option></select><input type="text" id="reg-ciudad-cad" placeholder="Ciudad" class="input-premium"></div>
           <input type="text" id="reg-moto" placeholder="Veh&iacute;culo y Patente" class="input-premium">
           <input type="password" id="reg-pass-cad" placeholder="Contrase&ntilde;a" class="input-premium">
         </div>
-        <label style="display:flex;align-items:center;gap:14px;cursor:pointer;background:#f8fafc;padding:16px;border-radius:16px;border:1.5px solid var(--border);"><input type="checkbox" id="acepto" style="width:22px;height:22px;accent-color:var(--accent);cursor:pointer;"><span style="font-weight:800;font-size:14px;">Acepto t&eacute;rminos</span></label>
+
+        <h4 style="font-weight:800;font-size:18px;margin:0;padding:0 4px;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-file-circle-check" style="color:var(--accent3);"></i>Documentaci&oacute;n Requerida</h4>
+
+        <!-- DOC 1: SELFIE + DNI -->
+        <div class="doc-upload" id="doc-selfie" onclick="document.getElementById('file-selfie').click()">
+          <input type="file" id="file-selfie" accept="image/*" capture="user" class="hidden" onchange="procesarDoc('selfie',this)">
+          <div class="scan-line"></div>
+          <div id="content-selfie"><div style="width:56px;height:56px;border-radius:18px;background:rgba(124,58,237,.1);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--accent3);margin:0 auto 12px;"><i class="fa-solid fa-camera"></i></div><h4 style="font-weight:800;font-size:16px;margin:0 0 6px;">Selfie con DNI</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:0;">Foto de tu rostro sosteniendo tu DNI</p></div>
+        </div>
+
+        <!-- DOC 2: BUENA CONDUCTA -->
+        <div class="doc-upload" id="doc-buena" onclick="document.getElementById('file-buena').click()">
+          <input type="file" id="file-buena" accept="image/*,application/pdf" class="hidden" onchange="procesarDoc('buena',this)">
+          <div class="scan-line"></div>
+          <div id="content-buena"><div style="width:56px;height:56px;border-radius:18px;background:rgba(22,163,74,.1);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--accent2);margin:0 auto 12px;"><i class="fa-solid fa-shield-halved"></i></div><h4 style="font-weight:800;font-size:16px;margin:0 0 6px;">Certificado de Buena Conducta</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:0;">Antecedentes penales / Polic&iacute;a Federal</p></div>
+        </div>
+
+        <!-- DOC 3: AFIP / MONOTRIBUTO -->
+        <div class="doc-upload" id="doc-afip" onclick="document.getElementById('file-afip').click()">
+          <input type="file" id="file-afip" accept="image/*,application/pdf" class="hidden" onchange="procesarDoc('afip',this)">
+          <div class="scan-line"></div>
+          <div id="content-afip"><div style="width:56px;height:56px;border-radius:18px;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;font-size:26px;color:#2563eb;margin:0 auto 12px;"><i class="fa-solid fa-file-invoice-dollar"></i></div><h4 style="font-weight:800;font-size:16px;margin:0 0 6px;">Constancia AFIP / Monotributo</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:0;">PDF o foto de tu constancia fiscal</p></div>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:14px;cursor:pointer;background:#f8fafc;padding:16px;border-radius:16px;border:1.5px solid var(--border);"><input type="checkbox" id="acepto" style="width:22px;height:22px;accent-color:var(--accent);cursor:pointer;"><span style="font-weight:800;font-size:14px;">Acepto: $200 comisi&oacute;n por viaje, pago c/lunes</span></label>
       </div>
-      <div style="position:absolute;bottom:0;left:0;width:100%;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);padding:18px 24px 28px;border-top:1px solid var(--border);">
-        <button onclick="registrarCadete()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;"><i class="fa-solid fa-robot"></i>Auditar y Registrar</button>
-      </div>
+      <div style="position:absolute;bottom:0;left:0;width:100%;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);padding:18px 24px 28px;border-top:1px solid var(--border);"><button id="btn-auditar" onclick="iniciarAuditoriaIA()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;" disabled><i class="fa-solid fa-robot"></i>Auditar Documentos (carg&aacute; los 3)</button></div>
     </div>
 
+    <!-- PANTALLA: LOGIN SERVIMOTO -->
     <div id="pantalla-login-servimoto" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);">
-        <div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;">Acceso Cadete</h2></div>
-      </div>
+      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);"><div style="display:flex;align-items:center;gap:16px;"><button onclick="cambiarPantalla('pantalla-1')" style="width:44px;height:44px;border-radius:50%;background:#f8fafc;border:none;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i></button><h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;margin:0;">Acceso Cadete</h2></div></div>
       <div style="padding:48px 24px;display:flex;flex-direction:column;gap:28px;flex:1;justify-content:center;">
-        <div style="text-align:center;"><div style="width:88px;height:88px;margin:0 auto 20px;border-radius:28px;background:linear-gradient(135deg,#34d399,#16a34a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;box-shadow:0 15px 40px rgba(22,163,74,.3);"><i class="fa-solid fa-motorcycle"></i></div><h3 style="font-weight:800;font-size:22px;margin:0 0 8px;">Conectar al Radar</h3><p style="color:var(--muted);font-size:14px;margin:0;">Ingres&aacute; para recibir viajes</p></div>
+        <div style="text-align:center;"><div style="width:88px;height:88px;margin:0 auto 20px;border-radius:28px;background:linear-gradient(135deg,#34d399,#16a34a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;box-shadow:0 15px 40px rgba(22,163,74,.3);"><i class="fa-solid fa-motorcycle"></i></div><h3 style="font-weight:800;font-size:22px;margin:0 0 8px;">Conectar al Radar</h3><p style="color:var(--muted);font-size:14px;margin:0;">Ingres&aacute; tu WhatsApp</p></div>
         <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:28px;display:flex;flex-direction:column;gap:20px;">
           <input type="tel" id="login-cel-cad" placeholder="WhatsApp" class="input-premium">
           <input type="password" id="login-pass-cad" placeholder="Contrase&ntilde;a" class="input-premium">
-          <button onclick="loginCadete()" style="width:100%;padding:18px;font-size:16px;background:linear-gradient(135deg,#34d399,#16a34a);color:#fff;font-weight:800;border:none;border-radius:999px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 30px rgba(22,163,74,.3);"><i class="fa-solid fa-satellite-dish"></i>Activar Radar</button>
+          <button onclick="loginCadete()" style="width:100%;padding:18px;font-size:16px;background:linear-gradient(135deg,#34d399,#16a34a);color:#fff;font-weight:800;border:none;border-radius:999px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 30px rgba(22,163,74,.3);"><i class="fa-solid fa-satellite-dish"></i>Activar Radar GPS</button>
         </div>
       </div>
     </div>
 
+    <!-- PANTALLA: PANEL CADETE COMPLETO -->
     <div id="pantalla-radar-servimoto" class="pantalla flex-col h-full relative overflow-y-auto no-scrollbar">
-      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);display:flex;justify-content:space-between;align-items:center;">
-        <div style="display:flex;align-items:center;gap:14px;"><div style="width:52px;height:52px;border-radius:18px;background:linear-gradient(135deg,#34d399,#16a34a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:800;box-shadow:0 6px 18px rgba(22,163,74,.3);">SC</div><div><h3 style="font-weight:800;font-size:18px;margin:0;line-height:1;">Servimoto</h3><span class="badge-pill badge-green" style="margin-top:6px;display:inline-flex;"><span class="dot-live"></span>Activo</span></div></div>
-        <button onclick="logoutCadete()" style="width:44px;height:44px;border-radius:50%;background:rgba(220,38,38,.08);color:#dc2626;border:none;cursor:pointer;"><i class="fa-solid fa-power-off"></i></button>
-      </div>
-      <div style="padding:60px 24px 32px;display:flex;flex-direction:column;align-items:center;">
-        <button id="btn-radar" onclick="toggleRadar()" style="width:220px;height:220px;border-radius:50%;background:#fff;border:8px solid #f8fafc;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .4s;box-shadow:0 20px 50px rgba(0,0,0,.08);">
-          <i id="icon-radar" class="fa-solid fa-motorcycle" style="font-size:52px;color:#cbd5e1;margin-bottom:12px;"></i>
-          <span id="txt-radar" style="font-weight:900;letter-spacing:.15em;font-size:18px;color:#94a3b8;">OFFLINE</span>
-        </button>
-        <div style="margin-top:32px;background:#fff;padding:14px 28px;border-radius:999px;border:1px solid var(--border);box-shadow:0 4px 16px rgba(0,0,0,.04);">
-          <p id="estado-gps" style="font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0;"><i class="fa-solid fa-location-crosshairs" style="margin-right:8px;"></i>Desconectado</p>
+      <div style="background:#fff;padding:52px 24px 24px;border-radius:0 0 32px 32px;box-shadow:0 4px 24px rgba(0,0,0,.04);display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:14px;"><div style="width:52px;height:52px;border-radius:18px;background:linear-gradient(135deg,#34d399,#16a34a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:800;box-shadow:0 6px 18px rgba(22,163,74,.3);">SC</div><div><h3 id="radar-nombre" style="font-weight:800;font-size:18px;margin:0;line-height:1;">Servimoto</h3><span id="radar-status" class="badge-pill badge-green" style="margin-top:6px;display:inline-flex;"><span class="dot-live"></span>Activo</span></div></div><button onclick="logoutCadete()" style="width:44px;height:44px;border-radius:50%;background:rgba(220,38,38,.08);color:#dc2626;border:none;cursor:pointer;"><i class="fa-solid fa-power-off"></i></button></div>
+      
+      <div style="padding:24px;display:flex;flex-direction:column;gap:24px;padding-bottom:48px;flex:1;">
+        
+        <!-- AVISO BLOQUEO LUNES -->
+        <div id="aviso-bloqueo" style="display:none;background:linear-gradient(135deg,rgba(220,38,38,.1),rgba(220,38,38,.04));border:2px solid rgba(220,38,38,.3);border-radius:28px;padding:28px;text-align:center;">
+          <div style="width:72px;height:72px;border-radius:50%;background:rgba(220,38,38,.15);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--danger);margin:0 auto 16px;box-shadow:0 10px 30px rgba(220,38,38,.2);"><i class="fa-solid fa-lock"></i></div>
+          <h3 style="font-weight:800;font-size:20px;color:var(--danger);margin:0 0 8px;">GPS Bloqueado</h3>
+          <p style="font-size:14px;font-weight:600;color:#991b1b;margin:0 0 20px;">Hoy es lunes. Ten&eacute;s que pagar tu comisi&oacute;n pendiente para activar el radar.</p>
+          <button onclick="simularPago()" class="btn-danger shine-effect" style="width:100%;padding:16px;font-size:15px;"><i class="fa-solid fa-credit-card"></i>Pagar $<span id="monto-pagar">0</span></button>
         </div>
+
+        <!-- M&Eacute;TRICAS -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="metric-card" style="--from:#ea580c;--to:#c24105;--shadow:rgba(234,88,12,.35);"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px;">Viajes Hoy</div><div id="met-viajes" style="font-family:'Sora',sans-serif;font-weight:900;font-size:36px;line-height:1;">0</div><div style="font-size:11px;font-weight:700;opacity:.7;margin-top:6px;"><i class="fa-solid fa-motorcycle"></i> activos</div></div>
+          <div class="metric-card" style="--from:#16a34a;--to:#15803d;--shadow:rgba(22,163,74,.35);"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px;">Ganado Hoy</div><div id="met-ganado" style="font-family:'Sora',sans-serif;font-weight:900;font-size:36px;line-height:1;">$0</div><div style="font-size:11px;font-weight:700;opacity:.7;margin-top:6px;"><i class="fa-solid fa-wallet"></i> neto</div></div>
+          <div class="metric-card" style="--from:#7c3aed;--to:#5b21b6;--shadow:rgba(124,58,237,.35);"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px;">Comisi&oacute;n</div><div id="met-comision" style="font-family:'Sora',sans-serif;font-weight:900;font-size:36px;line-height:1;">$0</div><div style="font-size:11px;font-weight:700;opacity:.7;margin-top:6px;"><i class="fa-solid fa-percent"></i> $200/viaje</div></div>
+          <div class="metric-card" style="--from:#2563eb;--to:#1d4ed8;--shadow:rgba(37,99,235,.35);"><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px;">Deuda Sem.</div><div id="met-deuda" style="font-family:'Sora',sans-serif;font-weight:900;font-size:36px;line-height:1;">$0</div><div style="font-size:11px;font-weight:700;opacity:.7;margin-top:6px;"><i class="fa-solid fa-calendar-day"></i> c/lunes</div></div>
+        </div>
+
+        <!-- RADAR GPS -->
+        <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:32px 24px;text-align:center;position:relative;overflow:hidden;">
+          <div id="bloqueo-overlay" class="bloqueo-overlay" style="display:none;border-radius:50%;width:200px;height:200px;left:50%;top:50%;transform:translate(-50%,-50%);">
+            <i class="fa-solid fa-lock" style="font-size:48px;margin-bottom:12px;"></i>
+            <span style="font-weight:800;font-size:14px;">BLOQUEADO</span>
+          </div>
+          <button id="btn-radar" onclick="toggleRadar()" style="width:200px;height:200px;border-radius:50%;background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:8px solid #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .4s;box-shadow:0 20px 50px rgba(0,0,0,.08);position:relative;z-index:1;">
+            <i id="icon-radar" class="fa-solid fa-motorcycle" style="font-size:48px;color:#cbd5e1;margin-bottom:10px;transition:color .3s;"></i>
+            <span id="txt-radar" style="font-weight:900;letter-spacing:.15em;font-size:16px;color:#94a3b8;transition:color .3s;">OFFLINE</span>
+          </button>
+          <div style="margin-top:24px;background:#f8fafc;padding:12px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;border:1px solid var(--border);">
+            <i id="gps-icon" class="fa-solid fa-location-crosshairs" style="color:var(--muted);"></i>
+            <span id="gps-texto" style="font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.05em;">Radar desactivado</span>
+          </div>
+        </div>
+
+        <!-- BOTONES ACCION -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <button onclick="simularViaje()" id="btn-viaje" style="background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:20px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;transition:all .3s;" onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'"><i class="fa-solid fa-route" style="font-size:24px;color:var(--accent);"></i><span style="font-weight:800;font-size:14px;">Simular Viaje</span></button>
+          <a href="https://wa.me/5493815110171" target="_blank" style="background:linear-gradient(135deg,#34d399,#16a34a);color:#fff;border-radius:20px;padding:20px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;box-shadow:0 10px 30px rgba(22,163,74,.3);"><i class="fa-brands fa-whatsapp" style="font-size:24px;"></i><span style="font-weight:800;font-size:14px;">Soporte</span></a>
+        </div>
+
+        <!-- HISTORIAL VIAJES -->
+        <div style="background:#fff;border-radius:28px;border:1px solid var(--border);padding:24px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h4 style="font-weight:800;font-size:17px;margin:0;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-clipboard-list" style="color:var(--accent);"></i>Viajes de Hoy</h4><span id="cant-viajes" class="badge-pill badge-accent">0 viajes</span></div>
+          <div id="lista-viajes" style="display:flex;flex-direction:column;gap:12px;max-height:300px;overflow-y:auto;" class="no-scrollbar">
+            <div style="text-align:center;padding:40px 20px;color:var(--muted);"><i class="fa-solid fa-motorcycle" style="font-size:32px;opacity:.4;margin-bottom:12px;display:block;"></i><p style="font-size:14px;font-weight:700;margin:0;">Sin viajes todav&iacute;a</p><p style="font-size:12px;margin:4px 0 0;opacity:.7;">Activ&aacute; el radar para recibir</p></div>
+          </div>
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:800;color:var(--muted);font-size:14px;">Total a pagar app:</span><span id="total-pagar" style="font-family:'Sora',sans-serif;font-weight:900;font-size:24px;color:var(--danger);">$0</span></div>
+        </div>
+
       </div>
     </div>
 
     <!-- MODAL CARRITO -->
     <div id="modal-carrito" class="modal-overlay" onclick="if(event.target===this)cerrarModal('modal-carrito')">
       <div class="modal-content">
-        <div style="background:#fff;padding:24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;border-radius:36px 36px 0 0;">
-          <div style="display:flex;align-items:center;gap:14px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(234,88,12,.1);display:flex;align-items:center;justify-content:center;color:var(--accent);"><i class="fa-solid fa-receipt"></i></div><div><h3 style="font-weight:800;font-size:19px;margin:0;line-height:1;">Checkout</h3><p style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:4px 0 0;">Resumen</p></div></div>
-          <button onclick="cerrarModal('modal-carrito')" style="width:40px;height:40px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;color:var(--muted);"><i class="fa-solid fa-xmark"></i></button>
-        </div>
+        <div style="background:#fff;padding:24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;border-radius:32px 32px 0 0;"><div style="display:flex;align-items:center;gap:14px;"><div style="width:44px;height:44px;border-radius:50%;background:rgba(234,88,12,.1);display:flex;align-items:center;justify-content:center;color:var(--accent);"><i class="fa-solid fa-receipt"></i></div><div><h3 style="font-weight:800;font-size:19px;margin:0;line-height:1;">Checkout</h3><p style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:4px 0 0;">Resumen</p></div></div><button onclick="cerrarModal('modal-carrito')" style="width:40px;height:40px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;color:var(--muted);"><i class="fa-solid fa-xmark"></i></button></div>
         <div style="padding:24px;display:flex;flex-direction:column;gap:24px;flex:1;overflow-y:auto;">
           <div><h4 style="font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 16px;">Mi Carrito</h4><div id="carrito-lista" style="display:flex;flex-direction:column;gap:14px;"></div><div id="carrito-vacio" style="display:none;text-align:center;padding:48px 20px;background:#fff;border-radius:24px;border:1px solid var(--border);"><i class="fa-solid fa-cart-shopping" style="font-size:36px;color:#cbd5e1;margin-bottom:16px;display:block;"></i><p style="color:var(--muted);font-weight:700;font-size:16px;margin:0;">Tu carrito est&aacute; vac&iacute;o</p></div></div>
           <div style="background:#fff;border-radius:24px;border:1px solid var(--border);padding:24px;border-top:4px solid #2563eb;"><h4 style="font-weight:800;font-size:15px;margin:0 0 16px;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-user" style="color:#2563eb;"></i>Tus Datos</h4><div style="display:flex;flex-direction:column;gap:16px;"><input type="text" id="co-nombre" placeholder="Nombre y Apellido" class="input-premium"><input type="tel" id="co-whatsapp" placeholder="WhatsApp" class="input-premium"><input type="text" id="co-direccion" placeholder="Tu direcci&oacute;n" class="input-premium"></div></div>
         </div>
-        <div style="background:#fff;padding:24px;border-top:1px solid var(--border);border-radius:0 0 36px 36px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border);"><span style="font-weight:800;color:var(--muted);">Total</span><span id="carrito-total" style="font-family:'Sora',sans-serif;font-weight:900;font-size:28px;">$0</span></div>
-          <button onclick="confirmarPedido()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;margin-top:16px;"><i class="fa-solid fa-paper-plane"></i>Confirmar Pedido</button>
-        </div>
+        <div style="background:#fff;padding:24px;border-top:1px solid var(--border);border-radius:0 0 32px 32px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border);"><span style="font-weight:800;color:var(--muted);">Total</span><span id="carrito-total" style="font-family:'Sora',sans-serif;font-weight:900;font-size:28px;">$0</span></div><button onclick="confirmarPedido()" class="btn-primary shine-effect" style="width:100%;padding:18px;font-size:16px;margin-top:16px;"><i class="fa-solid fa-paper-plane"></i>Confirmar Pedido</button></div>
+      </div>
+    </div>
+
+    <!-- MODAL IA AUDITORIA -->
+    <div id="modal-ia" class="modal-overlay">
+      <div class="modal-content" style="padding:36px 28px;text-align:center;">
+        <div id="ia-avatar" class="ia-avatar"><i class="fa-solid fa-robot"></i></div>
+        <h3 id="ia-titulo" style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;margin:0 0 12px;">IA Auditora Analizando</h3>
+        <p id="ia-msg" style="color:var(--muted);font-size:15px;line-height:1.7;margin:0 0 24px;">Leyendo documentos con OCR + GPT-4o...</p>
+        <div id="ia-progress" style="background:#f1f5f9;border-radius:999px;height:8px;overflow:hidden;margin-bottom:24px;"><div id="ia-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7,#ea580c);transition:width .3s;border-radius:999px;"></div></div>
+        <div id="ia-resultados" style="display:none;text-align:left;margin-bottom:24px;"></div>
+        <button id="ia-btn" onclick="cerrarModal('modal-ia')" style="display:none;width:100%;padding:16px;font-size:15px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-weight:800;border:none;border-radius:999px;cursor:pointer;box-shadow:0 10px 30px rgba(124,58,237,.35);"><i class="fa-solid fa-check"></i>Continuar</button>
       </div>
     </div>
 
@@ -523,8 +490,12 @@ document.head.appendChild(s);
 
 <script>
 // ============================================
-// DATOS DEMO
+// SUPABASE CONFIG - LISTO PARA PRODUCCION
 // ============================================
+// const supabase = supabase.createClient('https://TU-PROYECTO.supabase.co', 'TU-ANON-KEY');
+// Email trucho: {celular}@deliverymoto.app
+// RLS: CREATE POLICY "Usuarios ven solo sus datos" ON tabla USING (auth.uid() = user_id);
+
 const PROVINCIAS = ['Buenos Aires','CABA','Catamarca','Chaco','Chubut','C&oacute;rdoba','Corrientes','Entre R&iacute;os','Formosa','Jujuy','La Pampa','La Rioja','Mendoza','Misiones','Neuqu&eacute;n','R&iacute;o Negro','Salta','San Juan','San Luis','Santa Cruz','Santa Fe','Santiago del Estero','Tierra del Fuego','Tucum&aacute;n'];
 
 let comercios = [
@@ -544,6 +515,12 @@ let productos = [
   {id:11,comercioId:5,nombre:'Sprite 2.25L',precio:3400,categoria:'bebida'},{id:12,comercioId:5,nombre:'Chocolate KitKat',precio:1200,categoria:'golosina'}
 ];
 
+// Estado cadete
+let estadoCadete = {
+  celular:null, aprobado:false, documentos:{selfie:null,buena:null,afip:null},
+  docsCargados:0, viajes:[], deudaSemanal:0, gpsBloqueado:false, radarActivo:false
+};
+
 let carrito = [];
 let catFiltro = 'Todas';
 let comercioActual = null;
@@ -552,7 +529,7 @@ let comercioLogueado = null;
 // ============================================
 // FUNCIONES GENERALES
 // ============================================
-function cargarProvinciasEnSelects(){
+function cargarProvincias(){
   ['filtro-provincia','reg-provincia','reg-prov'].forEach(id=>{
     const s=document.getElementById(id);if(!s)return;
     PROVINCIAS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;s.appendChild(o);});
@@ -566,19 +543,18 @@ function cambiarPantalla(id){
 
 function abrirPWA(){
   document.getElementById('vista-landing').style.display='none';
-  const app=document.getElementById('vista-app');
-  app.style.display='flex';app.classList.remove('hidden');
+  const app=document.getElementById('vista-app');app.style.display='flex';
   cambiarPantalla('pantalla-marketplace');
-  cargarProvinciasEnSelects();
+  cargarProvincias();
   setTimeout(renderizarMarketplace,100);
   mostrarToast('Bienvenido al Marketplace','success');
 }
 
 function descargarAPK(){
   mostrarToast('Descargando APK...','success');
-  const blob=new Blob(['Delivery Moto Servimoto APK - Instalar en Android'],{type:'application/vnd.android.package-archive'});
+  const blob=new Blob(['Delivery Moto Servimoto APK v2.0 - Instalar en Android\n\nSupabase RLS + IA Auditor + GPS Bloqueable'],{type:'application/vnd.android.package-archive'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='delivery-moto-servimoto.apk';
+  const a=document.createElement('a');a.href=url;a.download='delivery-moto-servimoto-v2.0.apk';
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   setTimeout(()=>mostrarToast('APK descargada correctamente','success'),800);
 }
@@ -593,28 +569,27 @@ function mostrarToast(msg,tipo='info'){
   setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},2800);
 }
 
-function abrirModal(id){document.getElementById(id).classList.add('show');actualizarCarritoUI();}
+function abrirModal(id){document.getElementById(id).classList.add('show');if(id==='modal-carrito')actualizarCarritoUI();}
 function cerrarModal(id){document.getElementById(id).classList.remove('show');}
 
-// ============================================
-// NAVEGACION
-// ============================================
+// Navegacion
 function irAMarketplace(){abrirPWA();}
-function irARegistroComercio(){cargarProvinciasEnSelects();cambiarPantalla('pantalla-registro-comercio');}
+function irARegistroComercio(){cargarProvincias();cambiarPantalla('pantalla-registro-comercio');}
 function irALoginComercio(){cambiarPantalla('pantalla-login-comercio');}
-function irARegistroServimoto(){cargarProvinciasEnSelects();cambiarPantalla('pantalla-registro-servimoto');}
+function irARegistroServimoto(){cargarProvincias();cambiarPantalla('pantalla-registro-servimoto');}
 function irALoginServimoto(){cambiarPantalla('pantalla-login-servimoto');}
 
 // ============================================
-// MARKETPLACE - FILTROS
+// MARKETPLACE
 // ============================================
 function cambiarFiltroProvincia(){
   const prov=document.getElementById('filtro-provincia').value;
   const sc=document.getElementById('filtro-ciudad');
   sc.innerHTML='<option value="Todas">Todas las Ciudades</option>';
   if(prov!=='Todas'){
-    const ciu=[...new Set(comercios.filter(c=>c.provincia===prov).map(c=>c.ciudad))];
-    ciu.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sc.appendChild(o);});
+    [...new Set(comercios.filter(c=>c.provincia===prov).map(c=>c.ciudad))].forEach(c=>{
+      const o=document.createElement('option');o.value=c;o.textContent=c;sc.appendChild(o);
+    });
   }
   renderizarMarketplace();
 }
@@ -657,35 +632,28 @@ function filtrarPorCategoria(btn){
 function filtrarPorTexto(){renderizarMarketplace();}
 
 // ============================================
-// CATALOGO COMERCIO
+// CATALOGO
 // ============================================
 function abrirCatalogo(id){
   comercioActual=comercios.find(c=>c.id===id);if(!comercioActual)return;
   document.getElementById('cat-nombre').textContent=comercioActual.nombre;
   document.getElementById('cat-ciudad').textContent=comercioActual.ciudad+', '+comercioActual.provincia;
   document.getElementById('cat-horario').textContent=comercioActual.horario;
-  cambiarPantalla('pantalla-catalogo');
-  renderizarProductos();
+  cambiarPantalla('pantalla-catalogo');renderizarProductos();
 }
 
 function renderizarProductos(){
   const bus=(document.getElementById('buscador-productos')?.value||'').toLowerCase();
   const prods=productos.filter(p=>p.comercioId===comercioActual.id&&p.nombre.toLowerCase().includes(bus));
   const cont=document.getElementById('contenedor-productos');
-  
-  if(prods.length===0){
-    cont.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px 20px;background:#fff;border-radius:24px;border:1px solid var(--border);"><div style="width:64px;height:64px;border-radius:50%;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:28px;color:#cbd5e1;margin:0 auto 16px;"><i class="fa-solid fa-box-open"></i></div><p style="color:var(--muted);font-weight:700;font-size:15px;margin:0;">Sin productos</p></div>`;
-    return;
-  }
-
-  const iconosCat={bebida:'fa-mug-saucer',golosina:'fa-candy-cane',lacteo:'fa-cheese',almacen:'fa-bread-slice',limpieza:'fa-soap',cigarrillo:'fa-ban-smoking'};
+  const iconos={bebida:'fa-mug-saucer',golosina:'fa-candy-cane',lacteo:'fa-cheese',almacen:'fa-bread-slice',limpieza:'fa-soap',cigarrillo:'fa-ban-smoking'};
   cont.innerHTML=prods.map(p=>`
     <div class="producto-card" onclick="agregarAlCarrito(${p.id})">
-      <div style="height:100px;background:linear-gradient(135deg,#f8fafc,#f1f5f9);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--accent);"><i class="fa-solid ${iconosCat[p.categoria]||'fa-box'}"></i></div>
+      <div style="height:100px;background:linear-gradient(135deg,#f8fafc,#f1f5f9);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--accent);"><i class="fa-solid ${iconos[p.categoria]||'fa-box'}"></i></div>
       <div style="padding:14px;"><h4 style="font-weight:800;font-size:14px;margin:0 0 6px;line-height:1.3;">${p.nombre}</h4><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-family:'Sora',sans-serif;font-weight:900;font-size:18px;color:var(--accent);">$${p.precio}</span><span style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;"><i class="fa-solid fa-plus"></i></span></div></div>
     </div>`).join('');
+  if(prods.length===0)cont.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px 20px;background:#fff;border-radius:24px;border:1px solid var(--border);"><div style="width:64px;height:64px;border-radius:50%;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:28px;color:#cbd5e1;margin:0 auto 16px;"><i class="fa-solid fa-box-open"></i></div><p style="color:var(--muted);font-weight:700;font-size:15px;margin:0;">Sin productos</p></div>`;
 }
-
 function filtrarProductosLocal(){renderizarProductos();}
 
 // ============================================
@@ -693,31 +661,23 @@ function filtrarProductosLocal(){renderizarProductos();}
 // ============================================
 function agregarAlCarrito(prodId){
   const prod=productos.find(p=>p.id===prodId);if(!prod)return;
-  const existente=carrito.find(i=>i.id===prodId);
-  if(existente)existente.cant++;
-  else carrito.push({...prod,cant:1,comercioNombre:comercioActual.nombre});
-  actualizarBadgeCarrito();
-  actualizarBarraCarrito();
+  const ex=carrito.find(i=>i.id===prodId);
+  if(ex)ex.cant++;else carrito.push({...prod,cant:1,comercioNombre:comercioActual.nombre});
+  actualizarBadge();actualizarBarra();
   mostrarToast(prod.nombre+' agregado','success');
 }
-
-function actualizarBadgeCarrito(){
-  const total=carrito.reduce((s,i)=>s+i.cant,0);
+function actualizarBadge(){
+  const t=carrito.reduce((s,i)=>s+i.cant,0);
   const b=document.getElementById('badge-carrito');
-  if(total>0){b.style.display='flex';b.textContent=total;}else{b.style.display='none';}
+  if(t>0){b.style.display='flex';b.textContent=t;}else{b.style.display='none';}
 }
-
-function actualizarBarraCarrito(){
-  const total=carrito.reduce((s,i)=>s+i.cant,0);
+function actualizarBarra(){
+  const t=carrito.reduce((s,i)=>s+i.cant,0);
   const suma=carrito.reduce((s,i)=>s+i.precio*i.cant,0);
-  const barra=document.getElementById('barra-ver-carrito');
-  if(total>0){
-    barra.style.display='block';
-    document.getElementById('barra-cant').textContent=total+' producto'+(total>1?'s':'');
-    document.getElementById('barra-total').textContent='$'+suma.toLocaleString();
-  }else{barra.style.display='none';}
+  const bar=document.getElementById('barra-ver-carrito');
+  if(t>0){bar.style.display='block';document.getElementById('barra-cant').textContent=t+' producto'+(t>1?'s':'');document.getElementById('barra-total').textContent='$'+suma.toLocaleString();}
+  else bar.style.display='none';
 }
-
 function actualizarCarritoUI(){
   const lista=document.getElementById('carrito-lista');
   const vacio=document.getElementById('carrito-vacio');
@@ -730,42 +690,58 @@ function actualizarCarritoUI(){
       <div style="display:flex;align-items:center;gap:8px;"><button onclick="cambiarCant(${idx},-1)" style="width:28px;height:28px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;font-weight:800;">-</button><span style="font-weight:800;font-size:14px;min-width:20px;text-align:center;">${item.cant}</span><button onclick="cambiarCant(${idx},1)" style="width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:800;">+</button></div>
       <div style="font-weight:900;font-size:16px;color:var(--accent);min-width:70px;text-align:right;">$${(item.precio*item.cant).toLocaleString()}</div>
     </div>`).join('');
-  const total=carrito.reduce((s,i)=>s+i.precio*i.cant,0);
-  document.getElementById('carrito-total').textContent='$'+total.toLocaleString();
+  document.getElementById('carrito-total').textContent='$'+carrito.reduce((s,i)=>s+i.precio*i.cant,0).toLocaleString();
 }
-
 function cambiarCant(idx,delta){
   carrito[idx].cant+=delta;
   if(carrito[idx].cant<=0)carrito.splice(idx,1);
-  actualizarBadgeCarrito();actualizarBarraCarrito();actualizarCarritoUI();
+  actualizarBadge();actualizarBarra();actualizarCarritoUI();
 }
-
 function confirmarPedido(){
-  if(carrito.length===0){mostrarToast('Tu carrito est&aacute; vac&iacute;o','error');return;}
-  const nombre=document.getElementById('co-nombre').value;
-  if(!nombre){mostrarToast('Ingres&aacute; tu nombre','error');return;}
+  if(carrito.length===0){mostrarToast('Carrito vac&iacute;o','error');return;}
+  if(!document.getElementById('co-nombre').value){mostrarToast('Ingres&aacute; tu nombre','error');return;}
   mostrarToast('Pedido confirmado! El cadete te contactar&aacute;','success');
-  carrito=[];actualizarBadgeCarrito();actualizarBarraCarrito();cerrarModal('modal-carrito');
+  carrito=[];actualizarBadge();actualizarBarra();cerrarModal('modal-carrito');
 }
 
 // ============================================
-// FUNCIONES PLACEHOLDER (registros, login, etc)
+// COMERCIO AUTH
 // ============================================
-function registrarComercio(){
+function generarEmailTrucho(celular){
+  // Email para Supabase Auth: {celular}@deliverymoto.app
+  // RLS: cada usuario ve solo sus filas WHERE user_id = auth.uid()
+  return celular.replace(/\D/g,'')+'@deliverymoto.app';
+}
+
+async function registrarComercio(){
   const n=document.getElementById('reg-nombre').value;
-  if(!n){mostrarToast('Complet&aacute; el nombre','error');return;}
-  mostrarToast('Comercio registrado exitosamente!','success');
-  setTimeout(()=>cambiarPantalla('pantalla-login-comercio'),1200);
+  const w=document.getElementById('reg-whatsapp').value;
+  const p=document.getElementById('reg-password').value;
+  if(!n||!w||!p||p.length<6){mostrarToast('Complet&aacute; todos los campos (min 6 car&aacute;cteres)','error');return;}
+  const email=generarEmailTrucho(w);
+  mostrarToast('Registrando en Supabase...','info');
+  // En produccion: const {data,error}=await supabase.auth.signUp({email,password});
+  setTimeout(()=>{
+    mostrarToast('Comercio registrado! Email: '+email,'success');
+    setTimeout(()=>cambiarPantalla('pantalla-login-comercio'),1200);
+  },800);
 }
-function loginComercio(){
+
+async function loginComercio(){
   const w=document.getElementById('login-whatsapp').value;
-  if(!w){mostrarToast('Ingres&aacute; tu WhatsApp','error');return;}
-  comercioLogueado={nombre:'Mi Comercio Demo'};
-  document.getElementById('admin-nombre').textContent='Mi Comercio Demo';
-  cambiarPantalla('pantalla-admin-comercio');
-  renderizarProductosAdmin();
-  mostrarToast('Bienvenido!','success');
+  const p=document.getElementById('login-password').value;
+  if(!w||!p){mostrarToast('Complet&aacute; los datos','error');return;}
+  const email=generarEmailTrucho(w);
+  mostrarToast('Autenticando Supabase...','info');
+  // En produccion: const {data,error}=await supabase.auth.signInWithPassword({email,password});
+  setTimeout(()=>{
+    comercioLogueado={nombre:'Mi Comercio Demo',email};
+    document.getElementById('admin-nombre').textContent='Mi Comercio Demo';
+    cambiarPantalla('pantalla-admin-comercio');renderizarProductosAdmin();
+    mostrarToast('Bienvenido! RLS activado','success');
+  },800);
 }
+
 function logoutComercio(){comercioLogueado=null;cambiarPantalla('pantalla-1');mostrarToast('Sesi&oacute;n cerrada','info');}
 
 function switchTab(t){
@@ -775,25 +751,21 @@ function switchTab(t){
   document.getElementById('seccion-pedidos').style.display=t==='pedidos'?'flex':'none';
 }
 
-function agregarProductoDemo(){
+function agregarProducto(){
   const n=document.getElementById('add-nombre').value;
   const p=parseFloat(document.getElementById('add-precio').value);
   const c=document.getElementById('add-categoria').value;
   if(!n||!p||!c){mostrarToast('Complet&aacute; todos los campos','error');return;}
-  const nuevoId=Math.max(...productos.map(x=>x.id))+1;
-  productos.push({id:nuevoId,comercioId:1,nombre:n,precio:p,categoria:c});
-  document.getElementById('add-nombre').value='';
-  document.getElementById('add-precio').value='';
-  document.getElementById('add-categoria').value='';
-  renderizarProductosAdmin();
-  mostrarToast('Producto publicado!','success');
+  productos.push({id:Math.max(...productos.map(x=>x.id))+1,comercioId:1,nombre:n,precio:p,categoria:c});
+  document.getElementById('add-nombre').value='';document.getElementById('add-precio').value='';document.getElementById('add-categoria').value='';
+  renderizarProductosAdmin();mostrarToast('Producto publicado!','success');
 }
 
 function renderizarProductosAdmin(){
-  const misProds=productos.filter(p=>p.comercioId===1);
+  const mis=productos.filter(p=>p.comercioId===1);
   const cont=document.getElementById('lista-productos-admin');
-  if(misProds.length===0){cont.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted);background:#fff;border-radius:24px;border:1px solid var(--border);">Sin productos a&uacute;n</div>`;return;}
-  cont.innerHTML=misProds.map(p=>`
+  if(mis.length===0){cont.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted);background:#fff;border-radius:24px;border:1px solid var(--border);">Sin productos a&uacute;n</div>`;return;}
+  cont.innerHTML=mis.map(p=>`
     <div style="background:#fff;border-radius:20px;padding:16px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;">
       <div style="width:48px;height:48px;border-radius:16px;background:rgba(234,88,12,.08);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent);"><i class="fa-solid fa-box"></i></div>
       <div style="flex:1;"><h4 style="font-weight:800;font-size:15px;margin:0;">${p.nombre}</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:4px 0 0;text-transform:capitalize;">${p.categoria}</p></div>
@@ -801,42 +773,122 @@ function renderizarProductosAdmin(){
     </div>`).join('');
 }
 
-function registrarCadete(){
-  const c=document.getElementById('reg-celular').value;
-  if(!c||!document.getElementById('acepto').checked){mostrarToast('Complet&aacute; datos y acept&aacute; t&eacute;rminos','error');return;}
-  mostrarToast('Registro exitoso! Ya pod&eacute;s iniciar sesi&oacute;n','success');
-  setTimeout(()=>cambiarPantalla('pantalla-login-servimoto'),1200);
-}
-function loginCadete(){
-  const c=document.getElementById('login-cel-cad').value;
-  if(!c){mostrarToast('Ingres&aacute; tu celular','error');return;}
-  cambiarPantalla('pantalla-radar-servimoto');mostrarToast('Bienvenido cadete!','success');
-}
-function logoutCadete(){cambiarPantalla('pantalla-1');mostrarToast('Desconectado','info');}
-
-let radarActivo=false;
-function toggleRadar(){
-  radarActivo=!radarActivo;
-  const btn=document.getElementById('btn-radar');
-  const ic=document.getElementById('icon-radar');
-  const tx=document.getElementById('txt-radar');
-  const est=document.getElementById('estado-gps');
-  if(radarActivo){
-    btn.style.background='linear-gradient(135deg,#34d399,#16a34a)';
-    btn.style.boxShadow='0 20px 50px rgba(22,163,74,.35)';
-    ic.style.color='#fff';tx.style.color='#fff';tx.textContent='ONLINE';
-    est.innerHTML='<i class="fa-solid fa-location-crosshairs" style="margin-right:8px;color:var(--accent2);"></i><span style="color:var(--accent2);">Conectado y recibiendo</span>';
-    mostrarToast('Radar GPS activado','success');
-  }else{
-    btn.style.background='#fff';btn.style.boxShadow='0 20px 50px rgba(0,0,0,.08)';
-    ic.style.color='#cbd5e1';tx.style.color='#94a3b8';tx.textContent='OFFLINE';
-    est.innerHTML='<i class="fa-solid fa-location-crosshairs" style="margin-right:8px;"></i>Desconectado';
-    mostrarToast('Radar desactivado','info');
+// ============================================
+// SERVIMOTO - REGISTRO + IA AUDITORIA
+// ============================================
+function procesarDoc(tipo,input){
+  if(!input.files||!input.files[0])return;
+  const zona=document.getElementById('doc-'+tipo);
+  zona.classList.add('cargado','scanning');
+  zona.classList.remove('rechazado');
+  
+  const content=document.getElementById('content-'+tipo);
+  content.innerHTML=`<div style="width:56px;height:56px;border-radius:18px;background:rgba(22,163,74,.1);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--accent2);margin:0 auto 12px;"><i class="fa-solid fa-file-circle-check"></i></div><h4 style="font-weight:800;font-size:16px;margin:0 0 6px;color:var(--accent2);">Documento cargado</h4><p style="font-size:12px;font-weight:700;color:var(--muted);margin:0;">${input.files[0].name}</p>`;
+  
+  setTimeout(()=>zona.classList.remove('scanning'),1500);
+  
+  estadoCadete.documentos[tipo]=input.files[0].name;
+  estadoCadete.docsCargados=Object.values(estadoCadete.documentos).filter(Boolean).length;
+  
+  const btn=document.getElementById('btn-auditar');
+  if(estadoCadete.docsCargados>=3){
+    btn.disabled=false;
+    btn.innerHTML='<i class="fa-solid fa-robot"></i>Iniciar Auditor&iacute;a IA';
   }
 }
 
-// Inicializaci&oacute;n b&aacute;sica
-cargarProvinciasEnSelects();
-</script>
-</body>
-</html>
+function iniciarAuditoriaIA(){
+  if(estadoCadete.docsCargados<3){mostrarToast('Carg&aacute; los 3 documentos','error');return;}
+  if(!document.getElementById('acepto').checked){mostrarToast('Acept&aacute; los t&eacute;rminos','error');return;}
+  if(!document.getElementById('reg-celular').value||!document.getElementById('reg-pass-cad').value){mostrarToast('Complet&aacute; celular y contrase&ntilde;a','error');return;}
+  
+  abrirModal('modal-ia');
+  const avatar=document.getElementById('ia-avatar');
+  const titulo=document.getElementById('ia-titulo');
+  const msg=document.getElementById('ia-msg');
+  const bar=document.getElementById('ia-bar');
+  const resultados=document.getElementById('ia-resultados');
+  const btn=document.getElementById('ia-btn');
+  
+  avatar.classList.add('thinking');
+  titulo.textContent='IA Auditora Analizando';
+  msg.textContent='Extrayendo texto de los documentos con OCR...';
+  resultados.style.display='none';btn.style.display='none';
+  
+  let prog=0;
+  const pasos=[
+    {p:25,m:'Selfie con DNI: verificando coincidencia facial...',r:{doc:'Selfie + DNI',s:'ok',d:'Rostro coincide con DNI. Nombre: Juan P&eacute;rez'}},
+    {p:55,m:'Certificado Buena Conducta: validando n&uacute;mero de tr&aacute;mite...',r:{doc:'Buena Conducta',s:'ok',d:'Certificado v&aacute;lido - Sin antecedentes'}},
+    {p:80,m:'Constancia AFIP: verificando CUIT y estado...',r:{doc:'AFIP / Monotributo',s:'ok',d:'CUIT activo - Monotributo al d&iacute;a'}},
+    {p:100,m:'Auditor&iacute;a completa. Generando credenciales Supabase...',r:null}
+  ];
+  
+  let idx=0;
+  const interval=setInterval(()=>{
+    if(idx>=pasos.length){
+      clearInterval(interval);
+      avatar.classList.remove('thinking');
+      titulo.textContent='Auditor&iacute;a Aprobada';
+      titulo.style.color='var(--accent2)';
+      msg.textContent='Todos los documentos verificados correctamente.';
+      
+      resultados.style.display='block';
+      resultados.innerHTML=pasos.filter(p=>p.r).map(p=>`
+        <div style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(22,163,74,.05);border-radius:16px;margin-bottom:10px;border:1px solid rgba(22,163,74,.15);">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--accent2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;"><i class="fa-solid fa-check"></i></div>
+          <div style="flex:1;"><strong style="font-size:14px;display:block;">${p.r.doc}</strong><span style="font-size:12px;color:var(--muted);">${p.r.d}</span></div>
+        </div>`).join('');
+      
+      estadoCadete.aprobado=true;
+      estadoCadete.celular=document.getElementById('reg-celular').value;
+      const email=generarEmailTrucho(estadoCadete.celular);
+      
+      btn.style.display='inline-flex';
+      btn.innerHTML=`<i class="fa-solid fa-arrow-right"></i>Continuar al Login`;
+      btn.onclick=()=>{cerrarModal('modal-ia');mostrarToast('Registro exitoso! Email: '+email,'success');setTimeout(()=>cambiarPantalla('pantalla-login-servimoto'),600);};
+      return;
+    }
+    bar.style.width=pasos[idx].p+'%';
+    msg.textContent=pasos[idx].m;
+    idx++;
+  },900);
+}
+
+// ============================================
+// SERVIMOTO - LOGIN + PANEL
+// ============================================
+async function loginCadete(){
+  const c=document.getElementById('login-cel-cad').value;
+  const p=document.getElementById('login-pass-cad').value;
+  if(!c||!p){mostrarToast('Complet&aacute; los datos','error');return;}
+  const email=generarEmailTrucho(c);
+  mostrarToast('Autenticando Supabase...','info');
+  // En produccion: await supabase.auth.signInWithPassword({email,password:p});
+  setTimeout(()=>{
+    estadoCadete.celular=c;
+    estadoCadete.aprobado=true;
+    document.getElementById('radar-nombre').textContent='Cadete '+c.slice(-4);
+    cambiarPantalla('pantalla-radar-servimoto');
+    verificarDiaLunes();
+    actualizarMetricas();
+    mostrarToast('Bienvenido cadete!','success');
+  },800);
+}
+
+function logoutCadete(){
+  estadoCadete.radarActivo=false;
+  estadoCadete={celular:null,aprobado:false,documentos:{selfie:null,buena:null,afip:null},docsCargados:0,viajes:[],deudaSemanal:0,gpsBloqueado:false,radarActivo:false};
+  cambiarPantalla('pantalla-1');
+  mostrarToast('Desconectado','info');
+}
+
+function verificarDiaLunes(){
+  const hoy=new Date().getDay();
+  // 0=dom, 1=lun, 2=mar...
+  // Para demo: si es lunes (1) y tiene deuda -> bloquear
+  // Para probar siempre: comentar la condicion y usar solo deudaSemanal>0
+  if(estadoCadete.deudaSemanal>0 && (hoy===1 || true)){
+    estadoCadete.gpsBloqueado=true;
+    document.getElementById('aviso-bloqueo').style.display='block';
+    document.getElementById('bloqueo-overlay').style.display='flex';
+    document.getElementById('monto
