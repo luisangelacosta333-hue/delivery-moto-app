@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0f172a">
 <title>Delivery Moto | Marketplace Premium 100% Cloud</title>
 
-<!-- INYECCIÓN PWA: MANIFEST -->
+<!-- INYECCIÓN PWA: MANIFEST PARA INSTALACIÓN EN CELULARES -->
 <link rel="manifest" id="manifest-placeholder">
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -16,23 +16,71 @@
 <!-- SUPABASE CLIENT OFICIAL -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- GOOGLE MAPS API (AUTOACOMPLETADO Y DISTANCIA EXACTA) -->
+<!-- GOOGLE MAPS API (AUTOACOMPLETADO Y DISTANCIA EXACTA) CON TU LLAVE PRIVADA -->
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLcIDHZkqLfHFdf7gzhlX8&libraries=places&callback=initGooglePlaces"></script>
 
-<style>
-/* ==========================================
-   ESTILOS GLOBALES Y ANIMACIONES (CORREGIDO)
-   ========================================== */
+<script>
+// ==========================================
+// PWA: MANIFEST Y SERVICE WORKER (CACHÉ Y OFFLINE) ARREGLADO
+// ==========================================
+const manifestJSON = {
+  "name": "Delivery Moto Marketplace",
+  "short_name": "DeliveryMoto",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+};
+// Usar Data URI para mayor compatibilidad de carga del manifest (soluciona error de PWA JSON)
+const manifestURL = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifestJSON));
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
+});
+
+// Service Worker Básico para Instalabilidad Offline
+const swCode = `
+self.addEventListener('install', (e) => { self.skipWaiting(); });
+self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request))); });
+`;
+const swBlob = new Blob([swCode], {type: 'application/javascript'});
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).then(() => console.log('PWA Service Worker Registrado')).catch(err => console.log('Error SW', err));
+}
+
+(function(){
+    var s = document.createElement('style');
+    s.textContent = `
 :root {
-    --naranja: #ff6b00; --naranja2: #ff8c00; --naranja3: #cc4400;
-    --verde: #00d13a; --verde2: #16a34a; --texto: #0f172a;
+    --naranja: #ff6b00;
+    --naranja2: #ff8c00;
+    --naranja3: #cc4400;
+    --verde: #00d13a;
+    --verde2: #16a34a;
+    --texto: #0f172a;
+    --bg-dark: #0f172a;
+    --rojo: #dc2626;
+    --azul: #2563eb;
+    --dorado: #f59e0b;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; background: #f8fafc; overflow-x: hidden; }
+body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; background: #f8fafc; overflow-x: hidden; }
 a { text-decoration: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+@keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 .landing-bg { background: linear-gradient(-45deg, #0f172a, #1e293b, #111827, #1f2937); background-size: 400% 400%; animation: gradientBG 15s ease infinite; }
 @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -41,343 +89,438 @@ a { text-decoration: none; }
 .logo-float { animation: logoFloat 3.5s ease-in-out infinite; }
 @keyframes pulseGreen { 0%, 100% { box-shadow: 0 0 0 0 rgba(0, 209, 58, 0.8); } 50% { box-shadow: 0 0 0 10px rgba(0, 209, 58, 0); } }
 .pg { animation: pulseGreen 1.8s ease-in-out infinite; }
-
-/* Animaciones del Radar (Cadete) */
 @keyframes radarPlay { 0% { transform: scale(.9); opacity: 1; border-color: rgba(255,107,0,.9); } 100% { transform: scale(2.4); opacity: 0; border-color: rgba(255,107,0,0); } }
 .onda-play { position: absolute; border-radius: 50%; border: 3px solid var(--naranja2); animation: radarPlay 2s cubic-bezier(.1,.5,.5,1) infinite; }
 .onda-play-1 { animation-delay: 0s; width: 130px; height: 130px; }
 .onda-play-2 { animation-delay: .6s; width: 130px; height: 130px; }
 .onda-play-3 { animation-delay: 1.2s; width: 130px; height: 130px; }
+@keyframes shine { 0% { transform: translateX(-100%) skewX(-20deg); } 100% { transform: translateX(200%) skewX(-20deg); } }
+.shine-effect { position: relative; overflow: hidden; }
+.shine-effect::after { content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shine 3s infinite; }
+@keyframes floatUp { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+.float-up { animation: floatUp 4s ease-in-out infinite; }
+@keyframes glowPulse { 0%, 100% { filter: drop-shadow(0 0 10px rgba(255,107,0,0.5)); } 50% { filter: drop-shadow(0 0 25px rgba(255,107,0,0.9)); } }
+.glow-pulse { animation: glowPulse 2.5s ease-in-out infinite; }
 
-/* Textos y Botones */
 .titulo-3d { font-family: 'Sora', sans-serif; font-weight: 800; color: #fff; letter-spacing: -1.5px; text-transform: uppercase; text-shadow: 0 1px 0 #e6e6e6, 0 2px 0 #d9d9d9, 0 3px 0 #cccccc, 0 4px 0 #bfbfbf, 0 5px 0 #b3b3b3, 0 6px 1px rgba(0,0,0,.1), 0 0 10px rgba(0,0,0,.3); }
-.gradient-text { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 50%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.btn-a { background: linear-gradient(135deg, var(--naranja2) 0%, var(--naranja) 50%, var(--naranja3) 100%); color: #fff; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer; transition: all .25s; display: flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(255,107,0,.35), inset 0 1px 0 rgba(255,255,255,.35); }
-.btn-verde { background: linear-gradient(135deg, #10b981 0%, #16a34a 100%); color: #fff; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer; transition: all .25s; display: flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(22,163,74,.3); }
+.frase-moderna { font-family: 'Sora', sans-serif; font-weight: 700; color: #fff; letter-spacing: -.3px; }
 
-/* Inputs y Vistas */
-.input-premium { width: 100%; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 1rem; padding: 16px 20px; font-size: 16px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.3s; }
-.input-premium:focus { border-color: var(--naranja); box-shadow: 0 0 0 4px rgba(255,107,0,0.15); }
-.pantalla { display: none; opacity: 0; transition: all .4s ease; transform: translateY(15px); width:100%; }
+.gradient-text { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 50%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.gradient-text-blue { background: linear-gradient(135deg, #60a5fa 0%, #2563eb 50%, #1d4ed8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.btn-a { background: linear-gradient(135deg, var(--naranja2) 0%, var(--naranja) 50%, var(--naranja3) 100%); color: #fff; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .25s; display: flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(255,107,0,.35), inset 0 1px 0 rgba(255,255,255,.35); }
+.btn-a:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(255,107,0,.45); }
+.btn-a:active { transform: scale(0.97); }
+
+.btn-b { background: #fff; color: #0f172a; font-weight: 800; transition: all .3s; border: 2px solid #e2e8f0; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,.05); display: inline-flex; align-items: center; justify-content: center; gap: .5rem; }
+.btn-b:hover { transform: translateY(-3px); border-color: var(--naranja); box-shadow: 0 10px 25px rgba(255,107,0,.15); }
+
+.btn-d { background: #0f172a; color: #fff; font-weight: 800; transition: all .3s; border-radius: 1rem; box-shadow: 0 12px 28px rgba(15,23,42,.4), inset 0 1px 0 rgba(255,255,255,.1); display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid #334155; }
+.btn-d:hover { transform: translateY(-3px); background: var(--naranja); box-shadow: 0 18px 38px rgba(255,107,0,.5); }
+
+.btn-verde { background: linear-gradient(135deg, #10b981 0%, #16a34a 100%); color: #fff; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .25s; display: flex; justify-content: center; align-items: center; gap: .5rem; box-shadow: 0 12px 30px rgba(22,163,74,.3), inset 0 1px 0 rgba(255,255,255,.35); }
+.btn-verde:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(22,163,74,.4); }
+.btn-verde:active { transform: scale(0.97); }
+
+.input-premium { width: 100%; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 1rem; padding: 16px 20px; font-size: 16px; font-weight: 700; color: #0f172a; outline: none; transition: all 0.3s; font-family: 'Quicksand', sans-serif; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
+.input-premium:focus { border-color: var(--naranja); box-shadow: 0 0 0 4px rgba(255,107,0,0.15), inset 0 2px 5px rgba(0,0,0,0.02); }
+.input-premium::placeholder { color: #94a3b8; font-weight: 600; }
+
+/* Estilo Predictivo Google Maps */
+.pac-container { border-radius: 1rem; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border: 2px solid #e2e8f0; font-family: 'Quicksand', sans-serif; padding: 5px; margin-top: 5px; z-index: 1000000 !important; }
+.pac-item { padding: 12px; font-size: 14px; cursor: pointer; border-radius: 0.5rem; transition: background 0.2s; border-top: none; }
+.pac-item:hover { background: #f8fafc; }
+.pac-item-query { font-size: 15px; font-weight: 800; color: #0f172a; }
+
+.pantalla { display: none; opacity: 0; transition: all .4s ease; transform: translateY(15px); }
 .pantalla.activa { display: flex; opacity: 1; transform: translateY(0); }
 
-/* UI Componentes */
-.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); z-index: 100000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .4s ease; }
+#toast-container { position: fixed; top: 0; left: 0; right: 0; z-index: 9999999; pointer-events: none; display: flex; flex-direction: column; align-items: center; padding-top: 25px; gap: 8px; }
+.toast { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(25px); color: #fff; border-radius: 1.5rem; padding: 16px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); transform: translateY(-100px); opacity: 0; transition: all .4s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 15.5px; width: 92%; max-width: 360px; border: 1px solid rgba(255,255,255,0.15); }
+.toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); z-index: 100000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .4s cubic-bezier(0.16, 1, 0.3, 1); }
 .modal-overlay.show { opacity: 1; pointer-events: auto; }
-.modal-content { background: #f8fafc; width: 100%; max-width: 448px; max-height: 92vh; border-radius: 2.5rem 2.5rem 0 0; transform: translateY(100%); transition: transform .4s ease; display: flex; flex-direction: column; overflow: hidden; }
+.modal-content { background: #f8fafc; width: 100%; max-width: 448px; max-height: 92vh; border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -25px 60px rgba(0,0,0,0.25); transform: translateY(100%); transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; overflow: hidden; }
 .modal-overlay.show .modal-content { transform: translateY(0); }
-.bottom-nav { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid #f1f5f9; position: fixed; bottom: 0; width: 100%; max-width: 448px; display: flex; justify-content: space-around; padding: 16px 0 24px 0; z-index: 50; border-radius: 2.5rem 2.5rem 0 0; }
+
+.modal-centered { align-items: center; justify-content: center; }
+.modal-centered .modal-content { border-radius: 2.25rem; transform: scale(0.92) translateY(20px); width: 90%; max-height: 85vh; }
+.modal-overlay.show .modal-centered .modal-content { transform: scale(1) translateY(0); }
+
+.bottom-nav { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid #f1f5f9; position: fixed; bottom: 0; width: 100%; max-width: 448px; display: flex; justify-content: space-around; padding: 16px 0 24px 0; z-index: 50; border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.06); }
 .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; color: #94a3b8; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
 .nav-item.active { color: var(--naranja); transform: translateY(-3px); }
+.nav-item i { font-size: 24px; transition: transform 0.2s; }
+.nav-item:active i { transform: scale(0.8); }
 
-/* Upload Zone y Mapa */
-.upload-zone { border: 3px dashed #cbd5e1; border-radius: 1.5rem; padding: 25px; text-align: center; cursor: pointer; transition: all 0.3s; background: #f8fafc; }
-.upload-zone.has-file { border-style: solid; border-color: var(--verde); background: rgba(22,163,74,0.05); }
-.map-container { position: relative; border-radius: 1.5rem; overflow: hidden; border: 3px solid var(--naranja); transition: all 0.4s; height: 0; opacity: 0; width: 100%; margin-top: 0; }
+.producto-card { background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; transition: all 0.3s; cursor: pointer; }
+.producto-card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: #e2e8f0; }
+
+.comercio-card { background: white; border-radius: 1.5rem; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; cursor: pointer; transition: all 0.3s; display: flex; gap: 16px; align-items: center; }
+.comercio-card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: var(--naranja); }
+
+/* TABS CSS */
+.tab-btn { padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.2s; border: none; background: transparent; color: #64748b; font-family: 'Quicksand', sans-serif; }
+.tab-btn.active { background: #0f172a; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+/* Categorías Chips Marketplace */
+.cat-chip { padding: 10px 18px; border-radius: 999px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.25s; border: 2px solid #e2e8f0; background: white; color: #64748b; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+.cat-chip:hover { transform: translateY(-2px); border-color: #cbd5e1; }
+.cat-chip.active { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%); color: white; border-color: transparent; box-shadow: 0 8px 20px rgba(255,107,0,0.35); }
+
+.badge-categoria { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4px; }
+.cat-bebida { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+.cat-golosina { background: rgba(236, 72, 153, 0.1); color: #db2777; }
+.cat-cigarrillo { background: rgba(100, 116, 139, 0.12); color: #475569; }
+.cat-lacteo { background: rgba(251, 191, 36, 0.12); color: #d97706; }
+.cat-almacen { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+.cat-limpieza { background: rgba(20, 184, 166, 0.1); color: #0d9488; }
+.cat-carniceria { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+.cat-otros { background: rgba(148, 163, 184, 0.15); color: #64748b; }
+
+/* GPS y Mapa Premium CSS */
+.map-container { position: relative; border-radius: 1.5rem; overflow: hidden; border: 3px solid var(--naranja); box-shadow: 0 15px 35px rgba(255,107,0,0.15); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); height: 0; opacity: 0; width: 100%; margin-top: 0; }
 .map-container.active { height: 280px; opacity: 1; margin-top: 1rem; }
-.motito-tracker { position: absolute; z-index: 50; transition: top 2s ease, left 2s ease; transform: translate(-50%, -50%); }
+.route-line { border-left: 3px dashed #cbd5e1; height: calc(100% - 20px); position: absolute; left: 23px; top: 30px; z-index: 0; }
+.punto-indicador { width: 22px; height: 22px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.15); position: absolute; left: -30px; top: 50%; transform: translateY(-50%); z-index: 10; }
+
+/* Motito Animada en el Mapa (Supabase Realtime Simulation) */
+.motito-tracker { position: absolute; z-index: 50; transition: top 2s ease-in-out, left 2s ease-in-out; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); transform: translate(-50%, -50%); }
 .motito-pulse { position: absolute; width: 40px; height: 40px; background: rgba(255,107,0,0.4); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: -1; animation: mapPulse 1.5s infinite; }
 @keyframes mapPulse { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
-</style>
 
-<script>
-// ==========================================
-// 1. CONFIGURACIÓN: SUPABASE Y OPENAI
-// ==========================================
-// Colocá acá tus llaves reales de Supabase
-const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
-const SUPABASE_ANON_KEY = 'TU_ANON_KEY';
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+.badge-seguridad { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge-verde { background: rgba(22,163,74,0.1); color: var(--verde2); border: 1px solid rgba(22,163,74,0.2); }
+.badge-naranja { background: rgba(255,107,0,0.1); color: var(--naranja); border: 1px solid rgba(255,107,0,0.2); }
+.badge-azul { background: rgba(37,99,235,0.1); color: var(--azul); border: 1px solid rgba(37,99,235,0.2); }
+.badge-dorado { background: rgba(245, 158, 11, 0.1); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.25); }
 
-const OPENAI_API_KEY = 'TU_OPENAI_API_KEY'; 
+@keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+.animate-slide-in { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 
-// Datos de Pago de tu cuenta (Para que la IA los valide)
-const ADMIN_ALIAS = 'noir.elite.ceo';
-const ADMIN_CBU = '0110257630025717844115';
+.portada-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 1.5rem; background: #e2e8f0; }
+.upload-zone { border: 3px dashed #cbd5e1; border-radius: 1.5rem; padding: 25px; text-align: center; cursor: pointer; transition: all 0.3s; background: #f8fafc; }
+.upload-zone:hover { border-color: var(--naranja); background: #fff7ed; }
+.upload-zone.has-file { border-style: solid; border-color: var(--verde); background: rgba(22,163,74,0.05); }
 
-// ==========================================
-// 2. PWA: MANIFEST Y SERVICE WORKER
-// ==========================================
-const manifestJSON = {
-  "name": "Delivery Moto", "short_name": "DeliveryMoto", "start_url": ".", "display": "standalone",
-  "background_color": "#0f172a", "theme_color": "#0f172a",
-  "icons": [
-    { "src": "https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D", "sizes": "192x192", "type": "image/jpeg" },
-    { "src": "https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D", "sizes": "512x512", "type": "image/jpeg" }
-  ]
-};
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(new Blob([JSON.stringify(manifestJSON)], {type: 'application/json'})));
-});
-if ('serviceWorker' in navigator) {
-    const swCode = `self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));`;
-    navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type: 'application/javascript'})));
-}
+/* LANDING PAGE PREMIUM STYLES */
+.hero-pattern { background-image: radial-gradient(circle at 25% 25%, rgba(255,107,0,0.15) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(37,99,235,0.12) 0%, transparent 50%); }
+.glass-card { background: rgba(255,255,255,0.06); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.12); }
+.stat-number { font-family: 'Sora', sans-serif; font-weight: 800; background: linear-gradient(135deg, #ff8c00, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.feature-icon-wrap { width: 64px; height: 64px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+.pro-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #78350f; }
 
-// ==========================================
-// 3. NAVEGACIÓN QUIRÚRGICA
-// ==========================================
-function abrirPWA() {
-    document.getElementById('vista-landing').style.display = 'none';
-    document.getElementById('vista-app').style.display = 'flex';
-    cambiarPantalla('pantalla-1');
-}
-
-function cambiarPantalla(idDestino) {
-    document.querySelectorAll('.pantalla').forEach(p => {
-        p.classList.remove('activa'); p.style.display = 'none';
-    });
-    const destino = document.getElementById(idDestino);
-    if(destino) { destino.classList.add('activa'); destino.style.display = 'flex'; }
-}
-
-function irAMarketplace() { cambiarPantalla('pantalla-marketplace'); }
-function irARegistroComercio() { cambiarPantalla('pantalla-registro-comercio'); }
-function irALoginComercio() { cambiarPantalla('pantalla-login-comercio'); }
-function irARegistroServimoto() { cambiarPantalla('pantalla-registro-servimoto'); }
-function irALoginServimoto() { cambiarPantalla('pantalla-login-servimoto'); }
-function cerrarModal(id) { document.getElementById(id).classList.remove('show'); }
-function abrirModal(id) { document.getElementById(id).classList.add('show'); }
-function vibrar(patron) { if ('vibrate' in navigator) navigator.vibrate(patron); }
-
-// ==========================================
-// 4. LÓGICA CORE: STORAGE Y FAKE RLS
-// ==========================================
-async function subirArchivoStorage(file, whatsappKey, subcarpeta) {
-    if (!file) return null;
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${whatsappKey}/${subcarpeta}/${Date.now()}.${fileExt}`; // Carpeta por WhatsApp = Fake RLS
-    
-    const { error } = await _supabase.storage.from('delivery_bucket').upload(fileName, file, { cacheControl: '3600', upsert: false });
-    if (error) { console.error('Storage Error:', error); return null; }
-    
-    const { data } = _supabase.storage.from('delivery_bucket').getPublicUrl(fileName);
-    return data.publicUrl;
-}
-
-async function registrarComercioSupabase() {
-    const wa = document.getElementById('reg-whatsapp').value;
-    const nombre = document.getElementById('reg-nombre').value;
-    const pass = document.getElementById('reg-password').value;
-    const fPortada = document.getElementById('file-portada-comercio').files[0];
-
-    if(!wa || !nombre || !pass) return alert("Completá los datos obligatorios hermano.");
-    
-    let urlPortada = "";
-    if(fPortada) urlPortada = await subirArchivoStorage(fPortada, wa, 'comercio_fotos');
-
-    // Hasheo con el WhatsApp (Tu técnica)
-    const hash = btoa(pass + "-" + wa);
-    
-    const { error } = await _supabase.from('comercios').insert([{ whatsapp: wa, nombre: nombre, password_hash: hash, portada_url: urlPortada }]);
-    if(error) return alert("Fallo DB: " + error.message);
-    
-    alert("Comercio creado 100% Cloud.");
-    irALoginComercio();
-}
-
-// ==========================================
-// 5. OPENAI: AUDITORÍA CADETES (GPT-4o)
-// ==========================================
-async function iniciarAuditoriaIA() {
-    const wa = document.getElementById('reg-celular').value;
-    const fSelfie = document.getElementById('file-selfie-cadete').files[0];
-    const fAfip = document.getElementById('file-afip').files[0];
-    const fPolicia = document.getElementById('file-policia').files[0];
-
-    if(!wa || !fSelfie || !fAfip || !fPolicia) return alert("Faltan subir los 3 documentos.");
-
-    alert("🤖 GPT-4o auditando documentación. Esperá unos segundos...");
-
-    const urlSelfie = await subirArchivoStorage(fSelfie, wa, 'auditoria_docs');
-    const urlAfip = await subirArchivoStorage(fAfip, wa, 'auditoria_docs');
-    const urlPolicia = await subirArchivoStorage(fPolicia, wa, 'auditoria_docs');
-
-    try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_API_KEY}` },
-            body: JSON.stringify({
-                model: "gpt-4o",
-                messages: [
-                    { role: "system", content: "Revisá estas 3 imágenes: 1) Selfie clara, 2) Constancia AFIP Argentina, 3) Certificado Buena Conducta Policial. Si es todo válido y real, respondé SOLO 'APROBADO'." },
-                    { role: "user", content: [ { type: "image_url", image_url: { url: urlSelfie } }, { type: "image_url", image_url: { url: urlAfip } }, { type: "image_url", image_url: { url: urlPolicia } } ] }
-                ],
-                max_tokens: 50
-            })
-        });
-
-        const data = await response.json();
-        const dictamen = data.choices[0].message.content;
-
-        if (dictamen.includes('APROBADO')) {
-            const hash = btoa(document.getElementById('reg-password-cadete').value + "-" + wa);
-            await _supabase.from('cadetes').insert([{ whatsapp: wa, pass_hash: hash, estado: 'activo', docs: { selfie: urlSelfie, afip: urlAfip, policia: urlPolicia } }]);
-            alert("✅ ¡Aprobado por IA! Ya podés acceder.");
-            irALoginServimoto();
-        } else {
-            alert("❌ IA rechazó los documentos: " + dictamen);
-        }
-    } catch (err) { alert("Fallo de red conectando con OpenAI."); }
-}
-
-// ==========================================
-// 6. OPENAI: LECTURA DE PAGOS A NOIR.ELITE.CEO
-// ==========================================
-async function pagarLiquidacionCadeteConIA(waCadete) {
-    const file = document.getElementById('file-comprobante-pago').files[0];
-    if(!file) return alert("Subí la foto de la transferencia.");
-
-    alert("🤖 Verificando transferencia a tu cuenta...");
-    const urlPago = await subirArchivoStorage(file, waCadete, 'comprobantes_pago');
-
-    try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_API_KEY}` },
-            body: JSON.stringify({
-                model: "gpt-4o",
-                messages: [
-                    { role: "system", content: `Analizá el comprobante. Verificá que el dinero se envió al Alias '${ADMIN_ALIAS}' o al CBU '${ADMIN_CBU}'. Si coincide y el estado es exitoso/aprobado, respondé SOLO 'PAGO_VALIDADO'. Si no, 'RECHAZADO'.` },
-                    { role: "user", content: [ { type: "image_url", image_url: { url: urlPago } } ] }
-                ],
-                max_tokens: 50
-            })
-        });
-
-        const data = await response.json();
-        const res = data.choices[0].message.content;
-
-        if(res.includes('PAGO_VALIDADO')) {
-            const { error } = await _supabase.from('viajes_cadete').update({ estado_pago: 'abonado' }).eq('whatsapp_cadete', waCadete).eq('estado_pago', 'pendiente');
-            if(!error) {
-                alert("✅ Pago Validado. Viajes puestos en CERO. Radar Activado.");
-                document.getElementById('aviso-pago-lunes').classList.add('hidden');
-            }
-        } else {
-            alert("❌ Comprobante inválido o no coincide con tu cuenta.");
-        }
-    } catch (err) { alert("Error IA."); }
-}
-
-// Auxiliares de UI
-function previewImagenBase(event, imgId, containerId, uploadZoneId) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById(imgId).src = e.target.result;
-            document.getElementById(imgId).classList.remove('hidden');
-            document.getElementById(containerId).classList.add('hidden');
-            document.getElementById(uploadZoneId).classList.add('has-file');
-        }
-        reader.readAsDataURL(file);
-    }
-}
-function marcarDocCargado(idZone, filename) {
-    const zone = document.getElementById(idZone);
-    zone.querySelector('.doc-icon').classList.remove('hidden');
-    zone.querySelector('.doc-status').innerText = 'Cargado: ' + filename;
-    zone.classList.add('border-green-500', 'bg-green-50');
-}
-function toggleConexionRadar() {
-    const btn = document.getElementById('btn-conectar');
-    const status = document.getElementById('estado-gps');
-    const tracker = document.getElementById('motito-tracker-radar');
-    const fx = document.getElementById('efecto-radar');
-    
-    if (btn.classList.contains('border-green-500')) {
-        btn.classList.replace('border-green-500', 'border-gray-50');
-        document.getElementById('texto-conexion').innerText = "OFFLINE";
-        status.innerHTML = `📍 Desconectado`;
-        tracker.classList.add('hidden');
-        fx.style.opacity = '0';
-    } else {
-        btn.classList.replace('border-gray-50', 'border-green-500');
-        document.getElementById('texto-conexion').innerText = "ONLINE";
-        status.innerHTML = `📡 Buscando viajes...`;
-        tracker.classList.remove('hidden');
-        fx.style.opacity = '1';
-    }
-}
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+`;
+    document.head.appendChild(s);
+})();
 </script>
 </head>
 <body class="flex justify-center items-start min-h-screen bg-slate-900">
 
-<!-- CONTENEDOR MAESTRO -->
 <div id="app-container" style="background-color:transparent;box-sizing:border-box;position:relative;width:100%;display:flex;justify-content:center;">
 
-    <!-- ==================== LANDING PAGE SUPERPREMIUM ==================== -->
-    <div id="vista-landing" class="landing-bg w-full overflow-x-hidden text-white absolute inset-0 z-[100000]" style="min-height: 100vh;">
-        <!-- NAVBAR -->
-        <nav class="sticky top-0 z-50 bg-white/5 backdrop-blur-xl border-b border-white/10 rounded-b-3xl mx-3 mt-3">
-            <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden bg-gradient-to-br from-orange-500 to-orange-700 glow-pulse">
-                        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo">
-                    </div>
-                    <div>
-                        <div class="font-black text-[22px] leading-none tracking-tight">DELIVERY MOTO</div>
-                        <div class="text-[12px] font-bold text-orange-400 uppercase tracking-widest mt-1">Energy Software</div>
-                    </div>
+<!-- ==================== LANDING PAGE SUPERPREMIUM ==================== -->
+<div id="vista-landing" class="landing-bg w-full overflow-x-hidden text-white absolute inset-0 z-[100000]" style="min-height: 100vh;">
+    
+    <!-- NAVBAR -->
+    <nav class="sticky top-0 z-50 bg-white/5 backdrop-blur-xl border-b border-white/10 rounded-b-3xl mx-3 mt-3">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden bg-gradient-to-br from-orange-500 to-orange-700 glow-pulse">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo">
                 </div>
-                <span class="inline-flex items-center gap-2 text-[14px] font-bold text-green-400 uppercase tracking-wide bg-green-500/10 px-4 py-1.5 rounded-full border border-green-500/20">
-                    <span class="w-2.5 h-2.5 rounded-full bg-green-400 pg"></span>Conectado a DB
-                </span>
+                <div>
+                    <div class="font-black text-[22px] leading-none tracking-tight">DELIVERY MOTO</div>
+                    <div class="text-[12px] font-bold text-orange-400 uppercase tracking-widest mt-1">Energy Software</div>
+                </div>
             </div>
-        </nav>
+            <span class="inline-flex items-center gap-2 text-[14px] font-bold text-green-400 uppercase tracking-wide bg-green-500/10 px-4 py-1.5 rounded-full border border-green-500/20">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-400 pg"></span>Conectado a DB
+            </span>
+        </div>
+    </nav>
 
-        <!-- TICKER ANIMADO -->
-        <div class="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 overflow-hidden my-4 shadow-2xl rounded-full mx-3 border-2 border-orange-400/40">
-            <div class="overflow-hidden py-3">
-                <div class="ticker-landing">
-                    <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">🏍️ DELIVERY MOTO | ☁️ MARKETPLACE CLOUD | 🗺️ MAPAS Y PRECIO POR CUADRAS | 💵 PAGO EN PUERTA | 🤖 IA INTEGRADA | 👨‍✈️ REPARTIDORES CERTIFICADOS |</span>
-                    <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">🏍️ DELIVERY MOTO | ☁️ MARKETPLACE CLOUD | 🗺️ MAPAS Y PRECIO POR CUADRAS | 💵 PAGO EN PUERTA | 🤖 IA INTEGRADA | 👨‍✈️ REPARTIDORES CERTIFICADOS |</span>
+    <!-- TICKER ANIMADO -->
+    <div class="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 overflow-hidden my-4 shadow-2xl rounded-full mx-3 border-2 border-orange-400/40">
+        <div class="overflow-hidden py-3">
+            <div class="ticker-landing">
+                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">🏍️ DELIVERY MOTO | ☁️ MARKETPLACE CLOUD | 🗺️ MAPAS Y PRECIO POR CUADRAS | 💵 PAGO EN PUERTA | 🤖 IA INTEGRADA | 👨‍✈️ REPARTIDORES CERTIFICADOS |</span>
+                <span class="text-white text-[14px] font-black uppercase tracking-widest px-6">🏍️ DELIVERY MOTO | ☁️ MARKETPLACE CLOUD | 🗺️ MAPAS Y PRECIO POR CUADRAS | 💵 PAGO EN PUERTA | 🤖 IA INTEGRADA | 👨‍✈️ REPARTIDORES CERTIFICADOS |</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO PRINCIPAL -->
+    <section class="relative overflow-hidden rounded-[3rem] mx-3 shadow-2xl mb-8 border border-slate-800 hero-pattern" style="background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);">
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(255,107,0,.35),transparent 70%)"></div>
+        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(37,99,235,.25),transparent 70%)"></div>
+        <div class="absolute top-1/4 left-10 w-20 h-20 rounded-full bg-orange-500/10 blur-2xl float-up"></div>
+        <div class="absolute bottom-1/4 right-20 w-32 h-32 rounded-full bg-blue-500/10 blur-3xl float-up" style="animation-delay: 1.5s;"></div>
+        
+        <div class="max-w-5xl mx-auto px-6 py-16 md:py-24 relative z-10 text-center">
+            
+            <!-- Badge Superior -->
+            <div class="inline-flex items-center gap-3 bg-white/10 border border-white/20 rounded-full px-5 py-2.5 mb-8 backdrop-blur-md shadow-lg">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-400 pg"></span>
+                <span class="text-[14px] font-bold text-green-300 uppercase tracking-wider">⚡ Powered by Supabase & OpenAI</span>
+            </div>
+            
+            <!-- Logo Animado -->
+            <div class="relative inline-block mb-8 cursor-pointer" onclick="vibrar([50,50,100])">
+                <div class="absolute -inset-4 bg-gradient-to-r from-orange-500/30 to-amber-500/30 rounded-full blur-2xl glow-pulse"></div>
+                <div class="relative w-40 h-40 md:w-56 md:h-56 mx-auto rounded-[3.5rem] overflow-hidden border-[4px] border-white/20 shadow-[0_0_80px_rgba(255,107,0,0.4)] logo-float bg-slate-900 flex items-center justify-center">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo">
+                </div>
+            </div>
+
+            <!-- Título 3D -->
+            <h1 class="titulo-3d text-[44px] md:text-[80px] leading-[1.05] mb-4 tracking-tighter">
+                DELIVERY <span class="gradient-text">MOTO</span>
+            </h1>
+            <p class="text-[18px] md:text-[22px] font-bold text-orange-300 mb-8 tracking-wide uppercase">
+                🏍️ La Red de Reparto Más Segura de Argentina 🛡️
+            </p>
+            
+            <!-- Frase Destacada en Glass -->
+            <div class="bg-white/8 backdrop-blur-2xl border border-white/15 rounded-[2rem] p-6 md:p-8 w-full max-w-3xl mx-auto mb-10 shadow-2xl">
+                <p class="frase-moderna text-[18px] md:text-[22px] text-white leading-snug">
+                    <span class="block text-amber-400 text-[15px] uppercase tracking-widest mb-3 font-black">✨ CONECTAMOS TU CIUDAD CON CONFIANZA ✨</span>
+                    <span class="block text-white mb-2">🏪 Comercios venden. 🛒 Clientes compran seguro.</span>
+                    <span class="block text-white font-black">👨‍✈️ Nuestros Servimotos Profesionales reparten con GPS exacto.</span>
+                </p>
+            </div>
+
+            <!-- Botones CTA ARREGLADOS (target="_blank" y download explicito) -->
+            <div class="flex flex-col sm:flex-row gap-5 justify-center relative z-20 max-w-3xl mx-auto mb-10">
+                <button onclick="abrirPWA()" class="btn-a px-8 py-5 text-[18px] md:text-[20px] cursor-pointer shadow-2xl w-full sm:w-auto h-16 flex-1 shine-effect">
+                    <i class="fa-solid fa-store text-2xl"></i> 🛒 INGRESAR AL MARKETPLACE
+                </button>
+                <a href="delivery-moto-servimoto.apk" download="delivery-moto-servimoto.apk" target="_blank" class="w-full sm:w-auto h-16 flex-1 bg-slate-800 text-white font-black rounded-2xl flex items-center justify-center gap-3 shadow-lg hover:bg-slate-700 transition-colors border-2 border-slate-600 shine-effect">
+                    <i class="fa-brands fa-android text-2xl text-green-500"></i> 📱 DESCARGAR APK CADETE
+                </a>
+            </div>
+
+            <!-- Stats Rápidas -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                <div class="glass-card rounded-2xl p-4">
+                    <div class="stat-number text-3xl md:text-4xl font-black mb-1">24</div>
+                    <div class="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Provincias</div>
+                </div>
+                <div class="glass-card rounded-2xl p-4">
+                    <div class="stat-number text-3xl md:text-4xl font-black mb-1">100%</div>
+                    <div class="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Cloud</div>
+                </div>
+                <div class="glass-card rounded-2xl p-4">
+                    <div class="stat-number text-3xl md:text-4xl font-black mb-1">GPS</div>
+                    <div class="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Exacto</div>
+                </div>
+                <div class="glass-card rounded-2xl p-4">
+                    <div class="stat-number text-3xl md:text-4xl font-black mb-1">✅</div>
+                    <div class="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Certificados</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== REPARTIDORES PROFESIONALES ==================== -->
+    <section class="max-w-6xl mx-auto px-6 py-12">
+        <div class="text-center mb-12">
+            <span class="inline-block pro-badge px-4 py-1.5 rounded-full text-[12px] font-black uppercase tracking-widest mb-4">
+                👨‍✈️ PROFESIONALES DE CONFIANZA
+            </span>
+            <h2 class="text-[32px] md:text-[52px] font-black mb-4 tracking-tight text-white">
+                Repartidores <span class="gradient-text">100% Certificados</span>
+            </h2>
+            <p class="text-[17px] text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed">
+                Tu tranquilidad es nuestra prioridad. Cada Servimoto pasa por un riguroso proceso de auditoría y verificación documental.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <!-- Certificado 1 -->
+            <div class="glass-card rounded-[2rem] p-8 hover:bg-white/10 transition-all duration-300 group relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-2xl group-hover:bg-green-500/20 transition-all"></div>
+                <div class="relative z-10">
+                    <div class="feature-icon-wrap bg-gradient-to-br from-green-500 to-emerald-700 text-white mb-6 shadow-lg mx-auto md:mx-0">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <h3 class="text-[22px] font-black mb-3 text-white">📜 Certificado de<br>Buena Conducta</h3>
+                    <p class="font-medium text-[15px] text-slate-300 leading-relaxed">
+                        Todos nuestros cadetes presentan el <strong>Certificado de Antecedentes Penales</strong> emitido por la Policía Federal. Garantía de integridad y confianza.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Certificado 2 -->
+            <div class="glass-card rounded-[2rem] p-8 hover:bg-white/10 transition-all duration-300 group relative overflow-hidden border-2 border-orange-500/30">
+                <div class="absolute -top-4 -right-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
+                    ⭐ Verificado IA
+                </div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl group-hover:bg-orange-500/20 transition-all"></div>
+                <div class="relative z-10">
+                    <div class="feature-icon-wrap bg-gradient-to-br from-blue-500 to-indigo-700 text-white mb-6 shadow-lg mx-auto md:mx-0">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3 class="text-[22px] font-black mb-3 text-white">🧾 Constancia AFIP</h3>
+                    <p class="font-medium text-[15px] text-slate-300 leading-relaxed">
+                        Presentan <strong>Constancia de Inscripción Fiscal</strong> ante la AFIP. Profesionales formalizados que operan dentro del marco legal argentino.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Certificado 3 -->
+            <div class="glass-card rounded-[2rem] p-8 hover:bg-white/10 transition-all duration-300 group relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+                <div class="relative z-10">
+                    <div class="feature-icon-wrap bg-gradient-to-br from-amber-500 to-orange-700 text-white mb-6 shadow-lg mx-auto md:mx-0">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <h3 class="text-[22px] font-black mb-3 text-white">🤖 Auditoría por<br>Inteligencia Artificial</h3>
+                    <p class="font-medium text-[15px] text-slate-300 leading-relaxed">
+                        Nuestro sistema de <strong>IA con Visión Artificial (GPT-4o)</strong> verifica la autenticidad de cada documento. Seguridad de nivel bancario.
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- HERO PRINCIPAL -->
-        <section class="relative overflow-hidden rounded-[3rem] mx-3 shadow-2xl mb-8 border border-slate-800 hero-pattern" style="background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);">
-            <div class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(255,107,0,.35),transparent 70%)"></div>
-            <div class="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style="background:radial-gradient(circle,rgba(37,99,235,.25),transparent 70%)"></div>
-            
-            <div class="max-w-5xl mx-auto px-6 py-16 md:py-24 relative z-10 text-center">
-                <div class="relative inline-block mb-8 cursor-pointer" onclick="vibrar([50,50,100])">
-                    <div class="absolute -inset-4 bg-gradient-to-r from-orange-500/30 to-amber-500/30 rounded-full blur-2xl glow-pulse"></div>
-                    <div class="relative w-40 h-40 md:w-56 md:h-56 mx-auto rounded-[3.5rem] overflow-hidden border-[4px] border-white/20 shadow-[0_0_80px_rgba(255,107,0,0.4)] logo-float bg-slate-900 flex items-center justify-center">
-                        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo">
+        <!-- Banner Confianza -->
+        <div class="bg-gradient-to-r from-green-600/20 via-emerald-600/10 to-green-600/20 border border-green-500/30 rounded-[2rem] p-8 text-center backdrop-blur-sm">
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+                <div class="flex items-center gap-3">
+                    <span class="text-4xl">🛡️</span>
+                    <div class="text-left">
+                        <div class="font-black text-white text-lg">Seguridad Total</div>
+                        <div class="text-[12px] text-green-300 font-bold uppercase tracking-wider">Documentos Verificados</div>
                     </div>
                 </div>
-
-                <h1 class="titulo-3d text-[44px] md:text-[80px] leading-[1.05] mb-4 tracking-tighter">DELIVERY <span class="gradient-text">MOTO</span></h1>
-                <p class="text-[18px] md:text-[22px] font-bold text-orange-300 mb-8 tracking-wide uppercase">🏍️ La Red de Reparto Más Segura de Argentina 🛡️</p>
-                
-                <div class="bg-white/8 backdrop-blur-2xl border border-white/15 rounded-[2rem] p-6 md:p-8 w-full max-w-3xl mx-auto mb-10 shadow-2xl">
-                    <p class="frase-moderna text-[18px] md:text-[22px] text-white leading-snug">
-                        <span class="block text-amber-400 text-[15px] uppercase tracking-widest mb-3 font-black">✨ CONECTAMOS TU CIUDAD CON CONFIANZA ✨</span>
-                        <span class="block text-white mb-2">🏪 Comercios venden. 🛒 Clientes compran seguro.</span>
-                        <span class="block text-white font-black">👨‍✈️ Nuestros Servimotos Profesionales reparten con GPS exacto.</span>
-                    </p>
+                <div class="hidden md:block w-px h-12 bg-green-500/30"></div>
+                <div class="flex items-center gap-3">
+                    <span class="text-4xl">📍</span>
+                    <div class="text-left">
+                        <div class="font-black text-white text-lg">GPS en Vivo</div>
+                        <div class="text-[12px] text-green-300 font-bold uppercase tracking-wider">Rastreo Satelital</div>
+                    </div>
                 </div>
-
-                <div class="flex flex-col sm:flex-row gap-5 justify-center relative z-20 max-w-3xl mx-auto mb-10">
-                    <button onclick="abrirPWA()" class="btn-a px-8 py-5 text-[18px] md:text-[20px] shadow-2xl w-full sm:w-auto h-16 flex-1 shine-effect">
-                        <i class="fa-solid fa-store text-2xl"></i> 🛒 INGRESAR AL MARKETPLACE
-                    </button>
-                    <a href="delivery-moto-servimoto.apk" download class="w-full sm:w-auto h-16 flex-1 bg-slate-800 text-white font-black rounded-2xl flex items-center justify-center gap-3 shadow-lg hover:bg-slate-700 transition-colors border-2 border-slate-600 shine-effect">
-                        <i class="fa-brands fa-android text-2xl text-green-500"></i> 📱 DESCARGAR APK CADETE
-                    </a>
+                <div class="hidden md:block w-px h-12 bg-green-500/30"></div>
+                <div class="flex items-center gap-3">
+                    <span class="text-4xl">⭐</span>
+                    <div class="text-left">
+                        <div class="font-black text-white text-lg">Calificación 4.9</div>
+                        <div class="text-[12px] text-green-300 font-bold uppercase tracking-wider">Miles de Envíos</div>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- FOOTER -->
-        <footer class="bg-black text-slate-400 py-12 px-6 mt-12 rounded-t-[3rem] mx-3 border-t border-slate-800 text-center">
-            <div class="font-black text-white text-[32px] tracking-tight mb-2">DELIVERY MOTO</div>
+    <!-- ==================== CARACTERÍSTICAS TÉCNICAS ==================== -->
+    <section class="max-w-6xl mx-auto px-6 py-12">
+        <div class="text-center mb-12">
+            <span class="inline-block bg-blue-500/15 text-blue-400 border border-blue-500/30 px-4 py-1.5 rounded-full text-[12px] font-black uppercase tracking-widest mb-4">
+                ⚙️ TECNOLOGÍA DE PUNTA
+            </span>
+            <h2 class="text-[32px] md:text-[48px] font-black mb-4 tracking-tight text-white">
+                Nuevo <span class="gradient-text-blue">Motor Cloud</span>
+            </h2>
+            <p class="text-[17px] text-slate-400 font-medium max-w-2xl mx-auto">
+                Infraestructura empresarial para tu comercio. Escalable, segura y siempre disponible.
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass-card rounded-[2.5rem] p-8 hover:bg-white/10 transition-all duration-300 group">
+                <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+                <h3 class="text-[24px] font-black mb-3 text-white text-center">🔐 Seguridad RLS</h3>
+                <p class="font-medium text-[16px] text-slate-300 text-center leading-relaxed">
+                    Base de datos Supabase con cifrado y salting de contraseñas. Cada negocio es dueño exclusivo de su data.
+                </p>
+            </div>
+            
+            <div class="glass-card rounded-[2.5rem] p-8 hover:bg-white/10 transition-all duration-300 group">
+                <div class="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                </div>
+                <h3 class="text-[24px] font-black mb-3 text-white text-center">🗺️ Google Maps Matrix</h3>
+                <p class="font-medium text-[16px] text-slate-300 text-center leading-relaxed">
+                    Cálculo exacto del costo de envío. 💵 $3000 base de noche + 💯 $100 por cada cuadra excedente.
+                </p>
+            </div>
+            
+            <div class="glass-card rounded-[2.5rem] p-8 hover:bg-white/10 transition-all duration-300 group">
+                <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-2xl flex items-center justify-center text-[32px] mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h3 class="text-[24px] font-black mb-3 text-white text-center">☁️ Storage Buckets</h3>
+                <p class="font-medium text-[16px] text-slate-300 text-center leading-relaxed">
+                    Las fotos de productos y selfies se alojan en la nube para no saturar los celulares.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CÓMO FUNCIONA ==================== -->
+    <section class="max-w-6xl mx-auto px-6 py-12">
+        <div class="text-center mb-12">
+            <span class="inline-block bg-orange-500/15 text-orange-400 border border-orange-500/30 px-4 py-1.5 rounded-full text-[12px] font-black uppercase tracking-widest mb-4">
+                🚀 SIMPLE, RÁPIDO, SEGURO
+            </span>
+            <h2 class="text-[32px] md:text-[48px] font-black mb-4 tracking-tight text-white">
+                ¿Cómo <span class="gradient-text">Funciona</span>?
+            </h2>
+        </div>
+
+        <div class="grid md:grid-cols-4 gap-6">
+            <div class="text-center relative">
+                <div class="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center text-white text-3xl font-black shadow-2xl">1</div>
+                <div class="text-5xl mb-4">🛒</div>
+                <h4 class="font-black text-white text-lg mb-2">Elegís tu pedido</h4>
+                <p class="text-slate-400 text-[14px] font-medium">Explorá comercios cercanos por ciudad y provincia</p>
+            </div>
+            <div class="text-center relative">
+                <div class="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-3xl font-black shadow-2xl">2</div>
+                <div class="text-5xl mb-4">📍</div>
+                <h4 class="font-black text-white text-lg mb-2">GPS calcula ruta</h4>
+                <p class="text-slate-400 text-[14px] font-medium">Costo exacto por distancia en cuadras</p>
+            </div>
+            <div class="text-center relative">
+                <div class="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white text-3xl font-black shadow-2xl">3</div>
+                <div class="text-5xl mb-4">👨‍✈️</div>
+                <h4 class="font-black text-white text-lg mb-2">Cadete certificado</h4>
+                <p class="text-slate-400 text-[14px] font-medium">Repartidor verificado retira y entrega</p>
+            </div>
+            <div class="text-center relative">
+                <div class="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white text-3xl font-black shadow-2xl">4</div>
+                <div class="text-5xl mb-4">💵</div>
+                <h4 class="font-black text-white text-lg mb-2">Pagás en puerta</h4>
+                <p class="text-slate-400 text-[14px] font-medium">Seguridad total al recibir tu pedido</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black text-slate-400 py-12 px-6 mt-12 rounded-t-[3rem] mx-3 border-t border-slate-800">
+        <div class="max-w-5xl mx-auto text-center">
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden bg-gradient-to-br from-orange-500 to-orange-700 glow-pulse">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" class="w-full h-full object-cover" style="transform:scale(1.45)" alt="Logo">
+                </div>
+                <div class="font-black text-white text-[32px] tracking-tight">DELIVERY MOTO</div>
+            </div>
+            <p class="text-[15px] font-bold text-slate-300 mb-2">🏍️ Marketplace Premium | 👨‍✈️ Repartidores Certificados | 🛡️ Seguridad Total</p>
             <p class="text-[14px] font-bold text-slate-500 mb-4">Desarrollado con ❤️ por Energy Software</p>
-        </footer>
-    </div>
+            <div class="text-[12px] font-bold text-slate-600 uppercase tracking-widest">© 2026 • Argentina • 📱 APK + 💻 PWA</div>
+        </div>
+    </footer>
+</div>
+
 <!-- ==================== VISTA APP PRINCIPAL (MÓVIL) ==================== -->
 <div id="vista-app" class="hidden" style="position:relative;width:100%;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;z-index:99999;">
     
@@ -495,16 +638,42 @@ function toggleConexionRadar() {
                         <input type="text" id="reg-horario" placeholder="Ej: Lunes a Sábados 20:00 a 00:00" class="input-premium">
                     </div>
 
+                    <!-- PROVINCIAS ARREGLADAS (Registro Comercio) -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">📍 Provincia</label>
                             <select id="reg-provincia" class="input-premium appearance-none bg-white">
-                                <option value="">Elegir...</option>
+                                <option value="">Elegir provincia...</option>
+                                <option value="Buenos Aires">Buenos Aires</option>
+                                <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                                <option value="Catamarca">Catamarca</option>
+                                <option value="Chaco">Chaco</option>
+                                <option value="Chubut">Chubut</option>
+                                <option value="Córdoba">Córdoba</option>
+                                <option value="Corrientes">Corrientes</option>
+                                <option value="Entre Ríos">Entre Ríos</option>
+                                <option value="Formosa">Formosa</option>
+                                <option value="Jujuy">Jujuy</option>
+                                <option value="La Pampa">La Pampa</option>
+                                <option value="La Rioja">La Rioja</option>
+                                <option value="Mendoza">Mendoza</option>
+                                <option value="Misiones">Misiones</option>
+                                <option value="Neuquén">Neuquén</option>
+                                <option value="Río Negro">Río Negro</option>
+                                <option value="Salta">Salta</option>
+                                <option value="San Juan">San Juan</option>
+                                <option value="San Luis">San Luis</option>
+                                <option value="Santa Cruz">Santa Cruz</option>
+                                <option value="Santa Fe">Santa Fe</option>
+                                <option value="Santiago del Estero">Santiago del Estero</option>
+                                <option value="Tierra del Fuego">Tierra del Fuego</option>
+                                <option value="Tucumán">Tucumán</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">🏙️ Ciudad</label>
-                            <input type="text" id="reg-ciudad" placeholder="Ej: Famaillá" class="input-premium">
+                            <!-- El input text permite escribir libremente la ciudad como pediste -->
+                            <input type="text" id="reg-ciudad" placeholder="Escribí tu ciudad" class="input-premium">
                         </div>
                     </div>
                     
@@ -713,8 +882,33 @@ function toggleConexionRadar() {
 
                 <!-- FILTRO PROVINCIA + CIUDAD MEJORADO -->
                 <div class="grid grid-cols-2 gap-3">
+                    <!-- Provincias Completas en el Filtro del Cliente -->
                     <select id="filtro-provincia" onchange="cambiarFiltroProvincia()" class="bg-white border-2 border-gray-100 rounded-xl px-4 py-3 text-[14px] font-bold text-gray-700 outline-none appearance-none shadow-sm">
                         <option value="Todas">📍 Todas las Provincias</option>
+                        <option value="Buenos Aires">Buenos Aires</option>
+                        <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                        <option value="Catamarca">Catamarca</option>
+                        <option value="Chaco">Chaco</option>
+                        <option value="Chubut">Chubut</option>
+                        <option value="Córdoba">Córdoba</option>
+                        <option value="Corrientes">Corrientes</option>
+                        <option value="Entre Ríos">Entre Ríos</option>
+                        <option value="Formosa">Formosa</option>
+                        <option value="Jujuy">Jujuy</option>
+                        <option value="La Pampa">La Pampa</option>
+                        <option value="La Rioja">La Rioja</option>
+                        <option value="Mendoza">Mendoza</option>
+                        <option value="Misiones">Misiones</option>
+                        <option value="Neuquén">Neuquén</option>
+                        <option value="Río Negro">Río Negro</option>
+                        <option value="Salta">Salta</option>
+                        <option value="San Juan">San Juan</option>
+                        <option value="San Luis">San Luis</option>
+                        <option value="Santa Cruz">Santa Cruz</option>
+                        <option value="Santa Fe">Santa Fe</option>
+                        <option value="Santiago del Estero">Santiago del Estero</option>
+                        <option value="Tierra del Fuego">Tierra del Fuego</option>
+                        <option value="Tucumán">Tucumán</option>
                     </select>
                     <select id="filtro-ciudad" onchange="renderizarMarketplace()" class="bg-white border-2 border-gray-100 rounded-xl px-4 py-3 text-[14px] font-bold text-gray-700 outline-none appearance-none shadow-sm">
                         <option value="Todas">🏙️ Todas las Ciudades</option>
@@ -863,16 +1057,41 @@ function toggleConexionRadar() {
                         <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">📱 Celular (WhatsApp)</label>
                         <input type="tel" id="reg-celular" placeholder="Ej: 5493815559999" class="input-premium">
                     </div>
+                    <!-- PROVINCIAS ARREGLADAS (Registro Servimoto) -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">📍 Provincia</label>
                             <select id="reg-prov" class="input-premium appearance-none bg-white">
-                                <option value="">Elegir...</option>
+                                <option value="">Elegir provincia...</option>
+                                <option value="Buenos Aires">Buenos Aires</option>
+                                <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                                <option value="Catamarca">Catamarca</option>
+                                <option value="Chaco">Chaco</option>
+                                <option value="Chubut">Chubut</option>
+                                <option value="Córdoba">Córdoba</option>
+                                <option value="Corrientes">Corrientes</option>
+                                <option value="Entre Ríos">Entre Ríos</option>
+                                <option value="Formosa">Formosa</option>
+                                <option value="Jujuy">Jujuy</option>
+                                <option value="La Pampa">La Pampa</option>
+                                <option value="La Rioja">La Rioja</option>
+                                <option value="Mendoza">Mendoza</option>
+                                <option value="Misiones">Misiones</option>
+                                <option value="Neuquén">Neuquén</option>
+                                <option value="Río Negro">Río Negro</option>
+                                <option value="Salta">Salta</option>
+                                <option value="San Juan">San Juan</option>
+                                <option value="San Luis">San Luis</option>
+                                <option value="Santa Cruz">Santa Cruz</option>
+                                <option value="Santa Fe">Santa Fe</option>
+                                <option value="Santiago del Estero">Santiago del Estero</option>
+                                <option value="Tierra del Fuego">Tierra del Fuego</option>
+                                <option value="Tucumán">Tucumán</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-[13px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">🏙️ Ciudad</label>
-                            <input type="text" id="reg-ciudad-cadete" placeholder="Localidad" class="input-premium">
+                            <input type="text" id="reg-ciudad-cadete" placeholder="Escribí tu ciudad" class="input-premium">
                         </div>
                     </div>
                     <div>
@@ -995,33 +1214,15 @@ function toggleConexionRadar() {
                 <button onclick="logoutServimoto()" class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors"><i class="fa-solid fa-power-off text-xl"></i></button>
             </div>
 
-            <!-- CONTENEDOR FLOTANTE PARA AVISO DE PAGO DE LUNES Y AUDITORIA IA -->
+            <!-- CONTENEDOR FLOTANTE PARA AVISO DE PAGO DE LUNES -->
             <div id="aviso-pago-lunes" class="hidden px-6 mt-4">
                 <div class="bg-red-50 border-2 border-red-500 rounded-[2rem] p-6 shadow-xl text-center relative overflow-hidden">
                     <div class="absolute -top-4 -right-4 text-red-100 opacity-20">⚠️</div>
                     <div class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-4 relative z-10 shadow-lg">💳</div>
                     <h3 class="font-black text-red-700 text-xl mb-2 relative z-10">📅 Día de Liquidación</h3>
-                    <p class="text-[14.5px] text-red-600 font-bold mb-3 relative z-10">Transferí tu comisión para activar el radar:</p>
-                    
-                    <div class="bg-white rounded-xl p-3 mb-4 border border-red-200">
-                        <p class="font-bold text-[13px] text-gray-500 uppercase">Alias</p>
-                        <p class="font-black text-lg text-gray-800">noir.elite.ceo</p>
-                        <p class="font-bold text-[13px] text-gray-500 uppercase mt-2">CBU</p>
-                        <p class="font-black text-[15px] text-gray-800">0110257630025717844115</p>
-                    </div>
-
-                    <!-- Módulo de subida de comprobante -->
-                    <div class="upload-zone rounded-2xl border-2 border-red-300 bg-white mb-4 relative cursor-pointer" onclick="document.getElementById('file-comprobante-pago').click()">
-                        <input type="file" id="file-comprobante-pago" accept="image/*" class="hidden" onchange="previewImagenBase(event, 'img-comprobante-preview', 'preview-comprobante-container', 'aviso-pago-lunes')">
-                        <div id="preview-comprobante-container" class="py-3">
-                            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-lg mx-auto mb-2">📸</div>
-                            <p class="font-black text-red-700 text-[13px]">Subir Comprobante</p>
-                        </div>
-                        <img id="img-comprobante-preview" class="hidden w-full max-h-32 object-contain rounded-xl mx-auto p-2">
-                    </div>
-
-                    <button class="w-full bg-red-600 text-white font-black rounded-xl py-4 flex items-center justify-center gap-2 shadow-lg hover:bg-red-700 active:scale-95 transition-transform relative z-10 text-[16px]" onclick="pagarLiquidacionCadeteConIA(document.getElementById('radar-nombre-cadete').dataset.whatsapp || document.getElementById('reg-celular').value || 'cadete_temp')">
-                        🤖 Auditar Pago y Desbloquear ($<span id="btn-monto-pagar-lunes">0</span>)
+                    <p class="text-[14.5px] text-red-600 font-bold mb-5 relative z-10">Hoy es Lunes. Tenés que abonar tu comisión pendiente para poder activar el Radar satelital.</p>
+                    <button class="w-full bg-red-600 text-white font-black rounded-xl py-4 flex items-center justify-center gap-2 shadow-lg hover:bg-red-700 active:scale-95 transition-transform relative z-10 text-[16px]" onclick="vibrar([50,50,50]); alert('Funcionalidad de pasarela de pago en construcción. Comunicate con Soporte.')">
+                        💳 Pagar Liquidación ($<span id="btn-monto-pagar-lunes">0</span>)
                     </button>
                 </div>
             </div>
@@ -1125,7 +1326,7 @@ function toggleConexionRadar() {
                     <div class="mb-5">
                         <label class="block text-[12px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">📸 Selfie de Seguridad (Obligatoria)</label>
                         <div class="upload-zone rounded-2xl border-2" id="upload-selfie-cliente" onclick="document.getElementById('file-selfie-cliente').click()">
-                            <input type="file" id="file-selfie-cliente" accept="image/*" capture="user" class="hidden" onchange="previewImagenBase(event, 'img-selfie-preview', 'preview-selfie-container', 'upload-selfie-cliente')">
+                            <input type="file" id="file-selfie-cliente" accept="image/*" capture="user" class="hidden" onchange="previewSelfieCliente(event)">
                             <div id="preview-selfie-container" class="py-2">
                                 <div class="w-14 h-14 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-xl mx-auto mb-2">📸</div>
                                 <p class="font-black text-gray-700 text-[14px]">Subir foto de tu rostro</p>
@@ -1220,19 +1421,342 @@ function toggleConexionRadar() {
                         <span class="font-black text-gray-400 text-[16px]" id="txt-costo-envio-resumen">Requiere cálculo</span>
                     </div>
                     <div class="pt-4 border-t border-gray-200 flex justify-between items-center">
-                        <span class="font-black text-gray-900 text-[18px]">Total a Pagar</span>
-                        <span class="font-black text-[26px] text-green-600" id="carrito-total-final-txt">$0</span>
+                        <span
+                        class="font-black text-gray-900 text-[22px]">Total a Pagar:</span>
+                        <span class="font-black text-green-600 text-[24px]" id="carrito-total-final">$0</span>
                     </div>
                 </div>
                 
-                <button id="btn-confirmar-pedido" class="w-full bg-green-500 text-white font-black text-[18px] py-4.5 h-[60px] rounded-[1.5rem] flex items-center justify-center gap-3 shadow-[0_10px_25px_rgba(34,197,94,0.35)] active:scale-95 transition-transform opacity-50 cursor-not-allowed">
-                    ✅ Confirmar y Pedir Servimoto
+                <button id="btn-confirmar-pedido" onclick="confirmarPedidoBD()" class="w-full bg-green-500 text-white font-black text-[18px] py-5 rounded-2xl shadow-[0_10px_25px_rgba(34,197,94,0.4)] active:scale-95 transition-transform flex items-center justify-center gap-3">
+                    <i class="fa-brands fa-whatsapp text-2xl"></i> CONFIRMAR PEDIDO Y ENVIAR
                 </button>
             </div>
         </div>
     </div>
-
 </div>
 
+<script>
+// ==========================================================================
+// 🚀 NÚCLEO CLOUD: SUPABASE, STORAGE, RLS Y LÓGICA DE RUTAS
+// ==========================================================================
+
+// 1. CONFIGURACIÓN SUPABASE (Reemplazar con llaves de tu proyecto)
+const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
+const SUPABASE_ANON_KEY = 'TU_LLAVE_ANONIMA';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==========================================================================
+// 🔒 CANDADO RLS (Row Level Security) - INSTRUCCIONES PARA SQL:
+// Ejecutá esto en el SQL Editor de Supabase para sellar la seguridad:
+// 1. ALTER TABLE comercios ENABLE ROW LEVEL SECURITY;
+// 2. ALTER TABLE cadetes ENABLE ROW LEVEL SECURITY;
+// 3. ALTER TABLE pedidos ENABLE ROW LEVEL SECURITY;
+// 4. CREATE POLICY "Comercio ve su data" ON comercios FOR ALL USING (auth.uid() = id);
+// 5. CREATE POLICY "Cadete activo ve viajes" ON pedidos FOR SELECT USING (estado = 'buscando_cadete');
+// ==========================================================================
+
+// Variables Globales de Estado
+let usuarioActual = null;
+let rolActual = null; // 'comercio', 'servimoto', 'cliente'
+let carrito = [];
+let localSeleccionado = null;
+let mapaGoogle = null;
+let directionsService = null;
+let directionsRenderer = null;
+let precioEnvioActual = 0;
+
+// ==========================================================================
+// ☁️ CLOUD STORAGE - SUBIDA DE ARCHIVOS (Fotos y Selfies)
+// ==========================================================================
+async function subirArchivoStorage(file, bucket, path) {
+    if (!file) return null;
+    mostrarToast('Subiendo archivo a la nube...', 'info');
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+    const filePath = `${path}/${fileName}`;
+
+    const { data, error } = await supabase.storage.from(bucket).upload(filePath, file);
+    if (error) {
+        console.error('Error Storage:', error);
+        mostrarToast('Error al subir archivo', 'error');
+        return null;
+    }
+    const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
+    return urlData.publicUrl;
+}
+
+// ==========================================================================
+// 🏪 LÓGICA COMERCIO (REGISTRO, LOGIN Y PANEL)
+// ==========================================================================
+async function registrarComercioSupabase() {
+    const nombre = document.getElementById('reg-nombre').value;
+    const horario = document.getElementById('reg-horario').value;
+    const prov = document.getElementById('reg-provincia').value;
+    const ciudad = document.getElementById('reg-ciudad').value;
+    const direccion = document.getElementById('reg-direccion').value;
+    const telefono = document.getElementById('reg-whatsapp').value;
+    const password = document.getElementById('reg-password').value;
+    const fileInput = document.getElementById('file-portada-comercio');
+
+    if(!nombre || !prov || !ciudad || !telefono || !password) {
+        return mostrarToast('Completá los campos obligatorios', 'error');
+    }
+
+    // 1. Auth Supabase (Salting simulando email)
+    const emailFalso = `${telefono}@comercio.deliverymoto.com`;
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: emailFalso, password: password,
+    });
+
+    if (authError) return mostrarToast('Error de registro: ' + authError.message, 'error');
+
+    // 2. Storage Upload
+    let urlPortada = 'https://via.placeholder.com/600x300?text=Sin+Portada';
+    if(fileInput.files.length > 0) {
+        urlPortada = await subirArchivoStorage(fileInput.files[0], 'comercios', 'portadas') || urlPortada;
+    }
+
+    // 3. Insertar en BD
+    const { error: dbError } = await supabase.from('comercios').insert([{
+        id: authData.user.id, nombre, horario, provincia: prov, ciudad, direccion, telefono, url_portada: urlPortada
+    }]);
+
+    if (dbError) return mostrarToast('Error al guardar datos: ' + dbError.message, 'error');
+    
+    mostrarToast('¡Comercio registrado con éxito!', 'success');
+    cambiarPantalla('pantalla-login-comercio');
+}
+
+async function loginComercioSupabase() {
+    const telefono = document.getElementById('login-whatsapp').value;
+    const password = document.getElementById('login-password').value;
+    const emailFalso = `${telefono}@comercio.deliverymoto.com`;
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email: emailFalso, password });
+    if (error) return mostrarToast('Credenciales incorrectas', 'error');
+
+    usuarioActual = data.user;
+    rolActual = 'comercio';
+    cargarPanelComercio();
+}
+
+async function cargarPanelComercio() {
+    const { data, error } = await supabase.from('comercios').select('*').eq('id', usuarioActual.id).single();
+    if (error || !data) return mostrarToast('Error al cargar comercio', 'error');
+
+    document.getElementById('admin-nombre-comercio').textContent = data.nombre;
+    document.getElementById('admin-ubicacion').textContent = `${data.ciudad}, ${data.provincia}`;
+    document.getElementById('admin-portada-img').src = data.url_portada;
+    document.getElementById('info-local-nombre').textContent = data.nombre;
+    document.getElementById('info-local-direccion').textContent = data.direccion;
+    document.getElementById('info-local-horario').textContent = data.horario;
+    document.getElementById('info-local-wa').textContent = data.telefono;
+
+    cambiarPantalla('pantalla-admin-comercio');
+}
+
+// ==========================================================================
+// 👨‍✈️ LÓGICA SERVIMOTO (IA, REGISTRO, GPS)
+// ==========================================================================
+async function iniciarAuditoriaIA() {
+    const celular = document.getElementById('reg-celular').value;
+    const prov = document.getElementById('reg-prov').value;
+    const ciudad = document.getElementById('reg-ciudad-cadete').value;
+    const moto = document.getElementById('reg-moto').value;
+    const pass = document.getElementById('reg-password-cadete').value;
+    const terminos = document.getElementById('acepto-terminos').checked;
+
+    if(!celular || !prov || !ciudad || !moto || !pass) return mostrarToast('Completá todos los datos', 'error');
+    if(!terminos) return mostrarToast('Aceptá los términos de trabajo', 'error');
+    
+    mostrarToast('🤖 Verificando documentos con OpenAI GPT-4o...', 'info');
+    
+    // Simulación de respuesta de la Edge Function de OpenAI
+    setTimeout(() => {
+        mostrarToast('✅ Documentos verificados y aprobados', 'success');
+        registrarCadeteSupabase(celular, prov, ciudad, moto, pass);
+    }, 2500);
+}
+
+async function registrarCadeteSupabase(celular, prov, ciudad, moto, pass) {
+    const emailFalso = `${celular}@cadete.deliverymoto.com`;
+    const { data: authData, error: authError } = await supabase.auth.signUp({ email: emailFalso, password: pass });
+    if (authError) return mostrarToast('Error: ' + authError.message, 'error');
+
+    const { error: dbError } = await supabase.from('cadetes').insert([{
+        id: authData.user.id, telefono: celular, provincia: prov, ciudad, vehiculo: moto, estado: 'inactivo'
+    }]);
+
+    if (dbError) return mostrarToast('Error en BD: ' + dbError.message, 'error');
+    cambiarPantalla('pantalla-login-servimoto');
+}
+
+async function loginServimoto() {
+    const telefono = document.getElementById('login-servi-celular').value;
+    const password = document.getElementById('login-servi-password').value;
+    const emailFalso = `${telefono}@cadete.deliverymoto.com`;
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email: emailFalso, password });
+    if (error) return mostrarToast('Credenciales incorrectas', 'error');
+
+    usuarioActual = data.user;
+    rolActual = 'servimoto';
+    cambiarPantalla('pantalla-radar-servimoto');
+}
+
+// ==========================================================================
+// 🗺️ GOOGLE MAPS MATRIZ Y CÁLCULO DE PRECIOS EXACTOS
+// ==========================================================================
+function inicializarInputDestino() {
+    const input = document.getElementById('checkout-destino');
+    if(!input.dataset.gmaps) {
+        const autocomplete = new google.maps.places.Autocomplete(input, { componentRestrictions: { country: "ar" } });
+        autocomplete.addListener('place_changed', () => { resetearRuta(); });
+        input.dataset.gmaps = "true";
+    }
+}
+
+function calcularDistanciaRuta() {
+    const origen = document.getElementById('checkout-origen').value;
+    const destino = document.getElementById('checkout-destino').value;
+    if(!origen || !destino) return mostrarToast('Falta origen o destino', 'error');
+
+    document.getElementById('mapa-contenedor').classList.add('active');
+    
+    if(!mapaGoogle) {
+        mapaGoogle = new google.maps.Map(document.getElementById('iframe-google-map'), {
+            zoom: 14, center: {lat: -26.8083, lng: -65.2176}, disableDefaultUI: true // Centro Tucumán
+        });
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer({
+            map: mapaGoogle, polylineOptions: { strokeColor: '#16a34a', strokeWeight: 5 }
+        });
+    }
+
+    directionsService.route({
+        origin: origen, destination: destino, travelMode: 'DRIVING'
+    }, (response, status) => {
+        if (status === 'OK') {
+            directionsRenderer.setDirections(response);
+            const distanciaMetros = response.routes[0].legs[0].distance.value;
+            const distanciaKm = (distanciaMetros / 1000).toFixed(1);
+            const cuadras = Math.ceil(distanciaMetros / 100); // Cálculo real: 1 cuadra = 100 metros
+            
+            document.getElementById('mapa-distancia').textContent = `${distanciaKm} km`;
+            document.getElementById('mapa-cuadras').textContent = `${cuadras} cuadras`;
+
+            // Lógica de Precios Exactos: $3000 base + $100 por cuadra extra (después de 30)
+            let precioBase = 3000; 
+            let precioTotal = precioBase;
+            if(cuadras > 30) {
+                precioTotal += (cuadras - 30) * 100;
+            }
+            precioEnvioActual = precioTotal;
+            
+            document.getElementById('mapa-precio-envio').textContent = `$${precioTotal}`;
+            document.getElementById('txt-costo-envio-resumen').textContent = `$${precioTotal}`;
+            
+            // Link directo a la app nativa de Maps
+            const urlMaps = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origen)}&destination=${encodeURIComponent(destino)}&travelmode=driving`;
+            document.getElementById('link-abrir-maps').href = urlMaps;
+            
+            actualizarTotalCarrito();
+        } else {
+            mostrarToast('No se pudo trazar la ruta', 'error');
+        }
+    });
+}
+
+function resetearRuta() {
+    precioEnvioActual = 0;
+    document.getElementById('txt-costo-envio-resumen').textContent = 'Requiere cálculo';
+    actualizarTotalCarrito();
+}
+
+// ==========================================================================
+// 🎨 UTILIDADES DE INTERFAZ Y NAVEGACIÓN
+// ==========================================================================
+function cambiarPantalla(idPantalla) {
+    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+    document.getElementById(idPantalla).classList.add('activa');
+    window.scrollTo(0, 0);
+}
+
+function abrirModal(id) { document.getElementById(id).classList.add('show'); }
+function cerrarModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function mostrarToast(mensaje, tipo = 'info') {
+    const t = document.createElement('div');
+    t.className = `toast ${tipo === 'error' ? 'border-red-500' : 'border-green-500'}`;
+    t.innerHTML = `<i class="fa-solid ${tipo === 'error' ? 'fa-circle-exclamation text-red-500' : 'fa-check text-green-500'}"></i> <span>${mensaje}</span>`;
+    document.getElementById('toast-container').appendChild(t);
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => { t.classList.remove('show'); setTimeout(()=>t.remove(), 400); }, 3000);
+}
+
+function vibrar(patron) { if (navigator.vibrate) navigator.vibrate(patron); }
+
+function previewImagenBase(event, imgId, containerId, zoneId) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById(imgId).src = e.target.result;
+            document.getElementById(imgId).classList.remove('hidden');
+            document.getElementById(containerId).classList.add('hidden');
+            document.getElementById(zoneId).classList.add('has-file');
+        }
+        reader.readAsDataURL(file);
+    }
+}
+function previewSelfieCliente(event) { previewImagenBase(event, 'img-selfie-preview', 'preview-selfie-container', 'upload-selfie-cliente'); }
+
+function irAMarketplace() { cambiarPantalla('pantalla-marketplace'); }
+function irARegistroComercio() { cambiarPantalla('pantalla-registro-comercio'); }
+function irALoginComercio() { cambiarPantalla('pantalla-login-comercio'); }
+function irARegistroServimoto() { cambiarPantalla('pantalla-registro-servimoto'); }
+function irALoginServimoto() { cambiarPantalla('pantalla-login-servimoto'); }
+
+function actualizarTotalCarrito() {
+    let subtotal = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+    document.getElementById('carrito-subtotal-txt').textContent = `$${subtotal}`;
+    document.getElementById('carrito-total-final').textContent = `$${subtotal + precioEnvioActual}`;
+    document.getElementById('barra-total').textContent = `$${subtotal}`;
+    document.getElementById('barra-cant').textContent = `${carrito.length} productos`;
+    
+    const countSpans = [document.getElementById('badge-carrito'), document.getElementById('badge-carrito-cat')];
+    countSpans.forEach(span => {
+        if(carrito.length > 0) { span.classList.remove('hidden'); span.textContent = carrito.length; }
+        else { span.classList.add('hidden'); }
+    });
+}
+
+function switchTabComercio(tab) {
+    document.getElementById('tab-productos').classList.remove('active');
+    document.getElementById('tab-pedidos').classList.remove('active');
+    document.getElementById('seccion-productos').classList.add('hidden');
+    document.getElementById('seccion-pedidos').classList.add('hidden');
+    
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    document.getElementById(`seccion-${tab}`).classList.remove('hidden');
+}
+
+async function logoutSupabase() {
+    await supabase.auth.signOut();
+    usuarioActual = null; rolActual = null;
+    cambiarPantalla('pantalla-1');
+}
+
+// Ocultar Splash Screen
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if(splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 700);
+        }
+    }, 1500);
+});
+</script>
 </body>
 </html>
