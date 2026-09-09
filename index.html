@@ -23,15 +23,15 @@
 // ==========================================
 // CONFIGURACIÓN CLOUD: SUPABASE Y OPENAI
 // ==========================================
-// Reemplazá con tus credenciales de proyecto de Supabase
+// Reemplazá con tus credenciales
 const SUPABASE_URL = 'TU_URL_DE_SUPABASE_AQUI';
 const SUPABASE_ANON_KEY = 'TU_ANON_KEY_AQUI';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Llave de OpenAI (Para producción con Energy Software, pasá esto por un Edge Function para mayor seguridad)
+// Llave de OpenAI 
 const OPENAI_API_KEY = 'TU_OPENAI_API_KEY_AQUI'; 
 
-// Datos Bancarios Centrales (IA verificará contra estos datos)
+// Datos Bancarios Centrales 
 const ADMIN_ALIAS = 'noir.elite.ceo';
 const ADMIN_CBU = '0110257630025717844115';
 
@@ -63,14 +63,13 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
 });
 
-// Service Worker Básico para Instalabilidad Offline
 const swCode = `
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request))); });
 `;
 const swBlob = new Blob([swCode], {type: 'application/javascript'});
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).then(() => console.log('PWA Service Worker Registrado')).catch(err => console.log('Error SW', err));
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).then(() => console.log('PWA SW Registrado')).catch(err => console.log('Error SW', err));
 }
 
 // ==========================================
@@ -103,7 +102,6 @@ function irALoginServimoto() { cambiarPantalla('pantalla-login-servimoto'); }
 
 function mostrarToast(mensaje, tipo="info") {
     console.log(`TOAST: [${tipo}] ${mensaje}`);
-    // Implementar visual de Toast si es necesario
 }
 
 function vibrar(patron) {
@@ -147,7 +145,6 @@ async function registrarComercioSupabase() {
     let urlPortada = "";
     if(filePortada) urlPortada = await subirArchivoStorage(filePortada, wa, 'comercio_fotos');
 
-    // Cifrado Salting básico
     const hash = btoa(pass + "-" + wa);
     
     const { data, error } = await _supabase.from('comercios').insert([
@@ -155,7 +152,7 @@ async function registrarComercioSupabase() {
     ]);
 
     if(error) return alert("Error en DB: " + error.message);
-    alert("Comercio enrutado a la DB exitosamente.");
+    alert("Comercio registrado exitosamente.");
     irALoginComercio();
 }
 
@@ -169,17 +166,15 @@ async function iniciarAuditoriaIA() {
     const fPolicia = document.getElementById('file-policia').files[0];
 
     if(!wa || !fSelfie || !fAfip || !fPolicia) {
-        return alert("Tenés que subir los 3 documentos para que la IA los valide.");
+        return alert("Tenés que subir los 3 documentos.");
     }
 
-    alert("🤖 GPT-4o está analizando tus documentos. Esto puede demorar unos segundos...");
+    alert("🤖 GPT-4o analizando documentos...");
 
-    // 1. Storage Upload
     const urlSelfie = await subirArchivoStorage(fSelfie, wa, 'auditoria_docs');
     const urlAfip = await subirArchivoStorage(fAfip, wa, 'auditoria_docs');
     const urlPolicia = await subirArchivoStorage(fPolicia, wa, 'auditoria_docs');
 
-    // 2. Fetch a OpenAI Vision
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -192,7 +187,7 @@ async function iniciarAuditoriaIA() {
                 messages: [
                     {
                         role: "system",
-                        content: "Sos el auditor jefe. Verificá estas 3 imágenes de Argentina: 1) Selfie con rostro claro, 2) Constancia de AFIP, 3) Certificado de Antecedentes Policiales/Buena Conducta. Si todo parece en orden, respondé SOLO 'APROBADO'. Si hay algo trucho o falta claridad, respondé 'RECHAZADO: [motivo]'."
+                        content: "Verificá estas 3 imágenes: 1) Selfie, 2) Constancia de AFIP, 3) Certificado Buena Conducta. Si todo está en orden responde SOLO 'APROBADO'."
                     },
                     {
                         role: "user",
@@ -212,30 +207,29 @@ async function iniciarAuditoriaIA() {
 
         if (dictamen.includes('APROBADO')) {
             const hash = btoa(document.getElementById('reg-password-cadete').value + "-" + wa);
-            // Insertando cadete aprobado a la DB (Fake RLS)
             await _supabase.from('cadetes').insert([{
                 whatsapp: wa, pass_hash: hash, estado: 'activo',
                 docs: { selfie: urlSelfie, afip: urlAfip, policia: urlPolicia }
             }]);
-            alert("✅ ¡Auditoría Perfecta! Estás habilitado en el sistema.");
+            alert("✅ ¡Aprobado! Estás habilitado en el sistema.");
             irALoginServimoto();
         } else {
-            alert("❌ La IA rechazó la postulación: " + dictamen);
+            alert("❌ IA rechazó la postulación: " + dictamen);
         }
     } catch (err) {
         console.error("Error IA:", err);
-        alert("Fallo de red conectando con el motor de IA.");
+        alert("Fallo conectando con IA.");
     }
 }
 
 // ==========================================
-// IA VISION: LECTURA DE PAGOS Y RESET (GPT-4o)
+// IA VISION: LECTURA DE PAGOS Y RESET
 // ==========================================
 async function pagarLiquidacionCadeteConIA(waCadete) {
     const inputFoto = document.getElementById('file-comprobante-pago').files[0];
-    if(!inputFoto) return alert("Subí el comprobante primero hermano.");
+    if(!inputFoto) return alert("Subí el comprobante primero.");
 
-    alert("🤖 Escaneando comprobante con IA para verificar el Alias/CBU...");
+    alert("🤖 Escaneando comprobante con IA...");
     const urlPago = await subirArchivoStorage(inputFoto, waCadete, 'comprobantes_pago');
 
     try {
@@ -250,7 +244,7 @@ async function pagarLiquidacionCadeteConIA(waCadete) {
                 messages: [
                     {
                         role: "system",
-                        content: `Revisa este comprobante de transferencia bancaria. Debe estar a nombre del alias '${ADMIN_ALIAS}' o el CBU '${ADMIN_CBU}'. Si los datos coinciden y el pago es exitoso, responde SOLO 'PAGO_VALIDADO'. Si no coincide, responde 'PAGO_RECHAZADO'.`
+                        content: `Revisa este comprobante de transferencia. Debe estar a nombre del alias '${ADMIN_ALIAS}' o el CBU '${ADMIN_CBU}'. Si coincide responde SOLO 'PAGO_VALIDADO'. Si no, 'PAGO_RECHAZADO'.`
                     },
                     {
                         role: "user",
@@ -265,7 +259,6 @@ async function pagarLiquidacionCadeteConIA(waCadete) {
         const resolucion = dataIA.choices[0].message.content;
 
         if(resolucion.includes('PAGO_VALIDADO')) {
-            // Update en la BD reseteando los viajes a 0 donde coincida el WhatsApp
             const { error } = await _supabase
                 .from('viajes_cadete')
                 .update({ estado_pago: 'abonado' })
@@ -273,21 +266,20 @@ async function pagarLiquidacionCadeteConIA(waCadete) {
                 .eq('estado_pago', 'pendiente');
                 
             if(!error) {
-                alert("✅ Pago Validado. Viajes puestos en CERO. Radar Activado.");
+                alert("✅ Pago Validado. Viajes en CERO.");
                 document.getElementById('contador-viajes').innerText = '0';
                 document.getElementById('total-adeudado-cadete').innerText = '$0';
                 document.getElementById('aviso-pago-lunes').classList.add('hidden');
             }
         } else {
-            alert("❌ Comprobante inválido. La cuenta destino no es la correcta.");
+            alert("❌ Comprobante inválido.");
         }
     } catch (err) {
         console.error(err);
-        alert("Hubo un error de conexión analizando el comprobante.");
+        alert("Error de conexión IA.");
     }
 }
 
-// Variables dummy para previsualizaciones UI
 function previewImagenBase(event, imgId, containerId, uploadZoneId, globalBlobName) {
     const file = event.target.files[0];
     if (file) {
@@ -309,18 +301,7 @@ function previewImagenBase(event, imgId, containerId, uploadZoneId, globalBlobNa
 (function(){
     var s = document.createElement('style');
     s.textContent = `
-:root {
-    --naranja: #ff6b00;
-    --naranja2: #ff8c00;
-    --naranja3: #cc4400;
-    --verde: #00d13a;
-    --verde2: #16a34a;
-    --texto: #0f172a;
-    --bg-dark: #0f172a;
-    --rojo: #dc2626;
-    --azul: #2563eb;
-    --dorado: #f59e0b;
-}
+:root { --naranja: #ff6b00; --naranja2: #ff8c00; --naranja3: #cc4400; --verde: #00d13a; --verde2: #16a34a; --texto: #0f172a; --bg-dark: #0f172a; --rojo: #dc2626; --azul: #2563eb; --dorado: #f59e0b; }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { font-family: 'Quicksand', sans-serif; color: var(--texto); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; background: #f8fafc; overflow-x: hidden; }
 a { text-decoration: none; }
@@ -761,7 +742,7 @@ a { text-decoration: none; }
     </footer>
 </div>
 <!-- ==================== VISTA APP PRINCIPAL (MÓVIL) ==================== -->
-<div id="vista-app" class="hidden" style="position:relative;width:100%;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;z-index:99999;">
+<div id="vista-app" class="hidden" style="position:relative;width:100%;min-height:100vh;flex-direction:column;align-items:center;justify-content:flex-start;z-index:99999;">
     
     <!-- SPLASH SCREEN -->
     <div id="splash-screen" style="position:absolute;inset:0;background:#0f172a;z-index:999999;display:none;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.7s;opacity:0;">
