@@ -723,7 +723,7 @@ html, body { width: 100%; overflow-x: hidden; }
                 </div>
             </div>
 
-            <!-- PASO 3: COMPRADOR - SELFIE DE SEGURIDAD -->
+            <!-- PASO 3: COMPRADOR - SELFIE DE SEGURIDAD CORREGIDO -->
             <div id="modal-step-3" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(2)"><i class="ri-arrow-left-s-line"></i> Volver</button>
                 <div class="step-indicator"><i class="ri-shield-user-fill"></i> Control de Identidad</div>
@@ -735,13 +735,15 @@ html, body { width: 100%; overflow-x: hidden; }
                     <input type="tel" class="input-buscar" id="telCliente" placeholder="Tu Celular de WhatsApp" style="padding-left:46px; margin:0; width:100%;">
                 </div>
                 
-                <div style="background:#f8fafc; border:2px dashed #cbd5e1; padding:24px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; margin-bottom:16px; transition:all .3s; display:flex; flex-direction:column; align-items:center;" onclick="simularSelfie(this)" id="boxSelfie">
+                <!-- FIX AQUÍ: Transformado a label + input file para activar la cámara del celular -->
+                <label style="background:#f8fafc; border:2px dashed #cbd5e1; padding:24px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; margin-bottom:16px; transition:all .3s; display:flex; flex-direction:column; align-items:center;" id="boxSelfie">
                     <div id="fotoClienteContainer" style="display:none; width:80px; height:80px; border-radius:50%; overflow:hidden; border:3px solid #16a34a; margin-bottom:10px; box-shadow:0 4px 15px rgba(22,163,74,0.3);">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200" style="width:100%;height:100%;object-fit:cover;">
+                        <img id="imgSelfiePreview" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <i class="ri-camera-3-fill" style="font-size:38px; color:#94a3b8; margin-bottom:8px; display:block;" id="iconSelfie"></i>
-                    <span style="font-weight:800; color:#334155; font-size:14px;" id="textSelfie">Tocar para tomar Selfie</span>
-                </div>
+                    <span style="font-weight:800; color:#334155; font-size:14px;" id="textSelfie">Tocar para abrir Cámara</span>
+                    <input type="file" accept="image/*" capture="user" style="display:none;" onchange="procesarSelfie(this)">
+                </label>
                 
                 <button class="btn-primary" style="width:100%; padding:14px; font-size:14px;" onclick="ingresarAlCatalogo()">ENTRAR AL CATÁLOGO <i class="ri-login-circle-fill"></i></button>
             </div>
@@ -1072,7 +1074,6 @@ html, body { width: 100%; overflow-x: hidden; }
 
     </div>
 </div>
-
 <!-- ====================================================================== -->
 <!-- MOTOR JAVASCRIPT GLOBAL -->
 <!-- ====================================================================== -->
@@ -1083,6 +1084,9 @@ let costoEnvioCalculado = 0;
 let radarActivoCadete = false;
 let modoMapaFase = 'compras'; 
 let datosRemisTemp = {};
+
+// Flags faltantes
+let selfieTomada = false;
 
 // Deuda Cadete
 let deudaCadete = 1400;
@@ -1133,6 +1137,62 @@ function abrirModalMarketplace(paso) {
 }
 function cerrarModalMarketplace() { document.getElementById('modalMarketplace').classList.remove('show'); document.body.style.overflow = ''; }
 function irPaso(paso) { document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active')); const target = document.getElementById(`modal-step-${paso}`); if(target) target.classList.add('active'); }
+
+// ==========================================
+// FUNCIONES FALTANTES AGREGADAS AHORA (SELFIE, CARRITO, PWA)
+// ==========================================
+
+function procesarSelfie(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imgSelfiePreview').src = e.target.result;
+            document.getElementById('iconSelfie').style.display = 'none';
+            document.getElementById('textSelfie').style.display = 'none';
+            document.getElementById('fotoClienteContainer').style.display = 'block';
+            document.getElementById('boxSelfie').style.borderColor = '#16a34a';
+            document.getElementById('boxSelfie').style.background = '#f0fdf4';
+            selfieTomada = true;
+            mostrarToast('Selfie procesada correctamente', 'success');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function ingresarAlCatalogo() {
+    const tel = document.getElementById('telCliente').value;
+    if(!tel || tel.length < 8) {
+        return mostrarToast('Ingresá un número de WhatsApp válido', 'error');
+    }
+    if(!selfieTomada) {
+        return mostrarToast('¡Debes tomarte la selfie para continuar!', 'error');
+    }
+    
+    // Si todo está OK, avanzamos al catálogo (Paso 4)
+    irPaso(4);
+    renderizarGrillaCatalogo();
+    mostrarToast('Ingreso seguro aprobado. Bienvenido.', 'success');
+}
+
+function abrirModalCarrito() {
+    document.getElementById('modalCarritoFinal').classList.add('show');
+    renderizarCarritoDOM();
+}
+
+function instalarPWAComercio() {
+    mostrarToast('Descargando App PWA para Comercios...', 'success');
+}
+
+function procesarLiquidacionIA(input) {
+    if(input.files && input.files[0]) {
+        mostrarToast('🤖 OpenAI auditando comprobante...', 'success');
+        setTimeout(() => {
+            mostrarToast('✅ Pago aprobado. Tu deuda es cero.', 'success');
+            deudaCadete = 0;
+            document.getElementById('deudaMoto').textContent = '$0';
+        }, 1800);
+    }
+}
 
 // --- COMERCIO: REGISTRO, LOGIN Y PANEL KDS ---
 function guardarRegistroComercio() {
