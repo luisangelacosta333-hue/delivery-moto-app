@@ -112,7 +112,6 @@ html, body { width: 100%; overflow-x: hidden; }
 
 .mic-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all .3s; background: linear-gradient(135deg, #16a34a, #15803d); color: white; box-shadow: 0 4px 15px rgba(22,163,74,.4); flex-shrink: 0; }
 .mic-btn:hover { transform: scale(1.08); box-shadow: 0 8px 24px rgba(22,163,74,.6); }
-.mic-btn.speaking { animation: micPulse 1s ease-in-out infinite; background: linear-gradient(135deg, #ff8c00, #cc4400); border-color: rgba(255,255,255,.5); }
 
 @media (max-width: 900px) { .hide-mobile { display: none !important; } }
 .nav-link { color: rgba(255,255,255,.92); font-weight: 700; font-size: 14px; transition: all .2s; cursor: pointer; padding: 5px 2px; border-bottom: 2px solid transparent; white-space: nowrap; }
@@ -159,9 +158,6 @@ html, body { width: 100%; overflow-x: hidden; }
 ::-webkit-scrollbar-track { background: #fff7ed; }
 ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
 
-/* APK Banner */
-.apk-banner { background: linear-gradient(135deg, #0f172a, #1a0a00); border-radius: 1.5rem; padding: 22px 26px; border: 3px solid #16a34a; box-shadow: 0 14px 40px rgba(22,163,74,.25); display: flex; align-items: center; gap: 18px; flex-wrap: wrap; position: relative; overflow: hidden; }
-.apk-banner::before { content: ''; position: absolute; top: -30px; right: -30px; width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, rgba(22,163,74,.35), transparent 70%); }
 </style>
 </head>
 <body style="margin:0;padding:0;font-family:'Quicksand',sans-serif;background:#fff7ed;color:#0f172a;overflow-x:hidden;">
@@ -631,7 +627,6 @@ html, body { width: 100%; overflow-x: hidden; }
 </footer>
 
 <script>
-// SCROLL NATIVO ORIGINAL
 function scrollToId(id) { 
     const el = document.getElementById(id);
     if(el) {
@@ -653,7 +648,6 @@ function descargarAPK() {
 <!-- PARTE 2: MODALES FULL SCREEN, MAGO DEL MAPA Y MOTOR JAVASCRIPT GLOBAL  -->
 <!-- ====================================================================== -->
 
-<!-- PANEL MODAL MARKETPLACE Y GESTIÓN -->
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
     <div class="modal-box">
         
@@ -679,78 +673,138 @@ function descargarAPK() {
             
             <!-- PASO 1: SELECCIÓN DE PERFIL -->
             <div id="modal-step-1" class="sub-step active" style="padding:24px 16px;">
-                <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Cómo vas a ingresar?</h4>
+                <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Qué necesitás hoy?</h4>
                 <div style="display:flex; flex-direction:column; gap:12px;">
                     
-                    <button class="option-card" onclick="irPaso(2)" style="border:2px solid #ff6b00; background:linear-gradient(to right, #fff, #fff7ed);">
+                    <button class="option-card" onclick="irPaso('cliente-ubicacion')" style="border:2px solid #ff6b00; background:linear-gradient(to right, #fff, #fff7ed);">
                         <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; box-shadow:0 6px 20px rgba(255,107,0,0.4);"><i class="ri-shopping-bag-3-fill"></i></div>
                         <div style="flex:1; text-align:left;">
                             <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a; margin-bottom:2px;">Quiero Comprar</div>
-                            <div style="font-size:12px; color:#64748b; font-weight:600;">Elegí zona, dirección y pedí.</div>
+                            <div style="font-size:12px; color:#64748b; font-weight:600;">Elegí zona, dirección y pedí comida o productos.</div>
                         </div>
                         <i class="ri-arrow-right-s-line" style="font-size:26px; color:#ff6b00;"></i>
                     </button>
 
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                        <button class="option-card" style="padding:16px; flex-direction:column; gap:8px; text-align:center;" onclick="irPaso('comercio')">
+                    <!-- CAJA DE CADETE EXPRESS -->
+                    <button class="option-card" onclick="irPaso('pedido-especial')" style="border:2px solid #3b82f6; background:linear-gradient(to right, #fff, #eff6ff);">
+                        <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #3b82f6, #1d4ed8); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; box-shadow:0 6px 20px rgba(59,130,246,0.4);"><i class="ri-motorbike-fill"></i></div>
+                        <div style="flex:1; text-align:left;">
+                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a; margin-bottom:2px;">Pedir un Cadete</div>
+                            <div style="font-size:12px; color:#64748b; font-weight:600;">Para viajes especiales, trámites o llevar paquetes.</div>
+                        </div>
+                        <i class="ri-arrow-right-s-line" style="font-size:26px; color:#3b82f6;"></i>
+                    </button>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px;">
+                        <button class="option-card" style="padding:16px; flex-direction:column; gap:8px; text-align:center;" onclick="iniciarLogin('comercio')">
                             <div style="width:42px; height:42px; border-radius:12px; background:#fff7ed; color:#ff6b00; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid #ffd4b3;"><i class="ri-store-2-fill"></i></div>
                             <div>
                                 <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#0f172a;">Soy Comercio</div>
-                                <div style="font-size:11px; color:#64748b; font-weight:700;">Catálogo y Panel</div>
+                                <div style="font-size:11px; color:#64748b; font-weight:700;">Ingresar al Panel</div>
                             </div>
                         </button>
-                        <button class="option-card-dark" style="padding:16px; flex-direction:column; gap:8px; text-align:center; background:linear-gradient(135deg, #0f172a, #1a0a00);" onclick="irPaso('servimoto-onboarding')">
-                            <div style="width:42px; height:42px; border-radius:12px; background:rgba(74,222,128,0.15); color:#4ade80; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid rgba(74,222,128,0.3);"><i class="ri-motorbike-fill"></i></div>
+                        <button class="option-card-dark" style="padding:16px; flex-direction:column; gap:8px; text-align:center; background:linear-gradient(135deg, #0f172a, #1a0a00);" onclick="iniciarLogin('cadete')">
+                            <div style="width:42px; height:42px; border-radius:12px; background:rgba(74,222,128,0.15); color:#4ade80; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid rgba(74,222,128,0.3);"><i class="ri-shield-keyhole-fill"></i></div>
                             <div>
                                 <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:white;">Servimoto</div>
-                                <div style="font-size:11px; color:#94a3b8; font-weight:700;">Auditoría RLS</div>
+                                <div style="font-size:11px; color:#94a3b8; font-weight:700;">Ingresar a Trabajar</div>
                             </div>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- PASO 2: COMPRADOR -->
-            <div id="modal-step-2" class="sub-step" style="padding:24px 16px;">
+            <!-- PASO DE LOGIN/REGISTRO UNIFICADO (COMERCIO Y CADETE) -->
+            <div id="modal-step-login" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
+                <div class="step-indicator" id="lblTipoLogin"><i class="ri-lock-2-fill"></i> Acceso a Cuenta</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Ingresá tus credenciales</h3>
+                <p style="color:#64748b; font-size:13px; margin-bottom:16px;">Logueate con tu número de celular y tu clave única (3 letras y 3 números).</p>
+
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <div style="position:relative;">
+                        <i class="ri-phone-fill" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#ff6b00; font-size:20px;"></i>
+                        <input type="tel" class="input-buscar" id="loginCelular" placeholder="Tu Celular (Ej: 3815110171)" style="padding-left:46px; margin:0; width:100%;">
+                    </div>
+                    <div style="position:relative;">
+                        <i class="ri-key-2-fill" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#ff6b00; font-size:20px;"></i>
+                        <input type="text" class="input-buscar" id="loginClave" placeholder="Clave (Ej: ABC123)" maxlength="6" style="padding-left:46px; margin:0; width:100%; text-transform:uppercase;">
+                    </div>
+                    <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px;" onclick="validarLogin()">INGRESAR AL PANEL <i class="ri-arrow-right-line"></i></button>
+                </div>
+            </div>
+
+            <!-- PASO VIAJE ESPECIAL (CADETE) -->
+            <div id="modal-step-pedido-especial" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
+                <div class="step-indicator" style="color:#1d4ed8; border-color:#93c5fd; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Solicitar Servicio de Cadete</h3>
+                
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira el cadete? (Ej: San Martín 100, Famaillá)" style="margin:0;">
+                    <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿A dónde lo lleva? (Ej: Rivadavia 200, Famaillá)" style="margin:0;">
+                    <textarea class="input-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Buscar un paquete a nombre de Juan)" style="margin:0; height:80px; resize:none;"></textarea>
+                    
+                    <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px; background:linear-gradient(135deg, #3b82f6, #1d4ed8); border-color:rgba(255,255,255,.3); box-shadow:0 14px 36px rgba(59,130,246,.5);" onclick="enviarPedidoEspecial()">CALCULAR VIAJE <i class="ri-map-2-fill"></i></button>
+                </div>
+            </div>
+
+            <!-- PASO COMPRADOR - UBICACIÓN EXACTA -->
+            <div id="modal-step-cliente-ubicacion" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
                 <div class="step-indicator"><i class="ri-map-pin-2-fill"></i> 1. Destino de Entrega</div>
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">¿Dónde recibís tu pedido?</h3>
                 
                 <div style="display:flex; flex-direction:column; gap:12px;">
-                    <select class="select-provincia" id="selProvincia" style="margin:0;">
+                    <select class="select-provincia" id="selProvinciaCliente" style="margin:0;" onchange="filtrarComerciosPorCiudad()">
                         <option value="">Seleccioná tu Provincia...</option>
+                        <option value="Buenos Aires">Buenos Aires</option>
+                        <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                        <option value="Catamarca">Catamarca</option>
+                        <option value="Chaco">Chaco</option>
+                        <option value="Chubut">Chubut</option>
+                        <option value="Córdoba">Córdoba</option>
+                        <option value="Corrientes">Corrientes</option>
+                        <option value="Entre Ríos">Entre Ríos</option>
+                        <option value="Formosa">Formosa</option>
+                        <option value="Jujuy">Jujuy</option>
+                        <option value="La Pampa">La Pampa</option>
+                        <option value="La Rioja">La Rioja</option>
+                        <option value="Mendoza">Mendoza</option>
+                        <option value="Misiones">Misiones</option>
+                        <option value="Neuquén">Neuquén</option>
+                        <option value="Río Negro">Río Negro</option>
+                        <option value="Salta">Salta</option>
+                        <option value="San Juan">San Juan</option>
+                        <option value="San Luis">San Luis</option>
+                        <option value="Santa Cruz">Santa Cruz</option>
+                        <option value="Santa Fe">Santa Fe</option>
+                        <option value="Santiago del Estero">Santiago del Estero</option>
+                        <option value="Tierra del Fuego">Tierra del Fuego</option>
+                        <option value="Tucumán">Tucumán</option>
                     </select>
-                    <input type="text" class="input-buscar" id="inputCiudad" placeholder="Ciudad (Ej: Famaillá, Tucumán)" style="margin:0;">
+                    <input type="text" class="input-buscar" id="inputCiudadCliente" placeholder="Ciudad (Ej: Famaillá)" style="margin:0;" onkeyup="filtrarComerciosPorCiudad()">
                     <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro (Ej: Av. San Martín 450)" style="margin:0;">
-                    <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px;" onclick="validarUbicacionCliente()">CONTINUAR <i class="ri-arrow-right-line"></i></button>
+                    <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px;" onclick="validarUbicacionCliente()">VER LOCALES CERCANOS <i class="ri-store-3-fill"></i></button>
                 </div>
             </div>
 
-            <!-- PASO 3: COMPRADOR - SELFIE -->
-            <div id="modal-step-3" class="sub-step" style="padding:24px 16px;">
-                <button class="btn-volver" onclick="irPaso(2)"><i class="ri-arrow-left-s-line"></i> Volver</button>
-                <div class="step-indicator"><i class="ri-shield-user-fill"></i> 2. Control de Identidad</div>
-                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 6px;">Selfie de Seguridad</h3>
-                <p style="color:#64748b; font-size:13px; margin-bottom:16px; font-weight:600;">Intercambiaremos tu rostro con el cadete certificado para una entrega segura.</p>
+            <!-- PASO COMPRADOR - LISTA DE COMERCIOS DE LA CIUDAD -->
+            <div id="modal-step-lista-comercios" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso('cliente-ubicacion')"><i class="ri-arrow-left-s-line"></i> Modificar Ubicación</button>
+                <div class="step-indicator"><i class="ri-store-2-fill"></i> 2. Elegí un Local</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Locales en tu zona</h3>
                 
-                <div style="position:relative; margin-bottom:12px;">
-                    <i class="ri-whatsapp-line" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#22c55e; font-size:20px;"></i>
-                    <input type="tel" class="input-buscar" id="telCliente" placeholder="Tu Celular (Ej: 381 51 101 71)" style="padding-left:46px; margin:0; width:100%;">
+                <div id="gridComerciosDisponibles" style="display:flex; flex-direction:column; gap:12px;">
+                    <!-- Se inyecta dinámicamente -->
                 </div>
-                
-                <div style="background:#f8fafc; border:2px dashed #cbd5e1; padding:24px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; margin-bottom:16px; transition:all .3s;" onclick="simularSelfie(this)" id="boxSelfie">
-                    <i class="ri-camera-3-fill" style="font-size:38px; color:#94a3b8; margin-bottom:8px; display:block;" id="iconSelfie"></i>
-                    <span style="font-weight:800; color:#334155; font-size:14px;" id="textSelfie">Tocar para tomar Selfie</span>
-                </div>
-                
-                <button class="btn-primary" style="width:100%; padding:14px; font-size:14px;" onclick="ingresarAlCatalogo()">ENTRAR AL CATÁLOGO <i class="ri-login-circle-fill"></i></button>
             </div>
 
-            <!-- PASO 4: CATÁLOGO -->
-            <div id="modal-step-4" class="sub-step" style="display:flex; flex-direction:column; height:100%; padding: 12px 0 20px 0;">
+            <!-- PASO COMPRADOR - CATÁLOGO DEL COMERCIO -->
+            <div id="modal-step-catalogo" class="sub-step" style="display:flex; flex-direction:column; height:100%; padding: 12px 0 20px 0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:#fff7ed; padding:10px 14px; border-radius:0.85rem; border:1px solid #ffe4cc; flex-shrink: 0; margin-left:8px; margin-right:8px;">
-                    <button class="btn-volver" style="margin:0; border:none; background:transparent; padding:0; box-shadow:none;" onclick="irPaso(3)"><i class="ri-arrow-left-s-line" style="font-size:18px;"></i> Salir</button>
-                    <div style="font-weight:800; color:#0f172a; font-size:13px;"><i class="ri-map-pin-2-fill" style="color:#ff6b00;"></i> <span id="lblCiudad">Ciudad</span></div>
+                    <button class="btn-volver" style="margin:0; border:none; background:transparent; padding:0; box-shadow:none;" onclick="irPaso('lista-comercios')"><i class="ri-arrow-left-s-line" style="font-size:18px;"></i> Locales</button>
+                    <div style="font-weight:800; color:#0f172a; font-size:13px;"><i class="ri-store-3-fill" style="color:#ff6b00;"></i> <span id="lblComercioActual">Catálogo</span></div>
                     <button class="btn-primary" style="padding:6px 12px; font-size:12px; border-radius:0.7rem; margin:0;" onclick="abrirModalCarrito()">
                         <i class="ri-shopping-cart-fill"></i> Carrito
                     </button>
@@ -759,43 +813,31 @@ function descargarAPK() {
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; overflow-y:auto; padding:2px 8px; flex:1;" id="catalogoGrid"></div>
             </div>
 
-            <!-- PASO COMERCIO -->
+            <!-- PASO COMERCIO: PANEL DE GESTIÓN -->
             <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
-                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Volver</button>
-                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Panel de Comercio</h3>
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Mi Local</h3>
                 
                 <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
-                    <!-- Caja de Portada Corregida para vista previa visual -->
-                    <label id="boxPortadaComercio" style="background:#f8fafc; border:2px dashed #ffb380; padding:16px; border-radius:1rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; background-size: cover; background-position: center; transition: all 0.3s;">
-                        <i class="ri-image-add-fill" id="iconPortada" style="font-size:28px; color:#ff6b00; z-index: 2;"></i>
-                        <span style="font-weight:800; color:#cc4400; font-size:13px; z-index: 2; background: rgba(255,255,255,0.8); padding: 2px 8px; border-radius: 4px;" id="lblPortadaComercio">Subir Foto de Portada del Local</span>
-                        <input type="file" accept="image/*" style="display:none;" onchange="previewPortada(this)">
-                    </label>
-
                     <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
                     <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta del Local (Ej: 9 de Julio 120)" style="margin:0;">
                     
-                    <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:14px; font-size:14px;">
-                        <option value="">Rubro / Categoría...</option>
-                        <option value="pizza">🍕 Pizzería</option>
-                        <option value="sandwicheria">🍔 Sandwichería</option>
-                        <option value="kiosco">🛒 Kiosco / Almacén</option>
-                        <option value="bebidas">🍷 Bebidas</option>
-                        <option value="farmacia">💊 Farmacia</option>
-                        <option value="panaderia">🥖 Panadería</option>
-                    </select>
-
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:12px; font-size:13px;">
                             <option value="">Provincia...</option>
+                            <option value="Buenos Aires">Buenos Aires</option>
+                            <option value="CABA">CABA</option>
+                            <option value="Tucumán">Tucumán</option>
+                            <option value="Córdoba">Córdoba</option>
+                            <option value="Salta">Salta</option>
+                            <!-- Se pueden agregar las demás aquí en el select real de comercio si se desea -->
                         </select>
                         <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:12px;">
                     </div>
 
-                    <button class="btn-primary" style="padding:14px; font-size:14px;" onclick="guardarComercio()">GUARDAR DATOS DEL LOCAL</button>
+                    <button class="btn-primary" style="padding:14px; font-size:14px;" onclick="guardarComercio()">GUARDAR PERFIL</button>
                 </div>
 
-                <!-- Caja de Artículo Corregida para vista previa visual -->
                 <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:1.2rem; padding:16px; margin-bottom:16px;">
                     <h4 style="font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Crear Artículo Nuevo</h4>
                     <div style="display:flex; gap:8px; margin-bottom:10px;">
@@ -805,60 +847,23 @@ function descargarAPK() {
                     
                     <label id="boxArticuloNuevo" style="background:white; border:2px dashed #cbd5e1; padding:20px 10px; border-radius:0.85rem; text-align:center; cursor:pointer; display:block; margin-bottom:10px; background-size: cover; background-position: center; min-height: 80px; position: relative;">
                         <div style="position: relative; z-index: 2; background: rgba(255,255,255,0.85); display: inline-block; padding: 4px 10px; border-radius: 8px;">
-                            <i class="ri-camera-fill" style="color:#0f172a;"></i> <span style="font-size:12px; font-weight:800; color:#0f172a;" id="lblArtFoto">Subir Foto Real del Plato</span>
+                            <i class="ri-camera-fill" style="color:#0f172a;"></i> <span style="font-size:12px; font-weight:800; color:#0f172a;" id="lblArtFoto">Subir Foto</span>
                         </div>
                         <input type="file" accept="image/*" style="display:none;" onchange="previewArtFoto(this)">
                     </label>
                     
-                    <button class="btn-secondary" style="width:100%; padding:10px; font-size:13px;" onclick="agregarArticuloComercio()">+ PUBLICAR EN LA GRILLA</button>
+                    <button class="btn-secondary" style="width:100%; padding:10px; font-size:13px;" onclick="agregarArticuloComercio()">+ PUBLICAR</button>
                 </div>
 
                 <div style="background:white; border-radius:1.2rem; padding:16px; border:2px solid #ffe4cc;">
-                    <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Tus Artículos Publicados</h4>
-                    <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto;">
-                        <!-- Inyectado dinámicamente -->
-                    </div>
+                    <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Tus Artículos</h4>
+                    <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto;"></div>
                 </div>
             </div>
 
-            <!-- PASO SERVIMOTO: CAJAS DE AUDITORÍA IA CORREGIDAS PARA CAMBIO VISUAL -->
-            <div id="modal-step-servimoto-onboarding" class="sub-step" style="padding:24px 16px;">
-                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Volver</button>
-                <div class="step-indicator"><i class="ri-shield-keyhole-fill"></i> Registro Oficial Cadetes</div>
-                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 6px;">Certificación de Conductor</h3>
-                <p style="color:#64748b;font-size:13px;margin-bottom:16px;line-height:1.4;">Subí tus 4 documentos obligatorios. Nuestro motor de IA auditará la veracidad antes de darte acceso a la red.</p>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
-                    <label id="cajaDoc1" class="card-premium" style="padding:14px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition: all 0.3s;">
-                        <i id="iconDoc1" class="ri-user-smile-fill" style="font-size:26px; color:#ff6b00;"></i>
-                        <span style="font-size:11px; font-weight:800; color:#0f172a;" id="txtDoc1">1. Foto Rostro</span>
-                        <input type="file" accept="image/*" style="display:none;" onchange="docCargado(this, 'txtDoc1', 'cajaDoc1', 'iconDoc1')">
-                    </label>
-                    <label id="cajaDoc2" class="card-premium" style="padding:14px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition: all 0.3s;">
-                        <i id="iconDoc2" class="ri-id-card-fill" style="font-size:26px; color:#ff6b00;"></i>
-                        <span style="font-size:11px; font-weight:800; color:#0f172a;" id="txtDoc2">2. DNI (Frente/Dorso)</span>
-                        <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="docCargado(this, 'txtDoc2', 'cajaDoc2', 'iconDoc2')">
-                    </label>
-                    <label id="cajaDoc3" class="card-premium" style="padding:14px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition: all 0.3s;">
-                        <i id="iconDoc3" class="ri-file-shield-2-fill" style="font-size:26px; color:#16a34a;"></i>
-                        <span style="font-size:11px; font-weight:800; color:#0f172a;" id="txtDoc3">3. Buena Conducta</span>
-                        <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="docCargado(this, 'txtDoc3', 'cajaDoc3', 'iconDoc3')">
-                    </label>
-                    <label id="cajaDoc4" class="card-premium" style="padding:14px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition: all 0.3s;">
-                        <i id="iconDoc4" class="ri-government-fill" style="font-size:26px; color:#2563eb;"></i>
-                        <span style="font-size:11px; font-weight:800; color:#0f172a;" id="txtDoc4">4. Constancia AFIP</span>
-                        <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="docCargado(this, 'txtDoc4', 'cajaDoc4', 'iconDoc4')">
-                    </label>
-                </div>
-
-                <button class="btn-primary" style="width:100%; padding:14px; font-size:14px;" onclick="auditarDocumentosIA()">
-                    <i class="ri-robot-2-fill" style="font-size:18px;"></i> AUDITAR CON IA Y APROBAR
-                </button>
-            </div>
-
-            <!-- PASO SERVIMOTO PANEL -->
+            <!-- PASO SERVIMOTO PANEL RADAR -->
             <div id="modal-step-servimoto" class="sub-step" style="padding:24px 16px;">
-                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Volver al Menú</button>
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 
                 <div style="background:linear-gradient(135deg, #0f172a, #050505); border-radius:1.5rem; padding:22px; border:3px solid #ff6b00; color:white; box-shadow:0 15px 35px rgba(0,0,0,0.5);">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -867,7 +872,6 @@ function descargarAPK() {
                     </div>
                     
                     <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px;">Control de Operación</h3>
-                    <p style="font-size:12px; color:rgba(255,255,255,0.7); margin:0 0 16px;">Cada viaje verificado vale <strong>$200</strong>. Liquidación semanal obligatoria los días <strong>LUNES</strong>.</p>
                     
                     <div style="background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:1rem; border:1px solid rgba(255,255,255,0.1); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div style="font-size:13px; font-weight:800;">Turno Activo:</div>
@@ -880,24 +884,6 @@ function descargarAPK() {
                             </button>
                         </div>
                     </div>
-
-                    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:18px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
-                        <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:2px;">Deuda Acumulada</div>
-                        <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:38px; font-weight:800; color:white; line-height:1; margin-bottom:4px;">$1.400</div>
-                        <div style="font-size:11.5px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:3px 10px; border-radius:20px;" id="viajesMotoBadge">7 Viajes Realizados</div>
-                    </div>
-
-                    <div style="background:rgba(255,107,0,0.1); border:2px dashed #ff6b00; padding:14px; border-radius:1rem; margin-bottom:16px;">
-                        <div style="font-weight:800; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;"><i class="ri-bank-fill" style="color:#ffd700;"></i> Datos para Depósito</div>
-                        <div style="font-size:12.5px; font-family:monospace; color:white; background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px; margin-bottom:6px;">Alias: <span style="color:#4ade80;">noir.elite.ceo</span></div>
-                        <div style="font-size:12.5px; font-family:monospace; color:white; background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px; margin-bottom:8px;">CBU: <span style="color:#4ade80;">0110257630025717844115</span></div>
-                        <div style="font-size:11.5px; color:#94a3b8; line-height:1.4;"><i class="ri-whatsapp-fill" style="color:#4ade80;"></i> Soporte Operativo: <strong>+54 9 381 51 101 71</strong></div>
-                    </div>
-
-                    <label class="btn-primary" style="width:100%; padding:15px; font-size:13.5px; cursor:pointer; background:linear-gradient(135deg,#16a34a,#15803d); border:none; box-shadow:0 12px 30px rgba(22,163,74,0.4); justify-content:center;">
-                        <i class="ri-upload-cloud-2-fill" style="font-size:20px;"></i> SUBIR COMPROBANTE Y AUDITAR
-                        <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">
-                    </label>
                 </div>
             </div>
 
@@ -905,10 +891,7 @@ function descargarAPK() {
     </div>
 </div>
 
-<!-- ====================================================================== -->
-<!-- EL MAGO DEL MAPA (GOOGLE MAPS INTEGRATION + MATEMÁTICA REAL DE COBRO)  -->
-<!-- ====================================================================== -->
-<!-- Llave corregida de Alza... a AIza... para que funcione correctamente -->
+<!-- EL MAGO DEL MAPA (GOOGLE MAPS) -->
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
 
 <div id="modalMapaGrande" class="modal-overlay" style="background:rgba(15,23,42,.98);">
@@ -917,15 +900,13 @@ function descargarAPK() {
         <div style="position:absolute; top:16px; left:16px; right:16px; z-index:10; display:flex; justify-content:space-between; align-items:flex-start;">
             <div style="background:rgba(255,255,255,.95); padding:12px 18px; border-radius:1rem; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:2px solid #ff6b00;">
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:17px; color:#0f172a; margin:0;"><i class="ri-radar-fill" style="color:#ff6b00;"></i> Radar GPS Activo</h3>
-                <div style="font-size:11.5px; color:#64748b; font-weight:700;">Calculando ruta de Comercio a Casa...</div>
+                <div style="font-size:11.5px; color:#64748b; font-weight:700;">Calculando ruta...</div>
             </div>
             <button onclick="cerrarMapa()" style="width:40px; height:40px; border-radius:50%; background:#ef4444; color:white; border:2px solid #fff; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 5px 15px rgba(239,68,68,0.5);"><i class="ri-close-line"></i></button>
         </div>
 
-        <!-- Canvas del Mapa -->
         <div id="googleMapCanvas" style="flex:1; width:100%; position:relative; background:#e2e8f0; min-height: 300px;"></div>
 
-        <!-- Consola de Cálculo Inferior -->
         <div style="background:white; padding:20px 24px; border-top:4px solid #ff6b00;">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                 <div style="background:#f8fafc; padding:14px; border-radius:1rem; border:2px solid #cbd5e1; text-align:center;">
@@ -938,53 +919,47 @@ function descargarAPK() {
                 </div>
             </div>
             <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="irAlCheckout()">
-                CONFIRMAR Y VER CARRITO <i class="ri-arrow-right-circle-fill" style="font-size:20px;"></i>
+                CONFIRMAR RUTA Y AVANZAR <i class="ri-arrow-right-circle-fill" style="font-size:20px;"></i>
             </button>
         </div>
     </div>
 </div>
 
-<!-- ====================================================================== -->
-<!-- CARRITO FINAL Y CHECKOUT DIRECTO POR WHATSAPP                          -->
-<!-- ====================================================================== -->
+<!-- CARRITO FINAL -->
 <div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
     <div class="modal-box" style="padding:24px; border:3.5px solid #16a34a; max-width:440px; border-radius:1.5rem; height:auto;">
         <button class="modal-close-btn" style="border-color:#16a34a; color:#15803d;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
-        
-        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:#0f172a; margin:0 0 16px;"><i class="ri-shopping-bag-3-fill" style="color:#16a34a;"></i> Mi Pedido</h3>
-        
+        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:#0f172a; margin:0 0 16px;"><i class="ri-shopping-bag-3-fill" style="color:#16a34a;"></i> Detalle del Pedido</h3>
         <div id="contenidoCarrito" style="max-height:280px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
-
         <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Total a Pagar</span>
             <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
         </div>
-
         <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none; box-shadow:0 10px 30px rgba(22,163,74,0.4);" onclick="mandarPedidoSoporte()">
             <i class="ri-whatsapp-fill" style="font-size:22px;"></i> ENVIAR PEDIDO (WHATSAPP)
         </button>
-        <div style="text-align:center; font-size:11.5px; font-weight:700; color:#64748b; margin-top:10px;">
-            Soporte Oficial: +54 9 381 51 101 71
-        </div>
     </div>
 </div>
 
-<!-- ====================================================================== -->
-<!-- MOTOR JAVASCRIPT GLOBAL (MATEMÁTICA, AUDIO LATINO, FOTOS Y MAPA)       -->
-<!-- ====================================================================== -->
 <script>
-const NUMERO_SOPORTE = "5493815110171";
+const NUMERO_SOPORTE = "5493816092676"; // Soporte principal actualizado
 let carritoGlobal = [];
 let costoEnvioCalculado = 0;
 let estadoTrabajoServimoto = false;
 let estadoRadar = false;
+let tipoLoginActual = '';
+let direccionOrigenCalculo = ''; 
 
-// Base de datos reactiva para el administrador de comercio y clientes
+// Base de datos reactiva simulada (Para no cobrar de Supabase)
+let baseComercios = [
+    { id: 1, nombre: "Rey del Lomito", provincia: "Tucumán", ciudad: "Famaillá", direccion: "San Martin 100", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150" },
+    { id: 2, nombre: "Panuchería Norte", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Rivadavia 50", img: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=150" }
+];
+
 let baseProductosActivos = [
-    { id: 1, nombre: "🍕 Pizza a la Piedra", comercio: "Don Carlos", precio: 12000, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400" },
-    { id: 2, nombre: "🍔 Lomito Completo", comercio: "Rey del Lomito", precio: 9500, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=400" },
-    { id: 3, nombre: "🥪 Panucho Tucumano", comercio: "Panuchería Norte", precio: 8000, img: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=400" },
-    { id: 4, nombre: "🥟 Docena Empanadas", comercio: "Del Norte", precio: 6000, img: "https://images.unsplash.com/photo-1626200419109-3221b0dcbd8b?auto=format&fit=crop&q=80&w=400" }
+    { id: 101, idComercio: 1, nombre: "🍔 Lomito Completo", precio: 9500, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400" },
+    { id: 102, idComercio: 1, nombre: "🍔 Lomito Especial", precio: 11000, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400" },
+    { id: 103, idComercio: 2, nombre: "🥪 Panucho Tucumano", precio: 8000, img: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=400" }
 ];
 
 function mostrarToast(msg, tipo) {
@@ -996,15 +971,10 @@ function mostrarToast(msg, tipo) {
     setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3500);
 }
 
-function abrirModalMarketplace(paso) {
+function abrirModalMarketplace() {
     document.getElementById('modalMarketplace').classList.add('show');
     document.body.style.overflow = 'hidden';
-    if(paso === 'comercio') {
-        irPaso('comercio');
-        renderizarAdminComercio();
-    } else {
-        irPaso(1);
-    }
+    irPaso(1);
 }
 function cerrarModalMarketplace() { 
     document.getElementById('modalMarketplace').classList.remove('show'); 
@@ -1015,242 +985,131 @@ function irPaso(paso) {
     document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active'));
     const target = document.getElementById(`modal-step-${paso}`);
     if(target) target.classList.add('active');
-    if(paso === 'comercio') renderizarAdminComercio();
 }
 
-// --- FLUJO COMPRADOR ---
-function validarUbicacionCliente() {
-    const prov = document.getElementById('selProvincia').value;
-    const ciu = document.getElementById('inputCiudad').value;
-    const dir = document.getElementById('inputDireccionCliente').value;
-    if(!prov || !ciu || !dir) return mostrarToast('Completá Provincia, Ciudad y tu Dirección exacta', 'error');
-    document.getElementById('lblCiudad').textContent = ciu;
-    irPaso(3);
+// --- SISTEMA DE LOGIN DE 6 CARACTERES ---
+function iniciarLogin(tipo) {
+    tipoLoginActual = tipo;
+    document.getElementById('lblTipoLogin').innerHTML = tipo === 'comercio' ? '<i class="ri-store-2-fill"></i> Acceso Comercio' : '<i class="ri-motorbike-fill"></i> Acceso Cadete';
+    document.getElementById('loginCelular').value = '';
+    document.getElementById('loginClave').value = '';
+    irPaso('login');
 }
 
-function simularSelfie(box) {
-    const icon = document.getElementById('iconSelfie');
-    const text = document.getElementById('textSelfie');
-    icon.className = 'ri-loader-4-line animate-ring';
-    text.textContent = 'Verificando rostro...';
-    setTimeout(() => {
-        box.style.background = '#f0fdf4';
-        box.style.borderColor = '#4ade80';
-        icon.className = 'ri-shield-check-fill';
-        icon.style.color = '#16a34a';
-        text.textContent = 'Identidad Validada';
-        text.style.color = '#15803d';
-        mostrarToast('Identidad validada con éxito', 'success');
-    }, 1500);
-}
-
-function ingresarAlCatalogo() {
-    const tel = document.getElementById('telCliente').value;
-    if(tel.length < 8) return mostrarToast('Ingresá tu número celular', 'error');
-    renderizarGrillaCatalogo();
-    irPaso(4);
-}
-
-// Grilla al ras con fotos reales sin recortar (object-fit: cover)
-function renderizarGrillaCatalogo() {
-    const container = document.getElementById('catalogoGrid');
-    container.innerHTML = baseProductosActivos.map((p, idx) => `
-        <div class="card-premium" style="padding:6px; border-radius:0.8rem; display:flex; flex-direction:column; justify-content:space-between; position:relative;">
-            <div style="height:110px; width:100%; background:url('${p.img}') center/cover no-repeat; border-radius:0.5rem; margin-bottom:8px;"></div>
-            <div style="padding:0 4px;">
-                <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:12px; line-height:1.2; color:#0f172a;">${p.nombre}</div>
-                <div style="font-size:10px; color:#64748b; font-weight:600; margin:4px 0 6px;"><i class="ri-store-2-fill"></i> ${p.comercio}</div>
-                <div style="color:#ff6b00; font-weight:800; font-size:15px; margin-bottom:8px;">$${p.precio.toLocaleString('es-AR')}</div>
-            </div>
-            <button class="btn-primary" style="width:100%; padding:6px; font-size:11px; border-radius:0.5rem;" onclick="agregarAlCarrito('${p.nombre}', ${p.precio})">AGREGAR <i class="ri-add-line"></i></button>
-        </div>
-    `).join('');
-}
-
-// --- COMERCIO, FOTO REAL Y PANEL ---
-let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
-
-// FUNCIÓN MEJORADA: Carga imagen de portada y cambia la caja visualmente
-function previewPortada(input) {
-    if(input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const box = document.getElementById('boxPortadaComercio');
-            box.style.backgroundImage = `url(${e.target.result})`;
-            document.getElementById('lblPortadaComercio').textContent = '✅ Portada Actualizada';
-            document.getElementById('iconPortada').style.color = '#fff';
-            mostrarToast('Portada cargada visualmente', 'success');
-        }
-        reader.readAsDataURL(input.files[0]);
+function validarLogin() {
+    const cel = document.getElementById('loginCelular').value;
+    const pwd = document.getElementById('loginClave').value.toUpperCase();
+    
+    // Validar formato: 3 letras y 3 números
+    const regexClave = /^[A-Z]{3}[0-9]{3}$/;
+    
+    if(cel.length < 8) return mostrarToast('El celular debe ser válido', 'error');
+    if(!regexClave.test(pwd)) return mostrarToast('La clave debe tener 3 letras y 3 números (Ej: ABC123)', 'error');
+    
+    mostrarToast('Ingreso exitoso', 'success');
+    if(tipoLoginActual === 'comercio') {
+        irPaso('comercio');
+    } else {
+        irPaso('servimoto');
     }
 }
 
-// FUNCIÓN MEJORADA: Carga foto del artículo y muestra vista previa en la caja
+// --- FLUJO COMPRADOR: SELECCIÓN DE TIENDA Y CATÁLOGO ---
+function validarUbicacionCliente() {
+    const prov = document.getElementById('selProvinciaCliente').value;
+    const ciu = document.getElementById('inputCiudadCliente').value;
+    const dir = document.getElementById('inputDireccionCliente').value;
+    if(!prov || !ciu || !dir) return mostrarToast('Completá Provincia, Ciudad y Dirección', 'error');
+    
+    filtrarComerciosPorCiudad();
+    irPaso('lista-comercios');
+}
+
+function filtrarComerciosPorCiudad() {
+    const prov = document.getElementById('selProvinciaCliente').value.toLowerCase();
+    const ciu = document.getElementById('inputCiudadCliente').value.toLowerCase();
+    const container = document.getElementById('gridComerciosDisponibles');
+    
+    let html = '';
+    baseComercios.forEach(c => {
+        if((!prov || c.provincia.toLowerCase().includes(prov)) && (!ciu || c.ciudad.toLowerCase().includes(ciu))) {
+            html += `
+            <div class="option-card" onclick="verCatalogoComercio(${c.id}, '${c.nombre}', '${c.direccion}, ${c.ciudad}')">
+                <img src="${c.img}" style="width:50px; height:50px; border-radius:12px; object-fit:cover;">
+                <div style="flex:1;">
+                    <div style="font-weight:800; color:#0f172a; font-size:15px;">${c.nombre}</div>
+                    <div style="font-size:11px; color:#64748b;"><i class="ri-map-pin-line"></i> ${c.direccion}</div>
+                </div>
+                <i class="ri-arrow-right-s-line" style="font-size:24px; color:#ff6b00;"></i>
+            </div>`;
+        }
+    });
+
+    if(html === '') html = '<div style="text-align:center; padding:20px; font-weight:700; color:#64748b;">No hay comercios registrados en esta zona aún.</div>';
+    if(container) container.innerHTML = html;
+}
+
+function verCatalogoComercio(idComercio, nombreComercio, direccionLocal) {
+    document.getElementById('lblComercioActual').textContent = nombreComercio;
+    direccionOrigenCalculo = direccionLocal; // Acá guardamos de dónde sale el cadete
+    
+    const container = document.getElementById('catalogoGrid');
+    const productos = baseProductosActivos.filter(p => p.idComercio === idComercio);
+    
+    if(productos.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px; font-weight:700; color:#64748b;">Este local no ha cargado platos aún.</div>';
+    } else {
+        container.innerHTML = productos.map(p => `
+            <div class="card-premium" style="padding:6px; border-radius:0.8rem; display:flex; flex-direction:column; justify-content:space-between;">
+                <div style="height:110px; width:100%; background:url('${p.img}') center/cover no-repeat; border-radius:0.5rem; margin-bottom:8px;"></div>
+                <div style="padding:0 4px;">
+                    <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:12px; line-height:1.2; color:#0f172a;">${p.nombre}</div>
+                    <div style="color:#ff6b00; font-weight:800; font-size:15px; margin-bottom:8px; margin-top:4px;">$${p.precio.toLocaleString('es-AR')}</div>
+                </div>
+                <button class="btn-primary" style="width:100%; padding:6px; font-size:11px; border-radius:0.5rem;" onclick="agregarAlCarrito('${p.nombre}', ${p.precio})">AGREGAR <i class="ri-add-line"></i></button>
+            </div>
+        `).join('');
+    }
+    irPaso('catalogo');
+}
+
+// --- PEDIDOS Y MAPA ---
+function enviarPedidoEspecial() {
+    const dirOrigen = document.getElementById('dirOrigenEspecial').value;
+    const dirDestino = document.getElementById('dirDestinoEspecial').value;
+    const txt = document.getElementById('txtPedidoEspecial').value;
+    
+    if(!dirOrigen || !dirDestino || !txt) return mostrarToast('Completá origen, destino y el detalle del viaje', 'error');
+    
+    direccionOrigenCalculo = dirOrigen; // Punto de partida para el mapa
+    document.getElementById('inputDireccionCliente').value = dirDestino; // Simular destino en el mismo input del mapa
+    
+    carritoGlobal.push({ nombre: "Viaje/Trámite Especial", precio: 0, detalle: txt });
+    cerrarModalMarketplace();
+    abrirMapaMago();
+}
+
+function agregarAlCarrito(nombre, precio) {
+    carritoGlobal.push({ nombre, precio, cantidad: 1 });
+    mostrarToast(`${nombre} agregado`, 'success');
+}
+
+// --- FOTOS COMERCIO ---
+let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
 function previewArtFoto(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
             tempImgBase64 = e.target.result;
-            const box = document.getElementById('boxArticuloNuevo');
-            box.style.backgroundImage = `url(${e.target.result})`;
-            document.getElementById('lblArtFoto').textContent = '✅ Foto Lista';
+            document.getElementById('boxArticuloNuevo').style.backgroundImage = `url(${e.target.result})`;
             mostrarToast('Imagen lista para publicar', 'success');
         }
         reader.readAsDataURL(input.files[0]);
     }
 }
 
-function guardarComercio() {
-    const nom = document.getElementById('comercioNombre').value;
-    const dir = document.getElementById('comercioDireccionExacta').value;
-    const cat = document.getElementById('comercioCategoria').value;
-    const ciu = document.getElementById('comercioCiudad').value;
-    if(!nom || !dir || !cat || !ciu) return mostrarToast('Completá nombre, dirección, rubro y ciudad', 'error');
-    mostrarToast(`¡Comercio "${nom}" guardado en ${ciu}!`, 'success');
-}
-
-function agregarArticuloComercio() {
-    const nom = document.getElementById('newArtNombre').value;
-    const pre = parseInt(document.getElementById('newArtPrecio').value);
-    const rubro = document.getElementById('comercioCategoria').value;
-    
-    if(!nom || isNaN(pre)) return mostrarToast('Ingresá nombre y precio válido', 'error');
-    
-    let emojiStr = "🍽️ ";
-    if(rubro.includes("pizza")) emojiStr = "🍕 ";
-    if(rubro.includes("sandwich")) emojiStr = "🍔 ";
-    if(rubro.includes("bebidas")) emojiStr = "🥤 ";
-    if(rubro.includes("panaderia")) emojiStr = "🥖 ";
-
-    const nombreComercio = document.getElementById('comercioNombre').value || "Mi Local";
-
-    baseProductosActivos.unshift({
-        id: Date.now(),
-        nombre: emojiStr + nom,
-        comercio: nombreComercio,
-        precio: pre,
-        img: tempImgBase64
-    });
-
-    mostrarToast(`¡"${nom}" publicado en el catálogo vivo!`, 'success');
-    
-    // Resetear formulario
-    document.getElementById('newArtNombre').value = '';
-    document.getElementById('newArtPrecio').value = '';
-    document.getElementById('lblArtFoto').innerHTML = 'Subir Foto Real del Plato';
-    document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
-    tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
-    
-    renderizarAdminComercio();
-}
-
-function eliminarArticuloAdmin(id) {
-    baseProductosActivos = baseProductosActivos.filter(p => p.id !== id);
-    renderizarAdminComercio();
-    mostrarToast('Artículo eliminado del catálogo', 'error');
-}
-
-function renderizarAdminComercio() {
-    const cont = document.getElementById('listaAdminComercio');
-    if(!cont) return;
-    if(baseProductosActivos.length === 0) {
-        cont.innerHTML = '<div style="font-size:12px; color:#64748b; text-align:center;">No hay artículos cargados.</div>';
-        return;
-    }
-    cont.innerHTML = baseProductosActivos.map(p => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:0.75rem;">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <img src="${p.img}" style="width:36px; height:36px; border-radius:6px; object-fit:cover;">
-                <div>
-                    <div style="font-size:12.5px; font-weight:800; color:#0f172a;">${p.nombre}</div>
-                    <div style="font-size:11px; color:#ff6b00; font-weight:700;">$${p.precio.toLocaleString('es-AR')}</div>
-                </div>
-            </div>
-            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:6px; width:28px; height:28px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
-        </div>
-    `).join('');
-}
-
-// --- SERVIMOTO IA & RADAR ---
-// FUNCIÓN MEJORADA: Cambia visualmente toda la caja a verde al cargar documento
-function docCargado(input, idLabel, idCaja, idIcon) {
-    if(input.files && input.files[0]) {
-        const lbl = document.getElementById(idLabel);
-        const caja = document.getElementById(idCaja);
-        const icon = document.getElementById(idIcon);
-        
-        lbl.textContent = '✅ ' + input.files[0].name.substring(0, 10) + '...';
-        
-        // Estilos de confirmación (Verde)
-        caja.style.backgroundColor = '#f0fdf4';
-        caja.style.borderColor = '#4ade80';
-        icon.className = 'ri-checkbox-circle-fill';
-        icon.style.color = '#16a34a';
-        lbl.style.color = '#15803d';
-
-        mostrarToast('Documento cargado en memoria', 'success');
-    }
-}
-
-function auditarDocumentosIA() {
-    mostrarToast('🤖 OpenAI GPT-4o: Auditoría en proceso...', 'success');
-    setTimeout(() => {
-        mostrarToast('✅ ¡Documentación Aprobada!', 'success');
-        irPaso('servimoto');
-    }, 1500);
-}
-
-function toggleEstadoTrabajo() {
-    estadoTrabajoServimoto = !estadoTrabajoServimoto;
-    const btn = document.getElementById('btnEstadoTrabajo');
-    if(estadoTrabajoServimoto) {
-        btn.style.background = '#16a34a';
-        btn.innerHTML = '<i class="ri-check-double-line"></i> TRABAJANDO';
-        mostrarToast('¡Estás en línea para recibir viajes!', 'success');
-    } else {
-        btn.style.background = '#ef4444';
-        btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
-        mostrarToast('Turno finalizado.', 'error');
-        if(estadoRadar) activarRadar();
-    }
-}
-
-function activarRadar() {
-    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (Trabajando) primero', 'error');
-    estadoRadar = !estadoRadar;
-    const btn = document.getElementById('btnRadar');
-    if(estadoRadar) {
-        btn.innerHTML = '<i class="ri-radar-fill animate-ring"></i> ESCANEANDO';
-        btn.style.background = '#0ea5e9';
-        mostrarToast('Radar Satelital buscando comercios y clientes...', 'success');
-    } else {
-        btn.innerHTML = '<i class="ri-radar-fill"></i> RADAR';
-        btn.style.background = '#2563eb';
-    }
-}
-
-function procesarLiquidacionIA(input) {
-    if(input.files && input.files.length > 0) {
-        mostrarToast('🤖 OpenAI Vision: Verificando comprobante a noir....', 'success');
-        setTimeout(() => {
-            document.getElementById('deudaMoto').textContent = '$0';
-            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> Validado por IA.';
-            document.getElementById('viajesMotoBadge').style.background = 'rgba(74,222,128,0.2)';
-            document.getElementById('viajesMotoBadge').style.color = '#4ade80';
-            mostrarToast('✅ Pago auditado. Cuenta en cero.', 'success');
-        }, 2000);
-    }
-}
-
-// --- MAPA GOOGLE REAL Y MATEMÁTICA ---
-function agregarAlCarrito(nombre, precio) {
-    carritoGlobal.push({ nombre, precio, cantidad: 1 });
-    mostrarToast(`${nombre} agregado`, 'success');
-    if(carritoGlobal.length === 1) {
-        cerrarModalMarketplace();
-        abrirMapaMago();
-    }
-}
+// --- MAPA GOOGLE REAL Y MATEMÁTICA ($2200 base dia, $3000 noche, +$100 dsp 1km) ---
+let directionsService, directionsRenderer, mapObj;
 
 function abrirMapaMago() {
     const modalMapa = document.getElementById('modalMapaGrande');
@@ -1261,48 +1120,37 @@ function abrirMapaMago() {
         box.style.opacity = '1';
         box.style.transform = 'scale(1)';
         
-        const cityBuscada = document.getElementById('inputCiudad').value || "Famailla";
+        const destinoAddress = document.getElementById('inputDireccionCliente').value + ", " + (document.getElementById('inputCiudadCliente') ? document.getElementById('inputCiudadCliente').value : "Tucumán");
+        const origenAddress = direccionOrigenCalculo || "San Martín 100, Famaillá, Tucumán";
         
         try {
             if(!mapObj) {
                 mapObj = new google.maps.Map(document.getElementById("googleMapCanvas"), {
                     zoom: 14,
                     center: {lat: -27.0544, lng: -65.4111},
-                    disableDefaultUI: true
+                    zoomControl: true, streetViewControl: true, fullscreenControl: true
                 });
                 directionsService = new google.maps.DirectionsService();
                 directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true});
                 directionsRenderer.setMap(mapObj);
             }
 
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ 'address': cityBuscada + ', Argentina' }, function(results, status) {
-                if (status == 'OK') {
-                    mapObj.setCenter(results[0].geometry.location);
-                    const origin = results[0].geometry.location;
-                    const destinationLat = results[0].geometry.location.lat() + 0.015;
-                    const destinationLng = results[0].geometry.location.lng() + 0.015;
-                    const destination = new google.maps.LatLng(destinationLat, destinationLng);
+            directionsService.route({
+                origin: origenAddress,
+                destination: destinoAddress,
+                travelMode: 'DRIVING'
+            }, function(response, status) {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                    
+                    const originMarker = new google.maps.Marker({position: response.routes[0].legs[0].start_location, map: mapObj, label: "🏪"});
+                    const destMarker = new google.maps.Marker({position: response.routes[0].legs[0].end_location, map: mapObj, label: "📍"});
 
-                    new google.maps.Marker({position: origin, map: mapObj, label: "🏪"});
-                    new google.maps.Marker({position: destination, map: mapObj, label: "📍"});
-
-                    directionsService.route({
-                        origin: origin,
-                        destination: destination,
-                        travelMode: 'DRIVING'
-                    }, function(response, status) {
-                        if (status === 'OK') {
-                            directionsRenderer.setDirections(response);
-                            const distanceMeters = response.routes[0].legs[0].distance.value;
-                            const kmReales = (distanceMeters / 1000).toFixed(1);
-                            calcularMatematicaEnvio(kmReales);
-                        } else {
-                            calcularMatematicaEnvio("2.1");
-                        }
-                    });
+                    const distanceMeters = response.routes[0].legs[0].distance.value;
+                    const kmReales = (distanceMeters / 1000).toFixed(1);
+                    calcularMatematicaEnvio(kmReales);
                 } else {
-                    calcularMatematicaEnvio("1.8");
+                    calcularMatematicaEnvio("2.1"); // Backup en caso de error de geocoding
                 }
             });
         } catch(e) {
@@ -1316,20 +1164,20 @@ function calcularMatematicaEnvio(km) {
     
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
-    const tarifaBase = esNoche ? 3000 : 2300;
+    const tarifaBase = esNoche ? 3000 : 2200; // $2200 de día como pediste
     
-    document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche ($3000)' : 'Base Día ($2300)';
+    document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche ($3000)' : 'Base Día ($2200)';
 
     let costoExtra = 0;
     if(km > 1.0) {
         const extraKm = km - 1.0;
         const cuadrasExtra = Math.ceil(extraKm / 0.1); 
-        costoExtra = cuadrasExtra * 100; // $100 por cuadra
+        costoExtra = cuadrasExtra * 100; // $100 la cuadra después del 1km
     }
     
     costoEnvioCalculado = tarifaBase + costoExtra;
     document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
-    mostrarToast('Cálculo de envío completado', 'success');
+    mostrarToast('Cálculo de envío de Comercio a Cliente completado', 'success');
 }
 
 function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); }
@@ -1347,7 +1195,7 @@ function renderizarCarritoDOM() {
     const totalUI = document.getElementById('totalFinalCarrito');
     
     if(carritoGlobal.length === 0) {
-        cont.innerHTML = '<div style="text-align:center;padding:24px 0;color:#64748b;font-weight:800;font-size:13.5px;">Tu carrito está vacío.</div>';
+        cont.innerHTML = '<div style="text-align:center;padding:24px 0;color:#64748b;font-weight:800;font-size:13.5px;">Tu carrito/pedido está vacío.</div>';
         totalUI.textContent = '$0';
         costoEnvioCalculado = 0;
         return;
@@ -1360,7 +1208,8 @@ function renderizarCarritoDOM() {
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:0.85rem;">
             <div>
                 <div style="font-weight:800; font-size:13.5px; color:#0f172a;">${item.nombre}</div>
-                <div style="color:#ff6b00; font-weight:800; font-size:12.5px;">$${item.precio.toLocaleString('es-AR')}</div>
+                <div style="color:#ff6b00; font-weight:800; font-size:12.5px;">${item.precio > 0 ? '$'+item.precio.toLocaleString('es-AR') : 'A cotizar'}</div>
+                ${item.detalle ? `<div style="font-size:11px; color:#64748b; margin-top:2px;">${item.detalle}</div>` : ''}
             </div>
             <button onclick="borrarItemCarrito(${idx})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:30px; height:30px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
         </div>`;
@@ -1373,17 +1222,11 @@ function renderizarCarritoDOM() {
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:0.85rem;">
             <div>
                 <div style="font-weight:800; font-size:13px; color:#166534;"><i class="ri-map-pin-2-fill"></i> Envío GPS (${tipoTarifa})</div>
-                <div style="font-size:11px; color:#15803d; font-weight:600;">$100 x cuadra extra</div>
+                <div style="font-size:11px; color:#15803d; font-weight:600;">$100 x cuadra extra después del 1er Km</div>
             </div>
             <div style="color:#166534; font-weight:800; font-size:13.5px;">$${costoEnvioCalculado.toLocaleString('es-AR')}</div>
         </div>`;
     }
-
-    listHTML += `
-    <div style="margin-top:12px;">
-        <input type="text" id="linkTransferencia" placeholder="Pegá aquí el link de tu comprobante de pago..." style="width:100%; padding:14px; border-radius:0.85rem; border:2px solid #cbd5e1; font-family:inherit; font-size:13px; outline:none;">
-    </div>
-    `;
 
     cont.innerHTML = listHTML;
     totalUI.textContent = '$' + (subtotal + costoEnvioCalculado).toLocaleString('es-AR');
@@ -1398,27 +1241,50 @@ function borrarItemCarrito(idx) {
 function mandarPedidoSoporte() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     
-    let txt = "🔥 *NUEVO PEDIDO DELIVERY MOTO* 🔥%0A%0A";
+    let txt = "🔥 *NUEVO PEDIDO / VIAJE MOTO* 🔥%0A%0A";
     let subtotal = 0;
     carritoGlobal.forEach(i => {
         txt += `▪️ ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`;
+        if(i.detalle) txt += `   ✏️ _Detalle: ${i.detalle}_%0A`;
         subtotal += i.precio;
     });
     
-    const dir = document.getElementById('inputDireccionCliente').value || "No especificada";
-    const ciu = document.getElementById('inputCiudad').value || "";
-    txt += `%0A📍 *Dirección Cliente:* ${dir}, ${ciu}%0A`;
-    txt += `📍 *Costo de Envío GPS:* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
+    const dirDestino = document.getElementById('inputDireccionCliente') ? document.getElementById('inputDireccionCliente').value : "";
+    const ciuDestino = document.getElementById('inputCiudadCliente') ? document.getElementById('inputCiudadCliente').value : "Famaillá";
+    
+    txt += `%0A🏪 *Retira en:* ${direccionOrigenCalculo || "Local Comercial"}%0A`;
+    txt += `📍 *Entrega en:* ${dirDestino}, ${ciuDestino}%0A`;
+    txt += `🛣️ *Costo de Envío GPS:* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     txt += `💰 *TOTAL A ABONAR: $${(subtotal + costoEnvioCalculado).toLocaleString('es-AR')}*%0A%0A`;
     
-    const linkEl = document.getElementById('linkTransferencia');
-    if(linkEl && linkEl.value.trim() !== '') {
-        txt += `🔗 *Comprobante:* ${encodeURIComponent(linkEl.value)}`;
-    } else {
-        txt += `⚠️ *Pago:* Abonará en efectivo al cadete.`;
-    }
-    
     window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
+}
+
+// --- SERVIMOTO PANEL RADAR MOCK ---
+function toggleEstadoTrabajo() {
+    estadoTrabajoServimoto = !estadoTrabajoServimoto;
+    const btn = document.getElementById('btnEstadoTrabajo');
+    if(estadoTrabajoServimoto) {
+        btn.style.background = '#16a34a';
+        btn.innerHTML = '<i class="ri-check-double-line"></i> TRABAJANDO';
+        mostrarToast('¡Estás en línea para recibir viajes!', 'success');
+    } else {
+        btn.style.background = '#ef4444';
+        btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
+        mostrarToast('Turno finalizado.', 'error');
+    }
+}
+function activarRadar() {
+    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (Trabajando) primero', 'error');
+    estadoRadar = !estadoRadar;
+    const btn = document.getElementById('btnRadar');
+    if(estadoRadar) {
+        btn.innerHTML = '<i class="ri-radar-fill animate-ring"></i> ESCANEANDO';
+        btn.style.background = '#0ea5e9';
+    } else {
+        btn.innerHTML = '<i class="ri-radar-fill"></i> RADAR';
+        btn.style.background = '#2563eb';
+    }
 }
 </script>
 </body>
