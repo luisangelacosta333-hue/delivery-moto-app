@@ -268,6 +268,10 @@ html, body { width: 100%; overflow-x: hidden; }
 ::-webkit-scrollbar-track { background: #fff7ed; }
 ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
 
+/* Filtro de grilla scrollable */
+.filter-bar { scrollbar-width: none; }
+.filter-bar::-webkit-scrollbar { display: none; }
+
 /* APK Banner */
 .apk-banner { background: linear-gradient(135deg, #0f172a, #1a0a00); border-radius: 1.5rem; padding: 22px 26px; border: 3px solid #16a34a; box-shadow: 0 14px 40px rgba(22,163,74,.25); display: flex; align-items: center; gap: 18px; flex-wrap: wrap; position: relative; overflow: hidden; }
 .apk-banner::before { content: ''; position: absolute; top: -30px; right: -30px; width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, rgba(22,163,74,.35), transparent 70%); }
@@ -331,6 +335,15 @@ html, body { width: 100%; overflow-x: hidden; }
             <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-android-fill" style="color:#4ade80;"></i> Descargá PWA / APK</span>
         </div>
     </div>
+</div>
+
+<!-- PANEL DE VOZ GLOBAL -->
+<div class="voice-panel" id="voicePanel">
+    <div class="voice-waves">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="voice-text">Reproduciendo asistente de voz...</div>
+    <button class="voice-stop-btn" onclick="detenerVoz()"><i class="ri-stop-circle-fill"></i> DETENER</button>
 </div>
 
 <!-- HERO COMPLETO Y ORIGINAL -->
@@ -785,14 +798,6 @@ html, body { width: 100%; overflow-x: hidden; }
     </div>
 </footer>
 
-<!-- Inicialización Supabase Mock / SDK Listo para Producción -->
-<script>
-    // Acá irán tus keys reales cuando lances a producción.
-    // const supabaseUrl = 'TU_URL_SUPABASE';
-    // const supabaseKey = 'TU_ANON_KEY';
-    // const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-</script>
-
 <script>
 // SCROLL NATIVO ORIGINAL
 function scrollToId(id) { 
@@ -812,9 +817,6 @@ function descargarAPK() {
     document.body.removeChild(a);
 }
 </script>
-<!-- ====================================================================== -->
-<!-- PARTE 2: MODALES FULL SCREEN, MAGO DEL MAPA Y MOTOR JAVASCRIPT GLOBAL  -->
-<!-- ====================================================================== -->
 
 <!-- PANEL MODAL MARKETPLACE Y GESTIÓN -->
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
@@ -884,7 +886,6 @@ function descargarAPK() {
                         <option value="">Seleccioná tu Provincia...</option>
                     </select>
                     <input type="text" class="input-buscar" id="inputCiudad" placeholder="Ciudad (Ej: Famaillá, Tucumán)" style="margin:0;">
-                    <!-- CAJA DE DIRECCIÓN EXACTA DEL CLIENTE -->
                     <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro (Ej: Av. San Martín 450)" style="margin:0;">
                     <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px;" onclick="validarUbicacionCliente()">CONTINUAR <i class="ri-arrow-right-line"></i></button>
                 </div>
@@ -921,7 +922,7 @@ function descargarAPK() {
                 </div>
                 
                 <!-- GRILLA 2 COLUMNAS SIN MÁRGENES MUERTOS -->
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; overflow-y:auto; padding:2px 8px; flex:1;" id="catalogoGrid"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; overflow-y:auto; padding:2px 8px; flex:1; align-content:start;" id="catalogoGrid"></div>
             </div>
 
             <!-- PASO COMERCIO: ALTA CON DIRECCIÓN Y GESTIÓN DE ARTÍCULOS EN VIVO -->
@@ -930,14 +931,13 @@ function descargarAPK() {
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Panel de Comercio</h3>
                 
                 <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
-                    <label style="background:#f8fafc; border:2px dashed #ffb380; padding:16px; border-radius:1rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                    <label style="background:#f8fafc; border:2px dashed #ffb380; padding:16px; border-radius:1rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition:all 0.3s;">
                         <i class="ri-image-add-fill" style="font-size:28px; color:#ff6b00;"></i>
                         <span style="font-weight:800; color:#cc4400; font-size:13px;" id="lblPortadaComercio">Subir Foto de Portada del Local</span>
                         <input type="file" accept="image/*" style="display:none;" onchange="previewPortada(this)">
                     </label>
 
                     <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
-                    <!-- CAJA DE DIRECCIÓN EXACTA DEL COMERCIO -->
                     <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta del Local (Ej: 9 de Julio 120)" style="margin:0;">
                     
                     <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:14px; font-size:14px;">
@@ -960,7 +960,6 @@ function descargarAPK() {
                     <button class="btn-primary" style="padding:14px; font-size:14px;" onclick="guardarComercio()">GUARDAR DATOS DEL LOCAL</button>
                 </div>
 
-                <!-- Cargar Artículo al Menú (Con foto real cuadrada) -->
                 <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:1.2rem; padding:16px; margin-bottom:16px;">
                     <h4 style="font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Crear Artículo Nuevo</h4>
                     <div style="display:flex; gap:8px; margin-bottom:10px;">
@@ -974,7 +973,7 @@ function descargarAPK() {
                     <button class="btn-secondary" style="width:100%; padding:10px; font-size:13px;" onclick="agregarArticuloComercio()">+ PUBLICAR EN LA GRILLA</button>
                 </div>
 
-                <!-- LISTA DE ARTÍCULOS ACTIVOS DEL COMERCIO (PARA ELIMINAR O EDITAR) -->
+                <!-- LISTA DE ARTÍCULOS ACTIVOS -->
                 <div style="background:white; border-radius:1.2rem; padding:16px; border:2px solid #ffe4cc;">
                     <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Tus Artículos Publicados</h4>
                     <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto;">
@@ -990,7 +989,6 @@ function descargarAPK() {
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 6px;">Certificación de Conductor</h3>
                 <p style="color:#64748b;font-size:13px;margin-bottom:16px;line-height:1.4;">Subí tus 4 documentos obligatorios. Nuestro motor de IA auditará la veracidad antes de darte acceso a la red.</p>
 
-                <!-- 4 CAJAS DE REGISTRO -->
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
                     <label class="card-premium" style="padding:14px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;">
                         <i class="ri-user-smile-fill" style="font-size:26px; color:#ff6b00;"></i>
@@ -1032,11 +1030,9 @@ function descargarAPK() {
                     <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px;">Control de Operación</h3>
                     <p style="font-size:12px; color:rgba(255,255,255,0.7); margin:0 0 16px;">Cada viaje verificado vale <strong>$200</strong>. Liquidación semanal obligatoria los días <strong>LUNES</strong>.</p>
                     
-                    <!-- Botones de Trabajo y Radar -->
                     <div style="background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:1rem; border:1px solid rgba(255,255,255,0.1); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div style="font-size:13px; font-weight:800;">Turno Activo:</div>
                         <div style="display:flex; gap:8px;">
-                            <!-- BOTÓN DE RADAR INCORPORADO PARA LA MOTO -->
                             <button id="btnRadar" onclick="activarRadar()" style="background:#2563eb; color:white; border:none; padding:8px 12px; border-radius:20px; font-weight:800; font-size:11px; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.4); transition:all .2s;">
                                 <i class="ri-radar-fill"></i> RADAR
                             </button>
@@ -1046,14 +1042,12 @@ function descargarAPK() {
                         </div>
                     </div>
 
-                    <!-- Deuda Acumulada -->
                     <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:18px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
                         <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:2px;">Deuda Acumulada</div>
                         <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:38px; font-weight:800; color:white; line-height:1; margin-bottom:4px;">$1.400</div>
                         <div style="font-size:11.5px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:3px 10px; border-radius:20px;" id="viajesMotoBadge">7 Viajes Realizados</div>
                     </div>
 
-                    <!-- Datos Bancarios & Soporte -->
                     <div style="background:rgba(255,107,0,0.1); border:2px dashed #ff6b00; padding:14px; border-radius:1rem; margin-bottom:16px;">
                         <div style="font-weight:800; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;"><i class="ri-bank-fill" style="color:#ffd700;"></i> Datos para Depósito</div>
                         <div style="font-size:12.5px; font-family:monospace; color:white; background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px; margin-bottom:6px;">Alias: <span style="color:#4ade80;">noir.elite.ceo</span></div>
@@ -1089,7 +1083,7 @@ function descargarAPK() {
         </div>
 
         <!-- Canvas del Mapa -->
-        <div id="googleMapCanvas" style="flex:1; position:relative; background:#e2e8f0;"></div>
+        <div id="googleMapCanvas" style="flex:1; min-height: 50vh; position:relative; background:#e2e8f0;"></div>
 
         <!-- Consola de Cálculo Inferior Matemática Exacta -->
         <div style="background:white; padding:20px 24px; border-top:4px solid #ff6b00;">
@@ -1162,12 +1156,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Base de datos reactiva (Se inyecta acá la foto que cargás en la P1)
 let baseProductosActivos = [
     { id: 1, nombre: "🍕 Pizza a la Piedra", comercio: "Don Carlos", precio: 12000, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400" },
     { id: 2, nombre: "🍔 Lomito Completo", comercio: "Rey del Lomito", precio: 9500, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=400" },
     { id: 3, nombre: "🥪 Panucho Tucumano", comercio: "Panuchería Norte", precio: 8000, img: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=400" },
-    { id: 4, nombre: "🥟 Docena Empanadas", comercio: "Del Norte", precio: 6000, img: "https://images.unsplash.com/photo-1626200419109-3221b0dcbd8b?auto=format&fit=crop&q=80&w=400" }
+    { id: 4, nombre: "🥟 Docena Empanadas", comercio: "Don Carlos", precio: 6000, img: "https://images.unsplash.com/photo-1626200419109-3221b0dcbd8b?auto=format&fit=crop&q=80&w=400" }
 ];
 
 function mostrarToast(msg, tipo) {
@@ -1201,8 +1194,7 @@ function irPaso(paso) {
     if(paso === 'comercio') renderizarAdminComercio();
 }
 
-// --- ASISTENTE DE VOZ LATINO ESTRICTO ---
-let ssu = new SpeechSynthesisUtterance();
+// --- ASISTENTE DE VOZ LATINO REPARADO ---
 let hablando = false;
 
 function toggleAsistenteVoz() {
@@ -1213,7 +1205,8 @@ function iniciarVoz() {
     if(!('speechSynthesis' in window)) { return mostrarToast('Navegador sin soporte de audio', 'error'); }
     window.speechSynthesis.cancel();
     
-    ssu.text = "Bienvenido a Delivery Moto. Una plataforma integral donde los comercios venden sin comisiones, los clientes compran seguro con nuestra validación de selfie, y nuestros cadetes certificados trabajan con radar GPS en vivo y buena conducta verificada por Inteligencia Artificial. Disfrutá de la mejor experiencia.";
+    // Instanciar acá adentro evita bloqueos de iOS/Android
+    let ssu = new SpeechSynthesisUtterance("Bienvenido a Delivery Moto. Una plataforma integral donde los comercios venden sin comisiones, los clientes compran seguro con nuestra validación de selfie, y nuestros cadetes certificados trabajan con radar GPS en vivo y buena conducta verificada por Inteligencia Artificial. Disfrutá de la mejor experiencia.");
     
     let voces = window.speechSynthesis.getVoices();
     let vozLatina = voces.find(v => v.lang === 'es-AR') || voces.find(v => v.lang === 'es-MX') || voces.find(v => v.lang.includes('es-419')) || voces.find(v => v.lang.startsWith('es'));
@@ -1273,20 +1266,42 @@ function ingresarAlCatalogo() {
     irPaso(4);
 }
 
-// Renderizado de Grilla al RAS DE LOS COSTADOS (Lee fotos reales inyectadas)
+// --- GRILLA CON FILTROS POR COMERCIO (Experiencia V) E IMÁGENES GRANDES ---
+let comercioSeleccionado = "Todos";
+
 function renderizarGrillaCatalogo() {
     const container = document.getElementById('catalogoGrid');
-    container.innerHTML = baseProductosActivos.map((p, idx) => `
-        <div class="card-premium" style="padding:6px; border-radius:0.8rem; display:flex; flex-direction:column; justify-content:space-between; position:relative;">
-            <div style="height:110px; width:100%; background:url('${p.img}') center/cover no-repeat; border-radius:0.5rem; margin-bottom:8px;"></div>
+    
+    const comerciosUnicos = ["Todos", ...new Set(baseProductosActivos.map(p => p.comercio))];
+    
+    let htmlFiltros = `<div class="filter-bar" style="display:flex; gap:10px; overflow-x:auto; padding:0 4px 12px 4px; margin-bottom:8px; border-bottom:2px solid #ffe4cc; width:100%; grid-column: 1 / -1;">`;
+    comerciosUnicos.forEach(c => {
+        const activo = c === comercioSeleccionado ? "background:#ff6b00; color:white; border-color:#cc4400;" : "background:white; color:#64748b; border-color:#cbd5e1;";
+        htmlFiltros += `<button onclick="filtrarComercio('${c}')" style="padding:10px 18px; border-radius:20px; font-family:'Sora',sans-serif; font-weight:800; font-size:12px; border:2px solid transparent; ${activo} white-space:nowrap; transition:all .2s; box-shadow:0 4px 10px rgba(0,0,0,0.05); cursor:pointer;">${c}</button>`;
+    });
+    htmlFiltros += `</div>`;
+
+    const productosFiltrados = comercioSeleccionado === "Todos" ? baseProductosActivos : baseProductosActivos.filter(p => p.comercio === comercioSeleccionado);
+
+    const htmlProductos = productosFiltrados.map((p, idx) => `
+        <div class="card-premium" style="padding:8px; border-radius:1rem; display:flex; flex-direction:column; justify-content:space-between; position:relative; box-shadow:0 6px 15px rgba(0,0,0,0.06);">
+            <!-- IMAGEN ESTIRADA A 160PX -->
+            <div style="height:160px; width:100%; background:url('${p.img}') center/cover no-repeat; border-radius:0.75rem; margin-bottom:12px; border:1px solid rgba(0,0,0,0.05);"></div>
             <div style="padding:0 4px;">
-                <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:12px; line-height:1.2; color:#0f172a;">${p.nombre}</div>
-                <div style="font-size:10px; color:#64748b; font-weight:600; margin:4px 0 6px;"><i class="ri-store-2-fill"></i> ${p.comercio}</div>
-                <div style="color:#ff6b00; font-weight:800; font-size:15px; margin-bottom:8px;">$${p.precio.toLocaleString('es-AR')}</div>
+                <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.2; color:#0f172a; margin-bottom:4px;">${p.nombre}</div>
+                <div style="font-size:11px; color:#64748b; font-weight:700; margin:4px 0 10px;"><i class="ri-store-2-fill" style="color:#ff6b00;"></i> ${p.comercio}</div>
+                <div style="color:#16a34a; font-weight:800; font-size:17px; margin-bottom:12px;">$${p.precio.toLocaleString('es-AR')}</div>
             </div>
-            <button class="btn-primary" style="width:100%; padding:6px; font-size:11px; border-radius:0.5rem;" onclick="agregarAlCarrito('${p.nombre}', ${p.precio})">AGREGAR <i class="ri-add-line"></i></button>
+            <button class="btn-primary" style="width:100%; padding:10px; font-size:12px; border-radius:0.75rem;" onclick="agregarAlCarrito('${p.nombre}', ${p.precio}, '${p.comercio}')">AGREGAR <i class="ri-add-line"></i></button>
         </div>
     `).join('');
+
+    container.innerHTML = htmlFiltros + (productosFiltrados.length > 0 ? htmlProductos : `<div style="grid-column: 1 / -1; text-align:center; padding:20px; color:#64748b; font-weight:800;">No hay productos para mostrar en este local.</div>`);
+}
+
+function filtrarComercio(nombre) {
+    comercioSeleccionado = nombre;
+    renderizarGrillaCatalogo();
 }
 
 // --- COMERCIO E INYECCIÓN REAL DE FOTOS ---
@@ -1294,8 +1309,15 @@ let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?a
 
 function previewPortada(input) {
     if(input.files && input.files[0]) {
-        document.getElementById('lblPortadaComercio').textContent = '✅ Portada Cargada';
-        mostrarToast('Foto de portada lista', 'success');
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const label = document.getElementById('lblPortadaComercio').parentElement;
+            label.style.background = `url(${e.target.result}) center/cover no-repeat`;
+            label.style.borderColor = '#ff6b00';
+            document.getElementById('lblPortadaComercio').innerHTML = '<span style="background:rgba(255,255,255,0.9); padding:6px 12px; border-radius:8px;">✅ Portada Cargada</span>';
+            mostrarToast('Foto de portada del local lista', 'success');
+        }
+        reader.readAsDataURL(input.files[0]);
     }
 }
 
@@ -1303,7 +1325,7 @@ function previewArtFoto(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            tempImgBase64 = e.target.result; // Foto convertida a base64 real sin recortes
+            tempImgBase64 = e.target.result;
             document.getElementById('lblArtFoto').textContent = '✅ Foto Real Cargada';
             mostrarToast('Imagen lista para publicar', 'success');
         }
@@ -1335,7 +1357,6 @@ function agregarArticuloComercio() {
 
     const nombreComercio = document.getElementById('comercioNombre').value || "Mi Local";
 
-    // PUSH DIRECTO A LA BASE REACTIVA PARA QUE EL COMPRADOR LO VEA
     baseProductosActivos.unshift({
         id: Date.now(),
         nombre: emojiStr + nom,
@@ -1368,15 +1389,16 @@ function renderizarAdminComercio() {
         return;
     }
     cont.innerHTML = baseProductosActivos.map(p => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:0.75rem;">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <img src="${p.img}" style="width:36px; height:36px; border-radius:6px; object-fit:cover;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:1rem;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <img src="${p.img}" style="width:50px; height:50px; border-radius:8px; object-fit:cover;">
                 <div>
-                    <div style="font-size:12.5px; font-weight:800; color:#0f172a;">${p.nombre}</div>
-                    <div style="font-size:11px; color:#ff6b00; font-weight:700;">$${p.precio.toLocaleString('es-AR')}</div>
+                    <div style="font-size:14px; font-weight:800; color:#0f172a;">${p.nombre}</div>
+                    <div style="font-size:12px; color:#ff6b00; font-weight:700;">$${p.precio.toLocaleString('es-AR')}</div>
                 </div>
             </div>
-            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:6px; width:28px; height:28px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
+            <!-- TACHITO GIGANTE -->
+            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:12px; width:44px; height:44px; cursor:pointer; box-shadow:0 4px 12px rgba(239,68,68,0.3); transition:all 0.2s;"><i class="ri-delete-bin-fill" style="font-size:22px;"></i></button>
         </div>
     `).join('');
 }
@@ -1444,12 +1466,12 @@ function procesarLiquidacionIA(input) {
     }
 }
 
-// --- MAPA GOOGLE REAL Y MATEMÁTICA EXACTA DE ENVÍO ($2300/$3000 + $100 CUADRA) ---
+// --- MAPA GOOGLE REAL Y MATEMÁTICA EXACTA DE ENVÍO ($2000/$3000 + $100 CUADRA) ---
 let directionsService, directionsRenderer, mapObj;
 
-function agregarAlCarrito(nombre, precio) {
-    carritoGlobal.push({ nombre, precio, cantidad: 1 });
-    mostrarToast(`${nombre} agregado`, 'success');
+function agregarAlCarrito(nombre, precio, comercio) {
+    carritoGlobal.push({ nombre, precio, comercio, cantidad: 1 });
+    mostrarToast(`${nombre} agregado al carrito`, 'success');
     if(carritoGlobal.length === 1) {
         cerrarModalMarketplace();
         abrirMapaMago();
@@ -1465,15 +1487,16 @@ function abrirMapaMago() {
         box.style.opacity = '1';
         box.style.transform = 'scale(1)';
         
-        const cityBuscada = document.getElementById('inputCiudad').value || "San Miguel de Tucuman";
-        const direccionCliente = document.getElementById('inputDireccionCliente').value || "";
-        const direccionComercio = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value : "Centro";
+        const cityBuscada = document.getElementById('inputCiudad').value || "Famaillá";
+        const direccionCliente = document.getElementById('inputDireccionCliente').value || "Centro";
+        const comercioPedido = carritoGlobal.length > 0 ? carritoGlobal[0].comercio : "Centro";
+        const direccionComercio = document.getElementById('comercioDireccionExacta') && document.getElementById('comercioDireccionExacta').value ? document.getElementById('comercioDireccionExacta').value : (comercioPedido + ", Centro");
         
         try {
             if(!mapObj) {
                 mapObj = new google.maps.Map(document.getElementById("googleMapCanvas"), {
                     zoom: 14,
-                    center: {lat: -26.8241, lng: -65.2226},
+                    center: {lat: -27.0543, lng: -65.4055}, // Centro en Famaillá
                     disableDefaultUI: true
                 });
                 directionsService = new google.maps.DirectionsService();
@@ -1483,14 +1506,13 @@ function abrirMapaMago() {
 
             const geocoder = new google.maps.Geocoder();
             
-            // Busca Origen (Comercio)
-            geocoder.geocode({ 'address': `${direccionComercio}, ${cityBuscada}, Argentina` }, function(resultsOrigen, statusOrigen) {
+            // Busca Origen (Comercio) y Destino (Cliente) y los conecta
+            geocoder.geocode({ 'address': `${direccionComercio}, ${cityBuscada}, Tucumán, Argentina` }, function(resultsOrigen, statusOrigen) {
                 if (statusOrigen == 'OK') {
                     const origin = resultsOrigen[0].geometry.location;
                     mapObj.setCenter(origin);
                     
-                    // Busca Destino (Cliente)
-                    geocoder.geocode({ 'address': `${direccionCliente}, ${cityBuscada}, Argentina` }, function(resultsDestino, statusDestino) {
+                    geocoder.geocode({ 'address': `${direccionCliente}, ${cityBuscada}, Tucumán, Argentina` }, function(resultsDestino, statusDestino) {
                         if (statusDestino == 'OK') {
                             const destination = resultsDestino[0].geometry.location;
                             
@@ -1530,12 +1552,12 @@ function abrirMapaMago() {
 function calcularMatematicaEnvio(km) {
     document.getElementById('mapaKm').textContent = km + " km";
     
-    // MATEMÁTICA EXACTA: Base $2300/$3000 (1km) + $100 x cuadra extra
+    // MATEMÁTICA ESTRICTA: $2000 Día, $3000 Noche (Base de 1km). $100 x cuadra extra (0.1km).
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
-    const tarifaBase = esNoche ? 3000 : 2300;
+    const tarifaBase = esNoche ? 3000 : 2000;
     
-    document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche' : 'Base Día';
+    document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche ($3000)' : 'Base Día ($2000)';
 
     let costoExtra = 0;
     if(km > 1.0) {
@@ -1579,7 +1601,8 @@ function renderizarCarritoDOM() {
                 <div style="font-weight:800; font-size:13.5px; color:#0f172a;">${item.nombre}</div>
                 <div style="color:#ff6b00; font-weight:800; font-size:12.5px;">$${item.precio.toLocaleString('es-AR')}</div>
             </div>
-            <button onclick="borrarItemCarrito(${idx})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:30px; height:30px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
+            <!-- TACHITO AGRANDADO EN CARRITO -->
+            <button onclick="borrarItemCarrito(${idx})" style="background:#ef4444; color:white; border:none; border-radius:10px; width:40px; height:40px; cursor:pointer; box-shadow:0 4px 10px rgba(239,68,68,0.3);"><i class="ri-delete-bin-fill" style="font-size:18px;"></i></button>
         </div>`;
     }).join('');
     
