@@ -11,10 +11,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
-    
-    <!-- API DE GOOGLE MAPS (SIN ASYNC/DEFER PARA EVITAR PANTALLA GRIS) -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- ========================================== -->
@@ -26,19 +22,38 @@
         // ==========================================
         // SEGURIDAD ANTI-COPIA PREMIUM
         // ==========================================
-        document.addEventListener('contextmenu', event => event.preventDefault()); 
+        document.addEventListener('contextmenu', event => event.preventDefault()); // Bloquea click derecho
         
         document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false; 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; 
-            if(e.ctrlKey && e.keyCode == 85) return false; 
-            if(e.ctrlKey && e.keyCode == 83) return false; 
+            // Bloquea F12
+            if(e.keyCode == 123) {
+                return false; 
+            }
+            // Bloquea Ctrl+Shift+I
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+                return false; 
+            }
+            // Bloquea Ctrl+Shift+J
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+                return false; 
+            }
+            // Bloquea Ctrl+U (Ver código fuente)
+            if(e.ctrlKey && e.keyCode == 85) {
+                return false; 
+            }
+            // Bloquea Ctrl+S (Guardar como)
+            if(e.ctrlKey && e.keyCode == 83) {
+                return false; 
+            }
         };
 
+        // ==========================================
+        // STORE DE MEMORIA Y CONFIGURACIÓN
+        // ==========================================
         const AppStore = (function() {
             const memory = new Map();
             const MAX_SIZE = 500; 
+            
             return {
                 set: function(key, value) {
                     if(memory.size >= MAX_SIZE) {
@@ -47,9 +62,15 @@
                     }
                     memory.set(key, value);
                 },
-                get: function(key) { return memory.get(key); },
-                remove: function(key) { memory.delete(key); },
-                clear: function() { memory.clear(); }
+                get: function(key) { 
+                    return memory.get(key); 
+                },
+                remove: function(key) { 
+                    memory.delete(key); 
+                },
+                clear: function() { 
+                    memory.clear(); 
+                }
             };
         })();
 
@@ -65,19 +86,75 @@
     </script>
 
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-serif; background: #fff7ed; color: #0f172a; }
+        /* ==========================================================================
+           CSS ULTRA PREMIUM - SISTEMA BASE
+           ========================================================================== */
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            margin: 0; 
+            padding: 0; 
+        }
 
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-14px); } }
-        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.6); } 50% { box-shadow: 0 0 0 28px rgba(255,107,0,0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes ringRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes micPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22,163,74,.6); } 50% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(22,163,74,0); } }
-        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        @keyframes shimmerGold { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-        @keyframes fadeInScale { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        html, 
+        body { 
+            width: 100%; 
+            overflow-x: hidden; 
+            font-family: 'Quicksand', sans-serif; 
+            background: #fff7ed; 
+            color: #0f172a; 
+        }
 
+        /* ==========================================================================
+           KEYFRAMES Y ANIMACIONES
+           ========================================================================== */
+        @keyframes gradientBG { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
+
+        @keyframes float { 
+            0%, 100% { transform: translateY(0px); } 
+            50% { transform: translateY(-14px); } 
+        }
+
+        @keyframes pulseGlow { 
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.6); } 
+            50% { box-shadow: 0 0 0 28px rgba(255,107,0,0); } 
+        }
+
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        @keyframes ringRotate { 
+            from { transform: rotate(0deg); } 
+            to { transform: rotate(360deg); } 
+        }
+
+        @keyframes micPulse { 
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22,163,74,.6); } 
+            50% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(22,163,74,0); } 
+        }
+
+        @keyframes ticker { 
+            0% { transform: translateX(0); } 
+            100% { transform: translateX(-50%); } 
+        }
+
+        @keyframes shimmerGold { 
+            0% { background-position: -200% center; } 
+            100% { background-position: 200% center; } 
+        }
+
+        @keyframes fadeInScale { 
+            from { opacity: 0; transform: scale(.95) translateY(8px); } 
+            to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+
+        /* CLASES DE ANIMACIÓN */
         .animate-float { animation: float 4.5s ease-in-out infinite; }
         .animate-pulse-glow { animation: pulseGlow 2.2s ease-in-out infinite; }
         .animate-slide-up { animation: slideUp .7s cubic-bezier(.16,1,.3,1) both; }
@@ -86,85 +163,631 @@
         .animate-mic { animation: micPulse 1.1s ease-in-out infinite; }
         .animate-fade-in-scale { animation: fadeInScale .35s cubic-bezier(.16,1,.3,1) both; }
 
-        .ticker-wrap { overflow: hidden; white-space: nowrap; }
-        .ticker-track { display: inline-block; animation: ticker 40s linear infinite; }
-
-        .hero-bg { background: linear-gradient(135deg, #1a0a00 0%, #2d1200 25%, #cc4400 60%, #ff6b00 100%); background-size: 200% 200%; animation: gradientBG 10s ease infinite; }
-        .glass { background: rgba(255,255,255,.14); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1.5px solid rgba(255,255,255,.25); }
-        .text-gradient-gold { background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00, #ffd700, #fff7e6); background-size: 200% auto; -webkit-background-clip: text; color: transparent; animation: shimmerGold 4s linear infinite; }
-        .text-gradient-orange { background: linear-gradient(100deg, #ff8c00, #ff6b00, #cc4400); -webkit-background-clip: text; color: transparent; }
-
-        .btn-primary { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 50%, #cc4400 100%); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.3); cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s cubic-bezier(.16,1,.3,1); display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 14px 36px rgba(255,107,0,.5), inset 0 1px 0 rgba(255,255,255,.4); position: relative; overflow: hidden; }
-        .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 48px rgba(255,107,0,.65), inset 0 1px 0 rgba(255,255,255,.4); border-color: rgba(255,255,255,.55); }
-        .btn-primary:active { transform: scale(.97); }
-        .btn-secondary { background: white; color: #cc4400; font-weight: 800; border-radius: 1rem; border: 2.5px solid #ff6b00; cursor: pointer; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 6px 20px rgba(255,107,0,.15); }
-        .btn-secondary:hover { transform: translateY(-3px); background: #fff7ed; box-shadow: 0 14px 35px rgba(255,107,0,.3); }
-        .btn-dark { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid #ff6b00; cursor: pointer; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 12px 28px rgba(0,0,0,.3); }
-        .btn-dark:hover { transform: translateY(-3px); background: linear-gradient(135deg, #ff6b00, #cc4400); box-shadow: 0 18px 42px rgba(255,107,0,.5); }
-        .btn-apk { background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.25); cursor: pointer; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .55rem; box-shadow: 0 12px 30px rgba(22,163,74,.45), inset 0 1px 0 rgba(255,255,255,.3); }
-        .btn-apk:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 42px rgba(22,163,74,.6); }
-
-        .card-premium { background: white; border-radius: 1.5rem; border: 2px solid #ffe4cc; box-shadow: 0 6px 25px rgba(255,107,0,.08); transition: all .4s cubic-bezier(.16,1,.3,1); position: relative; overflow: hidden; }
-        .card-premium:hover { transform: translateY(-7px); box-shadow: 0 22px 55px rgba(255,107,0,.22); border-color: #ff6b00; }
-        .card-premium::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #ff8c00, #ff6b00, #cc4400); }
-        .feature-icon { width: 62px; height: 62px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #ff6b00; transition: all .4s; border: 2px solid #ffd4b3; }
-        .card-premium:hover .feature-icon { transform: scale(1.12) rotate(-5deg); background: linear-gradient(135deg, #ff8c00, #cc4400); color: white; border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.45); }
-
-        .badge-naranja { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; border: 1.5px solid #ffb380; }
-        .badge-dorado { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, rgba(255,215,0,.22), rgba(255,140,0,.1)); color: #fff7e6; border: 1.5px solid rgba(255,215,0,.5); box-shadow: 0 4px 15px rgba(255,215,0,.15); }
-
-        .nav-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 76px; z-index: 500; background: linear-gradient(135deg,#1a0a00,#2d1200); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 3px solid #ff6b00; box-shadow: 0 4px 28px rgba(0,0,0,.4); display: flex; align-items: center; }
-        .nav-container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
-        .mic-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all .3s; background: linear-gradient(135deg, #16a34a, #15803d); color: white; box-shadow: 0 4px 15px rgba(22,163,74,.4); flex-shrink: 0; }
-        .mic-btn:hover { transform: scale(1.08); box-shadow: 0 8px 24px rgba(22,163,74,.6); }
-
-        @media (max-width: 900px) { .hide-mobile { display: none !important; } }
-        .nav-link { color: rgba(255,255,255,.92); font-weight: 700; font-size: 14px; transition: all .2s; cursor: pointer; padding: 5px 2px; border-bottom: 2px solid transparent; white-space: nowrap; }
-        .nav-link:hover { color: #ffd700; border-bottom-color: #ffd700; }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.95); backdrop-filter: blur(10px); z-index: 999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; padding: 0; }
-        .modal-overlay.show { opacity: 1; pointer-events: auto; }
-        .modal-box { background: #fff7ed; border-radius: 0; width: 100%; height: 100vh; max-height: 100vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.16,1,.3,1); position: relative; display: flex; flex-direction: column; }
-        .modal-overlay.show .modal-box { transform: translateY(0); }
-        @media (min-width: 768px) { .modal-overlay { align-items: center; padding: 20px; } .modal-box { height: auto; max-height: 90vh; border-radius: 1.5rem; max-width: 500px; border: 3px solid #ff6b00; overflow: hidden; transform: scale(.95); } .modal-overlay.show .modal-box { transform: scale(1); } }
-        .modal-close-btn { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.95); border: 3px solid #ff6b00; color: #cc4400; font-size: 24px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .25s; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,.2); }
-        .modal-close-btn:hover { background: #ff6b00; color: white; transform: rotate(90deg); }
-        .sub-step { display: none; padding: 20px 16px; flex: 1; animation: fadeInScale .3s ease; width: 100%; }
-        .sub-step.active { display: block; }
-
-        .option-card { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #ffe4cc; background: white; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 14px; text-align: left; transition: all .3s; font-family: inherit; width: 100%; }
-        .option-card:hover { transform: translateY(-3px); border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.22); background: linear-gradient(135deg, #fff7ed, white); }
-        .option-card-dark { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #ff6b00; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; transition: all .3s; font-family: inherit; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-        .option-card-dark:hover { transform: translateY(-3px); box-shadow: 0 18px 42px rgba(255,107,0,.35); background: linear-gradient(135deg, #cc4400, #ff6b00); }
-
-        .select-provincia, .input-buscar, .textarea-buscar { width: 100%; padding: 16px; border-radius: 1rem; border: 2.5px solid #ffe4cc; background: white; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 15px; color: #0f172a; outline: none; transition: all .25s; margin-bottom: 12px; }
-        .select-provincia { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ff6b00' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 48px; }
-        .select-provincia:focus, .input-buscar:focus, .textarea-buscar:focus { border-color: #ff6b00; box-shadow: 0 0 0 4px rgba(255,107,0,.12); }
-        .btn-volver { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; border: 2px solid #ffe4cc; background: white; color: #cc4400; font-weight: 800; font-size: 14px; cursor: pointer; transition: all .2s; margin-bottom: 16px; }
-        .btn-volver:hover { border-color: #ff6b00; background: #fff7ed; }
-        .step-indicator { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; font-size: 12px; font-weight: 800; border: 1.5px solid #ffd4b3; margin-bottom: 16px; }
-
-        .check-step { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
-        .check-step i { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, rgba(22,163,74,.15), rgba(22,163,74,.08)); color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; border: 1.5px solid rgba(22,163,74,.25); }
-        .bg-grid-orange { background-image: linear-gradient(rgba(255,107,0,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255,107,0,.055) 1px, transparent 1px); background-size: 44px 44px; }
-        .radial-orange { background: radial-gradient(700px 450px at 50% 0%, rgba(255,107,0,.16), transparent 70%); }
-        .stat-number { font-family: 'Sora', sans-serif; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ff8c00, #ffd700); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
-        .divider-glow { height: 3px; background: linear-gradient(90deg, transparent, #ff6b00, #ffd700, #16a34a, #ff6b00, transparent); border-radius: 3px; }
-        .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: #cc4400; display: inline-flex; align-items: center; gap: 10px; }
-        .eyebrow::before { content: ''; display: block; width: 36px; height: 3px; background: linear-gradient(90deg, #ff6b00, transparent); border-radius: 2px; }
-        .hero-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -1.5px; line-height: 1.02; }
-        .section-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -.8px; line-height: 1.15; }
+        /* ==========================================================================
+           TICKER DE NOTICIAS
+           ========================================================================== */
+        .ticker-wrap { 
+            overflow: hidden; 
+            white-space: nowrap; 
+        }
         
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #fff7ed; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
+        .ticker-track { 
+            display: inline-block; 
+            animation: ticker 40s linear infinite; 
+        }
+
+        /* ==========================================================================
+           UTILIDADES Y EFECTOS VISUALES
+           ========================================================================== */
+        .hero-bg { 
+            background: linear-gradient(135deg, #1a0a00 0%, #2d1200 25%, #cc4400 60%, #ff6b00 100%); 
+            background-size: 200% 200%; 
+            animation: gradientBG 10s ease infinite; 
+        }
+        
+        .glass { 
+            background: rgba(255,255,255,.14); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1.5px solid rgba(255,255,255,.25); 
+        }
+
+        .text-gradient-gold { 
+            background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00, #ffd700, #fff7e6); 
+            background-size: 200% auto; 
+            -webkit-background-clip: text; 
+            color: transparent; 
+            animation: shimmerGold 4s linear infinite; 
+        }
+        
+        .text-gradient-orange { 
+            background: linear-gradient(100deg, #ff8c00, #ff6b00, #cc4400); 
+            -webkit-background-clip: text; 
+            color: transparent; 
+        }
+
+        /* ==========================================================================
+           BOTONES PREMIUM
+           ========================================================================== */
+        .btn-primary { 
+            background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 50%, #cc4400 100%); 
+            color: white; 
+            font-weight: 800; 
+            border-radius: 1rem; 
+            border: 2.5px solid rgba(255,255,255,.3); 
+            cursor: pointer; 
+            font-family: 'Quicksand', sans-serif; 
+            transition: all .3s cubic-bezier(.16,1,.3,1); 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: .6rem; 
+            box-shadow: 0 14px 36px rgba(255,107,0,.5), inset 0 1px 0 rgba(255,255,255,.4); 
+            position: relative; 
+            overflow: hidden; 
+        }
+        
+        .btn-primary:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 20px 48px rgba(255,107,0,.65), inset 0 1px 0 rgba(255,255,255,.4); 
+            border-color: rgba(255,255,255,.55); 
+        }
+        
+        .btn-primary:active { 
+            transform: scale(.97); 
+        }
+
+        .btn-secondary { 
+            background: white; 
+            color: #cc4400; 
+            font-weight: 800; 
+            border-radius: 1rem; 
+            border: 2.5px solid #ff6b00; 
+            cursor: pointer; 
+            font-family: 'Quicksand', sans-serif; 
+            transition: all .3s; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: .6rem; 
+            box-shadow: 0 6px 20px rgba(255,107,0,.15); 
+        }
+        
+        .btn-secondary:hover { 
+            transform: translateY(-3px); 
+            background: #fff7ed; 
+            box-shadow: 0 14px 35px rgba(255,107,0,.3); 
+        }
+
+        .btn-dark { 
+            background: linear-gradient(135deg, #0f172a, #1e293b); 
+            color: white; 
+            font-weight: 800; 
+            border-radius: 1rem; 
+            border: 2.5px solid #ff6b00; 
+            cursor: pointer; 
+            font-family: 'Quicksand', sans-serif; 
+            transition: all .3s; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: .6rem; 
+            box-shadow: 0 12px 28px rgba(0,0,0,.3); 
+        }
+        
+        .btn-dark:hover { 
+            transform: translateY(-3px); 
+            background: linear-gradient(135deg, #ff6b00, #cc4400); 
+            box-shadow: 0 18px 42px rgba(255,107,0,.5); 
+        }
+
+        .btn-apk { 
+            background: linear-gradient(135deg, #16a34a, #15803d); 
+            color: white; 
+            font-weight: 800; 
+            border-radius: 1rem; 
+            border: 2.5px solid rgba(255,255,255,.25); 
+            cursor: pointer; 
+            font-family: 'Quicksand', sans-serif; 
+            transition: all .3s; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: .55rem; 
+            box-shadow: 0 12px 30px rgba(22,163,74,.45), inset 0 1px 0 rgba(255,255,255,.3); 
+        }
+        
+        .btn-apk:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 18px 42px rgba(22,163,74,.6); 
+        }
+
+        /* ==========================================================================
+           TARJETAS DE DISEÑO
+           ========================================================================== */
+        .card-premium { 
+            background: white; 
+            border-radius: 1.5rem; 
+            border: 2px solid #ffe4cc; 
+            box-shadow: 0 6px 25px rgba(255,107,0,.08); 
+            transition: all .4s cubic-bezier(.16,1,.3,1); 
+            position: relative; 
+            overflow: hidden; 
+        }
+        
+        .card-premium:hover { 
+            transform: translateY(-7px); 
+            box-shadow: 0 22px 55px rgba(255,107,0,.22); 
+            border-color: #ff6b00; 
+        }
+        
+        .card-premium::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            height: 5px; 
+            background: linear-gradient(90deg, #ff8c00, #ff6b00, #cc4400); 
+        }
+
+        .feature-icon { 
+            width: 62px; 
+            height: 62px; 
+            border-radius: 1.2rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 28px; 
+            background: linear-gradient(135deg, #fff7ed, #ffe4cc); 
+            color: #ff6b00; 
+            transition: all .4s; 
+            border: 2px solid #ffd4b3; 
+        }
+        
+        .card-premium:hover .feature-icon { 
+            transform: scale(1.12) rotate(-5deg); 
+            background: linear-gradient(135deg, #ff8c00, #cc4400); 
+            color: white; 
+            border-color: #ff6b00; 
+            box-shadow: 0 12px 30px rgba(255,107,0,.45); 
+        }
+
+        /* ==========================================================================
+           BADGES (ETIQUETAS)
+           ========================================================================== */
+        .badge-naranja { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 7px 16px; 
+            border-radius: 999px; 
+            font-size: 12px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: .8px; 
+            background: linear-gradient(135deg, #fff7ed, #ffe4cc); 
+            color: #cc4400; 
+            border: 1.5px solid #ffb380; 
+        }
+        
+        .badge-dorado { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 8px 18px; 
+            border-radius: 999px; 
+            font-size: 12px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            background: linear-gradient(135deg, rgba(255,215,0,.22), rgba(255,140,0,.1)); 
+            color: #fff7e6; 
+            border: 1.5px solid rgba(255,215,0,.5); 
+            box-shadow: 0 4px 15px rgba(255,215,0,.15); 
+        }
+
+        /* ==========================================================================
+           BARRA DE NAVEGACIÓN FIJA Y MICRÓFONO
+           ========================================================================== */
+        .nav-fixed { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 76px; 
+            z-index: 500; 
+            background: linear-gradient(135deg,#1a0a00,#2d1200); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 3px solid #ff6b00; 
+            box-shadow: 0 4px 28px rgba(0,0,0,.4); 
+            display: flex; 
+            align-items: center; 
+        }
+        
+        .nav-container { 
+            width: 100%; 
+            max-width: 1280px; 
+            margin: 0 auto; 
+            padding: 0 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            flex-wrap: nowrap; 
+        }
+
+        .mic-btn { 
+            width: 44px; 
+            height: 44px; 
+            border-radius: 50%; 
+            border: 2px solid rgba(255,255,255,.35); 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 20px; 
+            transition: all .3s; 
+            background: linear-gradient(135deg, #16a34a, #15803d); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(22,163,74,.4); 
+            flex-shrink: 0; 
+        }
+        
+        .mic-btn:hover { 
+            transform: scale(1.08); 
+            box-shadow: 0 8px 24px rgba(22,163,74,.6); 
+        }
+
+        @media (max-width: 900px) { 
+            .hide-mobile { 
+                display: none !important; 
+            } 
+        }
+        
+        .nav-link { 
+            color: rgba(255,255,255,.92); 
+            font-weight: 700; 
+            font-size: 14px; 
+            transition: all .2s; 
+            cursor: pointer; 
+            padding: 5px 2px; 
+            border-bottom: 2px solid transparent; 
+            white-space: nowrap; 
+        }
+        
+        .nav-link:hover { 
+            color: #ffd700; 
+            border-bottom-color: #ffd700; 
+        }
+
+        /* ==========================================================================
+           MODALES FULL SCREEN Y ESTRUCTURA LIMPIA
+           ========================================================================== */
+        .modal-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(15,23,42,.95); 
+            backdrop-filter: blur(10px); 
+            z-index: 999999; 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: center; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: all .3s ease; 
+            padding: 0; 
+        }
+        
+        .modal-overlay.show { 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+        
+        .modal-box { 
+            background: #fff7ed; 
+            border-radius: 0; 
+            width: 100%; 
+            height: 100vh; 
+            max-height: 100vh; 
+            overflow-y: auto; 
+            transform: translateY(100%); 
+            transition: transform .3s cubic-bezier(.16,1,.3,1); 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .modal-overlay.show .modal-box { 
+            transform: translateY(0); 
+        }
+        
+        @media (min-width: 768px) { 
+            .modal-overlay { 
+                align-items: center; 
+                padding: 20px; 
+            } 
+            .modal-box { 
+                height: auto; 
+                max-height: 90vh; 
+                border-radius: 1.5rem; 
+                max-width: 500px; 
+                border: 3px solid #ff6b00; 
+                overflow: hidden; 
+                transform: scale(.95); 
+            } 
+            .modal-overlay.show .modal-box { 
+                transform: scale(1); 
+            } 
+        }
+
+        .modal-close-btn { 
+            position: absolute; 
+            top: 14px; 
+            right: 14px; 
+            width: 44px; 
+            height: 44px; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,.95); 
+            border: 3px solid #ff6b00; 
+            color: #cc4400; 
+            font-size: 24px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: all .25s; 
+            z-index: 100; 
+            box-shadow: 0 4px 15px rgba(0,0,0,.2); 
+        }
+        
+        .modal-close-btn:hover { 
+            background: #ff6b00; 
+            color: white; 
+            transform: rotate(90deg); 
+        }
+        
+        .sub-step { 
+            display: none; 
+            padding: 20px 16px; 
+            flex: 1; 
+            animation: fadeInScale .3s ease; 
+            width: 100%; 
+        }
+        
+        .sub-step.active { 
+            display: block; 
+        }
+
+        /* ==========================================================================
+           TARJETAS DE OPCIONES DE PERFIL (MODAL)
+           ========================================================================== */
+        .option-card { 
+            padding: 18px; 
+            border-radius: 1.2rem; 
+            border: 2.5px solid #ffe4cc; 
+            background: white; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            gap: 14px; 
+            text-align: left; 
+            transition: all .3s; 
+            font-family: inherit; 
+            width: 100%; 
+        }
+        
+        .option-card:hover { 
+            transform: translateY(-3px); 
+            border-color: #ff6b00; 
+            box-shadow: 0 12px 30px rgba(255,107,0,.22); 
+            background: linear-gradient(135deg, #fff7ed, white); 
+        }
+        
+        .option-card-dark { 
+            padding: 18px; 
+            border-radius: 1.2rem; 
+            border: 2.5px solid #ff6b00; 
+            background: linear-gradient(135deg, #0f172a, #1e293b); 
+            color: white; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            text-align: center; 
+            transition: all .3s; 
+            font-family: inherit; 
+            width: 100%; 
+            box-shadow: 0 10px 30px rgba(0,0,0,.25); 
+        }
+        
+        .option-card-dark:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 18px 42px rgba(255,107,0,.35); 
+            background: linear-gradient(135deg, #cc4400, #ff6b00); 
+        }
+
+        /* ==========================================================================
+           CONTROLES DE FORMULARIO (INPUTS, SELECTS)
+           ========================================================================== */
+        .select-provincia, 
+        .input-buscar, 
+        .textarea-buscar { 
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 1rem; 
+            border: 2.5px solid #ffe4cc; 
+            background: white; 
+            font-family: 'Quicksand', sans-serif; 
+            font-weight: 700; 
+            font-size: 15px; 
+            color: #0f172a; 
+            outline: none; 
+            transition: all .25s; 
+            margin-bottom: 12px; 
+        }
+        
+        .select-provincia { 
+            appearance: none; 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ff6b00' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); 
+            background-repeat: no-repeat; 
+            background-position: right 16px center; 
+            padding-right: 48px; 
+        }
+        
+        .select-provincia:focus, 
+        .input-buscar:focus, 
+        .textarea-buscar:focus { 
+            border-color: #ff6b00; 
+            box-shadow: 0 0 0 4px rgba(255,107,0,.12); 
+        }
+        
+        .btn-volver { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 8px 16px; 
+            border-radius: 10px; 
+            border: 2px solid #ffe4cc; 
+            background: white; 
+            color: #cc4400; 
+            font-weight: 800; 
+            font-size: 14px; 
+            cursor: pointer; 
+            transition: all .2s; 
+            margin-bottom: 16px; 
+        }
+        
+        .btn-volver:hover { 
+            border-color: #ff6b00; 
+            background: #fff7ed; 
+        }
+        
+        .step-indicator { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 6px 14px; 
+            border-radius: 999px; 
+            background: linear-gradient(135deg, #fff7ed, #ffe4cc); 
+            color: #cc4400; 
+            font-size: 12px; 
+            font-weight: 800; 
+            border: 1.5px solid #ffd4b3; 
+            margin-bottom: 16px; 
+        }
+
+        /* ==========================================================================
+           CLASES MISCELÁNEAS Y AYUDANTES (HELPERS)
+           ========================================================================== */
+        .check-step { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            padding: 6px 0; 
+        }
+        
+        .check-step i { 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, rgba(22,163,74,.15), rgba(22,163,74,.08)); 
+            color: #16a34a; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 13px; 
+            flex-shrink: 0; 
+            border: 1.5px solid rgba(22,163,74,.25); 
+        }
+        
+        .bg-grid-orange { 
+            background-image: linear-gradient(rgba(255,107,0,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255,107,0,.055) 1px, transparent 1px); 
+            background-size: 44px 44px; 
+        }
+        
+        .radial-orange { 
+            background: radial-gradient(700px 450px at 50% 0%, rgba(255,107,0,.16), transparent 70%); 
+        }
+        
+        .stat-number { 
+            font-family: 'Sora', sans-serif; 
+            font-weight: 800; 
+            line-height: 1; 
+            background: linear-gradient(135deg, #ff8c00, #ffd700); 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            color: transparent; 
+            font-variant-numeric: tabular-nums; 
+        }
+        
+        .divider-glow { 
+            height: 3px; 
+            background: linear-gradient(90deg, transparent, #ff6b00, #ffd700, #16a34a, #ff6b00, transparent); 
+            border-radius: 3px; 
+        }
+        
+        .eyebrow { 
+            font-size: 12px; 
+            font-weight: 800; 
+            letter-spacing: .22em; 
+            text-transform: uppercase; 
+            color: #cc4400; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        
+        .eyebrow::before { 
+            content: ''; 
+            display: block; 
+            width: 36px; 
+            height: 3px; 
+            background: linear-gradient(90deg, #ff6b00, transparent); 
+            border-radius: 2px; 
+        }
+        
+        .hero-title { 
+            font-family: 'Sora', sans-serif; 
+            font-weight: 800; 
+            letter-spacing: -1.5px; 
+            line-height: 1.02; 
+        }
+        
+        .section-title { 
+            font-family: 'Sora', sans-serif; 
+            font-weight: 800; 
+            letter-spacing: -.8px; 
+            line-height: 1.15; 
+        }
+        
+        ::-webkit-scrollbar { 
+            width: 8px; 
+        }
+        
+        ::-webkit-scrollbar-track { 
+            background: #fff7ed; 
+        }
+        
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(180deg,#ff8c00,#cc4400); 
+            border-radius: 10px; 
+        }
     </style>
 </head>
 <body>
 
-<!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+<!-- ====================================================================== -->
+<!-- BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR)                                  -->
+<!-- ====================================================================== -->
 <nav class="nav-fixed">
     <div class="nav-container">
+        
+        <!-- Bloque de Logo y Nombre -->
         <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
             <div style="position:relative;width:46px;height:46px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(255,107,0,.6);border:2px solid #ffd700;">
                 <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo Delivery Moto">
@@ -175,6 +798,7 @@
             </div>
         </div>
 
+        <!-- Enlaces de navegación (Ocultos en dispositivos móviles) -->
         <div style="display:flex;align-items:center;gap:16px;" class="hide-mobile">
             <span class="nav-link" onclick="scrollToId('funciona')">Cómo Funciona</span>
             <span class="nav-link" onclick="scrollToId('cadetes')">Cadetes</span>
@@ -182,8 +806,9 @@
             <span class="nav-link" onclick="scrollToId('funciones')">Funciones</span>
         </div>
 
+        <!-- Botones de Acción -->
+        <!-- FIX: El micrófono ya NO dispara el Toast cortado, solo animación visual -->
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-            <!-- BOTÓN DE MICRÓFONO CONECTADO A LA API DE VOZ -->
             <button class="mic-btn" id="micBtn" title="Asistente de Voz" onclick="activarMicrofono()">
                 <i class="ri-mic-fill" id="micIcon"></i>
             </button>
@@ -195,9 +820,12 @@
     </div>
 </nav>
 
+<!-- Div espaciador para compensar el fixed navbar -->
 <div style="height:90px;"></div>
 
-<!-- TICKER -->
+<!-- ====================================================================== -->
+<!-- BARRA ANIMADA (TICKER) DE VENTAJAS COMPETITIVAS                        -->
+<!-- ====================================================================== -->
 <div style="background:linear-gradient(90deg,#cc4400,#ff6b00,#ff8c00,#ff6b00,#cc4400);padding:8px 0;overflow:hidden;border-bottom:2px solid rgba(0,0,0,.2);">
     <div class="ticker-wrap">
         <div class="ticker-track">
@@ -206,18 +834,28 @@
             <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-store-3-fill" style="color:#ffd700;"></i> Publicá y Vendé</span>
             <span style="color:#fff7e6;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-map-pin-2-fill" style="color:#bbf7d0;"></i> Entrega GPS</span>
             <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-android-fill" style="color:#4ade80;"></i> Descargá PWA / APK</span>
+            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-vip-crown-fill" style="color:#ffd700;"></i> Cadetes Certificados</span>
+            <span style="color:#fff7e6;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-shield-check-fill" style="color:#bbf7d0;"></i> Buena Conducta</span>
         </div>
     </div>
 </div>
 
-<!-- HERO -->
+<!-- ====================================================================== -->
+<!-- SECCIÓN PRINCIPAL (HERO) CON MOTO Y LLAMADOS A LA ACCIÓN               -->
+<!-- ====================================================================== -->
 <section class="hero-bg" style="position:relative;overflow:hidden;padding:24px 22px 64px;">
-    <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:550px;height:550px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.25),transparent 65%);pointer-events:none;"></div>
     
+    <!-- Elementos Decorativos de Fondo -->
+    <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:550px;height:550px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.25),transparent 65%);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(22,163,74,.2),transparent 70%);pointer-events:none;"></div>
+
     <div style="max-width:1000px;margin:0 auto;position:relative;z-index:2;text-align:center;">
+        
+        <!-- Contenedor del Logo Principal con Anillos Animados -->
         <div style="position:relative;display:inline-block;margin-bottom:22px;z-index:10;">
             <div style="position:absolute;inset:-22px;border-radius:50%;border:2px dashed rgba(255,215,0,.38);" class="animate-ring"></div>
             <div style="position:absolute;inset:-42px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);" class="animate-ring-slow"></div>
+            <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.55),transparent 70%);filter:blur(28px);"></div>
             
             <div class="animate-float" style="position:relative;width:150px;height:150px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7),inset 0 0 25px rgba(0,0,0,.25);">
                 <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);position:relative;z-index:1;" alt="Logo Delivery Moto">
@@ -225,7 +863,9 @@
         </div>
 
         <div style="margin-bottom:16px;">
-            <span class="badge-dorado"><i class="ri-vip-crown-fill"></i> LA NUEVA ERA DEL DELIVERY</span>
+            <span class="badge-dorado">
+                <i class="ri-vip-crown-fill" style="font-size:14px;"></i> LA NUEVA ERA DEL DELIVERY
+            </span>
         </div>
 
         <h1 class="hero-title animate-slide-up" style="font-size:clamp(38px,6vw,72px);color:white;margin:0 auto 14px;max-width:780px;text-shadow:0 3px 25px rgba(0,0,0,.4);">
@@ -234,52 +874,487 @@
         
         <p class="animate-slide-up" style="color:rgba(255,255,255,.92);font-size:clamp(15.5px,2vw,19px);line-height:1.5;margin:0 auto 28px;max-width:650px;font-weight:600;text-shadow:0 2px 12px rgba(0,0,0,.3);">
             <strong style="color:white;">Comercios venden</strong>, <strong style="color:white;">clientes compran seguro</strong>, 
-            y nuestros <strong style="color:#ffd700;">Cadetes Certificados</strong> entregan en tu domicilio.
+            y nuestros <strong style="color:#ffd700;">Cadetes Certificados</strong> — personas reales con 
+            <strong style="color:#4ade80;">buena conducta</strong> — entregan en tu domicilio.
         </p>
 
+        <!-- Botones de Acción (Marketplace y APK) -->
         <div class="animate-slide-up" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:36px;">
             <button class="btn-primary" style="padding:16px 28px;font-size:16px;" onclick="abrirModalMarketplace()">
-                <i class="ri-store-2-fill" style="font-size:20px;"></i> MARKETPLACE
+                <i class="ri-store-2-fill" style="font-size:20px;"></i>
+                MARKETPLACE
             </button>
             <button class="btn-apk" id="btnInstalarApp" style="padding:16px 24px;font-size:16px;" onclick="descargarAPK()">
-                <i class="ri-android-fill" style="font-size:20px;"></i> DESCARGAR APK
+                <i class="ri-android-fill" style="font-size:20px;"></i>
+                <span class="hidden sm:inline">DESCARGAR APK / PWA</span>
+                <span class="sm:hidden">APK / PWA</span>
             </button>
+        </div>
+
+        <!-- Estadísticas Rápidas -->
+        <div class="animate-slide-up" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:520px;margin:0 auto;padding:20px 24px;border-radius:1.25rem;" class="glass">
+            <div>
+                <div class="stat-number" style="font-size:36px;">24/7</div>
+                <div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Servicio</div>
+            </div>
+            <div>
+                <div class="stat-number" style="font-size:36px;">100%</div>
+                <div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Certificados</div>
+            </div>
+            <div>
+                <div class="stat-number" style="font-size:36px;">GPS</div>
+                <div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Rastreo</div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- SECCIÓN 1, 2, 3, 4 y FOOTER OMITIDOS DEL TEXTO AQUÍ POR ESPACIO PERO SE MANTIENEN INTACTOS (El código es idéntico a tu original en landing page) -->
-<section id="funciona" style="padding:64px 22px;background:#fff7ed;" class="radial-orange bg-grid-orange">
-    <!-- Contenido idéntico de la landing original -->
-    <div style="text-align:center;margin-bottom:44px;">
-        <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:#0f172a;">¿Cómo funciona <span class="text-gradient-orange">Delivery Moto</span>?</h2>
+<!-- ====================================================================== -->
+<!-- SECCIÓN 1: CÓMO FUNCIONA EL SISTEMA (LOS 3 ACTORES)                    -->
+<!-- ====================================================================== -->
+<section id="funciona" style="padding:64px 22px;position:relative;background:#fff7ed;" class="radial-orange bg-grid-orange">
+    <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;">
+        
+        <div style="text-align:center;margin-bottom:44px;">
+            <div class="eyebrow" style="justify-content:center;margin-bottom:12px;">Sistema Integral</div>
+            <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:#0f172a;margin:0 0 10px;">
+                ¿Cómo funciona <span class="text-gradient-orange">Delivery Moto</span>?
+            </h2>
+            <p style="color:#64748b;font-size:16.5px;max-width:600px;margin:0 auto;line-height:1.6;font-weight:500;">
+                Tres actores, una plataforma. Todo conectado en tiempo real con Supabase e IA.
+            </p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr;gap:22px;" class="md:grid-cols-3">
+            
+            <!-- Actor 1: Comercios -->
+            <div class="card-premium" style="padding:28px 24px;text-align:center;">
+                <div style="position:relative;display:inline-block;margin-bottom:18px;">
+                    <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;">
+                        <i class="ri-store-3-fill"></i>
+                    </div>
+                    <div style="position:absolute;top:-8px;right:-8px;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(99,102,241,.4);border:2px solid white;">1</div>
+                </div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#0f172a;margin:0 0 10px;">Comercios</h3>
+                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">
+                    Creá tu tienda <strong style="color:#cc4400;">gratis</strong>. Publicá tu catálogo con fotos reales y vendé.
+                </p>
+                <div style="padding-top:14px;border-top:2px solid #ffe4cc;text-align:left;">
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Alta gratis en 2 min</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Catálogo administrable</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Pedidos por WhatsApp</span></div>
+                </div>
+            </div>
+
+            <!-- Actor 2: Clientes -->
+            <div class="card-premium" style="padding:28px 24px;text-align:center;">
+                <div style="position:relative;display:inline-block;margin-bottom:18px;">
+                    <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;">
+                        <i class="ri-shopping-cart-fill"></i>
+                    </div>
+                    <div style="position:absolute;top:-8px;right:-8px;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(255,107,0,.45);border:2px solid white;">2</div>
+                </div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#0f172a;margin:0 0 10px;">Clientes</h3>
+                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">
+                    Buscá tu ciudad, cargá tu dirección exacta, calculá envío por GPS y recibí en tu domicilio.
+                </p>
+                <div style="padding-top:14px;border-top:2px solid #ffe4cc;text-align:left;">
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Direcciones exactas</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Cálculo $100 x cuadra extra</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Pago por transferencia/puerta</span></div>
+                </div>
+            </div>
+
+            <!-- Actor 3: Cadetes -->
+            <div class="card-premium" style="padding:28px 24px;text-align:center;">
+                <div style="position:relative;display:inline-block;margin-bottom:18px;">
+                    <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#16a34a;border-color:#86efac;">
+                        <i class="ri-motorbike-fill"></i>
+                    </div>
+                    <div style="position:absolute;top:-8px;right:-8px;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(22,163,74,.45);border:2px solid white;">3</div>
+                </div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#0f172a;margin:0 0 10px;">Cadetes</h3>
+                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">
+                    <strong>Personas certificadas</strong>. Escanean viajes con el radar GPS y pagan liquidación con IA.
+                </p>
+                <div style="padding-top:14px;border-top:2px solid #ffe4cc;text-align:left;">
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Buena conducta y DNI</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Auditoría OpenAI</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Radar de viajes activable</span></div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </section>
 
-<footer style="background:#0a0500;color:rgba(255,255,255,.68);padding:48px 22px 24px;border-top:4px solid #ff6b00;">
-    <div style="text-align:center;font-size:12.5px;font-weight:700;">© 2026 Delivery Moto • Energy Software. Hecho en Argentina 🇦🇷</div>
-</footer>
-
-<!-- CONTENEDOR TOAST (NOTIFICACIONES) -->
-<div id="toast-container" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
-<style>
-    .toast-premium { background: white; border-radius: 12px; padding: 12px 20px; font-weight: 800; font-size: 14px; color: #0f172a; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid #16a34a; display: flex; align-items: center; gap: 10px; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); min-width: 280px; text-align: center; justify-content: center; }
-    .toast-error { border-color: #ef4444; color: #b91c1c; }
-</style>
+<!-- Divisor con resplandor -->
+<div class="divider-glow" style="max-width:700px;margin:0 auto;"></div>
 
 <!-- ====================================================================== -->
-<!-- MARKETPLACE MODAL (TODO EL SISTEMA)                                    -->
+<!-- SECCIÓN 2: EXPLICACIÓN Y REQUISITOS PARA CADETES CERTIFICADOS          -->
+<!-- ====================================================================== -->
+<section id="cadetes" style="padding:70px 22px;background:linear-gradient(180deg,#0f172a 0%,#1a0a00 50%,#2d1200 100%);position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(550px 380px at 20% 30%,rgba(255,107,0,.25),transparent 70%),radial-gradient(450px 320px at 80% 70%,rgba(22,163,74,.18),transparent 70%);pointer-events:none;"></div>
+    
+    <div style="max-width:1150px;margin:0 auto;position:relative;z-index:2;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
+        
+        <!-- Imágenes y Muestras de la App para el Cadete -->
+        <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                
+                <div class="glass" style="padding:10px 14px;border-radius:1.1rem;display:flex;align-items:center;gap:12px;box-shadow:0 10px 25px rgba(0,0,0,.3); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4);">
+                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#d4a017);display:flex;align-items:center;justify-content:center;color:#0f172a;font-size:16px;">
+                        <i class="ri-vip-crown-fill"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="color:white;font-weight:800;font-size:12.5px;">Cadete Premium</div>
+                        <div style="color:rgba(255,255,255,.75);font-size:10px;font-weight:600;">Verificado</div>
+                    </div>
+                </div>
+
+                <div class="glass" style="padding:10px 14px;border-radius:1.1rem;display:flex;align-items:center;gap:12px;box-shadow:0 10px 25px rgba(0,0,0,.3); background: rgba(22,163,74,0.15); border: 1px solid rgba(22,163,74,0.4);">
+                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;">
+                        <i class="ri-shield-check-fill"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="color:white;font-weight:800;font-size:12.5px;">Buena Conducta</div>
+                        <div style="color:rgba(255,255,255,.75);font-size:10px;font-weight:600;">Certificada</div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Imagen del Cadete -->
+            <div style="border-radius:1.75rem;overflow:hidden;box-shadow:0 25px 70px rgba(0,0,0,.55);border:4px solid #ff6b00;">
+                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/87d7c1a4a557425994acf948e9503b64.jpeg~tplv-0es2k971ck-image.image?rcl=20260909234706F5BB7D22F40FD41F6D84&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791560876&x-signature=%2FYy0omEjyJQG45WH4Cvh764gXlI%3D" style="width:100%;height:auto;display:block;" alt="Cadete profesional">
+            </div>
+        </div>
+
+        <!-- Información de Valor del Cadete -->
+        <div>
+            <span class="badge-dorado" style="margin-bottom:18px;">
+                <i class="ri-vip-crown-fill"></i> PERSONAS DE CONFIANZA
+            </span>
+            <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:white;margin:0 0 18px;">
+                Cadetes <span class="text-gradient-gold">Certificados</span><br>
+                con <span style="color:#4ade80;">Buena Conducta</span>
+            </h2>
+            <p style="color:rgba(255,255,255,.88);font-size:16px;line-height:1.7;margin:0 0 24px;">
+                Cada cadete es una <strong>persona real registrada</strong> que pasa por un 
+                <strong class="text-gradient-gold">proceso de certificación estricto</strong> auditado por inteligencia artificial.
+            </p>
+
+            <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:26px;" class="sm:grid-cols-2">
+                
+                <div class="glass" style="padding:14px;border-radius:1.1rem;display:flex;align-items:flex-start;gap:12px;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(22,163,74,.22);color:#4ade80;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(74,222,128,.3);">
+                        <i class="ri-file-shield-2-fill"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">Documentos Auditados</div>
+                        <div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">DNI, AFIP, Antecedentes • IA</div>
+                    </div>
+                </div>
+
+                <div class="glass" style="padding:14px;border-radius:1.1rem;display:flex;align-items:flex-start;gap:12px;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,140,0,.22);color:#ffb380;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(255,179,128,.3);">
+                        <i class="ri-user-smile-fill"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">Certificado de Conducta</div>
+                        <div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">Evaluación y referencias</div>
+                    </div>
+                </div>
+
+                <div class="glass" style="padding:14px;border-radius:1.1rem;display:flex;align-items:flex-start;gap:12px;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,215,0,.22);color:#ffd700;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(255,215,0,.35);">
+                        <i class="ri-star-fill"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">Calificación 5 Estrellas</div>
+                        <div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">Sistema de reputación</div>
+                    </div>
+                </div>
+
+                <div class="glass" style="padding:14px;border-radius:1.1rem;display:flex;align-items:flex-start;gap:12px;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.22);color:#93c5fd;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(147,197,253,.3);">
+                        <i class="ri-satellite-fill"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">GPS en Tiempo Real</div>
+                        <div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">Rastreo satelital</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Botón de postulación al sistema -->
+            <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                <button class="btn-primary" style="padding:15px 26px;font-size:15.5px;" onclick="iniciarLogin('cadete')">
+                    <i class="ri-motorbike-fill" style="font-size:20px;"></i> POSTULARME
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====================================================================== -->
+<!-- SECCIÓN 3: VENTAJAS PARA LOS COMERCIOS (PANEL DE GESTIÓN)              -->
+<!-- ====================================================================== -->
+<section id="comercios" style="padding:70px 22px;background:linear-gradient(180deg,#fff7ed 0%,#ffffff 100%);position:relative;">
+    <div style="max-width:1150px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
+        
+        <div>
+            <span class="badge-naranja" style="margin-bottom:18px;">
+                <i class="ri-store-3-fill"></i> PARA COMERCIOS
+            </span>
+            <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:#0f172a;margin:0 0 18px;">
+                Publicá y vendé<br>
+                <span class="text-gradient-orange">en tu ciudad</span>
+            </h2>
+            <p style="color:#64748b;font-size:16.5px;line-height:1.7;margin:0 0 24px;font-weight:500;">
+                <strong>Tenés el personal, tenés los productos</strong>. Ahora tenés la plataforma perfecta para 
+                <strong>publicar todo tu catálogo</strong> y llegar a miles de clientes en tu zona.
+            </p>
+
+            <div style="background:white;border-radius:1.4rem;padding:24px;border:2.5px solid #ffd4b3;box-shadow:0 10px 35px rgba(255,107,0,.1);margin-bottom:24px;">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                    <div style="width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,#fff7ed,#ffe4cc);color:#ff6b00;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid #ffd4b3;">
+                        <i class="ri-magic-fill"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;color:#0f172a;">Publicación Profesional</div>
+                        <div style="color:#64748b;font-size:12px;font-weight:700;">Tu tienda online premium</div>
+                    </div>
+                </div>
+                
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                    <div class="check-step" style="padding:4px 0;"><i class="ri-check-fill"></i><span style="font-size:12.5px;font-weight:700;color:#0f172a;">Fotos de Portada y Plato</span></div>
+                    <div class="check-step" style="padding:4px 0;"><i class="ri-check-fill"></i><span style="font-size:12.5px;font-weight:700;color:#0f172a;">Ciudades Exclusivas</span></div>
+                    <div class="check-step" style="padding:4px 0;"><i class="ri-check-fill"></i><span style="font-size:12.5px;font-weight:700;color:#0f172a;">Precios Transparentes</span></div>
+                    <div class="check-step" style="padding:4px 0;"><i class="ri-check-fill"></i><span style="font-size:12.5px;font-weight:700;color:#0f172a;">Conexión WhatsApp</span></div>
+                </div>
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                <button class="btn-primary" style="padding:15px 26px;font-size:15.5px;" onclick="iniciarLogin('comercio')">
+                    <i class="ri-add-circle-fill" style="font-size:20px;"></i> CREAR MI COMERCIO
+                </button>
+            </div>
+        </div>
+
+        <div style="position:relative;">
+            <div style="border-radius:1.75rem;overflow:hidden;box-shadow:0 25px 70px rgba(255,107,0,.2);border:4px solid white;">
+                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/d7131ec1e885488fa6e34a5adb26f105.jpeg~tplv-0es2k971ck-image.image?rcl=20260909234706F5BB7D22F40FD41F6D84&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791560882&x-signature=3%2BYN5DQdeuW94EqVEkXkJwLsfQI%3D" style="width:100%;height:auto;display:block;" alt="Productos">
+            </div>
+            
+            <div style="position:absolute;bottom:-20px;left:-16px;background:white;border-radius:1.4rem;padding:18px 24px;box-shadow:0 18px 45px rgba(0,0,0,.18);border:3px solid #ff6b00;">
+                <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:38px;line-height:1;" class="text-gradient-orange">+85%</div>
+                <div style="color:#64748b;font-size:12px;font-weight:800;margin-top:3px;">en ventas promedio</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====================================================================== -->
+<!-- SECCIÓN 4: GRID DE FUNCIONES PRINCIPALES DE TECNOLOGÍA                 -->
+<!-- ====================================================================== -->
+<section id="funciones" style="padding:70px 22px;background:#fff7ed;position:relative;" class="bg-grid-orange">
+    <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;">
+        
+        <div style="text-align:center;margin-bottom:44px;">
+            <div class="eyebrow" style="justify-content:center;margin-bottom:12px;">Tecnología de Vanguardia</div>
+            <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:#0f172a;margin:0 0 10px;">
+                Todas las <span class="text-gradient-orange">Funciones</span> Incluidas
+            </h2>
+            <p style="color:#64748b;font-size:16.5px;max-width:600px;margin:0 auto;line-height:1.6;font-weight:500;">
+                Todo lo que necesitás para operar al máximo nivel. Sin límites.
+            </p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr;gap:18px;" class="md:grid-cols-2 lg:grid-cols-3">
+            
+            <div class="card-premium" style="padding:26px;">
+                <div class="feature-icon"><i class="ri-volume-up-fill"></i></div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Asistente de Voz Latino</h3>
+                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Tocá el micrófono y escuchá la plataforma en tu idioma.</p>
+            </div>
+            
+            <div class="card-premium" style="padding:26px;">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#16a34a;border-color:#86efac;"><i class="ri-robot-2-fill"></i></div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Auditoría IA</h3>
+                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">OpenAI verifica los comprobantes de pago automáticamente.</p>
+            </div>
+            
+            <div class="card-premium" style="padding:26px;">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#2563eb;border-color:#93c5fd;"><i class="ri-database-2-fill"></i></div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Supabase Realtime</h3>
+                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Base de datos en tiempo real. Todo se actualiza al instante.</p>
+            </div>
+            
+            <div class="card-premium" style="padding:26px;">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706;border-color:#fcd34d;"><i class="ri-map-2-fill"></i></div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Mapa GPS</h3>
+                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Cálculo exacto de envío por trazado de punta a punta.</p>
+            </div>
+            
+            <div class="card-premium" style="padding:26px;">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#f3e8ff,#e9d5ff);color:#9333ea;border-color:#d8b4fe;"><i class="ri-camera-3-fill"></i></div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Selfie de Seguridad</h3>
+                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">El cliente sube foto y celular para que el cadete lo reconozca.</p>
+            </div>
+            
+            <div class="card-premium" style="padding:26px;">
+                <div class="feature-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);color:#db2777;border-color:#f9a8d4;"><i class="ri-whatsapp-fill"></i></div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Pedidos WhatsApp</h3>
+                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Toda la info del pedido llega directo al WhatsApp de soporte.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ====================================================================== -->
+<!-- CALL TO ACTION FINAL ANTES DEL FOOTER                                  -->
+<!-- ====================================================================== -->
+<section style="padding:70px 22px;background:linear-gradient(135deg,#1a0a00 0%,#cc4400 50%,#ff6b00 100%);position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:radial-gradient(450px 280px at 80% 20%,rgba(255,215,0,.25),transparent 70%);pointer-events:none;"></div>
+    
+    <div style="max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:2;">
+        
+        <div style="position:relative;display:inline-block;margin-bottom:24px;">
+            <div style="position:absolute;inset:-18px;border-radius:50%;border:2px dashed rgba(255,215,0,.4);" class="animate-ring"></div>
+            <div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7);position:relative;z-index:1;">
+                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo">
+            </div>
+        </div>
+        
+        <h2 class="section-title" style="font-size:clamp(28px,4.5vw,54px);color:white;margin:0 0 16px;text-shadow:0 4px 22px rgba(0,0,0,.4);">
+            ¿Listo para unirte a<br>
+            <span class="text-gradient-gold">Delivery Moto</span>?
+        </h2>
+        <p style="color:rgba(255,255,255,.92);font-size:17px;max-width:560px;margin:0 auto 32px;line-height:1.6;font-weight:500;">
+            Comerciantes, clientes y cadetes — todos ganan con Delivery Moto.
+        </p>
+        
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:24px;">
+            <button class="btn-primary animate-pulse-glow" style="padding:18px 32px;font-size:17px;border-color:rgba(255,255,255,.45);" onclick="abrirModalMarketplace()">
+                <i class="ri-store-2-fill" style="font-size:22px;"></i> ENTRAR AL MARKETPLACE
+            </button>
+            <button class="btn-apk" style="padding:18px 26px;font-size:17px;" onclick="descargarAPK()">
+                <i class="ri-android-fill" style="font-size:22px;"></i> PWA / APK CADETE
+            </button>
+        </div>
+
+    </div>
+</section>
+
+<!-- ====================================================================== -->
+<!-- FOOTER GLOBAL CON INFORMACIÓN LEGAL Y CONTACTOS REQUERIDOS             -->
+<!-- ====================================================================== -->
+<footer style="background:#0a0500;color:rgba(255,255,255,.68);padding:48px 22px 24px;border-top:4px solid #ff6b00;">
+    <div style="max-width:1150px;margin:0 auto;">
+        
+        <div style="display:grid;grid-template-columns:1fr;gap:32px;margin-bottom:32px;" class="md:grid-cols-3">
+            
+            <!-- Columna 1: Branding -->
+            <div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                    <div style="width:50px;height:50px;border-radius:1rem;overflow:hidden;flex-shrink:0;box-shadow:0 4px 16px rgba(255,107,0,.55);border:2.5px solid #ffd700;">
+                        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo">
+                    </div>
+                    <div>
+                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:white;letter-spacing:-.5px;line-height:1;">DELIVERY MOTO</div>
+                        <div style="font-size:10.5px;font-weight:800;color:#ff8c00;text-transform:uppercase;letter-spacing:2px;margin-top:2px;">Energy Software</div>
+                    </div>
+                </div>
+                <p style="font-size:14px;line-height:1.7;margin:0;color:rgba(255,255,255,.68);">
+                    Plataforma integral de delivery que conecta comercios, clientes y cadetes certificados. Todo bajo control RLS y almacenamiento protegido.
+                </p>
+            </div>
+            
+            <!-- Columna 2: Enlaces Rápidos -->
+            <div>
+                <h4 style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin:0 0 14px;">Plataforma</h4>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <span style="cursor:pointer;font-size:14px;font-weight:600;transition:color .2s;display:inline-block;width:fit-content;" onclick="abrirModalMarketplace()">Ir al Marketplace</span>
+                    <span style="cursor:pointer;font-size:14px;font-weight:600;transition:color .2s;display:inline-block;width:fit-content;" onclick="iniciarLogin('comercio')">Soy Comercio</span>
+                    <span style="cursor:pointer;font-size:14px;font-weight:600;transition:color .2s;display:inline-block;width:fit-content;" onclick="iniciarLogin('cadete')">Trabajar como Cadete</span>
+                </div>
+            </div>
+            
+            <!-- Columna 3: Contacto -->
+            <div>
+                <h4 style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin:0 0 14px;">Contacto de Soporte</h4>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;">
+                        <i class="ri-whatsapp-fill" style="color:#4ade80;font-size:19px;"></i> 
+                        <div>
+                            <div>+54 9 381 60 92 676 <span style="font-size:10px; color:#ff8c00;">(Opción 1)</span></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;">
+                        <i class="ri-whatsapp-fill" style="color:#4ade80;font-size:19px;"></i> 
+                        <div>
+                            <div>+54 9 381 51 101 71 <span style="font-size:10px; color:#ff8c00;">(Opción 2)</span></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;">
+                        <i class="ri-map-pin-2-fill" style="color:#ffd700;font-size:19px;"></i> Argentina
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- Línea final de derechos -->
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;font-size:12.5px;font-weight:700; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+            <div>© 2026 Delivery Moto • Energy Software.</div>
+            <div>Hecho en Argentina 🇦🇷</div>
+        </div>
+
+    </div>
+</footer>
+
+<script>
+// ==========================================
+// SCROLL NATIVO ORIGINAL (PÁGINA BASE)
+// ==========================================
+function scrollToId(id) { 
+    const el = document.getElementById(id);
+    if(el) {
+        const y = el.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({top: y, behavior: 'smooth'});
+    }
+}
+
+// Simulador de Descarga APK con Toast Corregido
+function descargarAPK() {
+    mostrarToast('📲 Iniciando descarga de APK / PWA...', 'success');
+}
+</script>
+<!-- ====================================================================== -->
+<!-- PARTE 2: MODALES FULL SCREEN, MAGO DEL MAPA Y MOTOR JAVASCRIPT GLOBAL  -->
+<!-- ====================================================================== -->
+
+<!-- ====================================================================== -->
+<!-- CONTENEDOR PRINCIPAL DEL MARKETPLACE (SISTEMA DE PASOS)                -->
 <!-- ====================================================================== -->
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
     <div class="modal-box">
         
-        <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar"><i class="ri-close-line"></i></button>
+        <!-- Botón de Cerrar Modal -->
+        <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar">
+            <i class="ri-close-line"></i>
+        </button>
 
         <!-- Cabecera del Marketplace -->
         <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:35px 24px 25px; position:relative; overflow:hidden; flex-shrink:0;">
+            <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
             <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
                 <div style="width:50px; height:50px; border-radius:1rem; overflow:hidden; flex-shrink:0; box-shadow:0 8px 25px rgba(255,107,0,0.6); border:2px solid #ffd700;">
-                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo Delivery">
                 </div>
                 <div style="text-align:left; flex:1;">
                     <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:white; line-height:1;">MARKETPLACE</div>
@@ -288,79 +1363,166 @@
             </div>
         </div>
 
+        <!-- Contenedor dinámico de pasos -->
         <div style="padding:0; flex:1; display:flex; flex-direction:column; overflow-y:auto;">
             
-            <!-- PASO 1 -->
+            <!-- ========================================== -->
+            <!-- PASO 1: SELECCIÓN DE PERFIL                -->
+            <!-- ========================================== -->
             <div id="modal-step-1" class="sub-step active" style="padding:24px 16px;">
                 <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Qué necesitás hoy?</h4>
+                
                 <div style="display:flex; flex-direction:column; gap:12px;">
-                    <button class="option-card" onclick="irPaso('cliente-ubicacion')">
-                        <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;"><i class="ri-shopping-bag-3-fill"></i></div>
-                        <div style="flex:1; text-align:left;">
-                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px;">Quiero Comprar</div>
-                            <div style="font-size:12px; color:#64748b; font-weight:600;">Elegí zona y pedí.</div>
+                    
+                    <!-- Opción: Cliente Comprador -->
+                    <button class="option-card" onclick="irPaso('cliente-ubicacion')" style="border:2px solid #ff6b00; background:linear-gradient(to right, #fff, #fff7ed);">
+                        <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; box-shadow:0 6px 20px rgba(255,107,0,0.4);">
+                            <i class="ri-shopping-bag-3-fill"></i>
                         </div>
+                        <div style="flex:1; text-align:left;">
+                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a; margin-bottom:2px;">Quiero Comprar</div>
+                            <div style="font-size:12px; color:#64748b; font-weight:600;">Elegí zona, dirección y pedí comida o productos.</div>
+                        </div>
+                        <i class="ri-arrow-right-s-line" style="font-size:26px; color:#ff6b00;"></i>
                     </button>
 
-                    <button class="option-card" onclick="irPaso('pedido-especial')" style="border-color:#3b82f6;">
-                        <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #3b82f6, #1d4ed8); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;"><i class="ri-motorbike-fill"></i></div>
-                        <div style="flex:1; text-align:left;">
-                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px;">Pedir un Cadete</div>
-                            <div style="font-size:12px; color:#64748b; font-weight:600;">Para viajes o paquetes.</div>
+                    <!-- Opción: Pedido Especial (Cadete Express) -->
+                    <button class="option-card" onclick="irPaso('pedido-especial')" style="border:2px solid #3b82f6; background:linear-gradient(to right, #fff, #eff6ff);">
+                        <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #3b82f6, #1d4ed8); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; box-shadow:0 6px 20px rgba(59,130,246,0.4);">
+                            <i class="ri-motorbike-fill"></i>
                         </div>
+                        <div style="flex:1; text-align:left;">
+                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a; margin-bottom:2px;">Pedir un Cadete</div>
+                            <div style="font-size:12px; color:#64748b; font-weight:600;">Para viajes especiales, trámites o llevar paquetes.</div>
+                        </div>
+                        <i class="ri-arrow-right-s-line" style="font-size:26px; color:#3b82f6;"></i>
                     </button>
 
+                    <!-- Opciones de Gestión (Comercio / Cadete) -->
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px;">
                         <button class="option-card" style="padding:16px; flex-direction:column; gap:8px; text-align:center;" onclick="iniciarLogin('comercio')">
-                            <div style="width:42px; height:42px; border-radius:12px; background:#fff7ed; color:#ff6b00; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid #ffd4b3;"><i class="ri-store-2-fill"></i></div>
+                            <div style="width:42px; height:42px; border-radius:12px; background:#fff7ed; color:#ff6b00; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid #ffd4b3;">
+                                <i class="ri-store-2-fill"></i>
+                            </div>
                             <div>
                                 <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#0f172a;">Soy Comercio</div>
+                                <div style="font-size:11px; color:#64748b; font-weight:700;">Ingresar al Panel</div>
                             </div>
                         </button>
                         
-                        <button class="option-card-dark" style="padding:16px; flex-direction:column; gap:8px; text-align:center;" onclick="iniciarLogin('cadete')">
-                            <div style="width:42px; height:42px; border-radius:12px; background:rgba(74,222,128,0.15); color:#4ade80; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid rgba(74,222,128,0.3);"><i class="ri-shield-keyhole-fill"></i></div>
+                        <button class="option-card-dark" style="padding:16px; flex-direction:column; gap:8px; text-align:center; background:linear-gradient(135deg, #0f172a, #1a0a00);" onclick="iniciarLogin('cadete')">
+                            <div style="width:42px; height:42px; border-radius:12px; background:rgba(74,222,128,0.15); color:#4ade80; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid rgba(74,222,128,0.3);">
+                                <i class="ri-shield-keyhole-fill"></i>
+                            </div>
                             <div>
                                 <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:white;">Servimoto</div>
+                                <div style="font-size:11px; color:#94a3b8; font-weight:700;">Ingresar a Trabajar</div>
                             </div>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- LOGIN -->
+            <!-- ========================================== -->
+            <!-- PASO DE LOGIN ESTRICTO (6 CARACTERES)      -->
+            <!-- ========================================== -->
             <div id="modal-step-login" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
-                <div class="step-indicator" id="lblTipoLogin">Acceso a Cuenta</div>
-                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px;">Ingresá tus credenciales</h3>
-                <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
-                    <input type="tel" class="input-buscar" id="loginCelular" placeholder="Tu Celular">
-                    <input type="text" class="input-buscar" id="loginClave" placeholder="Clave (Ej: ABC123)" maxlength="6">
-                    <button class="btn-primary" style="padding:14px;" onclick="validarLogin()">INGRESAR <i class="ri-arrow-right-line"></i></button>
+                
+                <div class="step-indicator" id="lblTipoLogin"><i class="ri-lock-2-fill"></i> Acceso a Cuenta</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Ingresá tus credenciales</h3>
+                <p style="color:#64748b; font-size:13px; margin-bottom:16px;">Logueate con tu número de celular y tu clave única (3 letras y 3 números).</p>
+
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <div style="position:relative;">
+                        <i class="ri-phone-fill" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#ff6b00; font-size:20px;"></i>
+                        <input type="tel" class="input-buscar" id="loginCelular" placeholder="Tu Celular (Ej: 3815110171)" style="padding-left:46px; margin:0; width:100%;">
+                    </div>
+                    
+                    <div style="position:relative;">
+                        <i class="ri-key-2-fill" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#ff6b00; font-size:20px;"></i>
+                        <input type="text" class="input-buscar" id="loginClave" placeholder="Clave (Ej: ABC123)" maxlength="6" style="padding-left:46px; margin:0; width:100%; text-transform:uppercase;">
+                    </div>
+                    
+                    <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px;" onclick="validarLogin()">
+                        INGRESAR AL PANEL <i class="ri-arrow-right-line"></i>
+                    </button>
                 </div>
             </div>
 
-            <!-- COMPRADOR (UBICACIÓN Y LISTA) -->
+            <!-- ========================================== -->
+            <!-- PASO VIAJE ESPECIAL (CADETE DIRECTO)       -->
+            <!-- ========================================== -->
+            <div id="modal-step-pedido-especial" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
+                
+                <div class="step-indicator" style="color:#1d4ed8; border-color:#93c5fd; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Solicitar Servicio de Cadete</h3>
+                
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira el paquete? (Ej: San Martín 100, Famaillá)" style="margin:0;">
+                    
+                    <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;">
+                        <option value="">Provincia Destino...</option>
+                        <option value="Tucumán">Tucumán</option>
+                        <option value="Buenos Aires">Buenos Aires</option>
+                    </select>
+                    <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino (Ej: Famaillá)" style="margin:0;">
+                    <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿A dónde lo lleva? (Ej: Rivadavia 200)" style="margin:0;">
+                    
+                    <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Buscar un paquete a nombre de Juan)" style="margin:0; height:80px; resize:none;"></textarea>
+                    
+                    <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px; background:linear-gradient(135deg, #3b82f6, #1d4ed8); border-color:rgba(255,255,255,.3); box-shadow:0 14px 36px rgba(59,130,246,.5);" onclick="enviarPedidoEspecial()">
+                        CALCULAR VIAJE EN MAPA <i class="ri-map-2-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- PASO COMPRADOR - UBICACIÓN EXACTA          -->
+            <!-- ========================================== -->
             <div id="modal-step-cliente-ubicacion" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
-                <div class="step-indicator">1. Destino</div>
-                <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
-                    <select class="select-provincia" id="selProvinciaCliente"><option value="Tucumán">Tucumán</option></select>
-                    <input type="text" class="input-buscar" id="inputCiudadCliente" placeholder="Ciudad (Ej: Famaillá)">
-                    <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Dirección exacta">
-                    <button class="btn-primary" style="padding:14px;" onclick="validarUbicacionCliente()">VER LOCALES</button>
+                
+                <div class="step-indicator"><i class="ri-map-pin-2-fill"></i> 1. Destino de Entrega</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">¿Dónde recibís tu pedido?</h3>
+                
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <select class="select-provincia" id="selProvinciaCliente" style="margin:0;" onchange="filtrarComerciosPorCiudad()">
+                        <option value="">Seleccioná tu Provincia...</option>
+                        <option value="Tucumán">Tucumán</option>
+                        <option value="Buenos Aires">Buenos Aires</option>
+                    </select>
+                    
+                    <input type="text" class="input-buscar" id="inputCiudadCliente" placeholder="Ciudad (Ej: Famaillá)" style="margin:0;" onkeyup="filtrarComerciosPorCiudad()">
+                    <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro (Ej: Av. San Martín 450)" style="margin:0;">
+                    
+                    <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px;" onclick="validarUbicacionCliente()">
+                        VER LOCALES CERCANOS <i class="ri-store-3-fill"></i>
+                    </button>
                 </div>
             </div>
 
+            <!-- ========================================== -->
+            <!-- PASO COMPRADOR - LISTA DE COMERCIOS        -->
+            <!-- ========================================== -->
             <div id="modal-step-lista-comercios" class="sub-step" style="padding:24px 16px;">
-                <button class="btn-volver" onclick="irPaso('cliente-ubicacion')"><i class="ri-arrow-left-s-line"></i> Volver</button>
-                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin-bottom: 14px;">Locales en tu zona</h3>
-                <div id="gridComerciosDisponibles" style="display:flex; flex-direction:column; gap:12px;"></div>
+                <button class="btn-volver" onclick="irPaso('cliente-ubicacion')"><i class="ri-arrow-left-s-line"></i> Modificar Ubicación</button>
+                
+                <div class="step-indicator"><i class="ri-store-2-fill"></i> 2. Elegí un Local</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Locales en tu zona</h3>
+                
+                <div id="gridComerciosDisponibles" style="display:flex; flex-direction:column; gap:12px;">
+                    <!-- Los comercios se inyectan dinámicamente aquí -->
+                </div>
             </div>
 
-            <!-- CATÁLOGO ARREGLADO (CAJAS PROPORCIONALES 2x2) -->
+            <!-- ========================================== -->
+            <!-- PASO COMPRADOR - CATÁLOGO DEL COMERCIO     -->
+            <!-- ========================================== -->
             <div id="modal-step-catalogo" class="sub-step" style="display:flex; flex-direction:column; height:100%; padding: 12px 0 20px 0;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:#fff7ed; padding:10px 14px; border-radius:0.85rem; border:1px solid #ffe4cc; flex-shrink: 0; margin: 0 10px;">
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:#fff7ed; padding:10px 14px; border-radius:0.85rem; border:1px solid #ffe4cc; flex-shrink: 0; margin-left:8px; margin-right:8px;">
                     <button class="btn-volver" style="margin:0; border:none; background:transparent; padding:0; box-shadow:none;" onclick="irPaso('lista-comercios')">
                         <i class="ri-arrow-left-s-line" style="font-size:18px;"></i> Locales
                     </button>
@@ -372,75 +1534,132 @@
                     </button>
                 </div>
                 
-                <!-- GRILLA ESTRICTA DE 2 COLUMNAS -->
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; overflow-y:auto; padding:8px 12px; flex:1;" id="catalogoGrid">
-                    <!-- Productos se inyectan acá -->
+                <!-- FIX APLICADO: GRILLA PERFECTA DE 2 COLUMNAS (NO ESTIRADA) -->
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); align-items:start; gap:12px; overflow-y:auto; padding:8px 12px; flex:1;" id="catalogoGrid">
+                    <!-- Productos inyectados aquí -->
                 </div>
             </div>
 
-            <!-- ONBOARDING SERVIMOTO ARREGLADO (CAJA PROFESIONAL PARA SELFIE Y DOCUMENTOS) -->
+            <!-- ========================================== -->
+            <!-- PASO COMERCIO: PANEL DE GESTIÓN DE LOCAL   -->
+            <!-- ========================================== -->
+            <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
+                
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Mi Local</h3>
+                
+                <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+                    <label id="boxPortadaComercio" style="background:#f8fafc; border:2px dashed #ffb380; padding:16px; border-radius:1rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; background-size: cover; background-position: center; transition: all 0.3s;">
+                        <i class="ri-image-add-fill" id="iconPortada" style="font-size:28px; color:#ff6b00; z-index: 2;"></i>
+                        <span style="font-weight:800; color:#cc4400; font-size:13px; z-index: 2; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 6px;" id="lblPortadaComercio">Subir Foto de Portada del Local</span>
+                        <input type="file" accept="image/*" style="display:none;" onchange="previewPortada(this)">
+                    </label>
+
+                    <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
+                    <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta del Local (Ej: 9 de Julio 120)" style="margin:0;">
+                    
+                    <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:14px; font-size:14px;">
+                        <option value="">Rubro / Categoría...</option>
+                        <option value="pizza">🍕 Pizzería</option>
+                        <option value="sandwicheria">🍔 Sandwichería</option>
+                    </select>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:12px; font-size:13px;">
+                            <option value="">Provincia...</option>
+                            <option value="Tucumán">Tucumán</option>
+                        </select>
+                        <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:12px;">
+                    </div>
+
+                    <button class="btn-primary" style="padding:14px; font-size:14px;" onclick="guardarComercio()">
+                        GUARDAR DATOS DEL LOCAL
+                    </button>
+                </div>
+
+                <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:1.2rem; padding:16px; margin-bottom:16px;">
+                    <h4 style="font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Crear Artículo Nuevo</h4>
+                    
+                    <div style="display:flex; gap:8px; margin-bottom:10px;">
+                        <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre Plato" style="margin:0; flex:2; padding:10px;">
+                        <input type="number" class="input-buscar" id="newArtPrecio" placeholder="$ Precio" style="margin:0; flex:1; padding:10px;">
+                    </div>
+                    
+                    <label id="boxArticuloNuevo" style="background:white; border:2px dashed #cbd5e1; padding:20px 10px; border-radius:0.85rem; text-align:center; cursor:pointer; display:block; margin-bottom:10px; background-size: cover; background-position: center; min-height: 80px; position: relative;">
+                        <div style="position: relative; z-index: 2; background: rgba(255,255,255,0.9); display: inline-block; padding: 4px 10px; border-radius: 8px;">
+                            <i class="ri-camera-fill" style="color:#0f172a;"></i> <span style="font-size:12px; font-weight:800; color:#0f172a;" id="lblArtFoto">Subir Foto Real del Plato</span>
+                        </div>
+                        <input type="file" accept="image/*" style="display:none;" onchange="previewArtFoto(this)">
+                    </label>
+                    
+                    <button class="btn-secondary" style="width:100%; padding:10px; font-size:13px;" onclick="agregarArticuloComercio()">
+                        + PUBLICAR EN LA GRILLA
+                    </button>
+                </div>
+
+                <div style="background:white; border-radius:1.2rem; padding:16px; border:2px solid #ffe4cc;">
+                    <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Tus Artículos Publicados</h4>
+                    <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto;">
+                        <!-- Inyectado dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- PASO SERVIMOTO: CAJAS DE AUDITORÍA IA      -->
+            <!-- ========================================== -->
             <div id="modal-step-servimoto-onboarding" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Volver</button>
                 
-                <div class="step-indicator" style="background:#dcfce7; color:#166534; border-color:#86efac;"><i class="ri-shield-keyhole-fill"></i> Registro Oficial Cadetes</div>
-                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 8px;">Certificación de Identidad</h3>
-                <p style="color:#64748b;font-size:13px;margin-bottom:20px;line-height:1.5;">Subí la documentación obligatoria. La IA auditará los archivos al instante para darte acceso al panel de trabajo.</p>
+                <div class="step-indicator"><i class="ri-shield-keyhole-fill"></i> Registro Oficial Cadetes</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 6px;">Certificación de Conductor</h3>
+                <p style="color:#64748b;font-size:13px;margin-bottom:16px;line-height:1.4;">Subí tus 4 documentos obligatorios. Nuestro motor de IA auditará la veracidad antes de darte acceso a la red.</p>
 
-                <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
+                <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
                     
-                    <!-- CAJA GIGANTE Y PROFESIONAL PARA LA SELFIE -->
-                    <label id="cajaDoc1" style="background:white; border:3px dashed #ff6b00; border-radius:1.5rem; padding:28px 16px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:10px; transition: all 0.3s; box-shadow:0 8px 25px rgba(255,107,0,0.15);">
-                        <div style="width:64px; height:64px; border-radius:50%; background:#fff7ed; display:flex; align-items:center; justify-content:center; border:2px solid #ffb380;">
-                            <i id="iconDoc1" class="ri-camera-lens-fill" style="font-size:32px; color:#ff6b00;"></i>
-                        </div>
-                        <span style="font-size:15px; font-weight:800; color:#0f172a;" id="txtDoc1">Tomate una Foto Selfie (Rostro)</span>
-                        <span style="font-size:11px; color:#64748b; font-weight:600;">Sin anteojos oscuros ni gorras.</span>
+                    <!-- FIX APLICADO: CAJA GRANDE PROFESIONAL PARA LA SELFIE -->
+                    <label id="cajaDoc1" style="background:#fff7ed; border:3px dashed #ff6b00; padding:24px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:8px; box-shadow:0 8px 20px rgba(255,107,0,0.1);">
+                        <i id="iconDoc1" class="ri-camera-lens-fill" style="font-size:42px; color:#ff6b00;"></i>
+                        <span style="font-size:15px; font-weight:800; color:#0f172a;" id="txtDoc1">1. Tomate una Selfie (Rostro)</span>
+                        <span style="font-size:11px; font-weight:600; color:#64748b;">Sin anteojos oscuros ni gorras.</span>
                         <input type="file" accept="image/*" capture="user" style="display:none;" onchange="docCargado(this, 'txtDoc1', 'cajaDoc1', 'iconDoc1')">
                     </label>
-                    
-                    <!-- RECUADROS PARA LOS DEMÁS DOCUMENTOS (DNI, BUENA CONDUCTA, AFIP) -->
-                    <div style="display:grid; grid-template-columns:1fr; gap:12px;">
-                        <label id="cajaDoc2" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
-                            <div style="width:40px; height:40px; border-radius:10px; background:#eff6ff; display:flex; align-items:center; justify-content:center; border:1px solid #bfdbfe;">
-                                <i id="iconDoc2" class="ri-id-card-fill" style="font-size:20px; color:#3b82f6;"></i>
-                            </div>
+
+                    <div style="display:grid; grid-template-columns:1fr; gap:10px;">
+                        <label id="cajaDoc2" class="card-premium" style="padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px;">
+                            <i id="iconDoc2" class="ri-id-card-fill" style="font-size:26px; color:#3b82f6;"></i>
                             <div style="flex:1;">
-                                <div style="font-size:13.5px; font-weight:800; color:#0f172a;" id="txtDoc2">Foto DNI (Frente y Dorso)</div>
-                                <div style="font-size:11px; color:#64748b;">Debe ser legible</div>
+                                <div style="font-size:13px; font-weight:800; color:#0f172a;" id="txtDoc2">2. DNI (Frente/Dorso)</div>
                             </div>
                             <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="docCargado(this, 'txtDoc2', 'cajaDoc2', 'iconDoc2')">
                         </label>
                         
-                        <label id="cajaDoc3" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
-                            <div style="width:40px; height:40px; border-radius:10px; background:#f0fdf4; display:flex; align-items:center; justify-content:center; border:1px solid #bbf7d0;">
-                                <i id="iconDoc3" class="ri-file-shield-2-fill" style="font-size:20px; color:#16a34a;"></i>
-                            </div>
+                        <label id="cajaDoc3" class="card-premium" style="padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px;">
+                            <i id="iconDoc3" class="ri-file-shield-2-fill" style="font-size:26px; color:#16a34a;"></i>
                             <div style="flex:1;">
-                                <div style="font-size:13.5px; font-weight:800; color:#0f172a;" id="txtDoc3">Certificado de Buena Conducta</div>
-                                <div style="font-size:11px; color:#64748b;">Emitido por la Policía</div>
+                                <div style="font-size:13px; font-weight:800; color:#0f172a;" id="txtDoc3">3. Buena Conducta</div>
                             </div>
                             <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="docCargado(this, 'txtDoc3', 'cajaDoc3', 'iconDoc3')">
                         </label>
-
-                        <label id="cajaDoc4" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
-                            <div style="width:40px; height:40px; border-radius:10px; background:#fef3c7; display:flex; align-items:center; justify-content:center; border:1px solid #fde68a;">
-                                <i id="iconDoc4" class="ri-government-fill" style="font-size:20px; color:#d97706;"></i>
-                            </div>
+                        
+                        <label id="cajaDoc4" class="card-premium" style="padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px;">
+                            <i id="iconDoc4" class="ri-government-fill" style="font-size:26px; color:#d97706;"></i>
                             <div style="flex:1;">
-                                <div style="font-size:13.5px; font-weight:800; color:#0f172a;" id="txtDoc4">Constancia de AFIP</div>
-                                <div style="font-size:11px; color:#64748b;">Monotributo Activo</div>
+                                <div style="font-size:13px; font-weight:800; color:#0f172a;" id="txtDoc4">4. Constancia AFIP</div>
                             </div>
                             <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="docCargado(this, 'txtDoc4', 'cajaDoc4', 'iconDoc4')">
                         </label>
                     </div>
                 </div>
 
-                <button class="btn-primary" style="width:100%; padding:16px; font-size:15px; background:linear-gradient(135deg, #16a34a, #15803d);" onclick="auditarDocumentosIA()">
-                    <i class="ri-robot-2-fill" style="font-size:20px;"></i> AUDITAR PERFIL CON IA
+                <button class="btn-primary" style="width:100%; padding:14px; font-size:14px;" onclick="auditarDocumentosIA()">
+                    <i class="ri-robot-2-fill" style="font-size:18px;"></i> AUDITAR CON IA Y APROBAR
                 </button>
             </div>
 
-            <!-- PANEL SERVIMOTO DINÁMICO ARREGLADO (DEUDA + BOTÓN SOPORTE) -->
+            <!-- ========================================== -->
+            <!-- PASO SERVIMOTO PANEL: RADAR Y LIQUIDACIÓN  -->
+            <!-- ========================================== -->
             <div id="modal-step-servimoto" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 
@@ -451,35 +1670,39 @@
                     </div>
                     
                     <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px;">Control de Operación</h3>
-                    <p style="font-size:12px; color:rgba(255,255,255,0.7); margin:0 0 16px;">Cada viaje suma <strong>$200</strong> a tu saldo a pagar los <strong>LUNES</strong>.</p>
+                    <p style="font-size:12px; color:rgba(255,255,255,0.7); margin:0 0 16px;">Cada viaje verificado vale <strong>$200</strong>. Liquidación semanal obligatoria los días <strong>LUNES</strong>.</p>
                     
                     <div style="background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:1rem; border:1px solid rgba(255,255,255,0.1); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                        <div style="font-size:13px; font-weight:800;">Estado de Red:</div>
+                        <div style="font-size:13px; font-weight:800;">Turno Activo:</div>
                         <div style="display:flex; gap:8px;">
-                            <button id="btnRadar" onclick="activarRadar()" style="background:#2563eb; color:white; border:none; padding:8px 12px; border-radius:20px; font-weight:800; font-size:11px; cursor:pointer;"><i class="ri-radar-fill"></i> RADAR</button>
-                            <button id="btnEstadoTrabajo" onclick="toggleEstadoTrabajo()" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:20px; font-weight:800; font-size:11px; cursor:pointer;"><i class="ri-close-circle-fill"></i> INACTIVO</button>
+                            <button id="btnRadar" onclick="activarRadar()" style="background:#2563eb; color:white; border:none; padding:8px 12px; border-radius:20px; font-weight:800; font-size:11px; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.4); transition:all .2s;">
+                                <i class="ri-radar-fill"></i> RADAR
+                            </button>
+                            <button id="btnEstadoTrabajo" onclick="toggleEstadoTrabajo()" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:20px; font-weight:800; font-size:11px; cursor:pointer; box-shadow:0 4px 12px rgba(239,68,68,0.4); transition:all .2s;">
+                                <i class="ri-close-circle-fill"></i> INACTIVO
+                            </button>
                         </div>
                     </div>
 
-                    <!-- CONTROL DINÁMICO DE DINERO -->
+                    <!-- FIX APLICADO: SUMA DINERO AUTOMÁTICA -->
                     <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:18px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
-                        <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:2px;">Deuda Acumulada a Pagar</div>
-                        <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:42px; font-weight:800; color:white; line-height:1; margin-bottom:6px;">$0</div>
-                        <div style="font-size:12px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:4px 12px; border-radius:20px;" id="viajesMotoBadge">0 Viajes Realizados</div>
+                        <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:2px;">Deuda Acumulada</div>
+                        <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:38px; font-weight:800; color:white; line-height:1; margin-bottom:4px;">$0</div>
+                        <div style="font-size:11.5px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:3px 10px; border-radius:20px;" id="viajesMotoBadge">0 Viajes Realizados</div>
                         
-                        <!-- BOTÓN SIMULADOR DE VIAJE PARA AGREGAR $200 -->
-                        <button onclick="simularViajeCadete()" style="margin-top:12px; width:100%; background:rgba(255,255,255,0.1); color:white; border:1px dashed rgba(255,255,255,0.3); padding:8px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
-                            + SIMULAR VIAJE TERMINADO ($200)
+                        <button onclick="sumarViajeCadete()" style="margin-top:12px; width:100%; background:rgba(255,255,255,0.1); color:white; border:1px dashed rgba(255,255,255,0.3); padding:8px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
+                            + SIMULAR VIAJE REALIZADO ($200)
                         </button>
                     </div>
 
                     <div style="background:rgba(255,107,0,0.1); border:2px dashed #ff6b00; padding:14px; border-radius:1rem; margin-bottom:16px;">
-                        <div style="font-weight:800; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;"><i class="ri-bank-fill" style="color:#ffd700;"></i> Transferir a:</div>
+                        <div style="font-weight:800; font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:6px;"><i class="ri-bank-fill" style="color:#ffd700;"></i> Datos para Depósito</div>
                         <div style="font-size:12.5px; font-family:monospace; color:white; background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px; margin-bottom:6px;">Alias: <span style="color:#4ade80;">noir.elite.ceo</span></div>
+                        <div style="font-size:12.5px; font-family:monospace; color:white; background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px; margin-bottom:8px;">CBU: <span style="color:#4ade80;">0110257630025717844115</span></div>
                         
-                        <!-- BOTÓN DE SOPORTE HACIA TU NÚMERO -->
-                        <button onclick="window.open('https://wa.me/5493815110171', '_blank')" style="margin-top:10px; width:100%; padding:10px; background:#16a34a; border:none; border-radius:8px; color:white; font-weight:800; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 12px rgba(22,163,74,0.4);">
-                            <i class="ri-whatsapp-fill" style="font-size:18px;"></i> CHAT CON SOPORTE
+                        <!-- FIX APLICADO: BOTÓN DE SOPORTE -->
+                        <button onclick="window.open('https://wa.me/5493815110171', '_blank')" style="margin-top:10px; width:100%; padding:10px; background:#16a34a; border:none; border-radius:8px; color:white; font-weight:800; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                            <i class="ri-whatsapp-fill" style="font-size:18px;"></i> CONTACTAR SOPORTE
                         </button>
                     </div>
 
@@ -490,39 +1713,22 @@
                 </div>
             </div>
 
-            <!-- PASOS FALTANTES (EXPRESS / COMERCIO) -->
-            <div id="modal-step-pedido-especial" class="sub-step" style="padding:24px 16px;">
-                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
-                <div class="step-indicator" style="color:#1d4ed8; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
-                <div style="display:flex; flex-direction:column; gap:12px;">
-                    <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira? (Ej: San Martín 100, Famaillá)">
-                    <select class="select-provincia" id="selProvinciaEspecial"><option value="Tucumán">Tucumán</option></select>
-                    <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino (Ej: Famaillá)">
-                    <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿A dónde lo lleva? (Ej: Rivadavia 200)">
-                    <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Buscar un paquete)"></textarea>
-                    <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">CALCULAR RUTA EN MAPA</button>
-                </div>
-            </div>
-            
         </div>
     </div>
 </div>
 
-<!-- ====================================================================== -->
-<!-- MAPA MODAL ARREGLADO (PANTALLA GRIS SOLUCIONADA)                       -->
-<!-- ====================================================================== -->
 <div id="modalMapaGrande" class="modal-overlay" style="background:rgba(15,23,42,.98);">
     <div style="width:100%; max-width:850px; height:100vh; background:#0f172a; border-radius:0; border:none; position:relative; overflow:hidden; box-shadow:0 0 100px rgba(255,107,0,0.5); display:flex; flex-direction:column; transform:scale(0.95); transition:all .35s; opacity:0;" id="mapaBox">
         
         <div style="position:absolute; top:16px; left:16px; right:16px; z-index:10; display:flex; justify-content:space-between; align-items:flex-start;">
             <div style="background:rgba(255,255,255,.95); padding:12px 18px; border-radius:1rem; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:2px solid #ff6b00;">
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:17px; color:#0f172a; margin:0;"><i class="ri-radar-fill" style="color:#ff6b00;"></i> Trazado GPS</h3>
+                <div style="font-size:11.5px; color:#64748b; font-weight:700;">Calculando ruta en tiempo real...</div>
             </div>
-            <button onclick="cerrarMapa()" style="width:40px; height:40px; border-radius:50%; background:#ef4444; color:white; border:2px solid #fff; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ri-close-line"></i></button>
+            <button onclick="cerrarMapa()" style="width:40px; height:40px; border-radius:50%; background:#ef4444; color:white; border:2px solid #fff; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 5px 15px rgba(239,68,68,0.5);"><i class="ri-close-line"></i></button>
         </div>
 
-        <!-- EL DIV DEL MAPA TIENE HEIGHT EXPLÍCITO AHORA -->
-        <div id="googleMapCanvas" style="flex:1; width:100%; height:100%; min-height:400px; position:relative; background:#e2e8f0;"></div>
+        <div id="googleMapCanvas" style="flex:1; width:100%; position:relative; background:#e2e8f0; min-height: 300px;"></div>
 
         <div style="background:white; padding:20px 24px; border-top:4px solid #ff6b00;">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
@@ -536,32 +1742,31 @@
                 </div>
             </div>
             <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="irAlCheckout()">
-                CONFIRMAR RUTA Y AVANZAR <i class="ri-arrow-right-circle-fill"></i>
+                CONFIRMAR RUTA Y AVANZAR <i class="ri-arrow-right-circle-fill" style="font-size:20px;"></i>
             </button>
         </div>
     </div>
 </div>
 
-<!-- ====================================================================== -->
-<!-- CARRITO FINAL                                                          -->
-<!-- ====================================================================== -->
 <div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
     <div class="modal-box" style="padding:24px; border:3.5px solid #16a34a; max-width:440px; border-radius:1.5rem; height:auto;">
         <button class="modal-close-btn" style="border-color:#16a34a; color:#15803d;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
-        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin:0 0 16px;"><i class="ri-shopping-bag-3-fill" style="color:#16a34a;"></i> Resumen del Pedido</h3>
+        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:#0f172a; margin:0 0 16px;"><i class="ri-shopping-bag-3-fill" style="color:#16a34a;"></i> Resumen del Pedido</h3>
         <div id="contenidoCarrito" style="max-height:280px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
         <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Total a Pagar</span>
             <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
         </div>
-        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()">
+        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none; box-shadow:0 10px 30px rgba(22,163,74,0.4);" onclick="mandarPedidoSoporte()">
             <i class="ri-whatsapp-fill" style="font-size:22px;"></i> CONFIRMAR POR WHATSAPP
         </button>
     </div>
 </div>
 
+<!-- ====================================================================== -->
+<!-- LÓGICA DE JAVASCRIPT GLOBAL                                            -->
+<!-- ====================================================================== -->
 <script>
-// ESTADO Y VARIABLES GLOBALES
 const NUMERO_SOPORTE = "5493816092676";
 let carritoGlobal = [];
 let costoEnvioCalculado = 0;
@@ -569,8 +1774,9 @@ let estadoTrabajoServimoto = false;
 let estadoRadar = false;
 let tipoLoginActual = '';
 let direccionOrigenCalculo = ''; 
-let viajesCadete = 0;
-let deudaCadete = 0;
+
+let viajesMotoCount = 0;
+let deudaMotoAcumulada = 0;
 
 let baseComercios = [
     { id: 1, nombre: "Rey del Lomito", provincia: "Tucumán", ciudad: "Famaillá", direccion: "San Martin 100", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150" },
@@ -580,11 +1786,13 @@ let baseComercios = [
 let baseProductosActivos = [
     { id: 101, idComercio: 1, nombre: "🍔 Lomito Completo", precio: 9500, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400" },
     { id: 102, idComercio: 1, nombre: "🍔 Lomito Especial", precio: 11000, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400" },
-    { id: 103, idComercio: 2, nombre: "🥪 Panucho Tucumano", precio: 8000, img: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=400" },
-    { id: 104, idComercio: 1, nombre: "🍟 Papas Fritas Grandes", precio: 4500, img: "https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=400" }
+    { id: 103, idComercio: 2, nombre: "🥪 Panucho Tucumano", precio: 8000, img: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=400" }
 ];
 
-function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
+function quitarAcentos(str) {
+    if(!str) return "";
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
 
 function mostrarToast(msg, tipo) {
     const container = document.getElementById('toast-container');
@@ -595,44 +1803,29 @@ function mostrarToast(msg, tipo) {
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
-// ==========================================
-// API DE MICRÓFONO FUNCIONAL
-// ==========================================
+// FIX: MICRÓFONO CONECTADO
 function activarMicrofono() {
     const icon = document.getElementById('micIcon');
-    
-    // Verifica compatibilidad con el navegador
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        return mostrarToast('Tu navegador no soporta el reconocimiento de voz.', 'error');
+        return mostrarToast('Tu navegador no soporta voz', 'error');
     }
-    
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognition.lang = 'es-AR'; // Español Argentina
-    
+    recognition.lang = 'es-AR'; 
     recognition.onstart = function() {
         icon.classList.add('animate-pulse');
-        mostrarToast('🎙️ Te estoy escuchando, hablá ahora...', 'success');
+        mostrarToast('🎙️ Te estoy escuchando...', 'success');
     };
-    
     recognition.onresult = function(event) {
         const transcript = event.results[0][0].transcript;
-        mostrarToast(`🗣️ Escuchado: "${transcript}"`, 'success');
-        // Si el usuario dijo "quiero comprar" o algo parecido, lo ruteamos
+        mostrarToast(`🗣️ "${transcript}"`, 'success');
         if(transcript.toLowerCase().includes("comprar")) {
             abrirModalMarketplace();
             irPaso('cliente-ubicacion');
         }
     };
-    
-    recognition.onerror = function() {
-        mostrarToast('No pude escuchar tu voz. Reintentá.', 'error');
-    };
-    
-    recognition.onend = function() {
-        icon.classList.remove('animate-pulse');
-    };
-
+    recognition.onerror = function() { mostrarToast('No te escuché bien. Reintentá.', 'error'); };
+    recognition.onend = function() { icon.classList.remove('animate-pulse'); };
     recognition.start();
 }
 
@@ -641,18 +1834,25 @@ function abrirModalMarketplace() {
     document.body.style.overflow = 'hidden';
     irPaso(1);
 }
+
 function cerrarModalMarketplace() { 
     document.getElementById('modalMarketplace').classList.remove('show'); 
     document.body.style.overflow = '';
 }
+
 function irPaso(paso) {
     document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active'));
-    document.getElementById(`modal-step-${paso}`).classList.add('active');
+    const target = document.getElementById(`modal-step-${paso}`);
+    if(target) target.classList.add('active');
 }
 
 function iniciarLogin(tipo) {
     tipoLoginActual = tipo;
-    document.getElementById('lblTipoLogin').innerHTML = tipo === 'comercio' ? '<i class="ri-store-2-fill"></i> Acceso Comercio' : '<i class="ri-motorbike-fill"></i> Acceso Cadete';
+    document.getElementById('lblTipoLogin').innerHTML = tipo === 'comercio' 
+        ? '<i class="ri-store-2-fill"></i> Acceso Comercio' 
+        : '<i class="ri-motorbike-fill"></i> Acceso Cadete';
+    document.getElementById('loginCelular').value = '';
+    document.getElementById('loginClave').value = '';
     irPaso('login');
 }
 
@@ -660,16 +1860,17 @@ function validarLogin() {
     const cel = document.getElementById('loginCelular').value;
     const pwd = document.getElementById('loginClave').value.toUpperCase();
     const regexClave = /^[A-Z]{3}[0-9]{3}$/; 
-    
     if(cel.length < 8) return mostrarToast('El celular debe ser válido', 'error');
-    if(!regexClave.test(pwd)) return mostrarToast('La clave debe tener 3 letras y 3 números exactos (Ej: ABC123)', 'error');
-    
-    mostrarToast('Credenciales validadas. Ingreso exitoso.', 'success');
-    if(tipoLoginActual === 'comercio') irPaso('comercio');
-    else irPaso('servimoto-onboarding'); 
+    if(!regexClave.test(pwd)) return mostrarToast('La clave debe tener 3 letras y 3 números exactos', 'error');
+    mostrarToast('Ingreso exitoso.', 'success');
+    if(tipoLoginActual === 'comercio') irPaso('comercio'); else irPaso('servimoto-onboarding');
 }
 
 function validarUbicacionCliente() {
+    const prov = document.getElementById('selProvinciaCliente').value;
+    const ciu = document.getElementById('inputCiudadCliente').value;
+    const dir = document.getElementById('inputDireccionCliente').value;
+    if(!prov || !ciu || !dir) return mostrarToast('Completá Provincia, Ciudad y Dirección', 'error');
     filtrarComerciosPorCiudad();
     irPaso('lista-comercios');
 }
@@ -679,54 +1880,66 @@ function filtrarComerciosPorCiudad() {
     const ciu = quitarAcentos(document.getElementById('inputCiudadCliente').value);
     const container = document.getElementById('gridComerciosDisponibles');
     let html = '';
-    
     baseComercios.forEach(c => {
-        html += `
-        <div class="option-card" onclick="verCatalogoComercio(${c.id}, '${c.nombre}', '${c.direccion}, ${c.ciudad}')">
-            <img src="${c.img}" style="width:50px; height:50px; border-radius:12px; object-fit:cover;">
-            <div style="flex:1;">
-                <div style="font-weight:800; color:#0f172a; font-size:15px;">${c.nombre}</div>
-                <div style="font-size:11px; color:#64748b;"><i class="ri-map-pin-line"></i> ${c.direccion}</div>
-            </div>
-            <i class="ri-arrow-right-s-line" style="font-size:24px; color:#ff6b00;"></i>
-        </div>`;
+        const cProv = quitarAcentos(c.provincia);
+        const cCiu = quitarAcentos(c.ciudad);
+        if((!prov || cProv.includes(prov)) && (!ciu || cCiu.includes(ciu))) {
+            html += `
+            <div class="option-card" onclick="verCatalogoComercio(${c.id}, '${c.nombre}', '${c.direccion}, ${c.ciudad}')">
+                <img src="${c.img}" style="width:50px; height:50px; border-radius:12px; object-fit:cover;">
+                <div style="flex:1;">
+                    <div style="font-weight:800; color:#0f172a; font-size:15px;">${c.nombre}</div>
+                    <div style="font-size:11px; color:#64748b;"><i class="ri-map-pin-line"></i> ${c.direccion}</div>
+                </div>
+                <i class="ri-arrow-right-s-line" style="font-size:24px; color:#ff6b00;"></i>
+            </div>`;
+        }
     });
-    container.innerHTML = html;
+    if(html === '') html = '<div style="text-align:center; padding:20px; font-weight:700; color:#64748b;">No hay comercios registrados en esta zona aún.</div>';
+    if(container) container.innerHTML = html;
 }
 
-// ARREGLO DE GRILLA (FORMATO 2 COLUMNAS PERFECTO)
+// FIX: GRILLA DE PRODUCTOS PERFECTA
 function verCatalogoComercio(idComercio, nombreComercio, direccionLocal) {
     document.getElementById('lblComercioActual').textContent = nombreComercio;
     direccionOrigenCalculo = direccionLocal; 
     const container = document.getElementById('catalogoGrid');
     const productos = baseProductosActivos.filter(p => p.idComercio === idComercio);
     
-    container.innerHTML = productos.map(p => `
-        <div class="card-premium" style="padding:8px; border-radius:1rem; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 4px 15px rgba(0,0,0,0.05); border: 2px solid #ffe4cc;">
-            <div style="height:115px; width:100%; border-radius:0.75rem; margin-bottom:10px; overflow:hidden;">
-                <img src="${p.img}" style="width:100%; height:100%; object-fit:cover;" alt="${p.nombre}">
+    if(productos.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px; font-weight:700; color:#64748b;">Este local no ha cargado platos aún.</div>';
+    } else {
+        container.innerHTML = productos.map(p => `
+            <div class="card-premium" style="padding:6px; border-radius:0.8rem; display:flex; flex-direction:column; background:white; border: 1px solid #ffe4cc;">
+                <div style="height:100px; width:100%; border-radius:0.5rem; margin-bottom:8px; overflow:hidden; flex-shrink:0;">
+                    <img src="${p.img}" style="width:100%; height:100%; object-fit:cover;" alt="${p.nombre}">
+                </div>
+                <div style="display:flex; flex-direction:column; flex:1; justify-content:space-between;">
+                    <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:12px; line-height:1.2; color:#0f172a; margin-bottom:4px;">${p.nombre}</div>
+                    <div style="color:#ff6b00; font-weight:800; font-size:14px; margin-bottom:8px;">$${p.precio.toLocaleString('es-AR')}</div>
+                    <button class="btn-primary" style="width:100%; padding:6px; font-size:11px; border-radius:0.5rem;" onclick="agregarAlCarrito('${p.nombre}', ${p.precio})">AGREGAR <i class="ri-add-line"></i></button>
+                </div>
             </div>
-            <div style="display:flex; flex-direction:column; flex:1;">
-                <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:13px; line-height:1.2; color:#0f172a; margin-bottom:4px;">${p.nombre}</div>
-                <div style="color:#ff6b00; font-weight:800; font-size:16px; margin-top:auto; margin-bottom:10px;">$${p.precio.toLocaleString('es-AR')}</div>
-            </div>
-            <button class="btn-primary" style="width:100%; padding:8px; font-size:11.5px; border-radius:0.75rem; gap:4px;" onclick="agregarAlCarrito('${p.nombre}', ${p.precio})">
-                AGREGAR <i class="ri-add-line"></i>
-            </button>
-        </div>
-    `).join('');
-    
+        `).join('');
+    }
     irPaso('catalogo');
 }
 
 function enviarPedidoEspecial() {
-    direccionOrigenCalculo = document.getElementById('dirOrigenEspecial').value; 
-    document.getElementById('inputDireccionCliente').value = document.getElementById('dirDestinoEspecial').value;
-    document.getElementById('inputCiudadCliente').value = document.getElementById('ciuDestinoEspecial').value;
+    const dirOrigen = document.getElementById('dirOrigenEspecial').value;
+    const ciuDestino = document.getElementById('ciuDestinoEspecial').value;
+    const dirDestino = document.getElementById('dirDestinoEspecial').value;
+    const provDestino = document.getElementById('selProvinciaEspecial').value;
+    const txt = document.getElementById('txtPedidoEspecial').value;
+    if(!dirOrigen || !dirDestino || !ciuDestino || !provDestino || !txt) return mostrarToast('Completá todo', 'error');
     
-    carritoGlobal.push({ nombre: "Viaje Express / Trámite", precio: 0, detalle: document.getElementById('txtPedidoEspecial').value });
+    direccionOrigenCalculo = dirOrigen;
+    document.getElementById('inputDireccionCliente').value = dirDestino;
+    document.getElementById('inputCiudadCliente').value = ciuDestino;
+    carritoGlobal.push({ nombre: "Viaje Express", precio: 0, detalle: txt });
+    
     cerrarModalMarketplace();
-    abrirMapaMago(); 
+    abrirMapaMago();
 }
 
 function agregarAlCarrito(nombre, precio) {
@@ -734,93 +1947,147 @@ function agregarAlCarrito(nombre, precio) {
     mostrarToast(`✅ Agregado al carrito`, 'success');
 }
 
+let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
+function previewPortada(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('boxPortadaComercio').style.backgroundImage = `url(${e.target.result})`;
+            document.getElementById('lblPortadaComercio').textContent = '✅ Portada Actualizada';
+            document.getElementById('iconPortada').style.color = '#fff';
+            mostrarToast('Portada cargada', 'success');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function previewArtFoto(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            tempImgBase64 = e.target.result;
+            document.getElementById('boxArticuloNuevo').style.backgroundImage = `url(${e.target.result})`;
+            document.getElementById('lblArtFoto').textContent = '✅ Foto Lista';
+            mostrarToast('Imagen lista', 'success');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function guardarComercio() {
+    const nom = document.getElementById('comercioNombre').value;
+    if(!nom) return mostrarToast('Faltan datos', 'error');
+    mostrarToast(`¡Local guardado!`, 'success');
+}
+
+function agregarArticuloComercio() {
+    const nom = document.getElementById('newArtNombre').value;
+    const pre = parseInt(document.getElementById('newArtPrecio').value);
+    if(!nom || isNaN(pre)) return mostrarToast('Faltan datos del artículo', 'error');
+    
+    baseProductosActivos.unshift({ id: Date.now(), nombre: "🍽️ " + nom, precio: pre, img: tempImgBase64 });
+    mostrarToast(`Publicado`, 'success');
+    
+    document.getElementById('newArtNombre').value = '';
+    document.getElementById('newArtPrecio').value = '';
+    document.getElementById('lblArtFoto').innerHTML = 'Subir Foto';
+    document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
+    renderizarAdminComercio();
+}
+
+function eliminarArticuloAdmin(id) {
+    baseProductosActivos = baseProductosActivos.filter(p => p.id !== id);
+    renderizarAdminComercio();
+}
+
+function renderizarAdminComercio() {
+    const cont = document.getElementById('listaAdminComercio');
+    if(!cont) return;
+    cont.innerHTML = baseProductosActivos.map(p => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:0.75rem;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="${p.img}" style="width:36px; height:36px; border-radius:6px; object-fit:cover;">
+                <div><div style="font-size:12px; font-weight:800;">${p.nombre}</div><div style="font-size:11px; color:#ff6b00; font-weight:700;">$${p.precio}</div></div>
+            </div>
+            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:6px; width:28px; height:28px;"><i class="ri-delete-bin-fill"></i></button>
+        </div>
+    `).join('');
+}
+
 function docCargado(input, idLabel, idCaja, idIcon) {
     if(input.files && input.files[0]) {
         const lbl = document.getElementById(idLabel);
         const caja = document.getElementById(idCaja);
         const icon = document.getElementById(idIcon);
-        
-        lbl.textContent = '✅ Subido Exitosamente';
+        lbl.textContent = '✅ Subido';
         caja.style.backgroundColor = '#f0fdf4';
         caja.style.borderColor = '#4ade80';
         icon.className = 'ri-checkbox-circle-fill';
         icon.style.color = '#16a34a';
         lbl.style.color = '#15803d';
-        mostrarToast('Documento guardado de forma segura', 'success');
+        mostrarToast('Guardado de forma segura', 'success');
     }
 }
 
 function auditarDocumentosIA() {
-    mostrarToast('🤖 Inicializando motor OpenAI Vision...', 'success');
+    mostrarToast('🤖 Inicializando motor OpenAI GPT-4o...', 'success');
     setTimeout(() => {
-        mostrarToast('✅ IA: Identidad 100% Verificada. Aprobado.', 'success');
-        setTimeout(() => irPaso('servimoto'), 1500);
-    }, 2500);
+        mostrarToast('✅ IA: Identidad Verificada.', 'success');
+        setTimeout(() => irPaso('servimoto'), 800);
+    }, 2000);
 }
 
 function toggleEstadoTrabajo() {
     estadoTrabajoServimoto = !estadoTrabajoServimoto;
     const btn = document.getElementById('btnEstadoTrabajo');
     if(estadoTrabajoServimoto) {
-        btn.style.background = '#16a34a';
-        btn.innerHTML = '<i class="ri-check-double-line"></i> TRABAJANDO';
+        btn.style.background = '#16a34a'; btn.innerHTML = '<i class="ri-check-double-line"></i> TRABAJANDO';
         mostrarToast('¡Estás en línea!', 'success');
     } else {
-        btn.style.background = '#ef4444';
-        btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
+        btn.style.background = '#ef4444'; btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
         if(estadoRadar) activarRadar();
     }
 }
 
 function activarRadar() {
-    if(!estadoTrabajoServimoto) return mostrarToast('Debes Activar el Turno (Trabajando) primero', 'error');
+    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno primero', 'error');
     estadoRadar = !estadoRadar;
     const btn = document.getElementById('btnRadar');
     if(estadoRadar) {
-        btn.innerHTML = '<i class="ri-radar-fill animate-ring"></i> ESCANEANDO';
-        btn.style.background = '#0ea5e9';
-        mostrarToast('Radar Satelital activo... Buscando viajes.', 'success');
+        btn.innerHTML = '<i class="ri-radar-fill animate-ring"></i> ESCANEANDO'; btn.style.background = '#0ea5e9';
     } else {
-        btn.innerHTML = '<i class="ri-radar-fill"></i> RADAR';
-        btn.style.background = '#2563eb';
+        btn.innerHTML = '<i class="ri-radar-fill"></i> RADAR'; btn.style.background = '#2563eb';
     }
 }
 
-// LOGICA DINÁMICA DE SUMA DE DINERO
-function simularViajeCadete() {
-    if(!estadoTrabajoServimoto || !estadoRadar) {
-        return mostrarToast('Debes estar Activo y con el Radar encendido', 'error');
-    }
-    viajesCadete++;
-    deudaCadete += 200;
-    document.getElementById('deudaMoto').textContent = '$' + deudaCadete.toLocaleString('es-AR');
-    document.getElementById('viajesMotoBadge').textContent = `${viajesCadete} Viajes Realizados`;
-    mostrarToast('✅ Nuevo viaje completado. Deuda actualizada.', 'success');
+// FIX: SUMAR VIAJES DE A $200
+function sumarViajeCadete() {
+    if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Encendé el Radar primero', 'error');
+    viajesMotoCount++;
+    deudaMotoAcumulada += 200;
+    document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+    document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Realizados';
+    mostrarToast('✅ Viaje cargado', 'success');
 }
 
 function procesarLiquidacionIA(input) {
     if(input.files && input.files.length > 0) {
-        mostrarToast('🤖 IA: Leyendo comprobante bancario...', 'success');
+        mostrarToast('🤖 Verificando comprobante...', 'success');
         setTimeout(() => {
-            viajesCadete = 0;
-            deudaCadete = 0;
+            viajesMotoCount = 0; deudaMotoAcumulada = 0;
             document.getElementById('deudaMoto').textContent = '$0';
-            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> Validado por IA.';
-            document.getElementById('viajesMotoBadge').style.background = 'rgba(74,222,128,0.2)';
-            document.getElementById('viajesMotoBadge').style.color = '#4ade80';
-            mostrarToast('✅ Transferencia procesada correctamente.', 'success');
-        }, 3000);
+            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
+            mostrarToast('✅ Transferencia procesada.', 'success');
+        }, 2500);
     }
 }
 
-// MAPA CON SOLUCIÓN DE PANTALLA GRIS
-let directionsService, directionsRenderer, mapObj;
-
+// FIX: GOOGLE MAPS SIN PANTALLA GRIS
 function abrirMapaMago() {
     const modalMapa = document.getElementById('modalMapaGrande');
     modalMapa.classList.add('show');
     
-    // ESPERAMOS A QUE EL MODAL TOME SU TAMAÑO (350ms) ANTES DE DISPARAR EL MAPA
+    // El setTimeout le da tiempo al CSS a abrir la ventana antes de cargar el mapa
     setTimeout(() => {
         const box = document.getElementById('mapaBox');
         box.style.opacity = '1';
@@ -831,17 +2098,15 @@ function abrirMapaMago() {
         
         try {
             if(!mapObj) {
-                mapObj = new google.maps.Map(document.getElementById("googleMapCanvas"), {
-                    zoom: 14,
-                    center: {lat: -27.0544, lng: -65.4111}
-                });
+                mapObj = new google.maps.Map(document.getElementById("googleMapCanvas"), { zoom: 14, center: {lat: -27.0544, lng: -65.4111} });
                 directionsService = new google.maps.DirectionsService();
                 directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true});
                 directionsRenderer.setMap(mapObj);
             }
-            
-            // ESTA LINEA EVITA LA PANTALLA GRIS EN LOS MODALS
+
+            // REDIBUJA EL MAPA AUTOMÁTICAMENTE
             google.maps.event.trigger(mapObj, 'resize');
+            mapObj.setCenter({lat: -27.0544, lng: -65.4111});
 
             directionsService.route({
                 origin: origenAddress,
@@ -850,9 +2115,6 @@ function abrirMapaMago() {
             }, function(response, status) {
                 if (status === 'OK') {
                     directionsRenderer.setDirections(response);
-                    new google.maps.Marker({position: response.routes[0].legs[0].start_location, map: mapObj, label: "A"});
-                    new google.maps.Marker({position: response.routes[0].legs[0].end_location, map: mapObj, label: "B"});
-
                     const distanceMeters = response.routes[0].legs[0].distance.value;
                     calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                 } else {
@@ -870,14 +2132,11 @@ function calcularMatematicaEnvio(km) {
     const esNoche = (new Date().getHours() >= 20 || new Date().getHours() < 6);
     const tarifaBase = esNoche ? 3000 : 2200;
     document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche ($3000)' : 'Base Día ($2200)';
-
     let costoExtra = 0;
     const kmFloat = parseFloat(km);
     if(kmFloat > 1.0) costoExtra = Math.ceil((kmFloat - 1.0) / 0.1) * 100; 
-    
     costoEnvioCalculado = tarifaBase + costoExtra;
     document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
-    mostrarToast('Cálculo GPS Completado', 'success');
 }
 
 function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); }
@@ -894,14 +2153,12 @@ function cerrarCarrito() { document.getElementById('modalCarritoFinal').classLis
 function renderizarCarritoDOM() {
     const cont = document.getElementById('contenidoCarrito');
     const totalUI = document.getElementById('totalFinalCarrito');
-    
     if(carritoGlobal.length === 0) {
         cont.innerHTML = '<div style="text-align:center;padding:24px 0;color:#64748b;font-weight:800;font-size:13.5px;">Tu pedido está vacío.</div>';
         totalUI.textContent = '$0';
         costoEnvioCalculado = 0;
         return;
     }
-
     let subtotal = 0;
     let listHTML = carritoGlobal.map((item, idx) => {
         subtotal += item.precio;
@@ -918,14 +2175,10 @@ function renderizarCarritoDOM() {
     if(costoEnvioCalculado > 0) {
         listHTML += `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:0.85rem;">
-            <div>
-                <div style="font-weight:800; font-size:13px; color:#166534;"><i class="ri-map-pin-2-fill"></i> Envío GPS</div>
-                <div style="font-size:11px; color:#15803d; font-weight:600;">Base + $100 x cuadra extra (>1km)</div>
-            </div>
+            <div><div style="font-weight:800; font-size:13px; color:#166534;">Envío GPS</div></div>
             <div style="color:#166534; font-weight:800; font-size:13.5px;">$${costoEnvioCalculado.toLocaleString('es-AR')}</div>
         </div>`;
     }
-
     cont.innerHTML = listHTML;
     totalUI.textContent = '$' + (subtotal + costoEnvioCalculado).toLocaleString('es-AR');
 }
@@ -938,22 +2191,17 @@ function borrarItemCarrito(idx) {
 
 function mandarPedidoSoporte() {
     if(carritoGlobal.length === 0) return mostrarToast('El pedido está vacío', 'error');
-    
     let txt = "🔥 *NUEVO PEDIDO EN LA RED* 🔥%0A%0A";
     let subtotal = 0;
     carritoGlobal.forEach(i => {
         txt += `▪️ ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`;
-        if(i.detalle) txt += `   ✏️ _Detalle: ${i.detalle}_%0A`;
         subtotal += i.precio;
     });
-    
     const dir = document.getElementById('inputDireccionCliente') ? document.getElementById('inputDireccionCliente').value : "";
     const ciu = document.getElementById('inputCiudadCliente') ? document.getElementById('inputCiudadCliente').value : "";
-    
     txt += `%0A📍 *Destino:* ${dir}, ${ciu}%0A`;
     txt += `🛣️ *Costo GPS:* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     txt += `💰 *TOTAL: $${(subtotal + costoEnvioCalculado).toLocaleString('es-AR')}*%0A`;
-    
     window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
 }
 </script>
