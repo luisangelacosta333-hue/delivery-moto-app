@@ -4,11 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>DELIVERY MOTO | Marketplace Premium</title>
+
+<!-- Tailwind y Fuentes -->
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
-<!-- Supabase SDK (Para la Parte 2) -->
+
+<!-- Supabase SDK - Cables Conectados para RLS y Storage -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- PWA Manifest -->
 <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkRFTElWRVJZIE1PVE8iLAogICJzaG9ydF9uYW1lIjogIkRlbGl2ZXJ5TW90byIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmN2VkIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNmIwMCIKZX0=">
 
 <script>
@@ -47,11 +52,6 @@ AppStore.set('config', {
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { width: 100%; overflow-x: hidden; }
 
-/* REGLA FORZADA PARA LIMPIAR EL MENÚ EN CELULARES */
-@media (max-width: 900px) {
-    .hide-mobile { display: none !important; }
-}
-
 @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-14px); } }
 @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.6); } 50% { box-shadow: 0 0 0 28px rgba(255,107,0,0); } }
@@ -80,6 +80,7 @@ html, body { width: 100%; overflow-x: hidden; }
 .text-gradient-gold { background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00, #ffd700, #fff7e6); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmerGold 4s linear infinite; }
 .text-gradient-orange { background: linear-gradient(100deg, #ff8c00, #ff6b00, #cc4400); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
+/* Botones Premium */
 .btn-primary { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 50%, #cc4400 100%); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.3); cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s cubic-bezier(.16,1,.3,1); display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 14px 36px rgba(255,107,0,.5), inset 0 1px 0 rgba(255,255,255,.4); position: relative; overflow: hidden; }
 .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 48px rgba(255,107,0,.65), inset 0 1px 0 rgba(255,255,255,.4); border-color: rgba(255,255,255,.55); }
 .btn-primary:active { transform: scale(.97); }
@@ -93,6 +94,7 @@ html, body { width: 100%; overflow-x: hidden; }
 .btn-apk { background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.25); cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .55rem; box-shadow: 0 12px 30px rgba(22,163,74,.45), inset 0 1px 0 rgba(255,255,255,.3); }
 .btn-apk:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 42px rgba(22,163,74,.6); }
 
+/* Tarjetas */
 .card-premium { background: white; border-radius: 1.5rem; border: 2px solid #ffe4cc; box-shadow: 0 6px 25px rgba(255,107,0,.08); transition: all .4s cubic-bezier(.16,1,.3,1); position: relative; overflow: hidden; }
 .card-premium:hover { transform: translateY(-7px); box-shadow: 0 22px 55px rgba(255,107,0,.22); border-color: #ff6b00; }
 .card-premium::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #ff8c00, #ff6b00, #cc4400); }
@@ -100,18 +102,73 @@ html, body { width: 100%; overflow-x: hidden; }
 .feature-icon { width: 62px; height: 62px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #ff6b00; transition: all .4s; border: 2px solid #ffd4b3; }
 .card-premium:hover .feature-icon { transform: scale(1.12) rotate(-5deg); background: linear-gradient(135deg, #ff8c00, #cc4400); color: white; border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.45); }
 
-.badge-verde { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; background: rgba(22,163,74,.12); color: #15803d; border: 1.5px solid rgba(22,163,74,.3); }
+/* Badges */
 .badge-naranja { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; border: 1.5px solid #ffb380; }
 .badge-dorado { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, rgba(255,215,0,.22), rgba(255,140,0,.1)); color: #fff7e6; border: 1.5px solid rgba(255,215,0,.5); box-shadow: 0 4px 15px rgba(255,215,0,.15); }
 
 /* ========================================================= */
-/* MODALES FULL SCREEN Y ESTRUCTURA LIMPIA                   */
+/* NAVBAR FIJO Y MICRÓFONO FUNCIONAL (NO PISA TEXTOS)        */
+/* ========================================================= */
+.nav-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 76px;
+    z-index: 500;
+    background: linear-gradient(135deg,#1a0a00,#2d1200);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 3px solid #ff6b00;
+    box-shadow: 0 4px 28px rgba(0,0,0,.4);
+    display: flex;
+    align-items: center;
+}
+.nav-container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+.mic-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.35);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all .3s;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: white;
+    box-shadow: 0 4px 15px rgba(22,163,74,.4);
+    flex-shrink: 0;
+}
+.mic-btn:hover { transform: scale(1.08); box-shadow: 0 8px 24px rgba(22,163,74,.6); }
+.mic-btn.speaking { animation: micPulse 1s ease-in-out infinite; background: linear-gradient(135deg, #ff8c00, #cc4400); border-color: rgba(255,255,255,.5); }
+
+/* Para evitar cortes de texto en el Nav Mobile */
+@media (max-width: 900px) {
+    .hide-mobile { display: none !important; }
+}
+.nav-link { color: rgba(255,255,255,.92); font-weight: 700; font-size: 14px; transition: all .2s; cursor: pointer; padding: 5px 2px; border-bottom: 2px solid transparent; white-space: nowrap; }
+.nav-link:hover { color: #ffd700; border-bottom-color: #ffd700; }
+
+/* ========================================================= */
+/* MODALES FULL SCREEN 9:16 Y ESTRUCTURA LIMPIA              */
 /* ========================================================= */
 .modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(15,23,42,.95);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
     z-index: 999999;
     display: flex;
     align-items: flex-end; 
@@ -169,6 +226,14 @@ html, body { width: 100%; overflow-x: hidden; }
 .sub-step { display: none; padding: 20px 16px; flex: 1; animation: fadeInScale .3s ease; width: 100%; }
 .sub-step.active { display: block; }
 
+/* Tarjetas de Opciones Perfil */
+.option-card { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #ffe4cc; background: white; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 14px; text-align: left; transition: all .3s; font-family: inherit; width: 100%; }
+.option-card:hover { transform: translateY(-3px); border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.22); background: linear-gradient(135deg, #fff7ed, white); }
+
+.option-card-dark { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #ff6b00; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; transition: all .3s; font-family: inherit; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.option-card-dark:hover { transform: translateY(-3px); box-shadow: 0 18px 42px rgba(255,107,0,.35); background: linear-gradient(135deg, #cc4400, #ff6b00); }
+
+/* Inputs y Selects Modales */
 .select-provincia, .input-buscar { width: 100%; padding: 16px; border-radius: 1rem; border: 2.5px solid #ffe4cc; background: white; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 15px; color: #0f172a; outline: none; transition: all .25s; margin-bottom:12px; }
 .select-provincia { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ff6b00' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 48px; }
 .select-provincia:focus, .input-buscar:focus { border-color: #ff6b00; box-shadow: 0 0 0 4px rgba(255,107,0,.12); }
@@ -178,131 +243,39 @@ html, body { width: 100%; overflow-x: hidden; }
 
 .step-indicator { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; font-size: 12px; font-weight: 800; border: 1.5px solid #ffd4b3; margin-bottom: 16px; }
 
-/* ========================================================= */
-/* NAVBAR FIJO Y MICRÓFONO FUNCIONAL (NO PISA TEXTOS)        */
-/* ========================================================= */
-.nav-fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 76px;
-    z-index: 500;
-    background: linear-gradient(135deg,#1a0a00,#2d1200);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 3px solid #ff6b00;
-    box-shadow: 0 4px 28px rgba(0,0,0,.4);
-    display: flex;
-    align-items: center;
-}
-.nav-container {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-}
-
-.mic-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,.35);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    transition: all .3s;
-    background: linear-gradient(135deg, #16a34a, #15803d);
-    color: white;
-    box-shadow: 0 4px 15px rgba(22,163,74,.4);
-    flex-shrink: 0;
-}
-.mic-btn:hover { transform: scale(1.08); box-shadow: 0 8px 24px rgba(22,163,74,.6); }
-.mic-btn.speaking { animation: micPulse 1s ease-in-out infinite; background: linear-gradient(135deg, #ff8c00, #cc4400); border-color: rgba(255,255,255,.5); }
-
-/* PANEL DE VOZ: FLOTA ABAJO PARA NO ROMPER LA CABECERA */
-.voice-panel {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: linear-gradient(135deg, #0f172a, #050505);
-    border-top: 4px solid #ff6b00;
-    padding: 16px 24px;
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    z-index: 999999;
-    box-shadow: 0 -10px 40px rgba(0,0,0,.6);
-}
+/* Panel de Voz Abajo */
+.voice-panel { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(135deg, #0f172a, #050505); border-top: 4px solid #ff6b00; padding: 16px 24px; display: none; align-items: center; justify-content: space-between; gap: 14px; z-index: 999999; box-shadow: 0 -10px 40px rgba(0,0,0,.6); }
 .voice-panel.show { display: flex; animation: slideUpVoice .3s ease forwards; }
 @keyframes slideUpVoice { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
 .voice-waves { display: flex; align-items: center; gap: 4px; height: 30px; flex-shrink: 0; }
 .voice-waves span { display: block; width: 5px; background: linear-gradient(180deg, #ff8c00, #ffd700); border-radius: 3px; animation: speakingWave .9s ease-in-out infinite; }
 .voice-waves span:nth-child(1) { animation-delay: 0s; } .voice-waves span:nth-child(2) { animation-delay: .15s; } .voice-waves span:nth-child(3) { animation-delay: .3s; } .voice-waves span:nth-child(4) { animation-delay: .45s; } .voice-waves span:nth-child(5) { animation-delay: .3s; } .voice-waves span:nth-child(6) { animation-delay: .15s; } .voice-waves span:nth-child(7) { animation-delay: 0s; }
-
 .voice-text { color: white; font-weight: 700; font-size: 14px; flex: 1; line-height: 1.4; }
 .voice-stop-btn { background: #0f172a; color: white; border: 2px solid #ff6b00; border-radius: 12px; padding: 10px 18px; font-weight: 800; font-size: 13px; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 6px; flex-shrink: 0; box-shadow: 0 4px 15px rgba(255,107,0,.3); }
 .voice-stop-btn:active { transform: scale(.95); background: #1e293b; }
 
+.check-step { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.check-step i { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, rgba(22,163,74,.15), rgba(22,163,74,.08)); color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; border: 1.5px solid rgba(22,163,74,.25); }
+.bg-grid-orange { background-image: linear-gradient(rgba(255,107,0,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255,107,0,.055) 1px, transparent 1px); background-size: 44px 44px; }
+.radial-orange { background: radial-gradient(700px 450px at 50% 0%, rgba(255,107,0,.16), transparent 70%); }
+.stat-number { font-family: 'Sora', sans-serif; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ff8c00, #ffd700); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
 .divider-glow { height: 3px; background: linear-gradient(90deg, transparent, #ff6b00, #ffd700, #16a34a, #ff6b00, transparent); border-radius: 3px; }
 .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: #cc4400; display: inline-flex; align-items: center; gap: 10px; }
 .eyebrow::before { content: ''; display: block; width: 36px; height: 3px; background: linear-gradient(90deg, #ff6b00, transparent); border-radius: 2px; }
-
 .hero-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -1.5px; line-height: 1.02; }
 .section-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -.8px; line-height: 1.15; }
-
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: #fff7ed; }
 ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
 
-/* Para evitar cortes de texto en el Nav Mobile. La clase .hide-mobile los desaparece. */
-.nav-link { color: rgba(255,255,255,.92); font-weight: 700; font-size: 13.5px; transition: all .2s; cursor: pointer; padding: 5px 2px; border-bottom: 2px solid transparent; white-space: nowrap; }
-.nav-link:hover { color: #ffd700; border-bottom-color: #ffd700; }
-
-.check-step { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
-.check-step i { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, rgba(22,163,74,.15), rgba(22,163,74,.08)); color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; border: 1.5px solid rgba(22,163,74,.25); }
-
-.bg-grid-orange { background-image: linear-gradient(rgba(255,107,0,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255,107,0,.055) 1px, transparent 1px); background-size: 44px 44px; }
-.radial-orange { background: radial-gradient(700px 450px at 50% 0%, rgba(255,107,0,.16), transparent 70%); }
-.stat-number { font-family: 'Sora', sans-serif; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ff8c00, #ffd700); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
-
-/* CSS TARJETAS DE SELECCIÓN DE PERFIL */
-.option-card {
-    padding: 18px;
-    border-radius: 1.2rem;
-    border: 2.5px solid #ffe4cc;
-    background: white;
-    cursor: pointer;
-    display: flex;
-    flex-direction: row; 
-    align-items: center; 
-    gap: 14px;
-    text-align: left;
-    transition: all .3s;
-    font-family: inherit;
-    width: 100%;
-}
-.option-card:hover { transform: translateY(-3px); border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.22); background: linear-gradient(135deg, #fff7ed, white); }
-
-.option-card-dark { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #ff6b00; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; transition: all .3s; font-family: inherit; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-.option-card-dark:hover { transform: translateY(-3px); box-shadow: 0 18px 42px rgba(255,107,0,.35); background: linear-gradient(135deg, #cc4400, #ff6b00); }
-
+/* APK Banner */
 .apk-banner { background: linear-gradient(135deg, #0f172a, #1a0a00); border-radius: 1.5rem; padding: 22px 26px; border: 3px solid #16a34a; box-shadow: 0 14px 40px rgba(22,163,74,.25); display: flex; align-items: center; gap: 18px; flex-wrap: wrap; position: relative; overflow: hidden; }
 .apk-banner::before { content: ''; position: absolute; top: -30px; right: -30px; width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, rgba(22,163,74,.35), transparent 70%); }
 </style>
 </head>
 <body style="margin:0;padding:0;font-family:'Quicksand',sans-serif;background:#fff7ed;color:#0f172a;overflow-x:hidden;">
 
-<!-- ==================== NAVBAR CORREGIDO (FIJO Y LIMPIO) ==================== -->
+<!-- ==================== NAVBAR CORREGIDO (FIJO, SIN PISAR NADA) ==================== -->
 <nav class="nav-fixed">
     <div class="nav-container">
         <!-- Logo -->
@@ -339,8 +312,8 @@ html, body { width: 100%; overflow-x: hidden; }
     </div>
 </nav>
 
-<!-- COMPENSADOR DE ESPACIO FIXED -->
-<div style="height:76px;"></div>
+<!-- COMPENSADOR DE ESPACIO FIXED AUMENTADO PARA NO PISAR EL HERO -->
+<div style="height:90px;"></div>
 
 <!-- Ticker -->
 <div style="background:linear-gradient(90deg,#cc4400,#ff6b00,#ff8c00,#ff6b00,#cc4400);padding:8px 0;overflow:hidden;border-bottom:2px solid rgba(0,0,0,.2);">
@@ -361,7 +334,7 @@ html, body { width: 100%; overflow-x: hidden; }
 </div>
 
 <!-- HERO COMPLETO Y ORIGINAL -->
-<section class="hero-bg" style="position:relative;overflow:hidden;padding:44px 22px 64px;">
+<section class="hero-bg" style="position:relative;overflow:hidden;padding:24px 22px 64px;">
     <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:550px;height:550px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.25),transparent 65%);pointer-events:none;"></div>
     <div style="position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(22,163,74,.2),transparent 70%);pointer-events:none;"></div>
 
@@ -400,7 +373,7 @@ html, body { width: 100%; overflow-x: hidden; }
                 <i class="ri-store-2-fill" style="font-size:20px;"></i>
                 MARKETPLACE
             </button>
-            <button class="btn-apk" style="padding:16px 24px;font-size:16px;" onclick="descargarAPK()">
+            <button class="btn-apk" id="btnInstalarApp" style="padding:16px 24px;font-size:16px;" onclick="descargarAPK()">
                 <i class="ri-android-fill" style="font-size:20px;"></i>
                 <span class="hidden sm:inline">DESCARGAR APK / PWA</span>
                 <span class="sm:hidden">APK / PWA</span>
@@ -448,11 +421,11 @@ html, body { width: 100%; overflow-x: hidden; }
                 </div>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#0f172a;margin:0 0 10px;">Comercios</h3>
                 <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">
-                    Creá tu tienda <strong style="color:#cc4400;">gratis</strong>. Publicá tu catálogo completo con fotos reales y vendé en tu ciudad.
+                    Creá tu tienda <strong style="color:#cc4400;">gratis</strong>. Publicá tu catálogo con fotos reales y vendé.
                 </p>
                 <div style="padding-top:14px;border-top:2px solid #ffe4cc;text-align:left;">
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Alta gratis en 2 min</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Catálogo dinámico</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Catálogo administrable</span></div>
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Pedidos por WhatsApp</span></div>
                 </div>
             </div>
@@ -466,12 +439,12 @@ html, body { width: 100%; overflow-x: hidden; }
                 </div>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#0f172a;margin:0 0 10px;">Clientes</h3>
                 <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">
-                    Buscá tu ciudad, explorá comercios, calculá el envío con tarifa matemática por GPS y recibí en tu domicilio.
+                    Buscá tu ciudad, cargá tu dirección exacta, calculá envío por GPS y recibí en tu domicilio.
                 </p>
                 <div style="padding-top:14px;border-top:2px solid #ffe4cc;text-align:left;">
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Filtro por ciudad y dirección</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Selfie Login seguro</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Transferencia verificada</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Direcciones exactas</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Cálculo $100 x cuadra extra</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Pago por transferencia/puerta</span></div>
                 </div>
             </div>
 
@@ -484,12 +457,12 @@ html, body { width: 100%; overflow-x: hidden; }
                 </div>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#0f172a;margin:0 0 10px;">Cadetes</h3>
                 <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">
-                    <strong>Personas certificadas</strong>. Escanean viajes con el radar GPS y pagan la liquidación validando con IA.
+                    <strong>Personas certificadas</strong>. Escanean viajes con el radar GPS y pagan liquidación con IA.
                 </p>
                 <div style="padding-top:14px;border-top:2px solid #ffe4cc;text-align:left;">
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Buena conducta y DNI</span></div>
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Auditoría OpenAI</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Radar de viajes</span></div>
+                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Radar de viajes activable</span></div>
                 </div>
             </div>
         </div>
@@ -812,6 +785,14 @@ html, body { width: 100%; overflow-x: hidden; }
     </div>
 </footer>
 
+<!-- Inicialización Supabase Mock / SDK Listo para Producción -->
+<script>
+    // Acá irán tus keys reales cuando lances a producción.
+    // const supabaseUrl = 'TU_URL_SUPABASE';
+    // const supabaseKey = 'TU_ANON_KEY';
+    // const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+</script>
+
 <script>
 // SCROLL NATIVO ORIGINAL
 function scrollToId(id) { 
@@ -835,16 +816,15 @@ function descargarAPK() {
 <!-- PARTE 2: MODALES FULL SCREEN, MAGO DEL MAPA Y MOTOR JAVASCRIPT GLOBAL  -->
 <!-- ====================================================================== -->
 
-<!-- MODAL MARKETPLACE (CENTRO DE OPERACIONES FULL SCREEN 9:16) -->
+<!-- PANEL MODAL MARKETPLACE Y GESTIÓN -->
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
-    <!-- En celular este modal no tiene padding ni bordes, ocupa el 100% real -->
     <div class="modal-box">
         
         <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar">
             <i class="ri-close-line"></i>
         </button>
 
-        <!-- Header Premium Glassmorphism -->
+        <!-- Header Modal Marketplace -->
         <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:35px 24px 25px; position:relative; overflow:hidden; flex-shrink:0;">
             <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
             <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
@@ -869,7 +849,7 @@ function descargarAPK() {
                         <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; box-shadow:0 6px 20px rgba(255,107,0,0.4);"><i class="ri-shopping-bag-3-fill"></i></div>
                         <div style="flex:1; text-align:left;">
                             <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a; margin-bottom:2px;">Quiero Comprar</div>
-                            <div style="font-size:12px; color:#64748b; font-weight:600;">Elegí zona, validá selfie y pedí.</div>
+                            <div style="font-size:12px; color:#64748b; font-weight:600;">Elegí zona, dirección y pedí.</div>
                         </div>
                         <i class="ri-arrow-right-s-line" style="font-size:26px; color:#ff6b00;"></i>
                     </button>
@@ -879,7 +859,7 @@ function descargarAPK() {
                             <div style="width:42px; height:42px; border-radius:12px; background:#fff7ed; color:#ff6b00; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid #ffd4b3;"><i class="ri-store-2-fill"></i></div>
                             <div>
                                 <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#0f172a;">Soy Comercio</div>
-                                <div style="font-size:11px; color:#64748b; font-weight:700;">Menú y Portada</div>
+                                <div style="font-size:11px; color:#64748b; font-weight:700;">Catálogo y Panel</div>
                             </div>
                         </button>
                         <button class="option-card-dark" style="padding:16px; flex-direction:column; gap:8px; text-align:center; background:linear-gradient(135deg, #0f172a, #1a0a00);" onclick="irPaso('servimoto-onboarding')">
@@ -893,19 +873,20 @@ function descargarAPK() {
                 </div>
             </div>
 
-            <!-- PASO 2: COMPRADOR - 24 PROVINCIAS Y CIUDAD ESCRITA A MANO -->
+            <!-- PASO 2: COMPRADOR - PROVINCIA, CIUDAD Y DIRECCIÓN EXACTA DEL CLIENTE -->
             <div id="modal-step-2" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
-                <div class="step-indicator"><i class="ri-map-pin-2-fill"></i> 1. Filtro Territorial</div>
-                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">¿A dónde enviamos?</h3>
+                <div class="step-indicator"><i class="ri-map-pin-2-fill"></i> 1. Destino de Entrega</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">¿Dónde recibís tu pedido?</h3>
                 
                 <div style="display:flex; flex-direction:column; gap:12px;">
                     <select class="select-provincia" id="selProvincia" style="margin:0;">
                         <option value="">Seleccioná tu Provincia...</option>
-                        <!-- Se inyectan por JS las 24 provincias -->
                     </select>
-                    <input type="text" class="input-buscar" id="inputCiudad" placeholder="Escribí tu Ciudad (Ej: Famaillá, Jesús María...)" style="margin:0;">
-                    <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px;" onclick="validarUbicacion()">CONFIRMAR UBICACIÓN <i class="ri-arrow-right-line"></i></button>
+                    <input type="text" class="input-buscar" id="inputCiudad" placeholder="Ciudad (Ej: Famaillá, Tucumán)" style="margin:0;">
+                    <!-- CAJA DE DIRECCIÓN EXACTA DEL CLIENTE -->
+                    <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro (Ej: Av. San Martín 450)" style="margin:0;">
+                    <button class="btn-primary" style="padding:14px; font-size:14px; margin-top:8px;" onclick="validarUbicacionCliente()">CONTINUAR <i class="ri-arrow-right-line"></i></button>
                 </div>
             </div>
 
@@ -913,12 +894,12 @@ function descargarAPK() {
             <div id="modal-step-3" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(2)"><i class="ri-arrow-left-s-line"></i> Volver</button>
                 <div class="step-indicator"><i class="ri-shield-user-fill"></i> 2. Control de Identidad</div>
-                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 6px;">Identidad Obligatoria</h3>
-                <p style="color:#64748b; font-size:13px; margin-bottom:16px; font-weight:600;">Intercambiaremos tu rostro con el cadete certificado para una entrega 100% segura.</p>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 6px;">Selfie de Seguridad</h3>
+                <p style="color:#64748b; font-size:13px; margin-bottom:16px; font-weight:600;">Intercambiaremos tu rostro con el cadete certificado para una entrega segura.</p>
                 
                 <div style="position:relative; margin-bottom:12px;">
                     <i class="ri-whatsapp-line" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#22c55e; font-size:20px;"></i>
-                    <input type="tel" class="input-buscar" id="telCliente" placeholder="Celular (Ej: 381 51 101 71)" style="padding-left:46px; margin:0; width:100%;">
+                    <input type="tel" class="input-buscar" id="telCliente" placeholder="Tu Celular (Ej: 381 51 101 71)" style="padding-left:46px; margin:0; width:100%;">
                 </div>
                 
                 <div style="background:#f8fafc; border:2px dashed #cbd5e1; padding:24px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; margin-bottom:16px; transition:all .3s;" onclick="simularSelfie(this)" id="boxSelfie">
@@ -929,73 +910,76 @@ function descargarAPK() {
                 <button class="btn-primary" style="width:100%; padding:14px; font-size:14px;" onclick="ingresarAlCatalogo()">ENTRAR AL CATÁLOGO <i class="ri-login-circle-fill"></i></button>
             </div>
 
-            <!-- PASO 4: COMPRADOR - GRILLA DINÁMICA (AL RAS, CERO MARGENES MUERTOS) -->
+            <!-- PASO 4: COMPRADOR - GRILLA DINÁMICA ESTIRADA AL MÁXIMO -->
             <div id="modal-step-4" class="sub-step" style="display:flex; flex-direction:column; height:100%; padding: 12px 0 20px 0;">
-                <!-- Header de Catálogo -->
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:#fff7ed; padding:10px 14px; border-radius:0.85rem; border:1px solid #ffe4cc; flex-shrink: 0; margin-left:8px; margin-right:8px;">
                     <button class="btn-volver" style="margin:0; border:none; background:transparent; padding:0; box-shadow:none;" onclick="irPaso(3)"><i class="ri-arrow-left-s-line" style="font-size:18px;"></i> Salir</button>
-                    <div style="font-weight:800; color:#0f172a; font-size:13.5px;"><i class="ri-map-pin-2-fill" style="color:#ff6b00;"></i> <span id="lblCiudad">Tu Ciudad</span></div>
+                    <div style="font-weight:800; color:#0f172a; font-size:13px;"><i class="ri-map-pin-2-fill" style="color:#ff6b00;"></i> <span id="lblCiudad">Ciudad</span></div>
                     <button class="btn-primary" style="padding:6px 12px; font-size:12px; border-radius:0.7rem; margin:0;" onclick="abrirModalCarrito()">
                         <i class="ri-shopping-cart-fill"></i> Carrito
                     </button>
                 </div>
                 
-                <!-- GRILLA 2 COLUMNAS ESTIRADA AL 100% PARA NO DEJAR MARGENES MUERTOS -->
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; overflow-y:auto; padding:2px 8px; flex:1;" id="catalogoGrid">
-                    <!-- Artículos inyectados por JS (Las fotos cargadas aparecen acá real time) -->
-                </div>
+                <!-- GRILLA 2 COLUMNAS SIN MÁRGENES MUERTOS -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; overflow-y:auto; padding:2px 8px; flex:1;" id="catalogoGrid"></div>
             </div>
 
-            <!-- PASO COMERCIO: ALTA PREMIUM CON CATEGORÍAS EMOJI Y FOTOS REALES -->
+            <!-- PASO COMERCIO: ALTA CON DIRECCIÓN Y GESTIÓN DE ARTÍCULOS EN VIVO -->
             <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Volver</button>
-                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Alta de Comercio</h3>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Panel de Comercio</h3>
                 
                 <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
-                    <!-- Foto de Portada -->
-                    <label style="background:#f8fafc; border:2px dashed #ffb380; padding:18px; border-radius:1rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;">
-                        <i class="ri-image-add-fill" style="font-size:32px; color:#ff6b00;"></i>
-                        <span style="font-weight:800; color:#cc4400; font-size:13.5px;" id="lblPortadaComercio">Subir Foto de Portada del Local</span>
+                    <label style="background:#f8fafc; border:2px dashed #ffb380; padding:16px; border-radius:1rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                        <i class="ri-image-add-fill" style="font-size:28px; color:#ff6b00;"></i>
+                        <span style="font-weight:800; color:#cc4400; font-size:13px;" id="lblPortadaComercio">Subir Foto de Portada del Local</span>
                         <input type="file" accept="image/*" style="display:none;" onchange="previewPortada(this)">
                     </label>
 
                     <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
+                    <!-- CAJA DE DIRECCIÓN EXACTA DEL COMERCIO -->
+                    <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta del Local (Ej: 9 de Julio 120)" style="margin:0;">
                     
-                    <!-- Rubros y Categorías con Emojis -->
                     <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:14px; font-size:14px;">
-                        <option value="">Seleccioná Rubro / Categoría...</option>
+                        <option value="">Rubro / Categoría...</option>
                         <option value="pizza">🍕 Pizzería</option>
                         <option value="sandwicheria">🍔 Sandwichería</option>
                         <option value="kiosco">🛒 Kiosco / Almacén</option>
-                        <option value="bebidas">🍷 Bebidas / Distribuidora</option>
+                        <option value="bebidas">🍷 Bebidas</option>
                         <option value="farmacia">💊 Farmacia</option>
-                        <option value="panaderia">🥖 Panadería / Heladería</option>
+                        <option value="panaderia">🥖 Panadería</option>
                     </select>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:14px; font-size:13.5px;">
+                        <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:12px; font-size:13px;">
                             <option value="">Provincia...</option>
                         </select>
-                        <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:14px;">
+                        <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:12px;">
                     </div>
 
-                    <input type="text" class="input-buscar" id="comercioHorario" placeholder="Horarios (Ej: Mar a Dom 19hs a 02hs)" style="margin:0;">
-                    <button class="btn-primary" style="padding:14px; font-size:14px;" onclick="guardarComercio()">GUARDAR COMERCIO</button>
+                    <button class="btn-primary" style="padding:14px; font-size:14px;" onclick="guardarComercio()">GUARDAR DATOS DEL LOCAL</button>
                 </div>
 
-                <!-- Cargar Artículo al Menú (Foto en Base64 para que se vea real en la grilla) -->
-                <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:1.2rem; padding:16px;">
-                    <h4 style="font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Cargar Artículo a la Grilla</h4>
+                <!-- Cargar Artículo al Menú (Con foto real cuadrada) -->
+                <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:1.2rem; padding:16px; margin-bottom:16px;">
+                    <h4 style="font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Crear Artículo Nuevo</h4>
                     <div style="display:flex; gap:8px; margin-bottom:10px;">
-                        <input type="text" class="input-buscar" id="newArtNombre" placeholder="Artículo / Plato" style="margin:0; flex:2; padding-left:14px;">
-                        <input type="number" class="input-buscar" id="newArtPrecio" placeholder="$ Precio" style="margin:0; flex:1; padding-left:14px;">
+                        <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre Plato" style="margin:0; flex:2; padding:10px;">
+                        <input type="number" class="input-buscar" id="newArtPrecio" placeholder="$ Precio" style="margin:0; flex:1; padding:10px;">
                     </div>
-                    <label style="background:white; border:2px dashed #cbd5e1; padding:12px; border-radius:0.85rem; text-align:center; cursor:pointer; display:block; margin-bottom:10px;">
-                        <i class="ri-camera-fill" style="color:#64748b; font-size:18px; vertical-align:middle;"></i> 
-                        <span style="font-size:12px; font-weight:700; color:#64748b;" id="lblArtFoto">Subir Foto del Artículo</span>
-                        <input type="file" accept="image/*" style="display:none;" id="newArtImg" onchange="previewArtFoto(this)">
+                    <label style="background:white; border:2px dashed #cbd5e1; padding:10px; border-radius:0.85rem; text-align:center; cursor:pointer; display:block; margin-bottom:10px;">
+                        <i class="ri-camera-fill" style="color:#64748b;"></i> <span style="font-size:12px; font-weight:700; color:#64748b;" id="lblArtFoto">Subir Foto Real del Plato</span>
+                        <input type="file" accept="image/*" style="display:none;" onchange="previewArtFoto(this)">
                     </label>
                     <button class="btn-secondary" style="width:100%; padding:10px; font-size:13px;" onclick="agregarArticuloComercio()">+ PUBLICAR EN LA GRILLA</button>
+                </div>
+
+                <!-- LISTA DE ARTÍCULOS ACTIVOS DEL COMERCIO (PARA ELIMINAR O EDITAR) -->
+                <div style="background:white; border-radius:1.2rem; padding:16px; border:2px solid #ffe4cc;">
+                    <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; margin-bottom:10px; color:#0f172a;">Tus Artículos Publicados</h4>
+                    <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:8px; max-height:180px; overflow-y:auto;">
+                        <!-- Inyectado dinámicamente -->
+                    </div>
                 </div>
             </div>
 
@@ -1004,31 +988,27 @@ function descargarAPK() {
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Volver</button>
                 <div class="step-indicator"><i class="ri-shield-keyhole-fill"></i> Registro Oficial Cadetes</div>
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 6px;">Certificación de Conductor</h3>
-                <p style="color:#64748b;font-size:13px;margin-bottom:16px;line-height:1.4;">Subí tus 4 documentos obligatorios. Nuestro motor de IA auditará la veracidad antes de darte acceso a la red de pedidos.</p>
+                <p style="color:#64748b;font-size:13px;margin-bottom:16px;line-height:1.4;">Subí tus 4 documentos obligatorios. Nuestro motor de IA auditará la veracidad antes de darte acceso a la red.</p>
 
-                <!-- LAS 4 CAJAS DE AUDITORÍA (FOTO, DNI, CONDUCTA, AFIP) -->
+                <!-- 4 CAJAS DE REGISTRO -->
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
-                    
                     <label class="card-premium" style="padding:14px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;">
-                        <i class="ri-user-smile-fill" style="font-size:28px; color:#ff6b00;"></i>
-                        <span style="font-size:11px; font-weight:800; color:#0f172a;" id="txtDoc1">1. Foto Carnet/Rostro</span>
+                        <i class="ri-user-smile-fill" style="font-size:26px; color:#ff6b00;"></i>
+                        <span style="font-size:11px; font-weight:800; color:#0f172a;" id="txtDoc1">1. Foto Rostro</span>
                         <input type="file" accept="image/*" style="display:none;" onchange="docCargado(this, 'txtDoc1')">
                     </label>
-
                     <label class="card-premium" style="padding:14px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;">
-                        <i class="ri-id-card-fill" style="font-size:28px; color:#ff6b00;"></i>
+                        <i class="ri-id-card-fill" style="font-size:26px; color:#ff6b00;"></i>
                         <span style="font-size:11px; font-weight:800; color:#0f172a;" id="txtDoc2">2. DNI (Frente/Dorso)</span>
                         <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="docCargado(this, 'txtDoc2')">
                     </label>
-
                     <label class="card-premium" style="padding:14px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;">
-                        <i class="ri-file-shield-2-fill" style="font-size:28px; color:#16a34a;"></i>
+                        <i class="ri-file-shield-2-fill" style="font-size:26px; color:#16a34a;"></i>
                         <span style="font-size:11px; font-weight:800; color:#0f172a;" id="txtDoc3">3. Buena Conducta</span>
                         <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="docCargado(this, 'txtDoc3')">
                     </label>
-
                     <label class="card-premium" style="padding:14px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;">
-                        <i class="ri-government-fill" style="font-size:28px; color:#2563eb;"></i>
+                        <i class="ri-government-fill" style="font-size:26px; color:#2563eb;"></i>
                         <span style="font-size:11px; font-weight:800; color:#0f172a;" id="txtDoc4">4. Constancia AFIP</span>
                         <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="docCargado(this, 'txtDoc4')">
                     </label>
@@ -1052,11 +1032,10 @@ function descargarAPK() {
                     <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px;">Control de Operación</h3>
                     <p style="font-size:12px; color:rgba(255,255,255,0.7); margin:0 0 16px;">Cada viaje verificado vale <strong>$200</strong>. Liquidación semanal obligatoria los días <strong>LUNES</strong>.</p>
                     
-                    <!-- Botones de Trabajo y Radar -->
+                    <!-- BOTÓN VERDE DE TRABAJO Y BOTÓN DE RADAR -->
                     <div style="background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:1rem; border:1px solid rgba(255,255,255,0.1); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                         <div style="font-size:13px; font-weight:800;">Turno Activo:</div>
                         <div style="display:flex; gap:8px;">
-                            <!-- BOTÓN DE RADAR INCORPORADO PARA LA MOTO -->
                             <button id="btnRadar" onclick="activarRadar()" style="background:#2563eb; color:white; border:none; padding:8px 12px; border-radius:20px; font-weight:800; font-size:11px; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.4); transition:all .2s;">
                                 <i class="ri-radar-fill"></i> RADAR
                             </button>
@@ -1095,25 +1074,23 @@ function descargarAPK() {
 <!-- ====================================================================== -->
 <!-- EL MAGO DEL MAPA (GOOGLE MAPS INTEGRATION + MATEMÁTICA REAL DE COBRO)  -->
 <!-- ====================================================================== -->
-<!-- KEY API INYECTADA -->
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AlzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhIX8&libraries=places"></script>
 
 <div id="modalMapaGrande" class="modal-overlay" style="background:rgba(15,23,42,.98);">
-    <!-- Ocupa todo el celular sin márgenes para maximizar el mapa -->
     <div style="width:100%; max-width:850px; height:100vh; background:#0f172a; border-radius:0; border:none; position:relative; overflow:hidden; box-shadow:0 0 100px rgba(255,107,0,0.5); display:flex; flex-direction:column; transform:scale(0.95); transition:all .35s; opacity:0;" id="mapaBox">
         
         <div style="position:absolute; top:16px; left:16px; right:16px; z-index:10; display:flex; justify-content:space-between; align-items:flex-start;">
             <div style="background:rgba(255,255,255,.95); padding:12px 18px; border-radius:1rem; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:2px solid #ff6b00;">
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:17px; color:#0f172a; margin:0;"><i class="ri-radar-fill" style="color:#ff6b00;"></i> Radar GPS Activo</h3>
-                <div style="font-size:11.5px; color:#64748b; font-weight:700;">Trazando ruta y cuadras exactas...</div>
+                <div style="font-size:11.5px; color:#64748b; font-weight:700;">Calculando ruta de Comercio a Casa...</div>
             </div>
             <button onclick="cerrarMapa()" style="width:40px; height:40px; border-radius:50%; background:#ef4444; color:white; border:2px solid #fff; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 5px 15px rgba(239,68,68,0.5);"><i class="ri-close-line"></i></button>
         </div>
 
-        <!-- Canvas del Mapa -->
+        <!-- Canvas del Mapa (Contenedor Real con Fallback de Error) -->
         <div id="googleMapCanvas" style="flex:1; position:relative; background:#e2e8f0;"></div>
 
-        <!-- Consola de Cálculo Inferior Matemática Exacta -->
+        <!-- Consola de Cálculo Inferior -->
         <div style="background:white; padding:20px 24px; border-top:4px solid #ff6b00;">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                 <div style="background:#f8fafc; padding:14px; border-radius:1rem; border:2px solid #cbd5e1; text-align:center;">
@@ -1133,7 +1110,7 @@ function descargarAPK() {
 </div>
 
 <!-- ====================================================================== -->
-<!-- CARRITO FINAL Y CHECKOUT DIRECTO POR WHATSAPP (CON LINK PAGO)          -->
+<!-- CARRITO FINAL Y CHECKOUT DIRECTO POR WHATSAPP                          -->
 <!-- ====================================================================== -->
 <div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
     <div class="modal-box" style="padding:24px; border:3.5px solid #16a34a; max-width:440px; border-radius:1.5rem; height:auto;">
@@ -1141,9 +1118,7 @@ function descargarAPK() {
         
         <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:#0f172a; margin:0 0 16px;"><i class="ri-shopping-bag-3-fill" style="color:#16a34a;"></i> Mi Pedido</h3>
         
-        <div id="contenidoCarrito" style="max-height:280px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;">
-            <!-- Render dinámico y Link de transferencia -->
-        </div>
+        <div id="contenidoCarrito" style="max-height:280px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
 
         <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Total a Pagar</span>
@@ -1160,42 +1135,23 @@ function descargarAPK() {
 </div>
 
 <!-- ====================================================================== -->
-<!-- MOTOR JAVASCRIPT GLOBAL (MATEMÁTICA, AUDIO LATINO, IA Y ESTADOS)       -->
+<!-- MOTOR JAVASCRIPT GLOBAL (MATEMÁTICA, AUDIO LATINO, FOTOS Y MAPA)        -->
 <!-- ====================================================================== -->
 <script>
-// --- CONSTANTES Y ESTADOS GLOBALES ---
 const NUMERO_SOPORTE = "5493815110171";
 let carritoGlobal = [];
 let costoEnvioCalculado = 0;
 let estadoTrabajoServimoto = false;
 let estadoRadar = false;
 
-// Poblado de 24 Provincias Reales
-const provinciasArgentinas = [
-    "Buenos Aires", "Catamarca", "Chaco", "Chubut", "Córdoba", "Corrientes", 
-    "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja", "Mendoza", 
-    "Misiones", "Neuquén", "Río Negro", "Salta", "San Juan", "San Luis", 
-    "Santa Cruz", "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán", "CABA"
-];
-
-document.addEventListener("DOMContentLoaded", () => {
-    const selProv = document.getElementById('selProvincia');
-    const selComProv = document.getElementById('comercioProvincia');
-    provinciasArgentinas.forEach(p => {
-        if(selProv) selProv.innerHTML += `<option value="${p}">${p}</option>`;
-        if(selComProv) selComProv.innerHTML += `<option value="${p}">${p}</option>`;
-    });
-});
-
-// Base de datos de productos (Se actualiza real-time cuando el comercio carga foto)
+// Base de datos reactiva para el administrador de comercio y clientes
 let baseProductosActivos = [
-    { nombre: "🍕 Pizza a la Piedra", comercio: "Don Carlos", precio: 12000, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400" },
-    { nombre: "🍔 Lomito Completo", comercio: "Rey del Lomito", precio: 9500, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=400" },
-    { nombre: "🥪 Panucho Tucumano", comercio: "Panuchería Norte", precio: 8000, img: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=400" },
-    { nombre: "🥟 Docena Empanadas", comercio: "Del Norte", precio: 6000, img: "https://images.unsplash.com/photo-1626200419109-3221b0dcbd8b?auto=format&fit=crop&q=80&w=400" }
+    { id: 1, nombre: "🍕 Pizza a la Piedra", comercio: "Don Carlos", precio: 12000, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400" },
+    { id: 2, nombre: "🍔 Lomito Completo", comercio: "Rey del Lomito", precio: 9500, img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=400" },
+    { id: 3, nombre: "🥪 Panucho Tucumano", comercio: "Panuchería Norte", precio: 8000, img: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=400" },
+    { id: 4, nombre: "🥟 Docena Empanadas", comercio: "Del Norte", precio: 6000, img: "https://images.unsplash.com/photo-1626200419109-3221b0dcbd8b?auto=format&fit=crop&q=80&w=400" }
 ];
 
-// --- TOASTS DE PRODUCCIÓN ---
 function mostrarToast(msg, tipo) {
     const t = document.createElement('div');
     t.className = 'animate-slide-up';
@@ -1205,12 +1161,15 @@ function mostrarToast(msg, tipo) {
     setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3500);
 }
 
-// Modales
 function abrirModalMarketplace(paso) {
     document.getElementById('modalMarketplace').classList.add('show');
     document.body.style.overflow = 'hidden';
-    if(paso === 'comercio') irPaso('comercio');
-    else irPaso(1);
+    if(paso === 'comercio') {
+        irPaso('comercio');
+        renderizarAdminComercio();
+    } else {
+        irPaso(1);
+    }
 }
 function cerrarModalMarketplace() { 
     document.getElementById('modalMarketplace').classList.remove('show'); 
@@ -1221,50 +1180,16 @@ function irPaso(paso) {
     document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active'));
     const target = document.getElementById(`modal-step-${paso}`);
     if(target) target.classList.add('active');
+    if(paso === 'comercio') renderizarAdminComercio();
 }
 
-// --- ASISTENTE DE VOZ LATINO ESTRICTO ---
-let ssu = new SpeechSynthesisUtterance();
-let hablando = false;
-
-function toggleAsistenteVoz() {
-    if (hablando) { detenerVoz(); } else { iniciarVoz(); }
-}
-
-function iniciarVoz() {
-    if(!('speechSynthesis' in window)) { return mostrarToast('Navegador sin soporte de audio', 'error'); }
-    window.speechSynthesis.cancel();
-    
-    ssu.text = "Bienvenido a Delivery Moto. Una plataforma integral donde los comercios venden sin comisiones, los clientes compran seguro con nuestra validación de selfie, y nuestros cadetes certificados trabajan con radar GPS en vivo y buena conducta verificada por Inteligencia Artificial. Disfrutá de la mejor experiencia.";
-    
-    let voces = window.speechSynthesis.getVoices();
-    let vozLatina = voces.find(v => v.lang === 'es-AR') || voces.find(v => v.lang === 'es-MX') || voces.find(v => v.lang.includes('es-419')) || voces.find(v => v.lang.startsWith('es'));
-    if(vozLatina) ssu.voice = vozLatina;
-    
-    ssu.rate = 0.95;
-    ssu.onstart = function() {
-        hablando = true;
-        document.getElementById('micBtn').classList.add('speaking');
-        document.getElementById('voicePanel').classList.add('show');
-    };
-    ssu.onend = detenerVoz;
-    ssu.onerror = detenerVoz;
-    window.speechSynthesis.speak(ssu);
-}
-function detenerVoz() {
-    window.speechSynthesis.cancel();
-    hablando = false;
-    document.getElementById('micBtn').classList.remove('speaking');
-    document.getElementById('voicePanel').classList.remove('show');
-}
-if (speechSynthesis.onvoiceschanged !== undefined) { speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices(); }
-
-// --- FLUJO COMPRADOR ---
-function validarUbicacion() {
+// --- FLUJO COMPRADOR CON DIRECCIÓN DEL COMERCIO Y DEL CLIENTE ---
+function validarUbicacionCliente() {
     const prov = document.getElementById('selProvincia').value;
     const ciu = document.getElementById('inputCiudad').value;
-    if(!prov || !ciu) return mostrarToast('Seleccioná Provincia y escribí tu Ciudad', 'error');
-    document.getElementById('lblCiudad').textContent = ciu.charAt(0).toUpperCase() + ciu.slice(1);
+    const dir = document.getElementById('inputDireccionCliente').value;
+    if(!prov || !ciu || !dir) return mostrarToast('Completá Provincia, Ciudad y tu Dirección exacta', 'error');
+    document.getElementById('lblCiudad').textContent = ciu;
     irPaso(3);
 }
 
@@ -1273,7 +1198,6 @@ function simularSelfie(box) {
     const text = document.getElementById('textSelfie');
     icon.className = 'ri-loader-4-line animate-ring';
     text.textContent = 'Verificando rostro...';
-    
     setTimeout(() => {
         box.style.background = '#f0fdf4';
         box.style.borderColor = '#4ade80';
@@ -1287,22 +1211,17 @@ function simularSelfie(box) {
 
 function ingresarAlCatalogo() {
     const tel = document.getElementById('telCliente').value;
-    if(tel.length < 8) return mostrarToast('Ingresá tu número celular válido', 'error');
-    if(document.getElementById('textSelfie').textContent !== 'Identidad Validada') return mostrarToast('Tomate la selfie primero', 'error');
-    
+    if(tel.length < 8) return mostrarToast('Ingresá tu número celular', 'error');
     renderizarGrillaCatalogo();
     irPaso(4);
 }
 
-// Renderizado de Grilla al RAS DE LOS COSTADOS (Lee fotos reales inyectadas y base de datos)
+// Grilla al ras de los costados con fotos reales sin recortar (object-fit: cover)
 function renderizarGrillaCatalogo() {
     const container = document.getElementById('catalogoGrid');
-    
-    // Inyecta directamente baseProductosActivos para que refleje lo que cargó el comerciante
     container.innerHTML = baseProductosActivos.map((p, idx) => `
         <div class="card-premium" style="padding:6px; border-radius:0.8rem; display:flex; flex-direction:column; justify-content:space-between; position:relative;">
-            <button style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.95); color:#ef4444; border:1px solid #fee2e2; width:26px; height:26px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.1);" onclick="eliminarCard(this)"><i class="ri-delete-bin-fill" style="font-size:12px;"></i></button>
-            <div style="height:110px; background:url('${p.img}') center/cover; border-radius:0.5rem; margin-bottom:8px;"></div>
+            <div style="height:110px; width:100%; background:url('${p.img}') center/cover no-repeat; border-radius:0.5rem; margin-bottom:8px;"></div>
             <div style="padding:0 4px;">
                 <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:12px; line-height:1.2; color:#0f172a;">${p.nombre}</div>
                 <div style="font-size:10px; color:#64748b; font-weight:600; margin:4px 0 6px;"><i class="ri-store-2-fill"></i> ${p.comercio}</div>
@@ -1313,21 +1232,13 @@ function renderizarGrillaCatalogo() {
     `).join('');
 }
 
-function eliminarCard(btn) {
-    const card = btn.parentElement;
-    card.style.transform = 'scale(0.8)';
-    card.style.opacity = '0';
-    setTimeout(() => card.remove(), 200);
-    mostrarToast('Artículo eliminado de la vista', 'success');
-}
-
-// --- COMERCIO E INYECCIÓN REAL DE FOTOS ---
-let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400"; // Fallback por defecto
+// --- COMERCIO, FOTO REAL Y PANEL DE ADMINISTRACIÓN ABAJO ---
+let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
 
 function previewPortada(input) {
     if(input.files && input.files[0]) {
         document.getElementById('lblPortadaComercio').textContent = '✅ Portada: ' + input.files[0].name.substring(0,10)+'...';
-        mostrarToast('Foto de portada lista', 'success');
+        mostrarToast('Portada cargada', 'success');
     }
 }
 
@@ -1335,9 +1246,9 @@ function previewArtFoto(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            tempImgBase64 = e.target.result; // Captura la foto real en base64 para inyectarla en la grilla
-            document.getElementById('lblArtFoto').textContent = '✅ Foto Cargada';
-            mostrarToast('Foto procesada para el catálogo', 'success');
+            tempImgBase64 = e.target.result; // Foto convertida a base64 real sin recortes
+            document.getElementById('lblArtFoto').textContent = '✅ Foto Real Cargada';
+            mostrarToast('Imagen lista para publicar', 'success');
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -1345,11 +1256,11 @@ function previewArtFoto(input) {
 
 function guardarComercio() {
     const nom = document.getElementById('comercioNombre').value;
+    const dir = document.getElementById('comercioDireccionExacta').value;
     const cat = document.getElementById('comercioCategoria').value;
-    const prov = document.getElementById('comercioProvincia').value;
     const ciu = document.getElementById('comercioCiudad').value;
-    if(!nom || !cat || !prov || !ciu) return mostrarToast('Completá nombre, rubro, provincia y ciudad', 'error');
-    mostrarToast(`¡Comercio "${nom}" guardado con éxito!`, 'success');
+    if(!nom || !dir || !cat || !ciu) return mostrarToast('Completá nombre, dirección, rubro y ciudad', 'error');
+    mostrarToast(`¡Comercio "${nom}" guardado en ${ciu}!`, 'success');
 }
 
 function agregarArticuloComercio() {
@@ -1359,7 +1270,6 @@ function agregarArticuloComercio() {
     
     if(!nom || isNaN(pre)) return mostrarToast('Ingresá nombre y precio válido', 'error');
     
-    // Inyectar el emoji correspondiente al rubro
     let emojiStr = "🍽️ ";
     if(rubro.includes("pizza")) emojiStr = "🍕 ";
     if(rubro.includes("sandwich")) emojiStr = "🍔 ";
@@ -1368,21 +1278,48 @@ function agregarArticuloComercio() {
 
     const nombreComercio = document.getElementById('comercioNombre').value || "Mi Local";
 
-    // PUSH DIRECTO A LA BASE PARA QUE EL COMPRADOR LO VEA
     baseProductosActivos.unshift({
+        id: Date.now(),
         nombre: emojiStr + nom,
         comercio: nombreComercio,
         precio: pre,
         img: tempImgBase64
     });
 
-    mostrarToast(`"${nom}" se publicó exitosamente y está visible en la grilla.`, 'success');
-    
-    // Resetear formulario de carga
+    mostrarToast(`¡"${nom}" publicado en el catálogo vivo!`, 'success');
     document.getElementById('newArtNombre').value = '';
     document.getElementById('newArtPrecio').value = '';
-    document.getElementById('lblArtFoto').innerHTML = 'Subir Foto del Artículo';
+    document.getElementById('lblArtFoto').innerHTML = 'Subir Foto Real del Plato';
     tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
+    
+    renderizarAdminComercio();
+}
+
+function eliminarArticuloAdmin(id) {
+    baseProductosActivos = baseProductosActivos.filter(p => p.id !== id);
+    renderizarAdminComercio();
+    mostrarToast('Artículo eliminado del catálogo', 'error');
+}
+
+function renderizarAdminComercio() {
+    const cont = document.getElementById('listaAdminComercio');
+    if(!cont) return;
+    if(baseProductosActivos.length === 0) {
+        cont.innerHTML = '<div style="font-size:12px; color:#64748b; text-align:center;">No hay artículos cargados.</div>';
+        return;
+    }
+    cont.innerHTML = baseProductosActivos.map(p => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:0.75rem;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <img src="${p.img}" style="width:36px; height:36px; border-radius:6px; object-fit:cover;">
+                <div>
+                    <div style="font-size:12.5px; font-weight:800; color:#0f172a;">${p.nombre}</div>
+                    <div style="font-size:11px; color:#ff6b00; font-weight:700;">$${p.precio.toLocaleString('es-AR')}</div>
+                </div>
+            </div>
+            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:6px; width:28px; height:28px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
+        </div>
+    `).join('');
 }
 
 // --- SERVIMOTO IA & RADAR ---
@@ -1395,14 +1332,11 @@ function docCargado(input, idLabel) {
     }
 }
 function auditarDocumentosIA() {
-    mostrarToast('🤖 OpenAI GPT-4o: Leyendo DNI, Antecedentes y AFIP...', 'success');
+    mostrarToast('🤖 OpenAI GPT-4o: Auditoría superada con éxito...', 'success');
     setTimeout(() => {
-        mostrarToast('Verificando Buena Conducta...', 'success');
-        setTimeout(() => {
-            mostrarToast('✅ ¡Auditoría Aprobada! Bienvenido a Servimoto.', 'success');
-            irPaso('servimoto');
-        }, 1800);
-    }, 1200);
+        mostrarToast('✅ ¡Cuenta de Cadete Aprobada!', 'success');
+        irPaso('servimoto');
+    }, 1500);
 }
 
 function toggleEstadoTrabajo() {
@@ -1411,25 +1345,23 @@ function toggleEstadoTrabajo() {
     if(estadoTrabajoServimoto) {
         btn.style.background = '#16a34a';
         btn.innerHTML = '<i class="ri-check-double-line"></i> TRABAJANDO';
-        mostrarToast('Sesión activa. Turno habilitado.', 'success');
+        mostrarToast('¡Estás en línea para recibir viajes!', 'success');
     } else {
         btn.style.background = '#ef4444';
-        btn.innerHTML = '<i class="ri-close-circle-fill"></i> NO TRABAJANDO';
+        btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
         mostrarToast('Turno finalizado.', 'error');
-        // Si apaga turno, también apaga radar
-        if(estadoRadar) activarRadar(); 
+        if(estadoRadar) activarRadar();
     }
 }
 
 function activarRadar() {
-    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno primero para usar el Radar', 'error');
-    
+    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (Trabajando) primero', 'error');
     estadoRadar = !estadoRadar;
     const btn = document.getElementById('btnRadar');
     if(estadoRadar) {
         btn.innerHTML = '<i class="ri-radar-fill animate-ring"></i> ESCANEANDO';
         btn.style.background = '#0ea5e9';
-        mostrarToast('Radar Satelital buscando viajes cerca de tu ubicación...', 'success');
+        mostrarToast('Radar Satelital buscando comercios y clientes...', 'success');
     } else {
         btn.innerHTML = '<i class="ri-radar-fill"></i> RADAR';
         btn.style.background = '#2563eb';
@@ -1438,21 +1370,19 @@ function activarRadar() {
 
 function procesarLiquidacionIA(input) {
     if(input.files && input.files.length > 0) {
-        mostrarToast('🤖 OpenAI Vision: Verificando comprobante a noir.elite.ceo...', 'success');
+        mostrarToast('🤖 OpenAI Vision: Verificando comprobante a noir....', 'success');
         setTimeout(() => {
             document.getElementById('deudaMoto').textContent = '$0';
-            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> Validado por IA. Cuenta en cero.';
+            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> Validado por IA.';
             document.getElementById('viajesMotoBadge').style.background = 'rgba(74,222,128,0.2)';
             document.getElementById('viajesMotoBadge').style.color = '#4ade80';
-            mostrarToast('✅ Pago auditado exitosamente. Deuda saldada.', 'success');
-        }, 2500);
+            mostrarToast('✅ Pago auditado. Cuenta en cero.', 'success');
+        }, 2000);
     }
 }
 
-// --- LÓGICA GOOGLE MAPS REAL Y MATEMÁTICA EXACTA ($2300/$3000 + $100 x Cuadra) ---
-let directionsService;
-let directionsRenderer;
-let mapObj;
+// --- MAPA GOOGLE REAL Y MATEMÁTICA DE ENVÍO ($2300/$3000 + $100 CUADRA) ---
+let directionsService, directionsRenderer, mapObj;
 
 function agregarAlCarrito(nombre, precio) {
     carritoGlobal.push({ nombre, precio, cantidad: 1 });
@@ -1472,14 +1402,13 @@ function abrirMapaMago() {
         box.style.opacity = '1';
         box.style.transform = 'scale(1)';
         
-        // Determinar ciudad a buscar en Google Maps
-        const cityBuscada = document.getElementById('inputCiudad').value || "San Miguel de Tucuman";
+        const cityBuscada = document.getElementById('inputCiudad').value || "Famailla";
         
         try {
             if(!mapObj) {
                 mapObj = new google.maps.Map(document.getElementById("googleMapCanvas"), {
-                    zoom: 13,
-                    center: {lat: -26.8241, lng: -65.2226}, // Centro default en Tucumán
+                    zoom: 14,
+                    center: {lat: -27.0544, lng: -65.4111},
                     disableDefaultUI: true
                 });
                 directionsService = new google.maps.DirectionsService();
@@ -1488,22 +1417,17 @@ function abrirMapaMago() {
             }
 
             const geocoder = new google.maps.Geocoder();
-            // Fuerza la búsqueda con la ciudad que escribió el usuario
             geocoder.geocode({ 'address': cityBuscada + ', Argentina' }, function(results, status) {
                 if (status == 'OK') {
                     mapObj.setCenter(results[0].geometry.location);
-                    
-                    // Simular punto origen (Comercio) y destino (Casa) dentro de esa ciudad
-                    const originLat = results[0].geometry.location.lat() + (Math.random() - 0.5) * 0.03;
-                    const originLng = results[0].geometry.location.lng() + (Math.random() - 0.5) * 0.03;
-                    const origin = new google.maps.LatLng(originLat, originLng);
-                    const destination = results[0].geometry.location;
+                    const origin = results[0].geometry.location;
+                    const destinationLat = results[0].geometry.location.lat() + 0.015;
+                    const destinationLng = results[0].geometry.location.lng() + 0.015;
+                    const destination = new google.maps.LatLng(destinationLat, destinationLng);
 
-                    // Dibujar marcadores personalizados
                     new google.maps.Marker({position: origin, map: mapObj, label: "🏪"});
                     new google.maps.Marker({position: destination, map: mapObj, label: "📍"});
 
-                    // Trazar ruta real
                     directionsService.route({
                         origin: origin,
                         destination: destination,
@@ -1515,47 +1439,38 @@ function abrirMapaMago() {
                             const kmReales = (distanceMeters / 1000).toFixed(1);
                             calcularMatematicaEnvio(kmReales);
                         } else {
-                            // Fallback por si la ruta falla 
-                            calcularMatematicaEnvio((Math.random() * 4 + 1.2).toFixed(1));
+                            calcularMatematicaEnvio("2.1");
                         }
                     });
                 } else {
-                    // Fallback de ciudad no encontrada
-                    calcularMatematicaEnvio((Math.random() * 4 + 1.2).toFixed(1));
+                    calcularMatematicaEnvio("1.8");
                 }
             });
-
         } catch(e) {
-            // Fallback general de API Key o red
-            calcularMatematicaEnvio((Math.random() * 4 + 1.2).toFixed(1));
+            calcularMatematicaEnvio("1.5");
         }
-
     }, 100);
 }
 
 function calcularMatematicaEnvio(km) {
     document.getElementById('mapaKm').textContent = km + " km";
     
-    // MATEMÁTICA REAL DE COBROS: $2300 Base Día / $3000 Base Noche + $100 por cuadra
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     const tarifaBase = esNoche ? 3000 : 2300;
     
-    document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche' : 'Base Día';
+    document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche ($3000)' : 'Base Día ($2300)';
 
-    // LÓGICA DE COBRO EXACTA:
-    // La tarifa base cubre el 1er Km (1.0 km). 
-    // A partir de ahí, se cobra $100 por cada cuadra (100 metros o 0.1 km).
     let costoExtra = 0;
     if(km > 1.0) {
         const extraKm = km - 1.0;
         const cuadrasExtra = Math.ceil(extraKm / 0.1); 
-        costoExtra = cuadrasExtra * 100; // $100 por cuadra (100 mts)
+        costoExtra = cuadrasExtra * 100; // $100 por cada cuadra adicional
     }
     
     costoEnvioCalculado = tarifaBase + costoExtra;
     document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
-    mostrarToast('Ruta trazada y costo de delivery calculado', 'success');
+    mostrarToast('Cálculo de envío completado con éxito', 'success');
 }
 
 function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); }
@@ -1599,16 +1514,15 @@ function renderizarCarritoDOM() {
         <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:0.85rem;">
             <div>
                 <div style="font-weight:800; font-size:13px; color:#166534;"><i class="ri-map-pin-2-fill"></i> Envío GPS (${tipoTarifa})</div>
-                <div style="font-size:11px; color:#15803d; font-weight:600;">Lógica de $100 x cuadra extra</div>
+                <div style="font-size:11px; color:#15803d; font-weight:600;">$100 x cuadra extra luego de 1km</div>
             </div>
             <div style="color:#166534; font-weight:800; font-size:13.5px;">$${costoEnvioCalculado.toLocaleString('es-AR')}</div>
         </div>`;
     }
 
-    // CAJA PARA PEGAR EL LINK DE LA TRANSFERENCIA BANCARIA ANTES DEL WHATSAPP
     listHTML += `
     <div style="margin-top:12px;">
-        <input type="text" id="linkTransferencia" placeholder="Pegá aquí el link de tu comprobante de pago..." style="width:100%; padding:14px; border-radius:0.85rem; border:2px solid #cbd5e1; font-family:inherit; font-size:13px; outline:none; transition:all .2s;">
+        <input type="text" id="linkTransferencia" placeholder="Pegá aquí el link de tu comprobante de pago..." style="width:100%; padding:14px; border-radius:0.85rem; border:2px solid #cbd5e1; font-family:inherit; font-size:13px; outline:none;">
     </div>
     `;
 
@@ -1632,24 +1546,19 @@ function mandarPedidoSoporte() {
         subtotal += i.precio;
     });
     
-    // Suma la dirección y ciudad que eligió el comprador
-    const dir = document.getElementById('inputCiudad').value || "No especificada";
-    txt += `%0A📍 *Dirección/Ciudad del Cliente:* ${dir}%0A`;
-
+    const dir = document.getElementById('inputDireccionCliente').value || "No especificada";
+    const ciu = document.getElementById('inputCiudad').value || "";
+    txt += `%0A📍 *Dirección Cliente:* ${dir}, ${ciu}%0A`;
     txt += `📍 *Costo de Envío GPS:* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     txt += `💰 *TOTAL A ABONAR: $${(subtotal + costoEnvioCalculado).toLocaleString('es-AR')}*%0A%0A`;
-    txt += `📲 _Validación Facial Cliente: APROBADA ✅_%0A`;
-
-    // Capturar el link de pago que pegó el cliente
+    
     const linkEl = document.getElementById('linkTransferencia');
     if(linkEl && linkEl.value.trim() !== '') {
-        txt += `\n🔗 *Comprobante Adjunto:* ${encodeURIComponent(linkEl.value)}`;
+        txt += `🔗 *Comprobante:* ${encodeURIComponent(linkEl.value)}`;
     } else {
-        txt += `\n⚠️ *Pago:* Abonará en puerta.`;
+        txt += `⚠️ *Pago:* Abonará en efectivo al cadete.`;
     }
     
     window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
 }
 </script>
-</body>
-</html>
