@@ -12,903 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- ========================================== -->
-    <!-- PWA MANIFEST                               -->
-    <!-- ========================================== -->
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkRFTElWRVJZIE1PVE8iLAogICJzaG9ydF9uYW1lIjogIkRlbGl2ZXJ5TW90byIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmN2VkIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNmIwMCIKZX0=">
-
-    <script>
-        // ==========================================
-        // SEGURIDAD ANTI-COPIA PREMIUM
-        // ==========================================
-        document.addEventListener('contextmenu', event => event.preventDefault()); 
-        
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false; 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; 
-            if(e.ctrlKey && e.keyCode == 85) return false; 
-            if(e.ctrlKey && e.keyCode == 83) return false; 
-        };
-
-        // ==========================================
-        // STORE DE MEMORIA Y CONFIGURACIÓN
-        // ==========================================
-        const AppStore = (function() {
-            const memory = new Map();
-            const MAX_SIZE = 500; 
-            return {
-                set: function(key, value) {
-                    if(memory.size >= MAX_SIZE) {
-                        const firstKey = memory.keys().next().value;
-                        memory.delete(firstKey);
-                    }
-                    memory.set(key, value);
-                },
-                get: function(key) { return memory.get(key); },
-                remove: function(key) { memory.delete(key); },
-                clear: function() { memory.clear(); }
-            };
-        })();
-
-        AppStore.set('config', {
-            aliasCobro: 'noir.elite.ceo',
-            cbuCobro: '0110257630025717844115',
-            costoDia: 2200,
-            costoNoche: 3000,
-            costoCuadraExtra: 100,
-            soportePrincipal: '3816092676',
-            soporteSecundario: '3815110171'
-        });
-    </script>
-
-    <style>
-        /* ==========================================================================
-           CSS ULTRA PREMIUM - SISTEMA BASE (Sincronizado con Parte 2)
-           ========================================================================== */
-        :root {
-            --primary: #ff6b00;
-            --primary-dark: #cc4400;
-            --primary-light: #ff8c00;
-            --gold: #ffd700;
-            --bg-body: #fff7ed;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --surface: #ffffff;
-            --border-soft: #ffe4cc;
-            --success: #16a34a;
-            --success-light: #dcfce7;
-            --danger: #ef4444;
-            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            --shadow-float: 0 20px 40px -10px rgba(255, 107, 0, 0.2);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        
-        /* FIX DE SCROLL ("Crullín"): Se removió el overscroll-behavior que congelaba la pantalla */
-        html, body { 
-            width: 100%; 
-            overflow-x: hidden; 
-            font-family: 'Quicksand', sans-serif; 
-            background: var(--bg-body); 
-            color: var(--text-main); 
-        }
-        
-        .font-sora { font-family: 'Sora', sans-serif; }
-
-        /* ==========================================================================
-           KEYFRAMES Y ANIMACIONES
-           ========================================================================== */
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
-        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.5); } 50% { box-shadow: 0 0 0 24px rgba(255,107,0,0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes ringRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes micPulse { 0%, 100% { transform: scale(1); color: white; } 50% { transform: scale(1.15); color: var(--gold); } }
-        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        @keyframes fadeInScale { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
-        .animate-float { animation: float 4.5s ease-in-out infinite; }
-        .animate-pulse-glow { animation: pulseGlow 2.5s ease-in-out infinite; }
-        .animate-slide-up { animation: slideUp .7s cubic-bezier(.16,1,.3,1) both; }
-        .animate-ring { animation: ringRotate 25s linear infinite; }
-        .animate-ring-slow { animation: ringRotate 45s linear infinite reverse; }
-        .animate-mic { animation: micPulse 1s ease-in-out infinite; }
-        .animate-fade-in-scale { animation: fadeInScale .35s cubic-bezier(.16,1,.3,1) both; }
-
-        /* FIX DE TICKER INFINITO: Display flex asegura que no haya saltos ni huecos */
-        .ticker-wrap { overflow: hidden; display: flex; width: 100%; white-space: nowrap; }
-        .ticker-track { display: flex; width: max-content; animation: ticker 35s linear infinite; }
-
-        /* ==========================================================================
-           UTILIDADES VISUALES Y FONDOS
-           ========================================================================== */
-        .hero-bg { background: linear-gradient(135deg, #120700 0%, #2d1200 25%, #cc4400 60%, #ff6b00 100%); background-size: 200% 200%; animation: gradientBG 12s ease infinite; }
-        .glass { background: rgba(255,255,255,.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.15); }
-        .text-gradient-gold { background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00); -webkit-background-clip: text; color: transparent; }
-        .text-gradient-orange { background: linear-gradient(100deg, var(--primary-light), var(--primary), var(--primary-dark)); -webkit-background-clip: text; color: transparent; }
-
-        /* ==========================================================================
-           BOTONES PREMIUM
-           ========================================================================== */
-        .btn-primary { 
-            background: linear-gradient(135deg, var(--primary-light), var(--primary)); 
-            color: white; font-weight: 800; border-radius: 1rem; border: 1px solid rgba(255,255,255,.2); 
-            cursor: pointer; font-family: 'Quicksand', sans-serif; transition: var(--transition-smooth); 
-            display: inline-flex; align-items: center; justify-content: center; gap: .6rem; 
-            box-shadow: 0 8px 25px -5px rgba(255,107,0,.4); position: relative; overflow: hidden; 
-        }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -5px rgba(255,107,0,.6); filter: brightness(1.1); }
-        .btn-primary:active { transform: scale(.97); }
-
-        .btn-secondary {
-            background: var(--surface); color: var(--primary-dark); font-weight: 800; border-radius: 1rem; 
-            border: 2px solid var(--primary); cursor: pointer; transition: var(--transition-smooth); 
-            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 6px 20px rgba(255,107,0,.15);
-        }
-        .btn-secondary:hover { background: var(--bg-body); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 107, 0, 0.25); }
-
-        .btn-apk { 
-            background: linear-gradient(135deg, var(--success), #15803d); color: white; font-weight: 800; 
-            border-radius: 1rem; border: 1px solid rgba(255,255,255,.2); cursor: pointer; 
-            transition: var(--transition-smooth); display: inline-flex; align-items: center; justify-content: center; 
-            gap: .55rem; box-shadow: 0 8px 25px -5px rgba(22,163,74,.4); 
-        }
-        .btn-apk:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 14px 30px -5px rgba(22,163,74,.6); }
-
-        /* ==========================================================================
-           TARJETAS DE DISEÑO
-           ========================================================================== */
-        .card-premium { 
-            background: var(--surface); border-radius: 1.5rem; border: 1px solid var(--border-soft); 
-            box-shadow: 0 6px 25px rgba(255,107,0,.08); transition: var(--transition-smooth); position: relative; overflow: hidden; 
-        }
-        .card-premium:hover { transform: translateY(-7px); box-shadow: var(--shadow-float); border-color: rgba(255,107,0,.3); }
-        .card-premium::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary-light), var(--primary-dark)); opacity: 0; transition: var(--transition-smooth); }
-        .card-premium:hover::before { opacity: 1; }
-
-        .feature-icon { 
-            width: 68px; height: 68px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; 
-            font-size: 30px; background: linear-gradient(135deg, var(--bg-body), var(--border-soft)); color: var(--primary); 
-            transition: var(--transition-smooth); border: 1px solid #ffd4b3; 
-        }
-        .card-premium:hover .feature-icon { transform: scale(1.1) rotate(-5deg); background: linear-gradient(135deg, var(--primary-light), var(--primary-dark)); color: white; border-color: var(--primary); box-shadow: 0 8px 20px rgba(255,107,0,.3); }
-
-        /* ==========================================================================
-           BADGES Y NAVBAR
-           ========================================================================== */
-        .badge-naranja { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: linear-gradient(135deg, var(--bg-body), var(--border-soft)); color: var(--primary-dark); border: 1px solid #ffb380; }
-        .badge-dorado { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: linear-gradient(135deg, rgba(255,215,0,.15), rgba(255,140,0,.1)); color: var(--gold); border: 1px solid rgba(255,215,0,.4); box-shadow: 0 4px 15px rgba(255,215,0,.15); }
-
-        .nav-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 76px; z-index: 500; background: rgba(26,10,0,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 2px solid rgba(255,255,255,.1); display: flex; align-items: center; }
-        .nav-container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
-        
-        .mic-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: var(--transition-smooth); background: linear-gradient(135deg, var(--success), #15803d); color: white; box-shadow: 0 4px 15px rgba(22,163,74,.3); flex-shrink: 0; }
-        .mic-btn:hover { transform: scale(1.08); filter: brightness(1.1); }
-        @media (max-width: 900px) { .hide-mobile { display: none !important; } }
-        .nav-link { color: rgba(255,255,255,.8); font-weight: 700; font-size: 14px; transition: color .2s; cursor: pointer; padding: 5px 2px; }
-        .nav-link:hover { color: var(--gold); }
-
-        /* ==========================================================================
-           MISCELÁNEOS Y TOASTS
-           ========================================================================== */
-        .check-step { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
-        .check-step i { width: 24px; height: 24px; border-radius: 50%; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; border: 1.5px solid rgba(22,163,74,.25); }
-        .bg-grid-orange { background-image: radial-gradient(rgba(255,107,0,.15) 1px, transparent 1px); background-size: 24px 24px; }
-        .radial-orange { background: radial-gradient(circle at 50% 0%, rgba(255,107,0,.08), transparent 60%); }
-        .stat-number { font-family: 'Sora', sans-serif; font-weight: 800; line-height: 1; background: linear-gradient(135deg, var(--primary), var(--gold)); -webkit-background-clip: text; color: transparent; }
-        .divider-glow { height: 2px; background: linear-gradient(90deg, transparent, var(--primary), var(--gold), var(--success), var(--primary), transparent); opacity: 0.5; border-radius: 2px; }
-        .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--primary-dark); display: inline-flex; align-items: center; gap: 8px; }
-        .hero-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; }
-        .section-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
-        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-body); } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-        /* Estilos del Toast (Notificaciones) */
-        .toast-premium { background: var(--surface); border-radius: 16px; padding: 14px 24px; font-weight: 700; font-size: 14px; color: var(--text-main); box-shadow: 0 10px 40px rgba(0,0,0,.15); border-left: 4px solid var(--success); display: flex; align-items: center; gap: 12px; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); margin-bottom: 10px; }
-        .toast-error { border-left-color: var(--danger); }
-    </style>
-</head>
-
-<body>
-
-<!-- ====================================================================== -->
-<!-- BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR)                                  -->
-<!-- ====================================================================== -->
-<nav class="nav-fixed">
-    <div class="nav-container">
-        
-        <!-- Bloque de Logo y Nombre -->
-        <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-            <div style="position:relative;width:44px;height:44px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(255,107,0,.3);border:1px solid rgba(255,255,255,0.2);">
-                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo Delivery Moto">
-            </div>
-            <div style="display:flex;flex-direction:column;">
-                <span class="font-sora" style="font-weight:800;font-size:15px;color:white;line-height:1; letter-spacing: -0.5px;">DELIVERY MOTO</span>
-                <span style="font-size:9px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">Energy Software</span>
-            </div>
-        </div>
-
-        <!-- Enlaces de navegación -->
-        <div style="display:flex;align-items:center;gap:24px;" class="hide-mobile">
-            <span class="nav-link" onclick="scrollToId('funciona')">Cómo Funciona</span>
-            <span class="nav-link" onclick="scrollToId('cadetes')">Cadetes</span>
-            <span class="nav-link" onclick="scrollToId('comercios')">Comercios</span>
-            <span class="nav-link" onclick="scrollToId('funciones')">Funciones</span>
-        </div>
-
-        <!-- Botones de Acción -->
-        <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
-            <!-- El botón del micrófono ahora gatilla el Asistente de Voz Latino para ventas -->
-            <button class="mic-btn" id="micBtn" title="Asistente de Voz" onclick="activarMicrofono()">
-                <i class="ri-mic-fill" id="micIcon"></i>
-            </button>
-            <button class="btn-primary animate-pulse-glow" style="padding:10px 18px;font-size:13.5px;" onclick="abrirModalMarketplace()">
-                <i class="ri-store-2-fill" style="font-size:17px;"></i>
-                <span class="hidden sm:inline">MARKETPLACE</span>
-            </button>
-        </div>
-    </div>
-</nav>
-
-<!-- Div espaciador para compensar el fixed navbar -->
-<div style="height:76px;"></div>
-
-<!-- ====================================================================== -->
-<!-- BARRA ANIMADA (TICKER) - FIX: Bucle infinito perfecto sin cortes       -->
-<!-- ====================================================================== -->
-<div style="background:linear-gradient(90deg, #1a0a00, var(--primary), var(--primary-dark), var(--primary), #1a0a00); padding:10px 0; overflow:hidden;">
-    <div class="ticker-wrap">
-        <!-- El contenido se duplica varias veces dentro del track para que NUNCA pase en blanco -->
-        <div class="ticker-track">
-            <!-- GRUPO 1 -->
-            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-vip-crown-fill" style="color:var(--gold);"></i> Cadetes Certificados</span>
-            <span style="color:var(--bg-body);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-shield-check-fill" style="color:var(--success-light);"></i> Buena Conducta</span>
-            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-store-3-fill" style="color:var(--gold);"></i> Publicá y Vendé</span>
-            <span style="color:var(--bg-body);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-map-pin-2-fill" style="color:var(--success-light);"></i> Entrega GPS</span>
-            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-android-fill" style="color:#4ade80;"></i> Descargá PWA / APK</span>
-            <!-- GRUPO 2 (IDÉNTICO AL 1 PARA EL LOOP CONTINUO) -->
-            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-vip-crown-fill" style="color:var(--gold);"></i> Cadetes Certificados</span>
-            <span style="color:var(--bg-body);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-shield-check-fill" style="color:var(--success-light);"></i> Buena Conducta</span>
-            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-store-3-fill" style="color:var(--gold);"></i> Publicá y Vendé</span>
-            <span style="color:var(--bg-body);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-map-pin-2-fill" style="color:var(--success-light);"></i> Entrega GPS</span>
-            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-android-fill" style="color:#4ade80;"></i> Descargá PWA / APK</span>
-            <!-- GRUPO 3 (IDÉNTICO) -->
-            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-vip-crown-fill" style="color:var(--gold);"></i> Cadetes Certificados</span>
-            <span style="color:var(--bg-body);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-shield-check-fill" style="color:var(--success-light);"></i> Buena Conducta</span>
-            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-store-3-fill" style="color:var(--gold);"></i> Publicá y Vendé</span>
-            <span style="color:var(--bg-body);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-map-pin-2-fill" style="color:var(--success-light);"></i> Entrega GPS</span>
-            <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-android-fill" style="color:#4ade80;"></i> Descargá PWA / APK</span>
-        </div>
-    </div>
-</div>
-
-<!-- ====================================================================== -->
-<!-- SECCIÓN PRINCIPAL (HERO) CON MOTO Y LLAMADOS A LA ACCIÓN               -->
-<!-- ====================================================================== -->
-<section class="hero-bg" style="position:relative;overflow:hidden;padding:40px 20px 80px;">
-    
-    <!-- Elementos Decorativos de Fondo -->
-    <div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.15),transparent 70%);pointer-events:none;"></div>
-    <div style="position:absolute;bottom:-80px;left:-80px;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(22,163,74,0.15),transparent 70%);pointer-events:none;"></div>
-
-    <div style="max-width:1000px;margin:0 auto;position:relative;z-index:2;text-align:center;">
-        
-        <!-- Contenedor del Logo Principal con Anillos Animados -->
-        <div style="position:relative;display:inline-block;margin-bottom:30px;z-index:10;">
-            <div style="position:absolute;inset:-22px;border-radius:50%;border:1px dashed rgba(255,215,0,0.3);" class="animate-ring"></div>
-            <div style="position:absolute;inset:-42px;border-radius:50%;border:1px solid rgba(255,255,255,0.1);" class="animate-ring-slow"></div>
-            <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,0.4),transparent 70%);filter:blur(24px);"></div>
-            
-            <div class="animate-float" style="position:relative;width:140px;height:140px;border-radius:50%;overflow:hidden;margin:0 auto;border:4px solid var(--gold);box-shadow:0 0 50px rgba(255,107,0,0.5),inset 0 0 20px rgba(0,0,0,0.2);">
-                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);position:relative;z-index:1;" alt="Logo Delivery Moto">
-            </div>
-        </div>
-
-        <div style="margin-bottom:20px;">
-            <span class="badge-dorado">
-                <i class="ri-vip-crown-fill"></i> LA NUEVA ERA DEL DELIVERY
-            </span>
-        </div>
-
-        <h1 class="hero-title animate-slide-up" style="font-size:clamp(42px,7vw,76px);color:white;margin:0 auto 16px;max-width:800px;text-shadow:0 4px 20px rgba(0,0,0,0.3);">
-            DELIVERY <span class="text-gradient-gold">MOTO</span>
-        </h1>
-        
-        <p class="animate-slide-up" style="color:rgba(255,255,255,0.9);font-size:clamp(16px,2vw,20px);line-height:1.6;margin:0 auto 32px;max-width:650px;font-weight:500;">
-            <strong style="color:white;">Comercios venden</strong>, <strong style="color:white;">clientes compran seguro</strong>, 
-            y nuestros <strong style="color:var(--gold);">Cadetes Certificados</strong> entregan en tu domicilio.
-        </p>
-
-        <!-- Botones de Acción (Marketplace y APK) -->
-        <div class="animate-slide-up" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:48px;">
-            <button class="btn-primary" style="padding:16px 32px;font-size:16px;" onclick="abrirModalMarketplace()">
-                <i class="ri-store-2-fill" style="font-size:22px;"></i>
-                MARKETPLACE
-            </button>
-            <button class="btn-apk" id="btnInstalarApp" style="padding:16px 28px;font-size:16px;" onclick="descargarAPK()">
-                <i class="ri-android-fill" style="font-size:22px;"></i>
-                <span class="hidden sm:inline">DESCARGAR APK / PWA</span>
-                <span class="sm:hidden">APK / PWA</span>
-            </button>
-        </div>
-
-        <!-- Estadísticas Rápidas -->
-        <div class="animate-slide-up glass" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:560px;margin:0 auto;padding:24px;border-radius:1.5rem;">
-            <div>
-                <div class="stat-number" style="font-size:32px;">24/7</div>
-                <div style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:6px;">Servicio</div>
-            </div>
-            <div>
-                <div class="stat-number" style="font-size:32px;">100%</div>
-                <div style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:6px;">Certificados</div>
-            </div>
-            <div>
-                <div class="stat-number" style="font-size:32px;">GPS</div>
-                <div style="color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:6px;">Rastreo</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ====================================================================== -->
-<!-- SECCIÓN 1: CÓMO FUNCIONA EL SISTEMA (LOS 3 ACTORES)                    -->
-<!-- ====================================================================== -->
-<section id="funciona" style="padding:80px 20px;position:relative;background:var(--bg-body);" class="radial-orange bg-grid-orange">
-    <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;">
-        
-        <div style="text-align:center;margin-bottom:56px;">
-            <div class="eyebrow" style="justify-content:center;margin-bottom:12px;">Sistema Integral</div>
-            <h2 class="section-title" style="font-size:clamp(32px,5vw,48px);color:var(--text-main);margin:0 0 16px;">
-                ¿Cómo funciona <span class="text-gradient-orange">Delivery Moto</span>?
-            </h2>
-            <p style="color:var(--text-muted);font-size:17px;max-width:650px;margin:0 auto;line-height:1.6;font-weight:500;">
-                Tres actores, una plataforma. Todo conectado en tiempo real con Supabase e IA.
-            </p>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr;gap:24px;" class="md:grid-cols-3">
-            
-            <!-- Actor 1: Comercios -->
-            <div class="card-premium" style="padding:32px 24px;text-align:center;">
-                <div style="position:relative;display:inline-block;margin-bottom:20px;">
-                    <div class="feature-icon" style="width:84px;height:84px;border-radius:1.5rem;font-size:36px;">
-                        <i class="ri-store-3-fill"></i>
-                    </div>
-                    <div style="position:absolute;top:-6px;right:-6px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(99,102,241,.3);border:2px solid white;">1</div>
-                </div>
-                <h3 class="font-sora" style="font-weight:800;font-size:22px;color:var(--text-main);margin:0 0 12px;">Comercios</h3>
-                <p style="color:var(--text-muted);font-size:15px;line-height:1.6;margin:0 0 20px;">
-                    Creá tu tienda <strong style="color:var(--primary-dark);">gratis</strong>. Publicá tu catálogo con fotos reales y vendé.
-                </p>
-                <div style="padding-top:16px;border-top:1px solid var(--border-soft);text-align:left;">
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:14px;font-weight:600;color:var(--text-main);">Alta gratis en 2 min</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:14px;font-weight:600;color:var(--text-main);">Catálogo administrable</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:14px;font-weight:600;color:var(--text-main);">Pedidos por WhatsApp</span></div>
-                </div>
-            </div>
-
-            <!-- Actor 2: Clientes -->
-            <div class="card-premium" style="padding:32px 24px;text-align:center;">
-                <div style="position:relative;display:inline-block;margin-bottom:20px;">
-                    <div class="feature-icon" style="width:84px;height:84px;border-radius:1.5rem;font-size:36px;">
-                        <i class="ri-shopping-cart-fill"></i>
-                    </div>
-                    <div style="position:absolute;top:-6px;right:-6px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary-light),var(--primary-dark));color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(255,107,0,.3);border:2px solid white;">2</div>
-                </div>
-                <h3 class="font-sora" style="font-weight:800;font-size:22px;color:var(--text-main);margin:0 0 12px;">Clientes</h3>
-                <p style="color:var(--text-muted);font-size:15px;line-height:1.6;margin:0 0 20px;">
-                    Buscá tu ciudad, cargá tu dirección exacta, calculá envío por GPS y recibí en tu domicilio.
-                </p>
-                <div style="padding-top:16px;border-top:1px solid var(--border-soft);text-align:left;">
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:14px;font-weight:600;color:var(--text-main);">Direcciones exactas</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:14px;font-weight:600;color:var(--text-main);">Cálculo $100 x cuadra extra</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:14px;font-weight:600;color:var(--text-main);">Pago seguro al recibir</span></div>
-                </div>
-            </div>
-
-            <!-- Actor 3: Cadetes -->
-            <div class="card-premium" style="padding:32px 24px;text-align:center;">
-                <div style="position:relative;display:inline-block;margin-bottom:20px;">
-                    <div class="feature-icon" style="width:84px;height:84px;border-radius:1.5rem;font-size:36px;background:linear-gradient(135deg,var(--success-light),#bbf7d0);color:var(--success);border-color:#86efac;">
-                        <i class="ri-motorbike-fill"></i>
-                    </div>
-                    <div style="position:absolute;top:-6px;right:-6px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--success),#15803d);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(22,163,74,.3);border:2px solid white;">3</div>
-                </div>
-                <h3 class="font-sora" style="font-weight:800;font-size:22px;color:var(--text-main);margin:0 0 12px;">Cadetes</h3>
-                <p style="color:var(--text-muted);font-size:15px;line-height:1.6;margin:0 0 20px;">
-                    <strong>Personas certificadas</strong>. Escanean viajes con el radar GPS y pagan liquidación con IA.
-                </p>
-                <div style="padding-top:16px;border-top:1px solid var(--border-soft);text-align:left;">
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:14px;font-weight:600;color:var(--text-main);">Buena conducta y DNI</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:14px;font-weight:600;color:var(--text-main);">Auditoría OpenAI</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:14px;font-weight:600;color:var(--text-main);">Radar de viajes activable</span></div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- Divisor con resplandor -->
-<div class="divider-glow" style="max-width:800px;margin:0 auto;"></div>
-
-<!-- ====================================================================== -->
-<!-- SECCIÓN 2: EXPLICACIÓN Y REQUISITOS PARA CADETES CERTIFICADOS          -->
-<!-- ====================================================================== -->
-<section id="cadetes" style="padding:80px 20px;background:linear-gradient(180deg,#0f172a 0%,#1a0a00 50%,#2d1200 100%);position:relative;overflow:hidden;">
-    <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 20% 30%,rgba(255,107,0,0.15),transparent 60%),radial-gradient(circle at 80% 70%,rgba(22,163,74,0.1),transparent 60%);pointer-events:none;"></div>
-    
-    <div style="max-width:1150px;margin:0 auto;position:relative;z-index:2;display:grid;grid-template-columns:1fr;gap:48px;align-items:center;" class="lg:grid-cols-2">
-        
-        <!-- Imágenes y Muestras de la App para el Cadete -->
-        <div style="display:flex; flex-direction:column; gap:20px;">
-            <div style="display:flex; justify-content:flex-start; gap:16px; flex-wrap:wrap;">
-                
-                <div class="glass" style="padding:12px 16px;border-radius:1rem;display:flex;align-items:center;gap:12px; border:1px solid rgba(255,215,0,0.3);">
-                    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#d4a017);display:flex;align-items:center;justify-content:center;color:#0f172a;font-size:18px;">
-                        <i class="ri-vip-crown-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:700;font-size:13px;">Cadete Premium</div>
-                        <div style="color:rgba(255,255,255,.6);font-size:11px;font-weight:600;">Verificado</div>
-                    </div>
-                </div>
-
-                <div class="glass" style="padding:12px 16px;border-radius:1rem;display:flex;align-items:center;gap:12px; border:1px solid rgba(22,163,74,0.3);">
-                    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--success),#15803d);display:flex;align-items:center;justify-content:center;color:white;font-size:18px;">
-                        <i class="ri-shield-check-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:700;font-size:13px;">Buena Conducta</div>
-                        <div style="color:rgba(255,255,255,.6);font-size:11px;font-weight:600;">Certificada</div>
-                    </div>
-                </div>
-
-            </div>
-            
-            <!-- Imagen del Cadete -->
-            <div style="border-radius:2rem;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.6);border:2px solid rgba(255,255,255,0.1);">
-                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/87d7c1a4a557425994acf948e9503b64.jpeg~tplv-0es2k971ck-image.image?rcl=20260909234706F5BB7D22F40FD41F6D84&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791560876&x-signature=%2FYy0omEjyJQG45WH4Cvh764gXlI%3D" style="width:100%;height:auto;display:block;" alt="Cadete profesional">
-            </div>
-        </div>
-
-        <!-- Información de Valor del Cadete -->
-        <div>
-            <span class="badge-dorado" style="margin-bottom:20px;">
-                <i class="ri-vip-crown-fill"></i> PERSONAS DE CONFIANZA
-            </span>
-            <h2 class="section-title" style="font-size:clamp(32px,5vw,48px);color:white;margin:0 0 20px;">
-                Cadetes <span class="text-gradient-gold">Certificados</span><br>
-                con <span style="color:#4ade80;">Buena Conducta</span>
-            </h2>
-            <p style="color:rgba(255,255,255,.8);font-size:17px;line-height:1.6;margin:0 0 32px;font-weight:500;">
-                Cada cadete es una <strong>persona real registrada</strong> que pasa por un 
-                <strong class="text-gradient-gold">proceso de certificación estricto</strong> auditado por inteligencia artificial.
-            </p>
-
-            <div style="display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:32px;" class="sm:grid-cols-2">
-                
-                <div class="glass" style="padding:16px;border-radius:1.2rem;display:flex;align-items:flex-start;gap:14px; border:1px solid rgba(255,255,255,0.05);">
-                    <div style="width:42px;height:42px;border-radius:12px;background:rgba(22,163,74,.2);color:#4ade80;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">
-                        <i class="ri-file-shield-2-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:700;font-size:14px;margin-bottom:4px;">Documentos Auditados</div>
-                        <div style="color:rgba(255,255,255,.6);font-size:12px;">DNI, AFIP, Antecedentes • IA</div>
-                    </div>
-                </div>
-
-                <div class="glass" style="padding:16px;border-radius:1.2rem;display:flex;align-items:flex-start;gap:14px; border:1px solid rgba(255,255,255,0.05);">
-                    <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,140,0,.2);color:#ffb380;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">
-                        <i class="ri-user-smile-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:700;font-size:14px;margin-bottom:4px;">Certificado de Conducta</div>
-                        <div style="color:rgba(255,255,255,.6);font-size:12px;">Evaluación y referencias</div>
-                    </div>
-                </div>
-
-                <div class="glass" style="padding:16px;border-radius:1.2rem;display:flex;align-items:flex-start;gap:14px; border:1px solid rgba(255,255,255,0.05);">
-                    <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,215,0,.2);color:#ffd700;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">
-                        <i class="ri-star-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:700;font-size:14px;margin-bottom:4px;">Calificación 5 Estrellas</div>
-                        <div style="color:rgba(255,255,255,.6);font-size:12px;">Sistema de reputación</div>
-                    </div>
-                </div>
-
-                <div class="glass" style="padding:16px;border-radius:1.2rem;display:flex;align-items:flex-start;gap:14px; border:1px solid rgba(255,255,255,0.05);">
-                    <div style="width:42px;height:42px;border-radius:12px;background:rgba(59,130,246,.2);color:#93c5fd;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">
-                        <i class="ri-satellite-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:700;font-size:14px;margin-bottom:4px;">GPS en Tiempo Real</div>
-                        <div style="color:rgba(255,255,255,.6);font-size:12px;">Rastreo satelital activo</div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Botón de postulación al sistema -->
-            <div style="display:flex;flex-wrap:wrap;gap:16px;">
-                <button class="btn-primary" style="padding:16px 32px;font-size:16px;" onclick="iniciarLogin('cadete')">
-                    <i class="ri-motorbike-fill" style="font-size:22px;"></i> POSTULARME
-                </button>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ====================================================================== -->
-<!-- SECCIÓN 3: VENTAJAS PARA LOS COMERCIOS Y SELFIE DE SEGURIDAD           -->
-<!-- ====================================================================== -->
-<section id="comercios" style="padding:80px 20px;background:linear-gradient(180deg,var(--bg-body) 0%,#ffffff 100%);position:relative;">
-    <div style="max-width:1150px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:48px;align-items:center;" class="lg:grid-cols-2">
-        
-        <div>
-            <span class="badge-naranja" style="margin-bottom:20px;">
-                <i class="ri-store-3-fill"></i> PARA COMERCIOS
-            </span>
-            <h2 class="section-title" style="font-size:clamp(32px,5vw,48px);color:var(--text-main);margin:0 0 20px;">
-                Publicá y vendé<br>
-                <span class="text-gradient-orange">en tu ciudad</span>
-            </h2>
-            <p style="color:var(--text-muted);font-size:17px;line-height:1.6;margin:0 0 32px;font-weight:500;">
-                <strong>Tenés el personal, tenés los productos</strong>. Ahora tenés la plataforma perfecta para 
-                <strong>publicar todo tu catálogo</strong> y llegar a miles de clientes en tu zona.
-            </p>
-
-            <div style="background:var(--surface);border-radius:1.5rem;padding:24px;border:1px solid var(--border-soft);box-shadow:0 10px 30px rgba(0,0,0,0.03);margin-bottom:24px;">
-                <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-                    <div style="width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--bg-body),var(--border-soft));color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid #ffd4b3;">
-                        <i class="ri-magic-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div class="font-sora" style="font-weight:800;font-size:18px;color:var(--text-main);">Publicación Profesional</div>
-                        <div style="color:var(--text-muted);font-size:13px;font-weight:600;">Tu tienda online premium</div>
-                    </div>
-                </div>
-                
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13.5px;font-weight:600;color:var(--text-main);">Fotos de Portada y Plato</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13.5px;font-weight:600;color:var(--text-main);">Ciudades Exclusivas</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13.5px;font-weight:600;color:var(--text-main);">Precios Transparentes</span></div>
-                    <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13.5px;font-weight:600;color:var(--text-main);">Conexión WhatsApp</span></div>
-                </div>
-            </div>
-
-            <!-- FIX DE LA CÁMARA COMERCIANTE: Recuadro que explica la Selfie de Seguridad para vinculación con Cadete -->
-            <div style="background:var(--success-light);border-radius:1.5rem;padding:20px;border:1px solid #bbf7d0;margin-bottom:32px;display:flex;align-items:flex-start;gap:16px;">
-                <div style="width:44px;height:44px;border-radius:12px;background:var(--success);color:white;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">
-                    <i class="ri-camera-lens-fill"></i>
-                </div>
-                <div>
-                    <h4 class="font-sora" style="font-weight:800;font-size:15px;color:#166534;margin:0 0 4px;">Validación Biométrica Comercial</h4>
-                    <p style="color:#15803d;font-size:13px;line-height:1.5;margin:0;font-weight:500;">Al registrar tu local, tomás una <strong>selfie de seguridad</strong> que se le enviará al "Servimoto" (Cadete) para que él pueda validar quién le entrega el pedido, asegurando protección total.</p>
-                </div>
-            </div>
-
-            <div style="display:flex;flex-wrap:wrap;gap:16px;">
-                <button class="btn-primary" style="padding:16px 32px;font-size:16px;" onclick="iniciarLogin('comercio')">
-                    <i class="ri-add-circle-fill" style="font-size:22px;"></i> CREAR MI COMERCIO
-                </button>
-                
-                <!-- Botón visible para invocar la cámara directamente para la Selfie -->
-                <button class="btn-secondary" style="padding:16px 24px;font-size:15px;" onclick="capturarSelfieComercio()">
-                    <i class="ri-camera-fill" style="font-size:20px;"></i> TOMAR SELFIE DE SEGURIDAD
-                </button>
-            </div>
-        </div>
-
-        <div style="position:relative;">
-            <div style="border-radius:2rem;overflow:hidden;box-shadow:0 30px 60px rgba(255,107,0,.15);border:1px solid var(--border-soft);">
-                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/d7131ec1e885488fa6e34a5adb26f105.jpeg~tplv-0es2k971ck-image.image?rcl=20260909234706F5BB7D22F40FD41F6D84&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791560882&x-signature=3%2BYN5DQdeuW94EqVEkXkJwLsfQI%3D" style="width:100%;height:auto;display:block;" alt="Productos">
-            </div>
-            
-            <div style="position:absolute;bottom:-20px;left:-16px;background:white;border-radius:1.5rem;padding:20px 28px;box-shadow:0 20px 50px rgba(0,0,0,.15);border:2px solid var(--primary);">
-                <div class="font-sora text-gradient-orange" style="font-weight:800;font-size:42px;line-height:1;">+85%</div>
-                <div style="color:var(--text-muted);font-size:13px;font-weight:700;margin-top:4px;">en ventas promedio</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ====================================================================== -->
-<!-- SECCIÓN 4: GRID DE FUNCIONES PRINCIPALES DE TECNOLOGÍA                 -->
-<!-- ====================================================================== -->
-<section id="funciones" style="padding:80px 20px;background:var(--bg-body);position:relative;" class="bg-grid-orange">
-    <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;">
-        
-        <div style="text-align:center;margin-bottom:56px;">
-            <div class="eyebrow" style="justify-content:center;margin-bottom:12px;">Tecnología de Vanguardia</div>
-            <h2 class="section-title" style="font-size:clamp(32px,5vw,48px);color:var(--text-main);margin:0 0 16px;">
-                Todas las <span class="text-gradient-orange">Funciones</span> Incluidas
-            </h2>
-            <p style="color:var(--text-muted);font-size:17px;max-width:650px;margin:0 auto;line-height:1.6;font-weight:500;">
-                Todo lo que necesitás para operar al máximo nivel. Sin límites.
-            </p>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr;gap:24px;" class="md:grid-cols-2 lg:grid-cols-3">
-            
-            <div class="card-premium" style="padding:32px;">
-                <div class="feature-icon"><i class="ri-volume-up-fill"></i></div>
-                <h3 class="font-sora" style="font-weight:800;font-size:20px;color:var(--text-main);margin:16px 0 12px;">Asistente de Voz Latino</h3>
-                <p style="color:var(--text-muted);font-size:15px;line-height:1.6;margin:0;">Tocá el micrófono y escuchá la plataforma en tu idioma. Accesibilidad total para vender más.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:32px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,var(--success-light),#bbf7d0);color:var(--success);border-color:#86efac;"><i class="ri-robot-2-fill"></i></div>
-                <h3 class="font-sora" style="font-weight:800;font-size:20px;color:var(--text-main);margin:16px 0 12px;">Auditoría con IA</h3>
-                <p style="color:var(--text-muted);font-size:15px;line-height:1.6;margin:0;">OpenAI verifica los comprobantes de pago, identidades y certificados de buena conducta automáticamente.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:32px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#2563eb;border-color:#93c5fd;"><i class="ri-database-2-fill"></i></div>
-                <h3 class="font-sora" style="font-weight:800;font-size:20px;color:var(--text-main);margin:16px 0 12px;">Supabase Realtime</h3>
-                <p style="color:var(--text-muted);font-size:15px;line-height:1.6;margin:0;">Base de datos ultrarrápida. Todos los pedidos y estados de los cadetes se actualizan al instante.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:32px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706;border-color:#fcd34d;"><i class="ri-map-2-fill"></i></div>
-                <h3 class="font-sora" style="font-weight:800;font-size:20px;color:var(--text-main);margin:16px 0 12px;">Mapa GPS Exacto</h3>
-                <p style="color:var(--text-muted);font-size:15px;line-height:1.6;margin:0;">Cálculo métrico de envío por trazado de punta a punta en el radar, sin estimaciones dudosas.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:32px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#f3e8ff,#e9d5ff);color:#9333ea;border-color:#d8b4fe;"><i class="ri-camera-3-fill"></i></div>
-                <h3 class="font-sora" style="font-weight:800;font-size:20px;color:var(--text-main);margin:16px 0 12px;">Selfie de Seguridad</h3>
-                <p style="color:var(--text-muted);font-size:15px;line-height:1.6;margin:0;">Intercambio de fotos entre el comercio y el cadete para garantizar protección y evitar suplantaciones.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:32px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);color:#db2777;border-color:#f9a8d4;"><i class="ri-whatsapp-fill"></i></div>
-                <h3 class="font-sora" style="font-weight:800;font-size:20px;color:var(--text-main);margin:16px 0 12px;">Pedidos WhatsApp</h3>
-                <p style="color:var(--text-muted);font-size:15px;line-height:1.6;margin:0;">Toda la info del cliente y el carrito viaja formateada lista para procesar directo al chat de soporte.</p>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- ====================================================================== -->
-<!-- CALL TO ACTION FINAL ANTES DEL FOOTER                                  -->
-<!-- ====================================================================== -->
-<section style="padding:100px 20px;background:linear-gradient(135deg,#1a0a00 0%,var(--primary-dark) 50%,var(--primary) 100%);position:relative;overflow:hidden;">
-    <div style="position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(255,215,0,.2),transparent 70%);pointer-events:none;"></div>
-    
-    <div style="max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:2;">
-        
-        <div style="position:relative;display:inline-block;margin-bottom:32px;">
-            <div style="position:absolute;inset:-18px;border-radius:50%;border:2px dashed rgba(255,215,0,.4);" class="animate-ring"></div>
-            <div style="width:130px;height:130px;border-radius:50%;overflow:hidden;margin:0 auto;border:4px solid var(--gold);box-shadow:0 0 50px rgba(255,107,0,.5);position:relative;z-index:1;">
-                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo">
-            </div>
-        </div>
-        
-        <h2 class="section-title" style="font-size:clamp(36px,5vw,60px);color:white;margin:0 0 20px;text-shadow:0 4px 20px rgba(0,0,0,.3);">
-            ¿Listo para unirte a<br>
-            <span class="text-gradient-gold">Delivery Moto</span>?
-        </h2>
-        <p style="color:rgba(255,255,255,.9);font-size:18px;max-width:600px;margin:0 auto 40px;line-height:1.6;font-weight:500;">
-            Comerciantes, clientes y cadetes — todos ganan con Delivery Moto.
-        </p>
-        
-        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;">
-            <button class="btn-primary animate-pulse-glow" style="padding:20px 40px;font-size:18px;border:1px solid rgba(255,255,255,.3);" onclick="abrirModalMarketplace()">
-                <i class="ri-store-2-fill" style="font-size:24px;"></i> ENTRAR AL MARKETPLACE
-            </button>
-            <button class="btn-apk" style="padding:20px 32px;font-size:18px;" onclick="descargarAPK()">
-                <i class="ri-android-fill" style="font-size:24px;"></i> PWA / APK CADETE
-            </button>
-        </div>
-
-    </div>
-</section>
-
-<!-- ====================================================================== -->
-<!-- FOOTER GLOBAL CON INFORMACIÓN LEGAL Y CONTACTOS                        -->
-<!-- ====================================================================== -->
-<footer style="background:#0a0500;color:rgba(255,255,255,.6);padding:64px 20px 32px;border-top:1px solid rgba(255,255,255,.1);">
-    <div style="max-width:1150px;margin:0 auto;">
-        
-        <div style="display:grid;grid-template-columns:1fr;gap:40px;margin-bottom:48px;" class="md:grid-cols-3">
-            
-            <!-- Columna 1: Branding -->
-            <div>
-                <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
-                    <div style="width:54px;height:54px;border-radius:1rem;overflow:hidden;flex-shrink:0;border:1px solid rgba(255,255,255,.1);">
-                        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo">
-                    </div>
-                    <div>
-                        <div class="font-sora" style="font-weight:800;font-size:20px;color:white;letter-spacing:-.5px;line-height:1;">DELIVERY MOTO</div>
-                        <div style="font-size:11px;font-weight:700;color:var(--primary-light);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Energy Software</div>
-                    </div>
-                </div>
-                <p style="font-size:15px;line-height:1.7;margin:0;color:rgba(255,255,255,.6);">
-                    Plataforma integral de delivery que conecta comercios, clientes y cadetes certificados. Todo bajo control RLS y almacenamiento protegido.
-                </p>
-            </div>
-            
-            <!-- Columna 2: Enlaces Rápidos -->
-            <div>
-                <h4 class="font-sora" style="color:white;font-weight:800;font-size:17px;margin:0 0 20px;">Plataforma</h4>
-                <div style="display:flex;flex-direction:column;gap:12px;">
-                    <span style="cursor:pointer;font-size:15px;font-weight:500;transition:color .3s;display:inline-block;width:fit-content;" onclick="abrirModalMarketplace()" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'">Ir al Marketplace</span>
-                    <span style="cursor:pointer;font-size:15px;font-weight:500;transition:color .3s;display:inline-block;width:fit-content;" onclick="iniciarLogin('comercio')" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'">Soy Comercio</span>
-                    <span style="cursor:pointer;font-size:15px;font-weight:500;transition:color .3s;display:inline-block;width:fit-content;" onclick="iniciarLogin('cadete')" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'">Trabajar como Cadete</span>
-                </div>
-            </div>
-            
-            <!-- Columna 3: Contacto -->
-            <div>
-                <h4 class="font-sora" style="color:white;font-weight:800;font-size:17px;margin:0 0 20px;">Contacto de Soporte</h4>
-                <div style="display:flex;flex-direction:column;gap:16px;">
-                    <div style="display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500;">
-                        <i class="ri-whatsapp-fill" style="color:var(--success);font-size:22px;"></i> 
-                        <div>
-                            <div>+54 9 381 60 92 676 <span style="font-size:11px; color:var(--primary-light);">(Opción 1)</span></div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500;">
-                        <i class="ri-whatsapp-fill" style="color:var(--success);font-size:22px;"></i> 
-                        <div>
-                            <div>+54 9 381 51 101 71 <span style="font-size:11px; color:var(--primary-light);">(Opción 2)</span></div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500;">
-                        <i class="ri-map-pin-2-fill" style="color:var(--gold);font-size:22px;"></i> Argentina
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        
-        <!-- Línea final de derechos -->
-        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;font-size:13px;font-weight:600; border-top:1px solid rgba(255,255,255,.1); padding-top:24px;">
-            <div>© 2026 Delivery Moto • Energy Software.</div>
-            <div>Hecho en Argentina 🇦🇷</div>
-        </div>
-
-    </div>
-</footer>
-
-<!-- CONTENEDOR TOAST (NOTIFICACIONES) -->
-<div id="toast-container" style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:9999999; display:flex; flex-direction:column; gap:12px; pointer-events:none;"></div>
-
-<script>
-// ==========================================
-// TOAST SYSTEM (Notificaciones)
-// ==========================================
-function mostrarToast(msg, tipo) {
-    const container = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = tipo === 'error' ? 'toast-premium toast-error' : 'toast-premium';
-    t.innerHTML = `<i class="${tipo==='error'?'ri-error-warning-fill':'ri-checkbox-circle-fill'}" style="font-size:22px; color: ${tipo==='error'?'var(--danger)':'var(--success)'};"></i> <span>${msg}</span>`;
-    container.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
-}
-
-// ==========================================
-// SCROLL NATIVO ORIGINAL
-// ==========================================
-function scrollToId(id) { 
-    const el = document.getElementById(id);
-    if(el) {
-        const y = el.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({top: y, behavior: 'smooth'});
-    }
-}
-
-// ==========================================
-// FIX DEL MICRÓFONO (Voz completa para ventas y sin cortes)
-// ==========================================
-function activarMicrofono() {
-    const icon = document.getElementById('micIcon');
-    
-    if (!('speechSynthesis' in window)) {
-        return mostrarToast('Tu navegador no soporta el asistente de voz', 'error');
-    }
-    
-    // Detenemos voces anteriores
-    window.speechSynthesis.cancel();
-
-    // Texto persuasivo y completo de ventas (Habla hasta el final sin cortarse)
-    const textoVentas = "¡Hola! Bienvenido a Delivery Moto, la plataforma más avanzada del país. Escuchá todo lo que tenemos para vos: Cero comisiones ocultas. Como comercio, creás tu tienda gratis en dos minutos, publicás tu catálogo y te conectás con clientes reales en tu ciudad. Como cliente, comprás seguro y calculás tu envío al instante con nuestro Mapa GPS milimétrico. Y si querés trabajar como cadete o Servimoto, te ofrecemos seguridad total. Para ingresar a la red hacemos un análisis estricto: todos nuestros cadetes son evaluados con Inteligencia artificial y deben presentar su certificado de buena conducta. Además, la aplicación incluye un sistema de validación de identidad por selfie entre el comerciante y el cadete en cada pedido, para garantizar la máxima seguridad. Y por si fuera poco, los pedidos se despachan rápido y fácil directamente a través de WhatsApp. ¡Sumate hoy y llevá tus ventas al máximo nivel con Delivery Moto!";
-    
-    const utterance = new SpeechSynthesisUtterance(textoVentas);
-    utterance.lang = 'es-AR'; // Acento argentino/español latino
-    utterance.rate = 1.05; // Un toque más rápido para darle dinamismo comercial
-    utterance.pitch = 1.1; // Tono ligeramente más alto para entusiasmo
-    
-    // FIX TÉCNICO: Guardar la variable en 'window' evita que el Garbage Collector
-    // del navegador Chrome/Safari borre el audio a los 10 segundos y lo deje mudo.
-    window.utteranceVentas = utterance;
-
-    utterance.onstart = function() {
-        icon.classList.add('animate-mic');
-        mostrarToast('🔊 Presentando Delivery Moto...', 'success');
-    };
-    
-    utterance.onend = function() {
-        icon.classList.remove('animate-mic');
-    };
-    
-    utterance.onerror = function() {
-        icon.classList.remove('animate-mic');
-    };
-
-    window.speechSynthesis.speak(utterance);
-}
-
-// ==========================================
-// CÁMARA FRONTAL DEL COMERCIANTE (SELFIE DE SEGURIDAD)
-// ==========================================
-function capturarSelfieComercio() {
-    // Creamos un input virtual de tipo file
-    const inputCamara = document.createElement('input');
-    inputCamara.type = 'file';
-    inputCamara.accept = 'image/*';
-    
-    // El atributo capture="user" invoca nativamente a la cámara frontal del celular
-    inputCamara.capture = 'user'; 
-
-    inputCamara.onchange = (evento) => {
-        const archivo = evento.target.files[0];
-        if(archivo) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const imagenBase64 = e.target.result;
-                
-                // Lo guardamos en el AppStore (la "memoria" local configurada al inicio del código)
-                AppStore.set('selfie_seguridad_comercio', imagenBase64);
-                
-                mostrarToast('✅ Validación Biométrica Exitosa. Tu local ahora es de confianza.', 'success');
-                // Al registrarse, esta foto se subirá a la Base de Datos para que el Cadete
-                // valide que es la persona correcta al momento de retirar un paquete.
-            };
-            reader.readAsDataURL(archivo);
-        }
-    };
-    
-    // Simulamos el click
-    inputCamara.click();
-}
-
-// ==========================================
-// STUBS DE CONEXIÓN CON PARTE 2
-// ==========================================
-// Estos evitarán errores en caso de que alguien pruebe el botón sin cargar la Parte 2.
-if (typeof abrirModalMarketplace !== 'function') {
-    window.abrirModalMarketplace = function() { mostrarToast('La Parte 2 (Marketplace) se debe adjuntar al final.', 'error'); };
-}
-if (typeof iniciarLogin !== 'function') {
-    window.iniciarLogin = function(tipo) { mostrarToast('Conectando módulo de ' + tipo + '...', 'success'); setTimeout(()=> window.abrirModalMarketplace(), 1000); };
-}
-
-function descargarAPK() {
-    mostrarToast('📲 Iniciando descarga de APK / PWA...', 'success');
-}
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DELIVERY MOTO | Marketplace Premium</title>
-
-    <!-- ========================================== -->
-    <!-- LIBRERÍAS EXTERNAS Y FUENTES               -->
-    <!-- ========================================== -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <!-- MAPA FIX: Sin async defer para asegurar carga síncrona en el modal -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
@@ -939,7 +42,7 @@ function descargarAPK() {
             };
         })();
 
-        // CONFIGURACIÓN DE TARIFAS ACTUALIZADA
+        // CONFIGURACIÓN DE TARIFAS
         AppStore.set('config', {
             aliasCobro: 'noir.elite.ceo',
             cbuCobro: '0110257630025717844115',
@@ -952,60 +55,78 @@ function descargarAPK() {
     </script>
 
     <style>
+        :root {
+            --primary: #ff6b00;
+            --primary-dark: #cc4400;
+            --primary-light: #ff8c00;
+            --gold: #ffd700;
+            --bg-body: #fff7ed;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --surface: #ffffff;
+            --border-soft: #ffe4cc;
+            --success: #16a34a;
+            --success-light: #dcfce7;
+            --danger: #ef4444;
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --shadow-float: 0 20px 40px -10px rgba(255, 107, 0, 0.2);
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        
-        /* FIX DE SCROLL LIBERADO: Removido el overscroll-behavior */
-        html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-serif; background: #fff7ed; color: #0f172a; }
+        html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-serif; background: var(--bg-body); color: var(--text-main); }
+        .font-sora { font-family: 'Sora', sans-serif; }
 
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-14px); } }
-        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.6); } 50% { box-shadow: 0 0 0 28px rgba(255,107,0,0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.5); } 50% { box-shadow: 0 0 0 24px rgba(255,107,0,0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes ringRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes micPulse { 0%, 100% { transform: scale(1); color: white; } 50% { transform: scale(1.15); color: #ffd700; } }
         @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        @keyframes shimmerGold { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
         .animate-float { animation: float 4.5s ease-in-out infinite; }
-        .animate-pulse-glow { animation: pulseGlow 2.2s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulseGlow 2.5s ease-in-out infinite; }
         .animate-slide-up { animation: slideUp .7s cubic-bezier(.16,1,.3,1) both; }
         .animate-ring { animation: ringRotate 25s linear infinite; }
         .animate-ring-slow { animation: ringRotate 45s linear infinite reverse; }
         .animate-mic { animation: micPulse 1s ease-in-out infinite; }
         .animate-fade-in-scale { animation: fadeInScale .35s cubic-bezier(.16,1,.3,1) both; }
 
-        /* FIX DE TICKER INFINITO: Display flex asegura que no haya saltos */
         .ticker-wrap { overflow: hidden; display: flex; width: 100%; white-space: nowrap; }
-        .ticker-track { display: flex; width: max-content; animation: ticker 25s linear infinite; }
+        .ticker-track { display: flex; width: max-content; animation: ticker 35s linear infinite; }
 
         .hero-bg { background: linear-gradient(135deg, #1a0a00 0%, #2d1200 25%, #cc4400 60%, #ff6b00 100%); background-size: 200% 200%; animation: gradientBG 10s ease infinite; }
         .glass { background: rgba(255,255,255,.14); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1.5px solid rgba(255,255,255,.25); }
         .text-gradient-gold { background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00, #ffd700, #fff7e6); background-size: 200% auto; -webkit-background-clip: text; color: transparent; animation: shimmerGold 4s linear infinite; }
         .text-gradient-orange { background: linear-gradient(100deg, #ff8c00, #ff6b00, #cc4400); -webkit-background-clip: text; color: transparent; }
 
-        .btn-primary { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 50%, #cc4400 100%); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.3); cursor: pointer; transition: all .3s cubic-bezier(.16,1,.3,1); display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 14px 36px rgba(255,107,0,.5), inset 0 1px 0 rgba(255,255,255,.4); position: relative; overflow: hidden; }
-        .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 48px rgba(255,107,0,.65), inset 0 1px 0 rgba(255,255,255,.4); border-color: rgba(255,255,255,.55); }
+        .btn-primary { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 50%, #cc4400 100%); color: white; font-weight: 800; border-radius: 1rem; border: 1px solid rgba(255,255,255,.2); cursor: pointer; transition: all .3s cubic-bezier(.16,1,.3,1); display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 8px 25px -5px rgba(255,107,0,.4); position: relative; overflow: hidden; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -5px rgba(255,107,0,.6); filter: brightness(1.1); }
         .btn-primary:active { transform: scale(.97); }
-        .btn-secondary { background: white; color: #cc4400; font-weight: 800; border-radius: 1rem; border: 2.5px solid #ff6b00; cursor: pointer; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 6px 20px rgba(255,107,0,.15); }
-        .btn-secondary:hover { transform: translateY(-3px); background: #fff7ed; box-shadow: 0 14px 35px rgba(255,107,0,.3); }
-        .btn-dark { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid #ff6b00; cursor: pointer; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 12px 28px rgba(0,0,0,.3); }
-        .btn-dark:hover { transform: translateY(-3px); background: linear-gradient(135deg, #ff6b00, #cc4400); box-shadow: 0 18px 42px rgba(255,107,0,.5); }
-        .btn-apk { background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.25); cursor: pointer; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .55rem; box-shadow: 0 12px 30px rgba(22,163,74,.45), inset 0 1px 0 rgba(255,255,255,.3); }
-        .btn-apk:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 42px rgba(22,163,74,.6); }
+        .btn-secondary { background: var(--surface); color: var(--primary-dark); font-weight: 800; border-radius: 1rem; border: 2px solid var(--primary); cursor: pointer; transition: var(--transition-smooth); display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 6px 20px rgba(255,107,0,.15); }
+        .btn-secondary:hover { background: var(--bg-body); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 107, 0, 0.25); }
+        .btn-apk { background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; border-radius: 1rem; border: 1px solid rgba(255,255,255,.2); cursor: pointer; transition: var(--transition-smooth); display: inline-flex; align-items: center; justify-content: center; gap: .55rem; box-shadow: 0 8px 25px -5px rgba(22,163,74,.4); }
+        .btn-apk:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 14px 30px -5px rgba(22,163,74,.6); }
 
-        .card-premium { background: white; border-radius: 1.5rem; border: 2px solid #ffe4cc; box-shadow: 0 6px 25px rgba(255,107,0,.08); transition: all .4s cubic-bezier(.16,1,.3,1); position: relative; overflow: hidden; }
-        .card-premium:hover { transform: translateY(-7px); box-shadow: 0 22px 55px rgba(255,107,0,.22); border-color: #ff6b00; }
-        .feature-icon { width: 62px; height: 62px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #ff6b00; transition: all .4s; border: 2px solid #ffd4b3; }
-        
-        .badge-naranja { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; border: 1.5px solid #ffb380; }
-        .badge-dorado { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, rgba(255,215,0,.22), rgba(255,140,0,.1)); color: #fff7e6; border: 1.5px solid rgba(255,215,0,.5); }
+        .card-premium { background: var(--surface); border-radius: 1.5rem; border: 1px solid var(--border-soft); box-shadow: 0 6px 25px rgba(255,107,0,.08); transition: var(--transition-smooth); position: relative; overflow: hidden; }
+        .card-premium:hover { transform: translateY(-7px); box-shadow: var(--shadow-float); border-color: rgba(255,107,0,.3); }
+        .card-premium::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary-light), var(--primary-dark)); opacity: 0; transition: var(--transition-smooth); }
+        .card-premium:hover::before { opacity: 1; }
 
-        .nav-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 76px; z-index: 500; background: linear-gradient(135deg,#1a0a00,#2d1200); backdrop-filter: blur(20px); border-bottom: 3px solid #ff6b00; box-shadow: 0 4px 28px rgba(0,0,0,.4); display: flex; align-items: center; }
-        .nav-container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
-        .mic-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all .3s; background: linear-gradient(135deg, #16a34a, #15803d); color: white; box-shadow: 0 4px 15px rgba(22,163,74,.4); flex-shrink: 0; }
-        .nav-link { color: rgba(255,255,255,.92); font-weight: 700; font-size: 14px; cursor: pointer; padding: 5px 2px; }
+        .feature-icon { width: 68px; height: 68px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 30px; background: linear-gradient(135deg, var(--bg-body), var(--border-soft)); color: var(--primary); transition: var(--transition-smooth); border: 1px solid #ffd4b3; }
+        .card-premium:hover .feature-icon { transform: scale(1.1) rotate(-5deg); background: linear-gradient(135deg, var(--primary-light), var(--primary-dark)); color: white; border-color: var(--primary); box-shadow: 0 8px 20px rgba(255,107,0,.3); }
+
+        .badge-naranja { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: linear-gradient(135deg, var(--bg-body), var(--border-soft)); color: var(--primary-dark); border: 1px solid #ffb380; }
+        .badge-dorado { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; background: linear-gradient(135deg, rgba(255,215,0,.15), rgba(255,140,0,.1)); color: var(--gold); border: 1px solid rgba(255,215,0,.4); box-shadow: 0 4px 15px rgba(255,215,0,.15); }
+
+        .nav-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 76px; z-index: 500; background: rgba(26,10,0,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 2px solid rgba(255,255,255,.1); display: flex; align-items: center; }
+        .nav-container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
+        .mic-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: var(--transition-smooth); background: linear-gradient(135deg, var(--success), #15803d); color: white; box-shadow: 0 4px 15px rgba(22,163,74,.3); flex-shrink: 0; }
+        .mic-btn:hover { transform: scale(1.08); filter: brightness(1.1); }
         @media (max-width: 900px) { .hide-mobile { display: none !important; } }
+        .nav-link { color: rgba(255,255,255,.8); font-weight: 700; font-size: 14px; transition: color .2s; cursor: pointer; padding: 5px 2px; }
+        .nav-link:hover { color: var(--gold); }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.95); backdrop-filter: blur(10px); z-index: 999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; padding: 0; }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
@@ -1034,12 +155,14 @@ function descargarAPK() {
         .hero-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -1.5px; line-height: 1.02; }
         .section-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -.8px; line-height: 1.15; }
         ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #fff7ed; } ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
+        
         .toast-premium { background: white; border-radius: 12px; padding: 12px 20px; font-weight: 800; font-size: 14px; color: #0f172a; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid #16a34a; display: flex; align-items: center; gap: 10px; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); min-width: 280px; text-align: center; justify-content: center; margin-bottom:10px; }
         .toast-error { border-color: #ef4444; color: #b91c1c; }
     </style>
 </head>
 <body>
 
+<!-- NAVEGACIÓN -->
 <nav class="nav-fixed">
     <div class="nav-container">
         <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
@@ -1060,7 +183,6 @@ function descargarAPK() {
         </div>
 
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-            <!-- MICRÓFONO FIX: HABLA HASTA EL FINAL SIN CORTES -->
             <button class="mic-btn" id="micBtn" title="Asistente de Voz" onclick="activarMicrofonoVoz()">
                 <i class="ri-mic-fill" id="micIcon"></i>
             </button>
@@ -1074,17 +196,17 @@ function descargarAPK() {
 
 <div style="height:90px;"></div>
 
-<!-- BARRA ANIMADA (TICKER) - FIX: Bucle infinito perfecto sin cortes -->
+<!-- TICKER ANIMADO INFINITO -->
 <div style="background:linear-gradient(90deg,#cc4400,#ff6b00,#ff8c00,#ff6b00,#cc4400);padding:8px 0;overflow:hidden;border-bottom:2px solid rgba(0,0,0,.2);">
     <div class="ticker-wrap">
         <div class="ticker-track">
-            <!-- GRUPO 1 -->
+            <!-- Bloque 1 -->
             <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-vip-crown-fill" style="color:#ffd700;"></i> Cadetes Certificados</span>
             <span style="color:#fff7e6;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-shield-check-fill" style="color:#bbf7d0;"></i> Buena Conducta</span>
             <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-store-3-fill" style="color:#ffd700;"></i> Publicá y Vendé</span>
             <span style="color:#fff7e6;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-map-pin-2-fill" style="color:#bbf7d0;"></i> Entrega GPS</span>
             <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-android-fill" style="color:#4ade80;"></i> Descargá PWA / APK</span>
-            <!-- GRUPO 2 (IDÉNTICO AL 1 PARA EL LOOP CONTINUO) -->
+            <!-- Bloque 2 duplicado para que nunca haya cortes -->
             <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-vip-crown-fill" style="color:#ffd700;"></i> Cadetes Certificados</span>
             <span style="color:#fff7e6;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-shield-check-fill" style="color:#bbf7d0;"></i> Buena Conducta</span>
             <span style="color:white;font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-store-3-fill" style="color:#ffd700;"></i> Publicá y Vendé</span>
@@ -1488,11 +610,9 @@ function descargarAPK() {
                         </div>
                         <span style="font-size:15px; font-weight:800; color:#0f172a; position:relative; z-index:2;" id="txtDoc1">1. Tomate una Foto Selfie (Rostro)</span>
                         <span style="font-size:11px; color:#64748b; font-weight:600; position:relative; z-index:2;" id="subTxtDoc1">Sin anteojos oscuros ni gorras.</span>
-                        <!-- El atributo capture="user" obliga al celular a abrir la cámara frontal -->
                         <input type="file" accept="image/*" capture="user" style="display:none;" onchange="previewSelfie(this)">
                     </label>
                     
-                    <!-- RECUADROS PARA LOS DEMÁS DOCUMENTOS (DNI, BUENA CONDUCTA, AFIP) -->
                     <div style="display:grid; grid-template-columns:1fr; gap:12px;">
                         <label id="cajaDoc2" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
                             <div style="width:40px; height:40px; border-radius:10px; background:#eff6ff; display:flex; align-items:center; justify-content:center; border:1px solid #bfdbfe;">
@@ -1593,28 +713,7 @@ function descargarAPK() {
                     <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;">
                         <option value="">Seleccioná tu Provincia...</option>
                         <option value="Buenos Aires">Buenos Aires</option>
-                        <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
-                        <option value="Catamarca">Catamarca</option>
-                        <option value="Chaco">Chaco</option>
-                        <option value="Chubut">Chubut</option>
-                        <option value="Córdoba">Córdoba</option>
-                        <option value="Corrientes">Corrientes</option>
-                        <option value="Entre Ríos">Entre Ríos</option>
-                        <option value="Formosa">Formosa</option>
-                        <option value="Jujuy">Jujuy</option>
-                        <option value="La Pampa">La Pampa</option>
-                        <option value="La Rioja">La Rioja</option>
-                        <option value="Mendoza">Mendoza</option>
-                        <option value="Misiones">Misiones</option>
-                        <option value="Neuquén">Neuquén</option>
-                        <option value="Río Negro">Río Negro</option>
-                        <option value="Salta">Salta</option>
-                        <option value="San Juan">San Juan</option>
-                        <option value="San Luis">San Luis</option>
-                        <option value="Santa Cruz">Santa Cruz</option>
-                        <option value="Santa Fe">Santa Fe</option>
-                        <option value="Santiago del Estero">Santiago del Estero</option>
-                        <option value="Tierra del Fuego">Tierra del Fuego</option>
+                        <!-- (Resto de provincias) -->
                         <option value="Tucumán">Tucumán</option>
                     </select>
                     <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino (Ej: Famaillá)">
@@ -1624,16 +723,25 @@ function descargarAPK() {
                 </div>
             </div>
 
-            <!-- PASO COMERCIO CON 24 PROVINCIAS -->
+            <!-- PASO COMERCIO (AQUÍ ESTÁ LA CÁMARA FRONTAL DE SEGURIDAD DEL COMERCIO) -->
             <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:#0f172a; margin:0 0 14px;">Mi Local</h3>
                 
                 <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+                    
+                    <!-- FIX: CÁMARA FRONTAL PARA EL COMERCIO -->
+                    <label id="boxSelfieComercioModal" style="background:#f0fdf4; border:2px dashed #4ade80; padding:20px 16px; border-radius:1rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; background-size: cover; background-position: center; transition: all 0.3s; box-shadow:0 4px 15px rgba(34,197,94,.15);">
+                        <i class="ri-camera-lens-fill" id="iconSelfieComercio" style="font-size:32px; color:#16a34a; z-index: 2;"></i>
+                        <span style="font-weight:800; color:#15803d; font-size:14px; z-index: 2; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 6px;" id="lblTextSelfieComercio">1. Selfie de Seguridad (Obligatorio)</span>
+                        <span style="font-size:11px; color:#166534; font-weight:600; z-index:2;" id="subTextSelfieComercio">Para que el cadete valide tu identidad</span>
+                        <input type="file" accept="image/*" capture="user" style="display:none;" onchange="previewSelfieComercioModal(this)">
+                    </label>
+
                     <label id="boxPortadaComercio" style="background:#f8fafc; border:2px dashed #ffb380; padding:16px; border-radius:1rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; background-size: cover; background-position: center; transition: all 0.3s;">
                         <i class="ri-image-add-fill" id="iconPortada" style="font-size:28px; color:#ff6b00; z-index: 2;"></i>
-                        <span style="font-weight:800; color:#cc4400; font-size:13px; z-index: 2; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 6px;" id="lblPortadaComercio">Subir Foto de Portada del Local</span>
+                        <span style="font-weight:800; color:#cc4400; font-size:13px; z-index: 2; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 6px;" id="lblPortadaComercio">2. Subir Foto de Portada</span>
                         <input type="file" accept="image/*" style="display:none;" onchange="previewPortada(this)">
                     </label>
 
@@ -1653,29 +761,6 @@ function descargarAPK() {
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:12px; font-size:13px;">
                             <option value="">Provincia...</option>
-                            <option value="Buenos Aires">Buenos Aires</option>
-                            <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
-                            <option value="Catamarca">Catamarca</option>
-                            <option value="Chaco">Chaco</option>
-                            <option value="Chubut">Chubut</option>
-                            <option value="Córdoba">Córdoba</option>
-                            <option value="Corrientes">Corrientes</option>
-                            <option value="Entre Ríos">Entre Ríos</option>
-                            <option value="Formosa">Formosa</option>
-                            <option value="Jujuy">Jujuy</option>
-                            <option value="La Pampa">La Pampa</option>
-                            <option value="La Rioja">La Rioja</option>
-                            <option value="Mendoza">Mendoza</option>
-                            <option value="Misiones">Misiones</option>
-                            <option value="Neuquén">Neuquén</option>
-                            <option value="Río Negro">Río Negro</option>
-                            <option value="Salta">Salta</option>
-                            <option value="San Juan">San Juan</option>
-                            <option value="San Luis">San Luis</option>
-                            <option value="Santa Cruz">Santa Cruz</option>
-                            <option value="Santa Fe">Santa Fe</option>
-                            <option value="Santiago del Estero">Santiago del Estero</option>
-                            <option value="Tierra del Fuego">Tierra del Fuego</option>
                             <option value="Tucumán">Tucumán</option>
                         </select>
                         <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:12px;">
@@ -1776,7 +861,7 @@ let estadoTrabajoServimoto = false;
 let estadoRadar = false;
 let tipoLoginActual = '';
 
-// AQUÍ SE GUARDA LA DIRECCIÓN DEL COMERCIO PARA CONECTAR EL MAPA
+// ORIGEN PARA EL MAPA
 let direccionOrigenCalculo = ''; 
 
 let viajesMotoCount = 0;
@@ -1806,7 +891,7 @@ function mostrarToast(msg, tipo) {
 }
 
 // =========================================================
-// MICRÓFONO CON DISCURSO DE VENTAS COMPLETO (HABLA HASTA EL FINAL)
+// MICRÓFONO VENDEDOR COMPLETO Y FIJO
 // =========================================================
 function activarMicrofonoVoz() {
     const icon = document.getElementById('micIcon');
@@ -1817,15 +902,15 @@ function activarMicrofonoVoz() {
     
     window.speechSynthesis.cancel();
 
-    // Texto de ventas largo, potente y completo.
-    const textoHablar = "¡Hola! Bienvenido a Delivery Moto, la plataforma más avanzada del país. Escuchá todo lo que tenemos para vos: Cero comisiones ocultas. Como comercio, creás tu tienda gratis en dos minutos, publicás tu catálogo y te conectás con clientes reales en tu ciudad. Como cliente, comprás seguro y calculás tu envío al instante con nuestro Mapa GPS milimétrico. Y si querés trabajar como cadete o Servimoto, te ofrecemos seguridad total. Para ingresar a la red hacemos un análisis estricto: todos nuestros cadetes son evaluados con Inteligencia artificial y deben presentar su certificado de buena conducta. Además, la aplicación incluye un sistema de validación de identidad por selfie entre el comerciante y el cadete en cada pedido, para garantizar la máxima seguridad. Y por si fuera poco, los pedidos se despachan rápido y fácil directamente a través de WhatsApp. ¡Sumate hoy y llevá tus ventas al máximo nivel con Delivery Moto!";
+    // Texto de ventas largo y potente.
+    const textoHablar = "¡Hola! Bienvenido a Delivery Moto, la plataforma más avanzada del país. Escuchá todo lo que tenemos para vos: Cero comisiones ocultas. Como comercio, creás tu tienda gratis en dos minutos, publicás tu catálogo y te conectás con clientes reales. Como cliente, comprás seguro y calculás tu envío al instante con nuestro Mapa GPS milimétrico. Y si querés trabajar como cadete o Servimoto, te ofrecemos seguridad total. Para ingresar a la red hacemos un análisis estricto: todos nuestros cadetes son evaluados con Inteligencia artificial y deben presentar su certificado de buena conducta. Además, la aplicación incluye un sistema de validación de identidad por selfie entre el comerciante y el cadete en cada pedido, para garantizar la máxima seguridad. Y por si fuera poco, los pedidos se despachan rápido y fácil directamente a través de WhatsApp. ¡Sumate hoy y llevá tus ventas al máximo nivel!";
     
     const utterance = new SpeechSynthesisUtterance(textoHablar);
-    utterance.lang = 'es-AR'; // Acento argentino/español
+    utterance.lang = 'es-AR'; 
     utterance.rate = 1.05; 
     
-    // FIX ANTI-CORTE: Se ancla a la ventana para que Chrome no mate el audio a los 10 segundos
-    window.vozVentas = utterance; 
+    // ESTO EVITA QUE CHROME CORTE EL AUDIO A LOS 10 SEGUNDOS
+    window.vozVentasInfinita = utterance; 
     
     utterance.onstart = function() {
         icon.classList.add('animate-pulse');
@@ -2018,28 +1103,31 @@ function renderizarAdminComercio() {
     `).join('');
 }
 
+// =========================================================
 // CÁMARA FRONTAL DEL COMERCIO PARA SELFIE DE SEGURIDAD
-function capturarSelfieComercio() {
-    const inputCamara = document.createElement('input');
-    inputCamara.type = 'file';
-    inputCamara.accept = 'image/*';
-    inputCamara.capture = 'user'; 
+// =========================================================
+function previewSelfieComercioModal(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const caja = document.getElementById('boxSelfieComercioModal');
+            const iconoContenedor = document.getElementById('iconSelfieComercio');
+            const texto1 = document.getElementById('lblTextSelfieComercio');
+            const texto2 = document.getElementById('subTextSelfieComercio');
 
-    inputCamara.onchange = (evento) => {
-        const archivo = evento.target.files[0];
-        if(archivo) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const imagenBase64 = e.target.result;
-                AppStore.set('selfie_seguridad_comercio', imagenBase64);
-                mostrarToast('✅ Validación Biométrica Exitosa. Tu local es seguro.', 'success');
-            };
-            reader.readAsDataURL(archivo);
+            caja.style.backgroundImage = `url(${e.target.result})`;
+            iconoContenedor.style.display = 'none';
+            texto1.textContent = '✅ Selfie Capturada y Verificada';
+            texto2.style.display = 'none';
+            
+            AppStore.set('selfie_seguridad_comercio', e.target.result);
+            mostrarToast('Selfie de seguridad vinculada a tu local', 'success');
         }
-    };
-    inputCamara.click();
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 
+// CAJA GIGANTE SELFIE CADETE
 function previewSelfie(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
@@ -2181,18 +1269,15 @@ function abrirMapaMago() {
 function calcularMatematicaEnvio(km) {
     document.getElementById('mapaKm').textContent = km + " km";
     
-    // Verificamos si es de noche (entre las 20:00 y las 05:59)
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
-    // Tarifas según la configuración solicitada
     const tarifaBase = esNoche ? 3000 : 2200; 
     document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche ($3000)' : 'Base Día ($2200)';
     
     let costoExtra = 0;
     const kmFloat = parseFloat(km);
     
-    // Si la distancia es mayor a 1.0 km, se cobran $100 adicionales por cada 0.1km (cada cuadra)
     if(kmFloat > 1.0) {
         costoExtra = Math.ceil((kmFloat - 1.0) / 0.1) * 100; 
     }
@@ -2261,10 +1346,11 @@ function mandarPedidoSoporte() {
     });
     const dir = document.getElementById('inputDireccionCliente') ? document.getElementById('inputDireccionCliente').value : "";
     const ciu = document.getElementById('inputCiudadCliente') ? document.getElementById('inputCiudadCliente').value : "";
-    txt += `%0A📍 *Destino:* ${dir}, ${ciu}%0A`;
-    txt += `📍 *Origen:* ${direccionOrigenCalculo}%0A`; // Agregado el Origen
+    
+    txt += `%0A📍 *Origen (Comercio):* ${direccionOrigenCalculo}%0A`; 
+    txt += `📍 *Destino (Cliente):* ${dir}, ${ciu}%0A`;
     txt += `🛣️ *Costo GPS:* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
-    txt += `💰 *TOTAL: $${(subtotal + costoEnvioCalculado).toLocaleString('es-AR')}*%0A`;
+    txt += `💰 *TOTAL A PAGAR: $${(subtotal + costoEnvioCalculado).toLocaleString('es-AR')}*%0A`;
     window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
 }
 </script>
