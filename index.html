@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -436,6 +437,7 @@
 
 <!-- CONTENEDOR TOAST (NOTIFICACIONES) -->
 <div id="toast-container" style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:9999999; display:flex; flex-direction:column; gap:12px; pointer-events:none;"></div>
+
 <!-- ====================================================================== -->
 <!-- MARKETPLACE Y MODALES FULL SCREEN                                      -->
 <!-- ====================================================================== -->
@@ -514,7 +516,7 @@
                 <div class="step-indicator"><i class="ri-map-pin-2-fill"></i> 1. Destino de Entrega</div>
                 <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
                     
-                    <!-- CAJA GIGANTE SELFIE CLIENTE (MEJORADA) -->
+                    <!-- CAJA GIGANTE SELFIE CLIENTE -->
                     <label id="boxSelfieClienteModal" style="background:#f0fdf4; border:3px dashed #4ade80; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; box-shadow:0 8px 25px rgba(34,197,94,.15); position:relative; overflow:hidden;">
                         <div style="width:70px; height:70px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; border:2px solid #86efac;" id="iconSelfieClienteContenedor">
                             <i class="ri-camera-lens-fill" style="font-size:36px; color:#16a34a;"></i>
@@ -554,8 +556,16 @@
                         <option value="Tierra del Fuego">Tierra del Fuego</option>
                         <option value="Tucumán">Tucumán</option>
                     </select>
-                    <input type="text" class="input-buscar" id="inputCiudadCliente" placeholder="Ciudad (Ej: Famaillá)" style="margin:0;">
-                    <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro" style="margin:0;">
+
+                    <div style="position:relative;">
+                        <input type="text" class="input-buscar" id="inputCiudadCliente" placeholder="Ciudad (Ej: Famaillá)" style="margin:0; width:100%; padding-right:45px;">
+                        <button onclick="iniciarDictado('inputCiudadCliente')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#ff6b00; font-size:22px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                    </div>
+
+                    <div style="position:relative;">
+                        <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro" style="margin:0; width:100%; padding-right:45px;">
+                        <button onclick="iniciarDictado('inputDireccionCliente')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#ff6b00; font-size:22px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                    </div>
                     
                     <button class="btn-primary" style="padding:16px; margin-top: 8px; font-size:15px;" onclick="validarUbicacionCliente()">VER LOCALES CERCANOS</button>
                 </div>
@@ -568,7 +578,7 @@
                 <div id="gridComerciosDisponibles" style="display:flex; flex-direction:column; gap:12px;"></div>
             </div>
 
-            <!-- CATÁLOGO FIX: ESTÉTICA ULTRA PREMIUM 2x2 CUBRIENDO COSTADOS -->
+            <!-- CATÁLOGO ESTÉTICA ULTRA PREMIUM 2x2 CUBRIENDO COSTADOS -->
             <div id="modal-step-catalogo" class="sub-step" style="padding: 0;">
                 <div style="display:flex; flex-direction:column; height:100%; padding: 12px 0 20px 0;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:#fff7ed; padding:12px 16px; border-radius:0.85rem; border:1px solid #ffe4cc; flex-shrink: 0; margin: 0 16px;">
@@ -595,7 +605,12 @@
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
                 <div class="step-indicator" style="color:#1d4ed8; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
                 <div style="display:flex; flex-direction:column; gap:12px;">
-                    <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira? (Ej: San Martín 100)">
+                    
+                    <div style="position:relative;">
+                        <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira? (Ej: San Martín 100)" style="width:100%; padding-right:45px; margin:0;">
+                        <button onclick="iniciarDictado('dirOrigenEspecial')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#3b82f6; font-size:22px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                    </div>
+
                     <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;">
                         <option value="">Provincia Destino...</option>
                         <option value="Buenos Aires">Buenos Aires</option>
@@ -623,9 +638,22 @@
                         <option value="Tierra del Fuego">Tierra del Fuego</option>
                         <option value="Tucumán">Tucumán</option>
                     </select>
-                    <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino (Ej: Famaillá)">
-                    <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿A dónde lo lleva? (Ej: Rivadavia 200)">
-                    <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Buscar un paquete)"></textarea>
+
+                    <div style="position:relative;">
+                        <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino (Ej: Famaillá)" style="width:100%; padding-right:45px; margin:0;">
+                        <button onclick="iniciarDictado('ciuDestinoEspecial')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#3b82f6; font-size:22px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                    </div>
+
+                    <div style="position:relative;">
+                        <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿A dónde lo lleva? (Ej: Rivadavia 200)" style="width:100%; padding-right:45px; margin:0;">
+                        <button onclick="iniciarDictado('dirDestinoEspecial')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#3b82f6; font-size:22px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                    </div>
+
+                    <div style="position:relative;">
+                        <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Buscar un paquete)" style="width:100%; padding-right:45px; margin:0;"></textarea>
+                        <button onclick="iniciarDictado('txtPedidoEspecial')" style="position:absolute; right:12px; top:12px; background:none; border:none; color:#3b82f6; font-size:22px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                    </div>
+
                     <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">CALCULAR RUTA EN MAPA</button>
                 </div>
             </div>
@@ -659,8 +687,15 @@
                         <input type="file" accept="image/*" style="display:none;" onchange="previewPortada(this)">
                     </label>
 
-                    <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
-                    <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta del Local (Ej: 9 de Julio 120)" style="margin:0;">
+                    <div style="position:relative;">
+                        <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="width:100%; padding-right:45px; margin:0;">
+                        <button onclick="iniciarDictado('comercioNombre')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#ff6b00; font-size:22px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                    </div>
+
+                    <div style="position:relative;">
+                        <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta del Local (Ej: 9 de Julio 120)" style="width:100%; padding-right:45px; margin:0;">
+                        <button onclick="iniciarDictado('comercioDireccionExacta')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#ff6b00; font-size:22px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                    </div>
                     
                     <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:14px; font-size:14px;">
                         <option value="">Rubro / Categoría...</option>
@@ -700,7 +735,11 @@
                             <option value="Tierra del Fuego">Tierra del Fuego</option>
                             <option value="Tucumán">Tucumán</option>
                         </select>
-                        <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:14px; font-size:14px;">
+
+                        <div style="position:relative;">
+                            <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="width:100%; padding-right:45px; margin:0; padding:14px; font-size:14px;">
+                            <button onclick="iniciarDictado('comercioCiudad')" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:#ff6b00; font-size:22px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                        </div>
                     </div>
 
                     <button class="btn-primary" style="padding:16px; font-size:15px; margin-top:8px;" onclick="guardarComercio()">
@@ -712,7 +751,10 @@
                     <h4 style="font-weight:800; font-size:16px; margin-bottom:14px; color:#0f172a;">Crear Artículo Nuevo</h4>
                     
                     <div style="display:flex; gap:12px; margin-bottom:14px;">
-                        <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre Plato" style="margin:0; flex:2; padding:14px;">
+                        <div style="flex:2; position:relative;">
+                            <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre Plato" style="width:100%; padding-right:45px; margin:0; padding:14px;">
+                            <button onclick="iniciarDictado('newArtNombre')" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:#ff6b00; font-size:20px; cursor:pointer;"><i class="ri-mic-fill"></i></button>
+                        </div>
                         <input type="number" class="input-buscar" id="newArtPrecio" placeholder="$ Precio" style="margin:0; flex:1; padding:14px;">
                     </div>
                     
@@ -912,10 +954,9 @@
 // ==========================================
 // TOAST SYSTEM Y JAVASCRIPT GLOBAL
 // ==========================================
-let miComercioLogueadoId = null; 
-
 function mostrarToast(msg, tipo) {
     const container = document.getElementById('toast-container');
+    if(!container) { alert(msg); return; } // Respaldo por si no agregaste el div del toast
     const t = document.createElement('div');
     t.className = tipo === 'error' ? 'toast-premium toast-error' : 'toast-premium';
     t.innerHTML = `<i class="${tipo==='error'?'ri-error-warning-fill':'ri-checkbox-circle-fill'}" style="font-size:20px;"></i> <span>${msg}</span>`;
@@ -923,7 +964,70 @@ function mostrarToast(msg, tipo) {
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
-// LOGICA COMERCIO GUARDADO (CORREGIDA LA BÚSQUEDA)
+// ==========================================
+// SISTEMA DE ALMACENAMIENTO (LOCALSTORAGE)
+// ==========================================
+const AppStore = {
+    get: (key) => localStorage.getItem(key),
+    set: (key, val) => localStorage.setItem(key, val),
+    getJSON: (key) => JSON.parse(localStorage.getItem(key) || '[]'),
+    setJSON: (key, val) => localStorage.setItem(key, JSON.stringify(val))
+};
+
+// Carga Inicial de Bases de Datos
+let baseComercios = AppStore.getJSON('db_comercios');
+let baseProductosActivos = AppStore.getJSON('db_productos');
+let carritoGlobal = [];
+let miComercioLogueadoId = null; 
+let tipoLoginActual = "";
+let direccionOrigenCalculo = "";
+
+// Variables Servimoto
+let estadoTrabajoServimoto = false;
+let estadoRadar = false;
+let viajesMotoCount = 0;
+let deudaMotoAcumulada = 0;
+let costoEnvioCalculado = 0;
+const NUMERO_SOPORTE = "5493815110171";
+
+// ==========================================
+// MOTOR DE DICTADO POR VOZ (MICRÓFONO)
+// ==========================================
+function iniciarDictado(inputId) {
+    if (!('webkitSpeechRecognition' in window)) {
+        return mostrarToast("Tu navegador no soporta dictado por voz.", "error");
+    }
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = "es-AR";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = function() {
+        mostrarToast("🎤 Escuchando... Hablá ahora.", "success");
+    };
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        const input = document.getElementById(inputId);
+        if(input) {
+            input.value = input.value ? input.value + " " + transcript : transcript;
+            mostrarToast("✅ Texto capturado", "success");
+        }
+    };
+
+    recognition.onerror = function(event) {
+        mostrarToast("Error con el micrófono. Verificá permisos.", "error");
+    };
+
+    recognition.start();
+}
+
+
+// ==========================================
+// LÓGICA DE COMERCIO (AHORA GUARDA EN MEMORIA)
+// ==========================================
+let tempImgPortada = "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150";
+
 function guardarComercio() {
     const nom = document.getElementById('comercioNombre').value.trim();
     const dir = document.getElementById('comercioDireccionExacta').value.trim();
@@ -953,8 +1057,12 @@ function guardarComercio() {
             baseComercios[index].img = tempImgPortada;
         }
     }
+    
+    AppStore.setJSON('db_comercios', baseComercios); // GUARDADO PERMANENTE
     mostrarToast(`¡Local guardado en ${ciu}! Ahora publicá tus platos.`, 'success');
 }
+
+let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
 
 function agregarArticuloComercio() {
     if(!miComercioLogueadoId) return mostrarToast('Primero GUARDÁ LOS DATOS DEL LOCAL arriba', 'error');
@@ -964,6 +1072,8 @@ function agregarArticuloComercio() {
     if(!nom || isNaN(pre)) return mostrarToast('Faltan datos del artículo', 'error');
     
     baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64 });
+    AppStore.setJSON('db_productos', baseProductosActivos); // GUARDADO PERMANENTE
+    
     mostrarToast(`Publicado`, 'success');
     
     document.getElementById('newArtNombre').value = '';
@@ -973,22 +1083,38 @@ function agregarArticuloComercio() {
     renderizarAdminComercio();
 }
 
+function eliminarArticuloAdmin(idArticulo) {
+    baseProductosActivos = baseProductosActivos.filter(p => p.id !== idArticulo);
+    AppStore.setJSON('db_productos', baseProductosActivos);
+    renderizarAdminComercio();
+    mostrarToast('Artículo eliminado', 'success');
+}
+
 function renderizarAdminComercio() {
     const cont = document.getElementById('listaAdminComercio');
     if(!cont) return;
     const misProductos = baseProductosActivos.filter(p => p.idComercio === miComercioLogueadoId);
+    
+    if(misProductos.length === 0) {
+        cont.innerHTML = "<p style='color:#64748b; font-size:13px; text-align:center;'>Aún no publicaste ningún plato.</p>";
+        return;
+    }
+
     cont.innerHTML = misProductos.map(p => `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem;">
             <div style="display:flex; align-items:center; gap:12px;">
                 <img src="${p.img}" style="width:44px; height:44px; border-radius:8px; object-fit:cover;">
                 <div><div style="font-size:13.5px; font-weight:800;">${p.nombre}</div><div style="font-size:12px; color:#ff6b00; font-weight:700;">$${p.precio}</div></div>
             </div>
-            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:34px; height:34px;"><i class="ri-delete-bin-fill"></i></button>
+            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:34px; height:34px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
         </div>
     `).join('');
 }
 
-let tempImgPortada = "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150";
+
+// ==========================================
+// FLUJO Y GLOBALES DE LA INTERFAZ
+// ==========================================
 function previewPortada(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
@@ -1004,7 +1130,6 @@ function previewPortada(input) {
     }
 }
 
-// RESTO DE FUNCIONES GLOBALES Y MODALES
 function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
 
 function abrirModalMarketplace() { document.getElementById('modalMarketplace').classList.add('show'); document.body.style.overflow = 'hidden'; irPaso(1); }
@@ -1016,23 +1141,43 @@ function iniciarLogin(tipo) {
     document.getElementById('lblTipoLogin').innerHTML = tipo === 'comercio' ? '<i class="ri-store-2-fill"></i> Acceso Comercio' : '<i class="ri-motorbike-fill"></i> Acceso Cadete';
     document.getElementById('loginCelular').value = '';
     document.getElementById('loginClave').value = '';
-    // Reseteamos sesión temporal para asegurar pruebas limpias si cambian de rol
+    
+    // Reseteo visual temporal
     miComercioLogueadoId = null;
     document.getElementById('comercioNombre').value = '';
     document.getElementById('comercioDireccionExacta').value = '';
     document.getElementById('comercioCiudad').value = '';
     document.getElementById('listaAdminComercio').innerHTML = '';
+    
     irPaso('login');
 }
 
 function validarLogin() {
     const cel = document.getElementById('loginCelular').value;
     const pwd = document.getElementById('loginClave').value.toUpperCase();
-    const regexClave = /^[A-Z]{3}[0-9]{3}$/; 
     if(cel.length < 8) return mostrarToast('El celular debe ser válido', 'error');
-    if(!regexClave.test(pwd)) return mostrarToast('La clave debe tener 3 letras y 3 números exactos', 'error');
+    if(pwd.length < 4) return mostrarToast('La clave debe ser válida', 'error'); // Simplificado para pruebas
     mostrarToast('Ingreso exitoso.', 'success');
-    if(tipoLoginActual === 'comercio') irPaso('comercio'); else irPaso('servimoto-onboarding');
+    
+    if(tipoLoginActual === 'comercio') {
+        // Carga inteligentemente el último local creado para recuperar sesión
+        if(baseComercios.length > 0) {
+            const ultimoLocal = baseComercios[baseComercios.length - 1];
+            miComercioLogueadoId = ultimoLocal.id;
+            document.getElementById('comercioNombre').value = ultimoLocal.nombre;
+            document.getElementById('comercioDireccionExacta').value = ultimoLocal.direccion;
+            document.getElementById('comercioProvincia').value = ultimoLocal.provincia;
+            document.getElementById('comercioCiudad').value = ultimoLocal.ciudad;
+            document.getElementById('boxPortadaComercio').style.backgroundImage = `url(${ultimoLocal.img})`;
+            document.getElementById('iconPortadaContenedor').style.display = 'none';
+            document.getElementById('lblPortadaComercio').textContent = '✅ Portada Cargada';
+            tempImgPortada = ultimoLocal.img;
+        }
+        renderizarAdminComercio();
+        irPaso('comercio'); 
+    } else {
+        irPaso('servimoto-onboarding');
+    }
 }
 
 function previewSelfieCliente(input) {
@@ -1065,7 +1210,9 @@ function validarUbicacionCliente() {
     irPaso('lista-comercios');
 }
 
-// FIX: CÓDIGO A PRUEBA DE FALLOS Y ESPACIOS EN BLANCO PARA ENCONTRAR COMERCIOS
+// ==========================================
+// LÓGICA DE COMPRA Y CATÁLOGOS CLIENTE
+// ==========================================
 function filtrarComerciosPorCiudad() {
     const prov = quitarAcentos(document.getElementById('selProvinciaCliente').value.trim());
     const ciu = quitarAcentos(document.getElementById('inputCiudadCliente').value.trim());
@@ -1093,7 +1240,6 @@ function filtrarComerciosPorCiudad() {
     if(container) container.innerHTML = html;
 }
 
-// ESTÉTICA ULTRA PREMIUM 2x2 CUBRIENDO COSTADOS (Diseño Tipo Rappi)
 function verCatalogoComercio(idComercio, nombreComercio, direccionLocal) {
     document.getElementById('lblComercioActual').textContent = nombreComercio;
     direccionOrigenCalculo = direccionLocal; 
@@ -1144,7 +1290,6 @@ function prepararCheckout() {
     abrirMapaMago();
 }
 
-let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
 function previewArtFoto(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
@@ -1160,7 +1305,9 @@ function previewArtFoto(input) {
     }
 }
 
-// CÁMARAS Y VALIDACIONES
+// ==========================================
+// CÁMARAS Y ONBOARDING CADETE
+// ==========================================
 function previewSelfieComercioModal(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
@@ -1227,7 +1374,9 @@ function auditarDocumentosIA() {
     }, 2000);
 }
 
+// ==========================================
 // RADAR DEL CADETE Y LÓGICA DE VIAJES
+// ==========================================
 function toggleEstadoTrabajo() {
     estadoTrabajoServimoto = !estadoTrabajoServimoto;
     const btn = document.getElementById('btnEstadoTrabajo');
