@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -437,7 +438,9 @@
 
 <!-- CONTENEDOR TOAST (NOTIFICACIONES) -->
 <div id="toast-container" style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:9999999; display:flex; flex-direction:column; gap:12px; pointer-events:none;"></div>
-<!-- ====================================================================== -->
+
+
+.<!-- ====================================================================== -->
 <!-- MARKETPLACE Y MODALES FULL SCREEN                                      -->
 <!-- ====================================================================== -->
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
@@ -950,23 +953,17 @@
 
 <script>
 // ==========================================
-// 1. MOTOR DE BASE DE DATOS (CRÍTICO: VA PRIMERO)
+// MOTOR DE BASE DE DATOS (LOCALSTORAGE)
 // ==========================================
 var AppStore = {
     get: function(key) { return localStorage.getItem(key); },
     set: function(key, val) { localStorage.setItem(key, val); },
-    getJSON: function(key) { 
-        try {
-            return JSON.parse(localStorage.getItem(key)) || [];
-        } catch(e) {
-            return [];
-        }
-    },
+    getJSON: function(key) { return JSON.parse(localStorage.getItem(key) || '[]'); },
     setJSON: function(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 };
 
 // ==========================================
-// 2. VARIABLES GLOBALES (CONECTADAS AL MOTOR)
+// TOAST SYSTEM Y VARIABLES GLOBALES (USANDO VAR PARA EVITAR CRASH)
 // ==========================================
 var baseComercios = AppStore.getJSON('db_comercios');
 var baseProductosActivos = AppStore.getJSON('db_productos');
@@ -983,9 +980,6 @@ var NUMERO_SOPORTE = "5493815110171";
 var tempImgPortada = "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150";
 var tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
 
-// ==========================================
-// 3. TOAST SYSTEM
-// ==========================================
 function mostrarToast(msg, tipo) {
     var container = document.getElementById('toast-container');
     if(!container) { alert(msg); return; } 
@@ -997,7 +991,7 @@ function mostrarToast(msg, tipo) {
 }
 
 // ==========================================
-// 4. MOTOR DE DICTADO POR VOZ (MICRÓFONO)
+// MOTOR DE DICTADO POR VOZ (MICRÓFONO)
 // ==========================================
 function iniciarDictado(inputId) {
     if (!('webkitSpeechRecognition' in window)) {
@@ -1030,7 +1024,7 @@ function iniciarDictado(inputId) {
 }
 
 // ==========================================
-// 5. LÓGICA DE COMERCIO (AHORA GUARDA REAL)
+// LÓGICA COMERCIO GUARDADO EN NAVEGADOR
 // ==========================================
 function guardarComercio() {
     var nom = document.getElementById('comercioNombre').value.trim();
@@ -1074,7 +1068,7 @@ function agregarArticuloComercio() {
     
     baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64 });
     AppStore.setJSON('db_productos', baseProductosActivos);
-    mostrarToast(`Publicado exitosamente`, 'success');
+    mostrarToast(`Publicado`, 'success');
     
     document.getElementById('newArtNombre').value = '';
     document.getElementById('newArtPrecio').value = '';
@@ -1096,7 +1090,7 @@ function renderizarAdminComercio() {
     var misProductos = baseProductosActivos.filter(function(p) { return p.idComercio === miComercioLogueadoId; });
     
     if(misProductos.length === 0) {
-        cont.innerHTML = "<p style='color:#64748b; font-size:13px; text-align:center;'>Aún no hay platos publicados.</p>";
+        cont.innerHTML = "<p style='color:#64748b; font-size:13px;'>No tenés platos publicados.</p>";
         return;
     }
     
@@ -1126,23 +1120,8 @@ function previewPortada(input) {
     }
 }
 
-function previewArtFoto(input) {
-    if(input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            tempImgBase64 = e.target.result;
-            var caja = document.getElementById('boxArticuloNuevo');
-            caja.style.backgroundImage = `url(${e.target.result})`;
-            document.getElementById('lblArtFoto').textContent = '✅ Foto Lista';
-            document.getElementById('iconPlatoContenedor').style.display = 'none';
-            mostrarToast('Imagen lista', 'success');
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
 // ==========================================
-// 6. FUNCIONES DE MODALES Y NAVEGACIÓN
+// RESTO DE FUNCIONES GLOBALES Y MODALES
 // ==========================================
 function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
 
@@ -1152,14 +1131,11 @@ function abrirModalMarketplace() {
         m.classList.add('show'); 
         document.body.style.overflow = 'hidden'; 
         irPaso(1); 
+    } else {
+        alert("Error: No se encontró el modalMarketplace en el HTML");
     }
 }
-
-function cerrarModalMarketplace() { 
-    document.getElementById('modalMarketplace').classList.remove('show'); 
-    document.body.style.overflow = ''; 
-}
-
+function cerrarModalMarketplace() { document.getElementById('modalMarketplace').classList.remove('show'); document.body.style.overflow = ''; }
 function irPaso(paso) { 
     document.querySelectorAll('.sub-step').forEach(function(e) { e.classList.remove('active'); }); 
     var s = document.getElementById(`modal-step-${paso}`);
@@ -1205,9 +1181,6 @@ function validarLogin() {
     }
 }
 
-// ==========================================
-// 7. COMPRADOR Y CATÁLOGO
-// ==========================================
 function previewSelfieCliente(input) {
     if(input.files && input.files[0]) {
         var reader = new FileReader();
@@ -1219,7 +1192,7 @@ function previewSelfieCliente(input) {
             caja.style.backgroundImage = `url(${e.target.result})`;
             icono.style.display = 'none';
             txt1.textContent = '✅ Selfie Capturada';
-            if(txt2) txt2.style.display = 'none';
+            txt2.style.display = 'none';
             AppStore.set('selfie_cliente', e.target.result);
             mostrarToast('Selfie guardada. El cadete te reconocerá.', 'success');
         }
@@ -1308,17 +1281,156 @@ function enviarPedidoEspecial() {
     abrirMapaMago();
 }
 
-// ==========================================
-// 8. CARRITO Y MAPAS
-// ==========================================
-function agregarAlCarrito(nombre, precio) { 
-    carritoGlobal.push({ nombre: nombre, precio: precio, cantidad: 1 }); 
-    mostrarToast(`✅ Agregado al carrito`, 'success'); 
-}
+function agregarAlCarrito(nombre, precio) { carritoGlobal.push({ nombre: nombre, precio: precio, cantidad: 1 }); mostrarToast(`✅ Agregado al carrito`, 'success'); }
 
 function prepararCheckout() {
     if(carritoGlobal.length === 0) return mostrarToast('Tu carrito está vacío.', 'error');
     abrirMapaMago();
+}
+
+function previewArtFoto(input) {
+    if(input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            tempImgBase64 = e.target.result;
+            var caja = document.getElementById('boxArticuloNuevo');
+            caja.style.backgroundImage = `url(${e.target.result})`;
+            document.getElementById('lblArtFoto').textContent = '✅ Foto Lista';
+            document.getElementById('iconPlatoContenedor').style.display = 'none';
+            mostrarToast('Imagen lista', 'success');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function previewSelfieComercioModal(input) {
+    if(input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var caja = document.getElementById('boxSelfieComercioModal');
+            var iconoContenedor = document.getElementById('iconSelfieComercioContenedor');
+            var texto1 = document.getElementById('lblTextSelfieComercio');
+            var texto2 = document.getElementById('subTextSelfieComercio');
+            caja.style.backgroundImage = `url(${e.target.result})`;
+            iconoContenedor.style.display = 'none';
+            texto1.textContent = '✅ Selfie Verificada';
+            if(texto2) texto2.style.display = 'none';
+            AppStore.set('selfie_seguridad_comercio', e.target.result);
+            mostrarToast('Selfie de seguridad vinculada a tu local', 'success');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function previewSelfieCadete(input) {
+    if(input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var caja = document.getElementById('cajaDoc1');
+            var iconoContenedor = document.getElementById('iconoSelfieContenedorCadete');
+            var texto1 = document.getElementById('txtDoc1');
+            var texto2 = document.getElementById('subTxtDoc1');
+            caja.style.backgroundImage = `url(${e.target.result})`;
+            caja.style.backgroundSize = 'cover';
+            caja.style.backgroundPosition = 'center';
+            iconoContenedor.style.display = 'none';
+            texto1.textContent = '✅ Selfie Capturada';
+            texto1.style.background = 'rgba(255,255,255,0.95)';
+            texto1.style.padding = '6px 14px';
+            texto1.style.borderRadius = '8px';
+            texto1.style.color = '#15803d';
+            if(texto2) texto2.style.display = 'none';
+            mostrarToast('Selfie guardada correctamente', 'success');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function docCargado(input, idLabel, idCaja, idIcon) {
+    if(input.files && input.files[0]) {
+        var lbl = document.getElementById(idLabel);
+        var caja = document.getElementById(idCaja);
+        var icon = document.getElementById(idIcon);
+        lbl.textContent = '✅ Subido Exitosamente';
+        caja.style.backgroundColor = '#f0fdf4';
+        caja.style.borderColor = '#4ade80';
+        icon.className = 'ri-checkbox-circle-fill';
+        icon.style.color = '#16a34a';
+        lbl.style.color = '#15803d';
+        mostrarToast('Documento guardado', 'success');
+    }
+}
+
+function auditarDocumentosIA() {
+    mostrarToast('🤖 Inicializando motor OpenAI GPT-4o...', 'success');
+    setTimeout(function() {
+        mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success');
+        setTimeout(function() { irPaso('servimoto'); }, 800);
+    }, 2000);
+}
+
+function toggleEstadoTrabajo() {
+    estadoTrabajoServimoto = !estadoTrabajoServimoto;
+    var btn = document.getElementById('btnEstadoTrabajo');
+    if(estadoTrabajoServimoto) {
+        btn.style.background = '#16a34a'; 
+        btn.style.boxShadow = '0 4px 12px rgba(22,163,74,0.4)';
+        btn.innerHTML = '<i class="ri-check-double-line"></i> ONLINE';
+        mostrarToast('¡Estás en línea! Encendé el radar.', 'success');
+    } else {
+        btn.style.background = '#ef4444'; 
+        btn.style.boxShadow = '0 4px 12px rgba(239,68,68,0.4)';
+        btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
+        if(estadoRadar) activarRadar(); 
+    }
+}
+
+function activarRadar() {
+    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (ONLINE) primero', 'error');
+    estadoRadar = !estadoRadar;
+    var btn = document.getElementById('btnRadar');
+    if(estadoRadar) {
+        btn.innerHTML = `
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#93c5fd;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#bfdbfe; letter-spacing:1px;">BUSCANDO...</span>
+        `;
+        btn.style.background = 'radial-gradient(circle, #2563eb, #1e3a8a)';
+        btn.style.borderColor = '#60a5fa';
+        btn.style.boxShadow = '0 0 40px rgba(59,130,246,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
+        mostrarToast('Radar encendido. Buscando viajes...', 'success');
+    } else {
+        btn.innerHTML = `
+            <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
+        `;
+        btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)';
+        btn.style.borderColor = '#3b82f6';
+        btn.style.boxShadow = '0 0 30px rgba(59,130,246,0.4)';
+    }
+}
+
+function simularViajeCadete() {
+    if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Encendé el Radar primero', 'error');
+    viajesMotoCount++;
+    deudaMotoAcumulada += 200;
+    document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+    document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Realizados';
+    mostrarToast('✅ Viaje cargado. Deuda sumada.', 'success');
+}
+
+function procesarLiquidacionIA(input) {
+    if(input.files && input.files.length > 0) {
+        mostrarToast('🤖 Verificando comprobante...', 'success');
+        setTimeout(function() {
+            viajesMotoCount = 0; deudaMotoAcumulada = 0;
+            document.getElementById('deudaMoto').textContent = '$0';
+            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
+            mostrarToast('✅ Transferencia procesada.', 'success');
+        }, 2500);
+    }
 }
 
 function abrirMapaMago() {
@@ -1450,138 +1562,4 @@ function mandarPedidoSoporte() {
     txt += `💰 *TOTAL A PAGAR: $${(subtotal + costoEnvioCalculado).toLocaleString('es-AR')}*%0A`;
     window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
 }
-
-// ==========================================
-// 9. FUNCIONES DEL CADETE Y CÁMARAS
-// ==========================================
-function previewSelfieComercioModal(input) {
-    if(input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var caja = document.getElementById('boxSelfieComercioModal');
-            var iconoContenedor = document.getElementById('iconSelfieComercioContenedor');
-            var texto1 = document.getElementById('lblTextSelfieComercio');
-            var texto2 = document.getElementById('subTextSelfieComercio');
-            caja.style.backgroundImage = `url(${e.target.result})`;
-            iconoContenedor.style.display = 'none';
-            texto1.textContent = '✅ Selfie Verificada';
-            if(texto2) texto2.style.display = 'none';
-            AppStore.set('selfie_seguridad_comercio', e.target.result);
-            mostrarToast('Selfie vinculada', 'success');
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function previewSelfieCadete(input) {
-    if(input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var caja = document.getElementById('cajaDoc1');
-            var iconoContenedor = document.getElementById('iconoSelfieContenedorCadete');
-            var texto1 = document.getElementById('txtDoc1');
-            var texto2 = document.getElementById('subTxtDoc1');
-            caja.style.backgroundImage = `url(${e.target.result})`;
-            caja.style.backgroundSize = 'cover';
-            caja.style.backgroundPosition = 'center';
-            iconoContenedor.style.display = 'none';
-            texto1.textContent = '✅ Capturada';
-            texto1.style.background = 'rgba(255,255,255,0.95)';
-            texto1.style.padding = '6px 14px';
-            texto1.style.borderRadius = '8px';
-            texto1.style.color = '#15803d';
-            if(texto2) texto2.style.display = 'none';
-            mostrarToast('Selfie guardada', 'success');
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function docCargado(input, idLabel, idCaja, idIcon) {
-    if(input.files && input.files[0]) {
-        var lbl = document.getElementById(idLabel);
-        var caja = document.getElementById(idCaja);
-        var icon = document.getElementById(idIcon);
-        lbl.textContent = '✅ Subido Exitosamente';
-        caja.style.backgroundColor = '#f0fdf4';
-        caja.style.borderColor = '#4ade80';
-        icon.className = 'ri-checkbox-circle-fill';
-        icon.style.color = '#16a34a';
-        lbl.style.color = '#15803d';
-        mostrarToast('Documento guardado', 'success');
-    }
-}
-
-function auditarDocumentosIA() {
-    mostrarToast('🤖 Inicializando motor OpenAI GPT-4o...', 'success');
-    setTimeout(function() {
-        mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success');
-        setTimeout(function() { irPaso('servimoto'); }, 800);
-    }, 2000);
-}
-
-function toggleEstadoTrabajo() {
-    estadoTrabajoServimoto = !estadoTrabajoServimoto;
-    var btn = document.getElementById('btnEstadoTrabajo');
-    if(estadoTrabajoServimoto) {
-        btn.style.background = '#16a34a'; 
-        btn.style.boxShadow = '0 4px 12px rgba(22,163,74,0.4)';
-        btn.innerHTML = '<i class="ri-check-double-line"></i> ONLINE';
-        mostrarToast('¡Estás en línea! Encendé el radar.', 'success');
-    } else {
-        btn.style.background = '#ef4444'; 
-        btn.style.boxShadow = '0 4px 12px rgba(239,68,68,0.4)';
-        btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
-        if(estadoRadar) activarRadar(); 
-    }
-}
-
-function activarRadar() {
-    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (ONLINE) primero', 'error');
-    estadoRadar = !estadoRadar;
-    var btn = document.getElementById('btnRadar');
-    if(estadoRadar) {
-        btn.innerHTML = `
-            <div class="radar-ring"></div>
-            <div class="radar-ring"></div>
-            <div class="radar-ring"></div>
-            <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#93c5fd;"></i>
-            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#bfdbfe; letter-spacing:1px;">BUSCANDO...</span>
-        `;
-        btn.style.background = 'radial-gradient(circle, #2563eb, #1e3a8a)';
-        btn.style.borderColor = '#60a5fa';
-        btn.style.boxShadow = '0 0 40px rgba(59,130,246,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
-        mostrarToast('Radar encendido. Buscando viajes...', 'success');
-    } else {
-        btn.innerHTML = `
-            <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
-            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
-        `;
-        btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)';
-        btn.style.borderColor = '#3b82f6';
-        btn.style.boxShadow = '0 0 30px rgba(59,130,246,0.4)';
-    }
-}
-
-function simularViajeCadete() {
-    if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Encendé el Radar primero', 'error');
-    viajesMotoCount++;
-    deudaMotoAcumulada += 200;
-    document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
-    document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Realizados';
-    mostrarToast('✅ Viaje cargado.', 'success');
-}
-
-function procesarLiquidacionIA(input) {
-    if(input.files && input.files.length > 0) {
-        mostrarToast('🤖 Verificando comprobante...', 'success');
-        setTimeout(function() {
-            viajesMotoCount = 0; deudaMotoAcumulada = 0;
-            document.getElementById('deudaMoto').textContent = '$0';
-            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
-            mostrarToast('✅ Transferencia procesada.', 'success');
-        }, 2500);
-    }
-}
 </script>
-
