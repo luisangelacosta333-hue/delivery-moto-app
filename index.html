@@ -10,37 +10,21 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- GOOGLE MAPS - PONÉ TU API KEY ACÁ -->
     <script>
-        window.initMapCallback = function() {
-            window._mapReady = true;
-            console.log('✅ Google Maps cargado');
-        };
-        
-        // Cargamos Maps dinámicamente para evitar errores si falla la key
-        function cargarGoogleMaps() {
-            const API_KEY = 'TU_API_KEY_AQUI'; // 👈 PONÉ TU KEY AQUÍ
-            if(API_KEY === 'TU_API_KEY_AQUI') {
-                console.warn('⚠️ Google Maps: API Key no configurada. Usando modo simulado.');
-                window._mapReady = true;
-                window._mapSimulado = true;
-                return;
-            }
+        // ==========================================
+        // GOOGLE MAPS (poné tu key acá)
+        // ==========================================
+        window.initMapCallback = function() { window._mapOK = true; };
+        (function() {
+            const KEY = 'TU_API_KEY_AQUI';
+            if(KEY === 'TU_API_KEY_AQUI') { window._mapOK = true; window._mapSim = true; return; }
             const s = document.createElement('script');
-            s.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&callback=initMapCallback`;
-            s.async = true;
-            s.defer = true;
-            s.onerror = function() {
-                console.warn('⚠️ Google Maps falló. Usando modo simulado.');
-                window._mapReady = true;
-                window._mapSimulado = true;
-            };
+            s.src = `https://maps.googleapis.com/maps/api/js?key=${KEY}&libraries=places&callback=initMapCallback`;
+            s.async = true; s.defer = true;
+            s.onerror = function() { window._mapOK = true; window._mapSim = true; };
             document.head.appendChild(s);
-        }
-        cargarGoogleMaps();
-    </script>
+        })();
 
-    <script>
         // ==========================================
         // SEGURIDAD
         // ==========================================
@@ -54,25 +38,35 @@
         // ==========================================
         // SUPABASE
         // ==========================================
-        const SUPABASE_URL = 'https://drpjcmznauposqlhaveo.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
         let supabase = null;
         try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('✅ Supabase conectado');
-        } catch(e) {
-            console.warn('⚠️ Supabase no disponible, usando localStorage');
-        }
+            supabase = window.supabase.createClient(
+                'https://drpjcmznauposqlhaveo.supabase.co',
+                'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4'
+            );
+        } catch(e) { console.warn('Supabase no disponible'); }
 
         // ==========================================
-        // PERSISTENCIA REAL (localStorage)
+        // 🔧 SISTEMA DE PERSISTENCIA REFORZADO
         // ==========================================
-        const DB = {
+        const ALMACEN = {
+            estaDisponible: function() {
+                try {
+                    const t = '__test__';
+                    localStorage.setItem(t, t);
+                    localStorage.removeItem(t);
+                    return true;
+                } catch(e) { return false; }
+            },
             guardar: function(clave, valor) {
                 try {
                     localStorage.setItem('dm_' + clave, JSON.stringify(valor));
+                    console.log('💾 GUARDADO:', clave, valor);
                     return true;
-                } catch(e) { return false; }
+                } catch(e) {
+                    console.error('❌ ERROR AL GUARDAR:', clave, e);
+                    return false;
+                }
             },
             leer: function(clave, defecto) {
                 try {
@@ -81,16 +75,14 @@
                 } catch(e) { return defecto; }
             },
             borrar: function(clave) {
-                localStorage.removeItem('dm_' + clave);
+                try { localStorage.removeItem('dm_' + clave); } catch(e) {}
             }
         };
 
         // ==========================================
-        // CONFIGURACIÓN
+        // CONFIG
         // ==========================================
-        const CONFIG = {
-            aliasCobro: 'noir.elite.ceo',
-            cbuCobro: '0110257630025717844115',
+        const CFG = {
             costoDia: 2200,
             costoNoche: 3000,
             costoCuadraExtra: 100,
@@ -98,25 +90,43 @@
         };
 
         // ==========================================
-        // VARIABLES GLOBALES (DECLARADAS UNA SOLA VEZ)
+        // 📋 LAS 24 PROVINCIAS ARGENTINAS
         // ==========================================
-        let tipoLoginActual = '';
-        let miComercioId = DB.leer('miComercioId', null);
-        let direccionOrigen = '';
+        const PROVINCIAS = [
+            'Buenos Aires', 'CABA', 'Catamarca', 'Chaco', 'Chubut',
+            'Córdoba', 'Corrientes', 'Entre Ríos', 'Formosa', 'Jujuy',
+            'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquén',
+            'Río Negro', 'Salta', 'San Juan', 'San Luis', 'Santa Cruz',
+            'Santa Fe', 'Santiago del Estero', 'Tierra del Fuego', 'Tucumán'
+        ];
+
+        function opcionesProvincias(seleccionada) {
+            return '<option value="">Seleccionar provincia...</option>' +
+                PROVINCIAS.map(p => 
+                    `<option value="${p}" ${p === seleccionada ? 'selected' : ''}>${p}</option>`
+                ).join('');
+        }
+
+        // ==========================================
+        // VARIABLES GLOBALES
+        // ==========================================
+        let tipoLogin = '';
+        let miComercioId = ALMACEN.leer('miComercioId', null);
+        let dirOrigen = '';
         let costoEnvio = 0;
-        let estadoRadar = false;
-        let deudaMoto = DB.leer('deudaMoto', 0);
-        let isSpeaking = false;
+        let radarActivo = false;
+        let deudaMoto = ALMACEN.leer('deudaMoto', 0);
+        let estaHablando = false;
         let carrito = [];
 
-        // BASE DE DATOS - carga desde localStorage o usa datos por defecto
-        let comercios = DB.leer('comercios', [
+        // BASE DE DATOS - carga desde localStorage
+        let comercios = ALMACEN.leer('comercios', [
             { id: 1, nombre: 'Kiosco Mamoly', provincia: 'Tucumán', ciudad: 'Famaillá', direccion: 'Av. San Martín 120', img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=300' },
             { id: 2, nombre: 'Pizzería Napoli', provincia: 'Tucumán', ciudad: 'San Miguel de Tucumán', direccion: '9 de Julio 450', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=300' },
             { id: 3, nombre: 'Farmacia Central', provincia: 'Tucumán', ciudad: 'Famaillá', direccion: 'Rivadavia 88', img: 'https://images.unsplash.com/photo-1587854692152-c407341c93c4?auto=format&fit=crop&w=300' }
         ]);
 
-        let productos = DB.leer('productos', [
+        let productos = ALMACEN.leer('productos', [
             { id: 101, idComercio: 1, nombre: 'Coca Cola 2.25L', precio: 1800, img: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?auto=format&fit=crop&w=300' },
             { id: 102, idComercio: 1, nombre: 'Pan Lactal', precio: 900, img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300' },
             { id: 103, idComercio: 2, nombre: 'Pizza Muzzarella', precio: 4500, img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=300' },
@@ -124,12 +134,21 @@
             { id: 105, idComercio: 3, nombre: 'Ibuprofeno 400mg', precio: 1200, img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=300' }
         ]);
 
-        // Guardar automáticamente
-        function persistirTodo() {
-            DB.guardar('comercios', comercios);
-            DB.guardar('productos', productos);
-            DB.guardar('miComercioId', miComercioId);
-            DB.guardar('deudaMoto', deudaMoto);
+        // GUARDAR TODO (forzado)
+        function guardarTodo() {
+            const ok1 = ALMACEN.guardar('comercios', comercios);
+            const ok2 = ALMACEN.guardar('productos', productos);
+            const ok3 = ALMACEN.guardar('miComercioId', miComercioId);
+            const ok4 = ALMACEN.guardar('deudaMoto', deudaMoto);
+            return ok1 && ok2 && ok3 && ok4;
+        }
+
+        // Verificar almacenamiento al inicio
+        if(!ALMACEN.estaDisponible()) {
+            console.error('❌ localStorage NO disponible');
+        } else {
+            console.log('✅ localStorage disponible');
+            console.log('📦 Datos cargados:', comercios.length, 'comercios,', productos.length, 'productos');
         }
     </script>
 
@@ -143,7 +162,7 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes ringRotate { from { transform: rotate(0); } to { transform: rotate(360deg); } }
         @keyframes micPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22,163,74,.6); } 50% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(22,163,74,0); } }
-        @keyframes micSpeaking { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239,68,68,.7); } 50% { transform: scale(1.12); box-shadow: 0 0 0 22px rgba(239,68,68,0); } }
+        @keyframes micHablando { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239,68,68,.7); } 50% { transform: scale(1.12); box-shadow: 0 0 0 22px rgba(239,68,68,0); } }
         @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         @keyframes shimmerGold { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -156,7 +175,7 @@
         .animate-ring { animation: ringRotate 25s linear infinite; }
         .animate-ring-slow { animation: ringRotate 45s linear infinite reverse; }
         .animate-mic { animation: micPulse 1.1s ease-in-out infinite; }
-        .animate-mic-speaking { animation: micSpeaking 0.4s ease-in-out infinite; }
+        .animate-mic-hablando { animation: micHablando 0.4s ease-in-out infinite; }
         .animate-fade-in-scale { animation: fadeInScale .35s cubic-bezier(.16,1,.3,1) both; }
 
         .ticker-wrap { overflow: hidden; white-space: nowrap; }
@@ -167,7 +186,7 @@
         .text-gradient-gold { background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00, #ffd700, #fff7e6); background-size: 200% auto; -webkit-background-clip: text; color: transparent; animation: shimmerGold 4s linear infinite; }
         .text-gradient-orange { background: linear-gradient(100deg, #ff8c00, #ff6b00, #cc4400); -webkit-background-clip: text; color: transparent; }
 
-        .btn-primary { background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.3); cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 14px 36px rgba(255,107,0,.5), inset 0 1px 0 rgba(255,255,255,.4); }
+        .btn-primary { background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.3); cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 14px 36px rgba(255,107,0,.5); }
         .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 48px rgba(255,107,0,.65); }
         .btn-primary:active { transform: scale(.97); }
 
@@ -192,7 +211,7 @@
 
         .mic-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all .3s; background: linear-gradient(135deg, #16a34a, #15803d); color: white; box-shadow: 0 4px 15px rgba(22,163,74,.4); flex-shrink: 0; }
         .mic-btn:hover { transform: scale(1.08); }
-        .mic-btn.speaking { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .mic-btn.hablando { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
         @media (max-width: 900px) { .hide-mobile { display: none !important; } }
         .nav-link { color: rgba(255,255,255,.92); font-weight: 700; font-size: 14px; cursor: pointer; padding: 5px 2px; border-bottom: 2px solid transparent; }
@@ -246,30 +265,27 @@
         ::-webkit-scrollbar-track { background: #fff7ed; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
 
-        /* TOAST */
         #toast-container { position: fixed; top: 90px; right: 16px; z-index: 9999999; display: flex; flex-direction: column; gap: 10px; }
         .toast-premium { background: white; border-left: 5px solid #16a34a; padding: 14px 18px; border-radius: 12px; box-shadow: 0 10px 35px rgba(0,0,0,.25); display: flex; align-items: center; gap: 10px; min-width: 260px; animation: toastIn .35s ease; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 13.5px; color: #0f172a; }
         .toast-premium i { font-size: 20px; color: #16a34a; flex-shrink: 0; }
         .toast-error { border-left-color: #ef4444; }
         .toast-error i { color: #ef4444; }
 
-        /* RADAR */
         .radar-ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid rgba(59,130,246,0.6); animation: radarPulse 1.5s ease-out infinite; }
         .radar-ring:nth-child(2) { animation-delay: 0.5s; }
         .radar-ring:nth-child(3) { animation-delay: 1s; }
 
-        /* MAPA - ALTURA FIJA (CRÍTICO) */
-        #googleMapCanvas { width: 100%; height: 100%; min-height: 350px; background: linear-gradient(135deg, #e2e8f0, #cbd5e1); display: flex; align-items: center; justify-content: center; }
+        #googleMapCanvas { width: 100%; min-height: 350px; background: linear-gradient(135deg, #e2e8f0, #cbd5e1); display: flex; align-items: center; justify-content: center; flex: 1; }
         .mapa-placeholder { text-align: center; color: #475569; padding: 20px; }
         .mapa-placeholder i { font-size: 64px; color: #3b82f6; display: block; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<!-- TOAST CONTAINER -->
+<!-- TOAST -->
 <div id="toast-container"></div>
 
-<!-- ============== NAVBAR ============== -->
+<!-- ============ NAVBAR ============ -->
 <nav class="nav-fixed">
     <div class="nav-container">
         <div style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
@@ -288,8 +304,8 @@
             <span class="nav-link" onclick="irA('funciones')">Funciones</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-            <button class="mic-btn animate-mic" id="micBtn" title="Escuchar explicación" onclick="hablarFunciones()">
-                <i class="ri-volume-up-fill" id="micIcon"></i>
+            <button class="mic-btn animate-mic" id="btnMicrofono" title="Escuchar explicación" onclick="explicarApp()">
+                <i class="ri-volume-up-fill" id="iconoMicrofono"></i>
             </button>
             <button class="btn-primary animate-pulse-glow" style="padding:10px 16px;font-size:13.5px;" onclick="abrirModal()">
                 <i class="ri-store-2-fill"></i>
@@ -301,21 +317,21 @@
 
 <div style="height:90px;"></div>
 
-<!-- ============== TICKER ============== -->
+<!-- ============ TICKER ============ -->
 <div style="background:linear-gradient(90deg,#cc4400,#ff6b00,#ff8c00,#ff6b00,#cc4400);padding:8px 0;overflow:hidden;">
     <div class="ticker-wrap">
         <div class="ticker-track">
             <span style="color:white;font-weight:800;font-size:12px;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-vip-crown-fill" style="color:#ffd700;"></i> Cadetes Certificados</span>
             <span style="color:#fff7e6;font-weight:700;font-size:12px;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-shield-check-fill" style="color:#bbf7d0;"></i> Buena Conducta</span>
-            <span style="color:white;font-weight:800;font-size:12px;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-store-3-fill" style="color:#ffd700;"></i> Publicá y Vendé</span>
+            <span style="color:white;font-weight:800;font-size:12px;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-store-3-fill" style="color:#ffd700;"></i> Las 24 Provincias</span>
             <span style="color:#fff7e6;font-weight:700;font-size:12px;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-map-pin-2-fill" style="color:#bbf7d0;"></i> Entrega GPS</span>
-            <span style="color:white;font-weight:800;font-size:12px;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-android-fill" style="color:#4ade80;"></i> Descargá PWA / APK</span>
+            <span style="color:white;font-weight:800;font-size:12px;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-android-fill" style="color:#4ade80;"></i> Descargá PWA</span>
             <span style="color:white;font-weight:800;font-size:12px;padding:0 32px;display:inline-flex;align-items:center;gap:8px;"><i class="ri-vip-crown-fill" style="color:#ffd700;"></i> Cadetes Certificados</span>
         </div>
     </div>
 </div>
 
-<!-- ============== HERO ============== -->
+<!-- ============ HERO ============ -->
 <section class="hero-bg" style="position:relative;overflow:hidden;padding:24px 22px 64px;">
     <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:550px;height:550px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.25),transparent 65%);"></div>
     <div style="max-width:1000px;margin:0 auto;position:relative;z-index:2;text-align:center;">
@@ -337,13 +353,13 @@
         </div>
         <div class="animate-slide-up glass" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:520px;margin:0 auto;padding:20px 24px;border-radius:1.25rem;">
             <div><div class="stat-number" style="font-size:36px;">24/7</div><div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;">Servicio</div></div>
-            <div><div class="stat-number" style="font-size:36px;">100%</div><div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;">Certificados</div></div>
+            <div><div class="stat-number" style="font-size:36px;">24</div><div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;">Provincias</div></div>
             <div><div class="stat-number" style="font-size:36px;">GPS</div><div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;">Rastreo</div></div>
         </div>
     </div>
 </section>
 
-<!-- ============== CÓMO FUNCIONA ============== -->
+<!-- ============ CÓMO FUNCIONA ============ -->
 <section id="funciona" style="padding:64px 22px;background:#fff7ed;" class="radial-orange bg-grid-orange">
     <div style="max-width:1200px;margin:0 auto;">
         <div style="text-align:center;margin-bottom:44px;">
@@ -354,7 +370,7 @@
             <div class="card-premium" style="padding:28px 24px;text-align:center;">
                 <div class="feature-icon" style="width:78px;height:78px;margin:0 auto 18px;font-size:34px;"><i class="ri-store-3-fill"></i></div>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin:0 0 10px;">Comercios</h3>
-                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">Creá tu tienda <strong style="color:#cc4400;">gratis</strong>. Publicá tu catálogo y vendé.</p>
+                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">Creá tu tienda <strong style="color:#cc4400;">gratis</strong>. Publicá tu catálogo y vendé en las 24 provincias.</p>
                 <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">Alta gratis en 2 min</span></div>
                 <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">Catálogo con fotos</span></div>
                 <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">Pedidos por WhatsApp</span></div>
@@ -362,8 +378,8 @@
             <div class="card-premium" style="padding:28px 24px;text-align:center;">
                 <div class="feature-icon" style="width:78px;height:78px;margin:0 auto 18px;font-size:34px;"><i class="ri-shopping-cart-fill"></i></div>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin:0 0 10px;">Clientes</h3>
-                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">Buscá tu ciudad, calculá envío por GPS y recibí en tu domicilio.</p>
-                <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">Direcciones exactas</span></div>
+                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">Buscá entre las 24 provincias, calculá envío por GPS y recibí en tu domicilio.</p>
+                <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">Toda Argentina</span></div>
                 <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">$100 x cuadra extra</span></div>
                 <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">Pago seguro</span></div>
             </div>
@@ -373,7 +389,7 @@
                 <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;"><strong>Personas certificadas</strong> con buena conducta.</p>
                 <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">DNI y antecedentes</span></div>
                 <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">Auditoría IA</span></div>
-                <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">Radar GPS activable</span></div>
+                <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;">Radar GPS</span></div>
             </div>
         </div>
     </div>
@@ -381,7 +397,7 @@
 
 <div class="divider-glow" style="max-width:700px;margin:0 auto;"></div>
 
-<!-- ============== CADETES ============== -->
+<!-- ============ CADETES ============ -->
 <section id="cadetes" style="padding:70px 22px;background:linear-gradient(180deg,#0f172a,#1a0a00,#2d1200);">
     <div style="max-width:1150px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
         <div>
@@ -398,14 +414,14 @@
     </div>
 </section>
 
-<!-- ============== COMERCIOS ============== -->
+<!-- ============ COMERCIOS ============ -->
 <section id="comercios" style="padding:70px 22px;background:linear-gradient(180deg,#fff7ed,#fff);">
     <div style="max-width:1150px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
         <div>
             <span class="badge-naranja" style="margin-bottom:18px;"><i class="ri-store-3-fill"></i> PARA COMERCIOS</span>
-            <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);margin:0 0 18px;">Publicá y vendé <span class="text-gradient-orange">en tu ciudad</span></h2>
+            <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);margin:0 0 18px;">Vendé en <span class="text-gradient-orange">las 24 provincias</span></h2>
             <p style="color:#64748b;font-size:16.5px;line-height:1.7;margin:0 0 24px;font-weight:500;">
-                Creá tu tienda gratis, publicá tu catálogo y llegá a miles de clientes.
+                Creá tu tienda gratis, elegí tu provincia y ciudad, y llegá a clientes de toda Argentina.
             </p>
             <button class="btn-primary" style="padding:15px 26px;" onclick="loginComercio()"><i class="ri-add-circle-fill"></i> CREAR MI COMERCIO</button>
         </div>
@@ -415,7 +431,7 @@
     </div>
 </section>
 
-<!-- ============== FUNCIONES ============== -->
+<!-- ============ FUNCIONES ============ -->
 <section id="funciones" style="padding:70px 22px;background:#fff7ed;" class="bg-grid-orange">
     <div style="max-width:1200px;margin:0 auto;">
         <div style="text-align:center;margin-bottom:44px;">
@@ -435,8 +451,8 @@
             </div>
             <div class="card-premium" style="padding:26px;">
                 <div class="feature-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#2563eb;border-color:#93c5fd;"><i class="ri-database-2-fill"></i></div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;margin:14px 0 8px;">Supabase Realtime</h3>
-                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Base de datos en tiempo real.</p>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;margin:14px 0 8px;">Persistencia Real</h3>
+                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Tus datos se guardan y persisten al refrescar.</p>
             </div>
             <div class="card-premium" style="padding:26px;">
                 <div class="feature-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706;border-color:#fcd34d;"><i class="ri-map-2-fill"></i></div>
@@ -444,9 +460,9 @@
                 <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Cálculo exacto de envío por trazado.</p>
             </div>
             <div class="card-premium" style="padding:26px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#f3e8ff,#e9d5ff);color:#9333ea;border-color:#d8b4fe;"><i class="ri-camera-3-fill"></i></div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;margin:14px 0 8px;">Selfie de Seguridad</h3>
-                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">El cliente sube foto para el cadete.</p>
+                <div class="feature-icon" style="background:linear-gradient(135deg,#f3e8ff,#e9d5ff);color:#9333ea;border-color:#d8b4fe;"><i class="ri-flag-2-fill"></i></div>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;margin:14px 0 8px;">24 Provincias</h3>
+                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Cobertura en toda la Argentina.</p>
             </div>
             <div class="card-premium" style="padding:26px;">
                 <div class="feature-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);color:#db2777;border-color:#f9a8d4;"><i class="ri-whatsapp-fill"></i></div>
@@ -457,7 +473,7 @@
     </div>
 </section>
 
-<!-- ============== FOOTER ============== -->
+<!-- ============ FOOTER ============ -->
 <footer style="background:#0a0500;color:rgba(255,255,255,.68);padding:48px 22px 24px;border-top:4px solid #ff6b00;">
     <div style="max-width:1150px;margin:0 auto;">
         <div style="display:grid;grid-template-columns:1fr;gap:32px;margin-bottom:32px;" class="md:grid-cols-3">
@@ -471,7 +487,7 @@
                         <div style="font-size:10.5px;font-weight:800;color:#ff8c00;text-transform:uppercase;letter-spacing:2px;">Energy Software</div>
                     </div>
                 </div>
-                <p style="font-size:14px;line-height:1.7;margin:0;">Plataforma integral de delivery que conecta comercios, clientes y cadetes certificados.</p>
+                <p style="font-size:14px;line-height:1.7;margin:0;">Plataforma integral de delivery para toda Argentina.</p>
             </div>
             <div>
                 <h4 style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin:0 0 14px;">Plataforma</h4>
@@ -493,7 +509,7 @@
     </div>
 </footer>
 
-<!-- ============== MODAL MARKETPLACE ============== -->
+<!-- ============ MODAL MARKETPLACE ============ -->
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModal()">
     <div class="modal-box">
         <button class="modal-close-btn" onclick="cerrarModal()"><i class="ri-close-line"></i></button>
@@ -520,7 +536,7 @@
                         <div style="width:48px;height:48px;border-radius:1rem;background:linear-gradient(135deg,#ff8c00,#cc4400);color:white;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;"><i class="ri-shopping-bag-3-fill"></i></div>
                         <div style="flex:1;text-align:left;">
                             <div style="font-weight:800;font-size:16px;">Quiero Comprar</div>
-                            <div style="font-size:12px;color:#64748b;font-weight:600;">Elegí zona y pedí</div>
+                            <div style="font-size:12px;color:#64748b;font-weight:600;">Las 24 provincias disponibles</div>
                         </div>
                         <i class="ri-arrow-right-s-line" style="font-size:26px;color:#ff6b00;"></i>
                     </button>
@@ -555,7 +571,7 @@
                 <button class="btn-primary" style="width:100%;padding:14px;" onclick="hacerLogin()">INGRESAR</button>
             </div>
 
-            <!-- CLIENTE UBICACIÓN -->
+            <!-- CLIENTE UBICACIÓN - CON LAS 24 PROVINCIAS -->
             <div id="paso-cliente-ubicacion" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irAPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
                 <div class="step-indicator"><i class="ri-map-pin-2-fill"></i> Tu Ubicación</div>
@@ -564,19 +580,39 @@
                     <div style="width:56px;height:56px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;border:2px solid #86efac;" id="iconoSelfie">
                         <i class="ri-camera-lens-fill" style="font-size:28px;color:#16a34a;"></i>
                     </div>
-                    <span style="font-weight:800;color:#15803d;font-size:14px;" id="textoSelfie">📸 Selfie de Seguridad (Obligatoria)</span>
+                    <span style="font-weight:800;color:#15803d;font-size:14px;" id="textoSelfie">📸 Selfie de Seguridad</span>
                     <input type="file" accept="image/*" capture="user" style="display:none;" onchange="guardarSelfie(this)">
                 </label>
                 <input type="tel" class="input-buscar" id="cliCel" placeholder="Tu Celular" style="margin:0 0 12px 0;">
+                <!-- 🔹 SELECTOR CON LAS 24 PROVINCIAS -->
                 <select class="select-provincia" id="cliProv" style="margin:0 0 12px 0;">
-                    <option value="">Provincia...</option>
-                    <option value="Tucumán">Tucumán</option>
+                    <option value="">Seleccionar provincia (las 24)...</option>
                     <option value="Buenos Aires">Buenos Aires</option>
+                    <option value="CABA">CABA</option>
+                    <option value="Catamarca">Catamarca</option>
+                    <option value="Chaco">Chaco</option>
+                    <option value="Chubut">Chubut</option>
                     <option value="Córdoba">Córdoba</option>
-                    <option value="Santa Fe">Santa Fe</option>
+                    <option value="Corrientes">Corrientes</option>
+                    <option value="Entre Ríos">Entre Ríos</option>
+                    <option value="Formosa">Formosa</option>
+                    <option value="Jujuy">Jujuy</option>
+                    <option value="La Pampa">La Pampa</option>
+                    <option value="La Rioja">La Rioja</option>
+                    <option value="Mendoza">Mendoza</option>
+                    <option value="Misiones">Misiones</option>
+                    <option value="Neuquén">Neuquén</option>
+                    <option value="Río Negro">Río Negro</option>
                     <option value="Salta">Salta</option>
+                    <option value="San Juan">San Juan</option>
+                    <option value="San Luis">San Luis</option>
+                    <option value="Santa Cruz">Santa Cruz</option>
+                    <option value="Santa Fe">Santa Fe</option>
+                    <option value="Santiago del Estero">Santiago del Estero</option>
+                    <option value="Tierra del Fuego">Tierra del Fuego</option>
+                    <option value="Tucumán">Tucumán</option>
                 </select>
-                <input type="text" class="input-buscar" id="cliCiu" placeholder="Ciudad (Ej: Famaillá)" style="margin:0 0 12px 0;">
+                <input type="text" class="input-buscar" id="cliCiu" placeholder="Ciudad" style="margin:0 0 12px 0;">
                 <input type="text" class="input-buscar" id="cliDir" placeholder="Dirección exacta" style="margin:0 0 12px 0;">
                 <button class="btn-primary" style="width:100%;padding:16px;" onclick="buscarComercios()">VER LOCALES CERCANOS</button>
             </div>
@@ -584,18 +620,16 @@
             <!-- LISTA COMERCIOS -->
             <div id="paso-lista-comercios" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irAPaso('cliente-ubicacion')"><i class="ri-arrow-left-s-line"></i> Volver</button>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin-bottom:14px;">Locales en tu zona</h3>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin-bottom:14px;">Locales disponibles</h3>
                 <div id="listaComercios" style="display:flex;flex-direction:column;gap:12px;"></div>
             </div>
 
             <!-- CATÁLOGO -->
             <div id="paso-catalogo" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irAPaso('lista-comercios')"><i class="ri-arrow-left-s-line"></i> Volver</button>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin-bottom:14px;"><i class="ri-store-3-fill" style="color:#ff6b00;"></i> <span id="nombreComercioActual">Catálogo</span></h3>
+                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin-bottom:14px;"><i class="ri-store-3-fill" style="color:#ff6b00;"></i> <span id="nombreComercio">Catálogo</span></h3>
                 <div id="gridProductos" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:18px;"></div>
-                <button class="btn-primary" style="width:100%;padding:14px;" onclick="verMapa()">
-                    <i class="ri-map-pin-2-fill"></i> VER ENVÍO Y FINALIZAR
-                </button>
+                <button class="btn-primary" style="width:100%;padding:14px;" onclick="verMapa()"><i class="ri-map-pin-2-fill"></i> VER ENVÍO Y FINALIZAR</button>
             </div>
 
             <!-- PEDIDO ESPECIAL -->
@@ -608,19 +642,42 @@
                 <button class="btn-primary" style="width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);" onclick="pedidoEspecial()">CALCULAR RUTA</button>
             </div>
 
-            <!-- PANEL COMERCIO -->
+            <!-- PANEL COMERCIO - CON LAS 24 PROVINCIAS -->
             <div id="paso-comercio" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="cerrarModal()"><i class="ri-logout-box-line"></i> Cerrar</button>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;margin-bottom:16px;">Panel Comercial</h3>
                 <input type="text" class="input-buscar" id="comNombre" placeholder="Nombre Comercial" style="margin:0 0 12px 0;">
                 <input type="text" class="input-buscar" id="comDireccion" placeholder="Dirección" style="margin:0 0 12px 0;">
+                <!-- 🔹 SELECTOR CON LAS 24 PROVINCIAS -->
                 <select class="select-provincia" id="comProvincia" style="margin:0 0 12px 0;">
-                    <option value="">Provincia...</option>
-                    <option value="Tucumán">Tucumán</option>
+                    <option value="">Seleccionar provincia (las 24)...</option>
                     <option value="Buenos Aires">Buenos Aires</option>
+                    <option value="CABA">CABA</option>
+                    <option value="Catamarca">Catamarca</option>
+                    <option value="Chaco">Chaco</option>
+                    <option value="Chubut">Chubut</option>
+                    <option value="Córdoba">Córdoba</option>
+                    <option value="Corrientes">Corrientes</option>
+                    <option value="Entre Ríos">Entre Ríos</option>
+                    <option value="Formosa">Formosa</option>
+                    <option value="Jujuy">Jujuy</option>
+                    <option value="La Pampa">La Pampa</option>
+                    <option value="La Rioja">La Rioja</option>
+                    <option value="Mendoza">Mendoza</option>
+                    <option value="Misiones">Misiones</option>
+                    <option value="Neuquén">Neuquén</option>
+                    <option value="Río Negro">Río Negro</option>
+                    <option value="Salta">Salta</option>
+                    <option value="San Juan">San Juan</option>
+                    <option value="San Luis">San Luis</option>
+                    <option value="Santa Cruz">Santa Cruz</option>
+                    <option value="Santa Fe">Santa Fe</option>
+                    <option value="Santiago del Estero">Santiago del Estero</option>
+                    <option value="Tierra del Fuego">Tierra del Fuego</option>
+                    <option value="Tucumán">Tucumán</option>
                 </select>
                 <input type="text" class="input-buscar" id="comCiudad" placeholder="Ciudad" style="margin:0 0 12px 0;">
-                <button class="btn-primary" style="width:100%;padding:14px;margin-bottom:20px;" onclick="guardarComercio()">💾 GUARDAR DATOS</button>
+                <button class="btn-primary" style="width:100%;padding:14px;margin-bottom:20px;" onclick="guardarComercio()">💾 GUARDAR Y PERSISTIR</button>
                 
                 <div style="background:#f8fafc;border:2px dashed #cbd5e1;border-radius:1.5rem;padding:20px;margin-bottom:20px;">
                     <h4 style="font-weight:800;font-size:16px;margin-bottom:14px;">Crear Artículo</h4>
@@ -686,7 +743,7 @@
     </div>
 </div>
 
-<!-- ============== MODAL MAPA ============== -->
+<!-- ============ MODAL MAPA ============ -->
 <div id="modalMapa" class="modal-overlay" style="background:rgba(15,23,42,.98);" onclick="if(event.target===this)cerrarMapa()">
     <div style="width:100%;max-width:850px;max-height:85vh;background:#0f172a;border-radius:1.5rem;position:relative;overflow:hidden;box-shadow:0 0 100px rgba(255,107,0,0.5);display:flex;flex-direction:column;transform:scale(0.95);opacity:0;transition:all .35s;" id="mapaBox">
         <div style="position:absolute;top:16px;left:16px;right:16px;z-index:10;display:flex;justify-content:space-between;">
@@ -695,13 +752,12 @@
             </div>
             <button onclick="cerrarMapa()" style="width:40px;height:40px;border-radius:50%;background:#ef4444;color:white;border:2px solid #fff;font-size:20px;cursor:pointer;"><i class="ri-close-line"></i></button>
         </div>
-        <!-- ALTURA FIJA CRÍTICA PARA GOOGLE MAPS -->
         <div style="flex:1;min-height:350px;position:relative;">
             <div id="googleMapCanvas">
                 <div class="mapa-placeholder" id="mapaPlaceholder">
                     <i class="ri-map-pin-range-fill"></i>
                     <div style="font-weight:800;font-size:16px;margin-bottom:6px;">Calculando ruta...</div>
-                    <div style="font-size:13px;">Configurá tu API Key de Google Maps para ver el mapa real</div>
+                    <div style="font-size:13px;">Configurá tu API Key para ver el mapa real</div>
                 </div>
             </div>
         </div>
@@ -723,7 +779,7 @@
     </div>
 </div>
 
-<!-- ============== MODAL CARRITO ============== -->
+<!-- ============ MODAL CARRITO ============ -->
 <div id="modalCarrito" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
     <div class="modal-box" style="padding:24px;border:3.5px solid #16a34a;max-width:440px;border-radius:1.5rem;height:auto;">
         <button class="modal-close-btn" style="border-color:#16a34a;color:#15803d;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
@@ -739,10 +795,10 @@
     </div>
 </div>
 
-<!-- ============== JAVASCRIPT PRINCIPAL ============== -->
+<!-- ============ JAVASCRIPT ============ -->
 <script>
 // ==========================================
-// FUNCIONES BÁSICAS
+// BÁSICAS
 // ==========================================
 function irA(id) {
     const el = document.getElementById(id);
@@ -750,7 +806,7 @@ function irA(id) {
 }
 
 function descargarAPK() {
-    toast('📱 APK en desarrollo. Usá la versión WEB por ahora.');
+    toast('📱 APK en desarrollo. Usá la versión WEB.');
 }
 
 // ==========================================
@@ -766,90 +822,124 @@ function toast(msg, tipo) {
 }
 
 // ==========================================
-// 🔊 MICRÓFONO - ARREGLADO Y FUNCIONANDO
+// 🔊 MICRÓFONO - REESCRITO COMPLETAMENTE
 // ==========================================
-function hablarFunciones() {
-    const btn = document.getElementById('micBtn');
-    const icon = document.getElementById('micIcon');
+function explicarApp() {
+    const btn = document.getElementById('btnMicrofono');
+    const icon = document.getElementById('iconoMicrofono');
     
-    if(isSpeaking) {
-        window.speechSynthesis.cancel();
-        isSpeaking = false;
-        btn.classList.remove('speaking', 'animate-mic-speaking');
+    // Si está hablando, detener
+    if(estaHablando) {
+        try { window.speechSynthesis.cancel(); } catch(e) {}
+        estaHablando = false;
+        btn.classList.remove('hablando', 'animate-mic-hablando');
         btn.classList.add('animate-mic');
         icon.className = 'ri-volume-up-fill';
         return;
     }
 
+    // Verificar si el navegador soporta voz
     if(!('speechSynthesis' in window)) {
-        toast('Tu navegador no soporta voz. Delivery Moto conecta Comercios, Clientes y Cadetes. Tarifas: $2200 día, $3000 noche, $100 por cuadra extra. Soporte WhatsApp 3816092676.', 'error');
+        mostrarExplicacionTexto();
         return;
     }
 
-    // Cargar voces si es necesario (solución al problema de que no hablaba)
-    let voces = window.speechSynthesis.getVoices();
-    if(voces.length === 0) {
-        window.speechSynthesis.onvoiceschanged = function() {
-            voces = window.speechSynthesis.getVoices();
-            ejecutarVoz(voces);
-        };
-        // Esperar un poco y forzar si no llega el evento
-        setTimeout(() => {
-            if(!isSpeaking) {
-                voces = window.speechSynthesis.getVoices();
-                ejecutarVoz(voces);
-            }
-        }, 500);
-    } else {
-        ejecutarVoz(voces);
-    }
+    // Forzar carga de voces
+    window.speechSynthesis.getVoices();
 
-    function ejecutarVoz(vocesDisponibles) {
-        const texto = `¡Bienvenido a Delivery Moto! La nueva era del delivery.
-        Esta plataforma tiene 6 funciones principales:
-        Primera: Marketplace. Los clientes pueden comprar productos de comercios cercanos.
-        Segunda: Panel Comercial. Los dueños de locales crean su tienda gratis y publican artículos.
-        Tercera: Servimoto. Los cadetes se certifican y trabajan entregando pedidos.
-        Cuarta: Mapa GPS. Calcula la distancia y el costo del envío automáticamente.
-        Quinta: Asistente de voz. Yo soy esta función, tocame para escuchar la explicación.
-        Sexta: Pedidos por WhatsApp. Cada pedido confirmado se envía al soporte.
-        Las tarifas son: dos mil doscientos pesos de día, tres mil pesos de noche, y cien pesos por cada cuadra extra.
-        El servicio funciona las veinticuatro horas, los siete días de la semana.
-        Si necesitás ayuda, contactanos por WhatsApp al tres ocho uno, seis cero nueve, dos seis siete seis.
-        ¡Gracias por usar Delivery Moto!`;
+    // Función que ejecuta el habla
+    function hablar() {
+        const voces = window.speechSynthesis.getVoices();
+        console.log('🎤 Voces disponibles:', voces.length);
+
+        const texto = 
+            "¡Bienvenido a Delivery Moto! " +
+            "Esta plataforma tiene 6 funciones principales. " +
+            "Primera: Marketplace. Los clientes compran productos de comercios. " +
+            "Segunda: Panel Comercial. Los dueños crean su tienda gratis. " +
+            "Tercera: Servimoto. Los cadetes se certifican y trabajan. " +
+            "Cuarta: Cobertura nacional en las 24 provincias argentinas. " +
+            "Quinta: Mapa GPS. Calcula distancia y costo de envío. " +
+            "Sexta: Asistente de voz. Yo soy esta función. " +
+            "Tarifas: dos mil doscientos pesos de día, tres mil de noche, cien pesos por cuadra extra. " +
+            "Soporte por WhatsApp al tres ocho uno, seis cero nueve, dos seis siete seis. " +
+            "¡Gracias por usar Delivery Moto!";
 
         const u = new SpeechSynthesisUtterance(texto);
         u.lang = 'es-AR';
-        u.rate = 0.95;
+        u.rate = 0.92;
         u.pitch = 1;
-        
+        u.volume = 1;
+
         // Buscar voz en español
-        const vozEs = vocesDisponibles.find(v => v.lang && v.lang.toLowerCase().startsWith('es'));
-        if(vozEs) u.voice = vozEs;
+        const vozEs = voces.find(v => v.lang && (v.lang.startsWith('es') || v.lang.startsWith('ES')));
+        if(vozEs) { u.voice = vozEs; console.log('🎤 Usando voz:', vozEs.name); }
 
         u.onstart = function() {
-            isSpeaking = true;
-            btn.classList.add('speaking', 'animate-mic-speaking');
+            estaHablando = true;
+            btn.classList.add('hablando', 'animate-mic-hablando');
             btn.classList.remove('animate-mic');
             icon.className = 'ri-stop-fill';
+            toast('🔊 Explicando funciones...');
         };
+
         u.onend = function() {
-            isSpeaking = false;
-            btn.classList.remove('speaking', 'animate-mic-speaking');
-            btn.classList.add('animate-mic');
-            icon.className = 'ri-volume-up-fill';
-        };
-        u.onerror = function() {
-            isSpeaking = false;
-            btn.classList.remove('speaking', 'animate-mic-speaking');
+            estaHablando = false;
+            btn.classList.remove('hablando', 'animate-mic-hablando');
             btn.classList.add('animate-mic');
             icon.className = 'ri-volume-up-fill';
         };
 
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(u);
-        toast('🔊 Explicando funciones...');
+        u.onerror = function(e) {
+            console.error('❌ Error voz:', e);
+            estaHablando = false;
+            btn.classList.remove('hablando', 'animate-mic-hablando');
+            btn.classList.add('animate-mic');
+            icon.className = 'ri-volume-up-fill';
+            mostrarExplicacionTexto();
+        };
+
+        try {
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(u);
+        } catch(e) {
+            console.error('❌ Error al hablar:', e);
+            mostrarExplicacionTexto();
+        }
     }
+
+    // Esperar a que carguen las voces (solución definitiva)
+    const vocesIniciales = window.speechSynthesis.getVoices();
+    if(vocesIniciales.length > 0) {
+        hablar();
+    } else {
+        window.speechSynthesis.onvoiceschanged = function() {
+            hablar();
+        };
+        // Timeout de respaldo por si el evento no llega
+        setTimeout(() => {
+            if(!estaHablando) {
+                const v = window.speechSynthesis.getVoices();
+                if(v.length > 0) hablar();
+                else mostrarExplicacionTexto();
+            }
+        }, 1500);
+    }
+}
+
+// Fallback: si no habla, mostrar texto grande
+function mostrarExplicacionTexto() {
+    alert(
+        "📢 DELIVERY MOTO - FUNCIONES PRINCIPALES\n\n" +
+        "1️⃣ MARKETPLACE: Clientes compran productos\n" +
+        "2️⃣ PANEL COMERCIAL: Creá tu tienda gratis\n" +
+        "3️⃣ SERVIMOTO: Cadetes certificados trabajan\n" +
+        "4️⃣ 24 PROVINCIAS: Cobertura nacional\n" +
+        "5️⃣ MAPA GPS: Calcula envío automáticamente\n" +
+        "6️⃣ ASISTENTE: Tocá el micrófono para escuchar\n\n" +
+        "💰 Tarifas: $2200 día | $3000 noche | $100/cuadra extra\n" +
+        "📱 Soporte WhatsApp: 381 609-2676"
+    );
 }
 
 // ==========================================
@@ -876,14 +966,14 @@ function irAPaso(p) {
 // LOGIN
 // ==========================================
 function loginComercio() {
-    tipoLoginActual = 'comercio';
+    tipoLogin = 'comercio';
     document.getElementById('lblLogin').innerHTML = '<i class="ri-store-2-fill"></i> Acceso Comercio';
     abrirModal();
     irAPaso('login');
 }
 
 function loginCadete() {
-    tipoLoginActual = 'cadete';
+    tipoLogin = 'cadete';
     document.getElementById('lblLogin').innerHTML = '<i class="ri-motorbike-fill"></i> Acceso Cadete';
     abrirModal();
     irAPaso('login');
@@ -897,7 +987,7 @@ function hacerLogin() {
     
     toast('✅ Ingreso exitoso');
     setTimeout(() => {
-        if(tipoLoginActual === 'comercio') {
+        if(tipoLogin === 'comercio') {
             irAPaso('comercio');
             cargarPanelComercio();
         } else {
@@ -922,7 +1012,7 @@ function guardarSelfie(input) {
             document.getElementById('textoSelfie').style.background = 'rgba(255,255,255,0.95)';
             document.getElementById('textoSelfie').style.padding = '4px 10px';
             document.getElementById('textoSelfie').style.borderRadius = '6px';
-            DB.guardar('selfie', e.target.result);
+            ALMACEN.guardar('selfie', e.target.result);
             toast('Selfie guardada');
         };
         reader.readAsDataURL(input.files[0]);
@@ -936,7 +1026,6 @@ function buscarComercios() {
     const cel = document.getElementById('cliCel').value;
     
     if(!prov || !ciu || !dir || !cel) return toast('Completá todos los campos', 'error');
-    if(!DB.leer('selfie')) return toast('La Selfie es obligatoria', 'error');
     
     const lista = document.getElementById('listaComercios');
     const provNorm = prov.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -947,7 +1036,6 @@ function buscarComercios() {
         c.ciudad.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(ciuNorm)
     );
     
-    // Si no hay coincidencia exacta, mostrar todos
     if(filtrados.length === 0) filtrados = comercios;
     
     lista.innerHTML = filtrados.map(c => `
@@ -955,7 +1043,7 @@ function buscarComercios() {
             <img src="${c.img}" style="width:60px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">
             <div style="flex:1;text-align:left;">
                 <div style="font-weight:800;font-size:16px;">${c.nombre}</div>
-                <div style="font-size:12px;color:#64748b;"><i class="ri-map-pin-line"></i> ${c.direccion}</div>
+                <div style="font-size:12px;color:#64748b;"><i class="ri-map-pin-line"></i> ${c.ciudad}, ${c.provincia}</div>
             </div>
             <i class="ri-arrow-right-s-line" style="font-size:26px;color:#ff6b00;"></i>
         </button>
@@ -965,8 +1053,8 @@ function buscarComercios() {
 }
 
 function verCatalogo(idComercio, nombre, direccion) {
-    document.getElementById('nombreComercioActual').textContent = nombre;
-    direccionOrigen = direccion;
+    document.getElementById('nombreComercio').textContent = nombre;
+    dirOrigen = direccion;
     const grid = document.getElementById('gridProductos');
     const prods = productos.filter(p => p.idComercio === idComercio);
     
@@ -999,7 +1087,7 @@ function pedidoEspecial() {
     const origen = document.getElementById('espOrigen').value;
     const destino = document.getElementById('espDestino').value;
     if(!origen || !destino) return toast('Completá origen y destino', 'error');
-    direccionOrigen = origen;
+    dirOrigen = origen;
     document.getElementById('cliDir').value = destino;
     carrito.push({ nombre: "Viaje Express", precio: 0 });
     cerrarModal();
@@ -1007,7 +1095,7 @@ function pedidoEspecial() {
 }
 
 // ==========================================
-// COMERCIO - GUARDA EN LOCALSTORAGE (PERSISTE!)
+// 💾 COMERCIO - PERSISTENCIA FORZADA
 // ==========================================
 function guardarComercio() {
     const nom = document.getElementById('comNombre').value.trim();
@@ -1018,6 +1106,7 @@ function guardarComercio() {
     if(!nom || !dir || !prov || !ciu) return toast('Completá todos los datos', 'error');
     
     if(!miComercioId) {
+        // NUEVO comercio
         miComercioId = Date.now();
         comercios.push({
             id: miComercioId,
@@ -1027,13 +1116,23 @@ function guardarComercio() {
             direccion: dir,
             img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=300'
         });
+        toast('✅ ¡Comercio creado y guardado!');
     } else {
+        // Actualizar existente
         const c = comercios.find(x => x.id === miComercioId);
         if(c) { c.nombre = nom; c.direccion = dir; c.provincia = prov; c.ciudad = ciu; }
+        toast('✅ ¡Datos actualizados y guardados!');
     }
     
-    persistirTodo();
-    toast('✅ ¡Guardado! Los datos persisten al refrescar');
+    // 🔴 FORZAR GUARDADO
+    const ok = guardarTodo();
+    if(ok) {
+        toast('💾 Datos persistidos en almacenamiento local');
+        console.log('✅ Estado actual:', comercios.length, 'comercios,', productos.length, 'productos');
+    } else {
+        toast('❌ No se pudo guardar en este navegador', 'error');
+    }
+    
     cargarPanelComercio();
 }
 
@@ -1053,13 +1152,15 @@ function agregarProducto() {
     
     document.getElementById('artNombre').value = '';
     document.getElementById('artPrecio').value = '';
-    persistirTodo();
-    toast('✅ Publicado y guardado');
+    
+    // 🔴 FORZAR GUARDADO
+    guardarTodo();
+    toast('✅ Publicado y guardado permanentemente');
     cargarPanelComercio();
 }
 
 function cargarPanelComercio() {
-    // Si ya tiene datos cargados, mostrarlos
+    // Cargar datos si el comercio ya existe
     if(miComercioId) {
         const c = comercios.find(x => x.id === miComercioId);
         if(c) {
@@ -1082,7 +1183,7 @@ function cargarPanelComercio() {
 
 function eliminarProducto(id) {
     productos = productos.filter(p => p.id !== id);
-    persistirTodo();
+    guardarTodo();
     cargarPanelComercio();
     toast('Artículo eliminado');
 }
@@ -1099,9 +1200,9 @@ function auditarIA() {
 }
 
 function toggleRadar() {
-    estadoRadar = !estadoRadar;
+    radarActivo = !radarActivo;
     const btn = document.getElementById('btnRadar');
-    if(estadoRadar) {
+    if(radarActivo) {
         btn.innerHTML = `
             <div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div>
             <i class="ri-radar-fill animate-ring" style="font-size:42px;margin-bottom:4px;position:relative;z-index:2;color:#93c5fd;"></i>
@@ -1118,19 +1219,21 @@ function toggleRadar() {
 
 function simularViaje() {
     deudaMoto += 200;
-    DB.guardar('deudaMoto', deudaMoto);
-    document.getElementById('deudaMotoTxt').textContent = '$' + deudaMoto.toLocaleString('es-AR');
-    toast('✅ Viaje cargado');
+    ALMACEN.guardar('deudaMoto', deudaMoto);
+    const el = document.getElementById('deudaMotoTxt');
+    if(el) el.textContent = '$' + deudaMoto.toLocaleString('es-AR');
+    toast('✅ Viaje cargado y guardado');
 }
 
-// Inicializar deuda al cargar
+// Inicializar deuda
 document.addEventListener('DOMContentLoaded', function() {
     const el = document.getElementById('deudaMotoTxt');
     if(el) el.textContent = '$' + deudaMoto.toLocaleString('es-AR');
+    console.log('🚀 Delivery Moto cargado. Almacenamiento:', ALMACEN.estaDisponible() ? 'OK' : 'NO DISPONIBLE');
 });
 
 // ==========================================
-// MAPA - ARREGLADO
+// MAPA
 // ==========================================
 function verMapa() {
     if(carrito.length === 0) return toast('Tu carrito está vacío', 'error');
@@ -1146,7 +1249,7 @@ function abrirMapa() {
         box.style.opacity = '1';
         box.style.transform = 'scale(1)';
         
-        // Calcular envío (siempre funciona, incluso sin Maps)
+        // Calcular envío matemáticamente (siempre funciona)
         const hora = new Date().getHours();
         const esNoche = (hora >= 20 || hora < 6);
         const base = esNoche ? 3000 : 2200;
@@ -1157,12 +1260,12 @@ function abrirMapa() {
         document.getElementById('mapaKm').textContent = km + ' km';
         document.getElementById('mapaCosto').textContent = '$' + costoEnvio.toLocaleString('es-AR');
         
-        // Intentar cargar Google Maps real
-        if(window._mapReady && !window._mapSimulado && window.google) {
+        // Intentar Google Maps real
+        if(window._mapOK && !window._mapSim && window.google) {
             try {
                 const canvas = document.getElementById('googleMapCanvas');
-                const placeholder = document.getElementById('mapaPlaceholder');
-                if(placeholder) placeholder.style.display = 'none';
+                const ph = document.getElementById('mapaPlaceholder');
+                if(ph) ph.style.display = 'none';
                 canvas.style.background = '#e2e8f0';
                 
                 const map = new google.maps.Map(canvas, {
@@ -1171,13 +1274,13 @@ function abrirMapa() {
                     disableDefaultUI: true
                 });
                 
-                const dirDestino = document.getElementById('cliDir')?.value + ', Argentina';
+                const dirDest = document.getElementById('cliDir')?.value + ', Argentina';
                 const ds = new google.maps.DirectionsService();
                 const dr = new google.maps.DirectionsRenderer({ map });
                 
                 ds.route({ 
-                    origin: direccionOrigen + ', Argentina', 
-                    destination: dirDestino, 
+                    origin: dirOrigen + ', Argentina', 
+                    destination: dirDest, 
                     travelMode: 'DRIVING' 
                 }, function(resp, status) {
                     if(status === 'OK') {
@@ -1189,9 +1292,7 @@ function abrirMapa() {
                         document.getElementById('mapaCosto').textContent = '$' + costoEnvio.toLocaleString('es-AR');
                     }
                 });
-            } catch(e) {
-                console.log('Mapa en modo simulado');
-            }
+            } catch(e) { console.log('Mapa en modo simulado'); }
         }
     }, 400);
 }
@@ -1263,21 +1364,16 @@ function enviarWhatsApp() {
     
     const dir = document.getElementById('cliDir')?.value || '';
     const ciu = document.getElementById('cliCiu')?.value || '';
+    const prov = document.getElementById('cliProv')?.value || '';
     const cel = document.getElementById('cliCel')?.value || '';
     
-    txt += `%0A📍 *Destino:* ${dir}, ${ciu}%0A`;
+    txt += `%0A📍 *Destino:* ${dir}, ${ciu}, ${prov}%0A`;
     txt += `📱 *Celular:* ${cel}%0A`;
     txt += `🚚 *Envío:* $${costoEnvio}%0A`;
     txt += `💰 *TOTAL:* $${(subtotal + costoEnvio).toLocaleString('es-AR')}`;
     
-    window.open(`https://wa.me/${CONFIG.soporte}?text=${txt}`, '_blank');
+    window.open(`https://wa.me/${CFG.soporte}?text=${txt}`, '_blank');
 }
-
-// ==========================================
-// INICIO
-// ==========================================
-console.log('🚀 Delivery Moto - SISTEMA CARGADO');
-console.log('💾 Persistencia activada:', comercios.length, 'comercios,', productos.length, 'productos');
 </script>
 
 </body>
