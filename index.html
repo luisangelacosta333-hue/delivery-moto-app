@@ -1,1487 +1,614 @@
-<html style="margin:0;padding:0;">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-(function(){
-    var s = document.createElement('style');
-    s.textContent = `
-        :root {
-            --bg: #fefcf8;
-            --card: #ffffff;
-            --text: #0f172a;
-            --muted: #64748b;
-            --accent: #ea580c;
-            --accent-soft: rgba(234,88,12,.14);
-            --accent2: #16a34a;
-            --accent2-soft: rgba(22,163,74,.14);
-            --gold: #ffd700;
-            --border: rgba(15,23,42,.07);
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, #fefcf8 0%, #fff7ed 50%, #fef3c7 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            color: var(--text);
-        }
+<!DOCTYPE html>
+<html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DELIVERY MOTO | Marketplace Premium</title>
+
+    <!-- LIBRERÍAS EXTERNAS Y FUENTES -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- PWA MANIFEST -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkRFTElWRVJZIE1PVE8iLAogICJzaG9ydF9uYW1lIjogIkRlbGl2ZXJ5TW90byIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmN2VkIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNmIwMCIKZX0=">
+
+    <style>
+        /* ==========================================================================
+           CSS ULTRA PREMIUM - SISTEMA BASE UNIFICADO
+           ========================================================================== */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        html, body { width: 100%; min-height: 100vh; overflow-x: hidden; font-family: 'Quicksand', sans-serif; background: #fff7ed; color: #0f172a; }
 
         /* ANIMACIONES */
-        @keyframes shimmerGold { 0%{background-position:-200% center} 100%{background-position:200% center} }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-        @keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(234,88,12,.5)} 50%{box-shadow:0 0 0 24px rgba(234,88,12,0)} }
-        @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes fadeInScale { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
-        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        @keyframes radarExpand { 0%{transform:scale(.8);opacity:1} 100%{transform:scale(1.8);opacity:0} }
-        @keyframes gradientBG { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-14px); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spinPremium { 100% { transform: rotate(360deg); } }
+        @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes radarExpand { 0% { transform: scale(.8); opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        .animate-float { animation: float 4s ease-in-out infinite; }
-        .animate-pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
-        .animate-slide-up { animation: slideUp .6s cubic-bezier(.16,1,.3,1) both; }
-        .animate-fade-in-scale { animation: fadeInScale .35s cubic-bezier(.16,1,.3,1) both; }
-        .animate-spin { animation: spin 2s linear infinite; }
-
-        .text-gradient-gold {
-            background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00, #ffd700, #fff7e6);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: shimmerGold 4s linear infinite;
-        }
-        .text-gradient-orange {
-            background: linear-gradient(100deg, #ff8c00, #ea580c, #c2410c);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+        .animate-float { animation: float 4.5s ease-in-out infinite; }
+        .animate-slide-up { animation: slideUp .5s cubic-bezier(.16,1,.3,1) both; }
+        
+        .hero-bg { background: linear-gradient(135deg, #1a0a00 0%, #2d1200 25%, #cc4400 60%, #ff6b00 100%); background-size: 200% 200%; animation: gradientBG 10s ease infinite; }
+        .text-gradient-gold { background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00, #ffd700, #fff7e6); background-size: 200% auto; -webkit-background-clip: text; color: transparent; animation: gradientBG 4s linear infinite; }
+        .text-gradient-orange { background: linear-gradient(100deg, #ff8c00, #ff6b00, #cc4400); -webkit-background-clip: text; color: transparent; }
 
         /* BOTONES PREMIUM */
-        .btn-premium {
-            background: linear-gradient(135deg, #ff8c00 0%, #ea580c 50%, #c2410c 100%);
-            color: white;
-            font-weight: 800;
-            border-radius: 14px;
-            border: 2.5px solid rgba(255,255,255,.35);
-            cursor: pointer;
-            font-family: 'Quicksand', sans-serif;
-            transition: all .3s cubic-bezier(.16,1,.3,1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 12px 32px rgba(234,88,12,.45), inset 0 1px 0 rgba(255,255,255,.4);
-            position: relative;
-            overflow: hidden;
-        }
-        .btn-premium:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 44px rgba(234,88,12,.6); }
-        .btn-premium:active { transform: scale(.97); }
+        .btn-primary { background: linear-gradient(135deg, #ea580c, #c2410c); color: white; font-weight: 800; border-radius: 1rem; border: none; cursor: pointer; font-family: 'Sora', sans-serif; transition: all .3s cubic-bezier(.16,1,.3,1); display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 10px 30px rgba(234,88,12,.4); padding: 16px; width: 100%; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(234,88,12,.6); }
+        .btn-primary:active { transform: scale(.97); }
 
-        .btn-premium-green {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
-            color: white;
-            font-weight: 800;
-            border-radius: 14px;
-            border: 2.5px solid rgba(255,255,255,.3);
-            cursor: pointer;
-            font-family: 'Quicksand', sans-serif;
-            transition: all .3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 12px 32px rgba(22,163,74,.4);
-        }
-        .btn-premium-green:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(22,163,74,.55); }
-
-        .btn-premium-dark {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: white;
-            font-weight: 800;
-            border-radius: 14px;
-            border: 2.5px solid var(--accent);
-            cursor: pointer;
-            font-family: 'Quicksand', sans-serif;
-            transition: all .3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 10px 28px rgba(0,0,0,.25);
-        }
-        .btn-premium-dark:hover { transform: translateY(-3px); background: linear-gradient(135deg, #ea580c, #c2410c); }
+        .btn-apk { background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.25); cursor: pointer; font-family: 'Sora', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .55rem; box-shadow: 0 12px 30px rgba(22,163,74,.45); padding: 16px; }
+        .btn-apk:hover { transform: translateY(-3px); box-shadow: 0 18px 42px rgba(22,163,74,.6); }
+        
+        .btn-volver { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 12px; border: 2px solid #e2e8f0; background: #f8fafc; color: #475569; font-weight: 800; font-size: 14px; cursor: pointer; transition: all .2s; margin-bottom: 20px; }
+        .btn-volver:hover { border-color: #ea580c; color: #ea580c; background: white; transform: translateX(-3px); }
 
         /* TARJETAS */
-        .card-premium {
-            background: white;
-            border-radius: 20px;
-            border: 2px solid #fed7aa;
-            box-shadow: 0 6px 24px rgba(234,88,12,.08);
-            transition: all .4s cubic-bezier(.16,1,.3,1);
-            position: relative;
-            overflow: hidden;
-        }
-        .card-premium:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 50px rgba(234,88,12,.2);
-            border-color: var(--accent);
-        }
-        .card-premium::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #ff8c00, #ea580c, #c2410c);
-        }
-
-        .feature-icon {
-            width: 56px; height: 56px;
-            border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px;
-            background: linear-gradient(135deg, #fff7ed, #fed7aa);
-            color: var(--accent);
-            border: 2px solid #fdba74;
-            transition: all .4s;
-        }
-        .card-premium:hover .feature-icon {
-            transform: scale(1.1) rotate(-5deg);
-            background: linear-gradient(135deg, #ff8c00, #c2410c);
-            color: white;
-            border-color: var(--accent);
-            box-shadow: 0 10px 28px rgba(234,88,12,.4);
-        }
-
-        /* MODAL */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(15,23,42,.88);
-            backdrop-filter: blur(12px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            padding: 12px;
-        }
-        .modal-overlay.show { display: flex; animation: fadeInScale .3s ease; }
-        .modal-box {
-            background: var(--bg);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 520px;
-            max-height: 92vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 30px 80px rgba(0,0,0,.45);
-            border: 3px solid var(--accent);
-            animation: slideUp .4s cubic-bezier(.34,1.56,.64,1);
-        }
-        .modal-header {
-            background: linear-gradient(135deg, #0a0500, #2d1200, #4a1d00);
-            padding: 28px 24px 22px;
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .modal-header::before {
-            content: '';
-            position: absolute;
-            top: -60px; right: -60px;
-            width: 200px; height: 200px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,107,0,.3), transparent 70%);
-        }
-        .modal-close {
-            position: absolute;
-            top: 16px; right: 16px;
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            background: rgba(255,255,255,.15);
-            border: 2px solid rgba(255,255,255,.3);
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: all .25s;
-            z-index: 10;
-        }
-        .modal-close:hover { background: #ef4444; transform: rotate(90deg); }
-
-        .modal-body {
-            padding: 0;
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sub-step { display: none; padding: 24px 20px; flex: 1; animation: fadeInScale .3s ease; }
-        .sub-step.active { display: block; }
+        .card-premium { background: white; border-radius: 1.5rem; border: 2px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,.05); transition: all .3s; }
+        .card-premium:hover { transform: translateY(-5px); border-color: #ea580c; box-shadow: 0 15px 40px rgba(234,88,12,.15); }
+        
+        .option-card { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #e2e8f0; background: white; cursor: pointer; display: flex; align-items: center; gap: 14px; transition: all .3s; width: 100%; text-align: left; }
+        .option-card:hover { transform: translateY(-3px); border-color: #ea580c; box-shadow: 0 12px 30px rgba(234,88,12,.15); }
+        .option-card-dark { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #334155; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: all .3s; width: 100%; text-align: center; }
+        .option-card-dark:hover { transform: translateY(-3px); box-shadow: 0 18px 42px rgba(74,222,128,.3); border-color:#4ade80; }
 
         /* INPUTS */
-        .input-premium {
-            width: 100%;
-            padding: 16px 18px;
-            border-radius: 14px;
-            border: 2.5px solid #fed7aa;
-            background: white;
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text);
-            outline: none;
-            transition: all .25s;
-        }
-        .input-premium:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(234,88,12,.12);
-            background: white;
-        }
-        .select-premium {
-            width: 100%;
-            padding: 16px 18px;
-            border-radius: 14px;
-            border: 2.5px solid #fed7aa;
-            background: white;
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text);
-            outline: none;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23ea580c' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            padding-right: 48px;
-            transition: all .25s;
-        }
-        .select-premium:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(234,88,12,.12); }
+        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; margin-bottom: 14px; }
+        .input-buscar, .select-provincia, .textarea-buscar { width: 100%; padding: 16px; border-radius: 1rem; border: 2px solid #e2e8f0; background: #f8fafc; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 15px; color: #0f172a; outline: none; transition: all .25s; }
+        .input-buscar:focus, .select-provincia:focus { border-color: #ea580c; background: white; box-shadow: 0 0 0 4px rgba(234,88,12,.12); }
+        
+        .select-provincia { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ea580c' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 48px; margin-bottom: 14px; }
+        .textarea-buscar { min-height: 100px; resize: vertical; margin-bottom: 14px; }
 
-        .textarea-premium {
-            width: 100%;
-            padding: 16px 18px;
-            border-radius: 14px;
-            border: 2.5px solid #fed7aa;
-            background: white;
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text);
-            outline: none;
-            resize: vertical;
-            min-height: 100px;
-            transition: all .25s;
-        }
-        .textarea-premium:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(234,88,12,.12); }
+        .mic-btn { position: absolute; right: 8px; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #ea580c, #c2410c); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all .2s; box-shadow: 0 4px 12px rgba(234,88,12,.35); z-index: 2; }
+        .mic-btn:hover { transform: scale(1.08); }
 
-        /* OPCIONES */
-        .option-card {
-            display: flex; align-items: center; gap: 14px;
-            padding: 18px;
-            background: white;
-            border: 2.5px solid #fed7aa;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all .3s;
-            text-align: left;
-            width: 100%;
-        }
-        .option-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--accent);
-            box-shadow: 0 12px 30px rgba(234,88,12,.18);
-            background: linear-gradient(135deg, #fff7ed, white);
-        }
+        /* MODALES */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.95); backdrop-filter: blur(10px); z-index: 999999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; padding: 20px; }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .modal-box { background: #fff7ed; width: 100%; max-height: 90vh; border-radius: 1.5rem; max-width: 500px; border: 3px solid #ff6b00; overflow: hidden; transform: scale(.95) translateY(20px); transition: all .3s cubic-bezier(.16,1,.3,1); display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+        .modal-overlay.show .modal-box { transform: scale(1) translateY(0); }
+        
+        .modal-close-btn { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.95); border: 3px solid #ff6b00; color: #cc4400; font-size: 24px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .25s; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,.2); }
+        .modal-close-btn:hover { background: #ff6b00; color: white; transform: rotate(90deg); }
+        
+        .sub-step { display: none; padding: 24px 20px; flex: 1; width: 100%; overflow-y: auto; }
+        .sub-step.active { display: block; animation: slideUp .4s ease; }
 
-        /* TOAST */
-        #toast-container {
-            position: fixed;
-            top: 20px; right: 20px;
-            z-index: 100000;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .toast-premium {
-            display: flex; align-items: center; gap: 10px;
-            padding: 14px 20px;
-            background: linear-gradient(135deg, #16a34a, #15803d);
-            color: white;
-            border-radius: 14px;
-            font-weight: 700; font-size: 14px;
-            box-shadow: 0 10px 30px rgba(22,163,74,.4);
-            animation: slideUp .35s cubic-bezier(.34,1.56,.64,1);
-            min-width: 260px;
-        }
-        .toast-premium.error {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            box-shadow: 0 10px 30px rgba(220,38,38,.4);
-        }
+        /* TOAST PREMIUM */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast-premium { display: flex; align-items: center; gap: 12px; padding: 16px 24px; background: linear-gradient(135deg, #16a34a, #15803d); color: white; border-radius: 1rem; font-weight: 700; font-size: 14px; box-shadow: 0 15px 35px rgba(22,163,74,.4); animation: slideInRight .35s cubic-bezier(.34,1.56,.64,1); border: 2px solid rgba(255,255,255,0.2); }
+        .toast-premium.toast-error { background: linear-gradient(135deg, #dc2626, #b91c1c); box-shadow: 0 15px 35px rgba(220,38,38,.4); border-color: rgba(255,255,255,0.2); }
 
-        /* BADGES */
-        .badge-gold {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 7px 16px;
-            border-radius: 999px;
-            font-size: 11px; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 1px;
-            background: linear-gradient(135deg, rgba(255,215,0,.2), rgba(255,140,0,.1));
-            color: #fff7e6;
-            border: 1.5px solid rgba(255,215,0,.5);
-        }
-        .badge-orange {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 7px 14px;
-            border-radius: 999px;
-            font-size: 11px; font-weight: 800;
-            text-transform: uppercase; letter-spacing: .8px;
-            background: var(--accent-soft);
-            color: var(--accent);
-            border: 1.5px solid #fdba74;
-        }
-
-        /* HERO */
-        .hero-bg {
-            background: linear-gradient(135deg, #1a0a00 0%, #2d1200 30%, #cc4400 70%, #ff6b00 100%);
-            background-size: 200% 200%;
-            animation: gradientBG 12s ease infinite;
-        }
-
-        .glass {
-            background: rgba(255,255,255,.12);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1.5px solid rgba(255,255,255,.22);
-        }
-
-        /* NAVBAR */
-        .nav-fixed {
-            position: sticky; top: 0;
-            z-index: 100;
-            background: linear-gradient(135deg, #1a0a00, #2d1200);
-            border-bottom: 3px solid var(--accent);
-            box-shadow: 0 4px 24px rgba(0,0,0,.35);
-        }
-
-        /* UPLOAD BOX */
-        .upload-box {
-            border: 3px dashed #fdba74;
-            border-radius: 18px;
-            padding: 28px 16px;
-            text-align: center;
-            cursor: pointer;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 10px;
-            min-height: 160px;
-            background: #fff7ed;
-            transition: all .3s;
-            position: relative;
-            overflow: hidden;
-            background-size: cover;
-            background-position: center;
-        }
-        .upload-box:hover { border-color: var(--accent); background: #ffedd5; }
-        .upload-box.has-image { border-style: solid; border-color: var(--accent2); }
-
-        /* SERVIMOTO PANEL */
-        .servimoto-panel {
-            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
-            border-radius: 24px;
-            border: 3px solid var(--accent);
-            box-shadow: 0 20px 60px rgba(0,0,0,.5);
-            overflow: hidden;
-            position: relative;
-        }
-        .servimoto-panel::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #ffd700, var(--accent), var(--accent2));
-        }
-
-        .stat-box {
-            background: rgba(255,255,255,.05);
-            border: 1.5px solid rgba(255,255,255,.1);
-            border-radius: 16px;
-            padding: 16px;
-            text-align: center;
-        }
-
-        .radar-btn {
-            width: 150px; height: 150px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #1e3a8a, #0f172a);
-            color: white;
-            border: 4px solid #3b82f6;
-            box-shadow: 0 0 30px rgba(59,130,246,.4);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            cursor: pointer;
-            transition: all .3s;
-            position: relative;
-        }
-        .radar-btn.active {
-            background: radial-gradient(circle, #2563eb, #1e3a8a);
-            border-color: #60a5fa;
-            box-shadow: 0 0 50px rgba(59,130,246,.7);
-        }
-        .radar-ring {
-            position: absolute; inset: -10px;
-            border-radius: 50%;
-            border: 3px solid rgba(96,165,250,.5);
-            animation: radarExpand 1.8s ease-out infinite;
-        }
+        /* RADAR */
+        .radar-ring { position: absolute; inset: -10px; border-radius: 50%; border: 3px solid rgba(96,165,250,.5); animation: radarExpand 1.8s ease-out infinite; }
+        .radar-ring:nth-child(2) { animation-delay: .6s; }
+        .radar-ring:nth-child(3) { animation-delay: 1.2s; }
 
         /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #fff7ed; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #ff8c00, #c2410c); border-radius: 10px; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
 
-        /* TABLAS */
-        .table-premium {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 14px;
-            overflow: hidden;
-        }
-        .table-premium th {
-            background: linear-gradient(135deg, #fff7ed, #fed7aa);
-            padding: 12px 14px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: .8px;
-            color: var(--accent);
-            border-bottom: 2px solid var(--accent);
-        }
-        .table-premium td {
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--border);
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .table-premium tr:hover td { background: #fff7ed; }
-
-        .nav-link {
-            color: rgba(255,255,255,.9);
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 6px 2px;
-            border-bottom: 2px solid transparent;
-            transition: all .2s;
-        }
-        .nav-link:hover { color: #ffd700; border-bottom-color: #ffd700; }
-
-        @media (max-width: 768px) {
-            .hide-mobile { display: none !important; }
-        }
-    `;
-    document.head.appendChild(s);
-})();
-</script>
-
-<div style="background-color:transparent;box-sizing:border-box;">
-
-<!-- TOAST CONTAINER -->
-<div id="toast-container"></div>
-
-<!-- ========================================== -->
-<!-- NAVBAR -->
-<!-- ========================================== -->
-<nav class="nav-fixed">
-    <div style="max-width:1280px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
-        <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-            <div style="width:44px;height:44px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 14px rgba(255,107,0,.6);border:2px solid #ffd700;background:linear-gradient(135deg,#ff8c00,#c2410c);display:flex;align-items:center;justify-content:center;">
-                <i class="ri-motorbike-fill" style="font-size:24px;color:white;"></i>
+<!-- BARRA DE NAVEGACIÓN -->
+<nav style="position: fixed; top: 0; left: 0; width: 100%; height: 80px; z-index: 500; background: linear-gradient(135deg,#1a0a00,#2d1200); backdrop-filter: blur(20px); border-bottom: 3px solid #ff6b00; box-shadow: 0 4px 28px rgba(0,0,0,.4); display: flex; align-items: center; padding: 0 20px;">
+    <div style="width: 100%; max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+            <div style="width:50px; height:50px; border-radius:14px; overflow:hidden; box-shadow:0 4px 15px rgba(255,107,0,.6); border:2px solid #ffd700;">
+                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo">
             </div>
-            <div style="display:flex;flex-direction:column;">
-                <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:white;line-height:1;">DELIVERY MOTO</span>
-                <span style="font-size:9px;font-weight:800;color:#ffd700;text-transform:uppercase;letter-spacing:1.8px;margin-top:2px;">Premium Marketplace</span>
+            <div style="display:flex; flex-direction:column;">
+                <span style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:white; line-height:1;">DELIVERY MOTO</span>
+                <span style="font-size:10px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.8px; margin-top:2px;">Energy Software</span>
             </div>
         </div>
-
-        <div style="display:flex;align-items:center;gap:14px;" class="hide-mobile">
-            <span class="nav-link" onclick="scrollToId('funciona')">Cómo Funciona</span>
-            <span class="nav-link" onclick="scrollToId('cadetes')">Cadetes</span>
-            <span class="nav-link" onclick="scrollToId('comercios')">Comercios</span>
-        </div>
-
-        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-            <button class="btn-premium animate-pulse-glow" style="padding:10px 16px;font-size:13px;" onclick="abrirModalMarketplace()">
-                <i class="ri-store-2-fill" style="font-size:16px;"></i>
-                <span class="hidden sm:inline">MARKETPLACE</span>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button class="btn-primary" style="padding:10px 18px; width:auto; font-size:14px;" onclick="abrirModalMarketplace()">
+                <i class="ri-store-2-fill"></i> <span class="hidden sm:inline">MARKETPLACE</span>
             </button>
         </div>
     </div>
 </nav>
 
-<!-- ========================================== -->
-<!-- HERO -->
-<!-- ========================================== -->
-<section class="hero-bg" style="position:relative;overflow:hidden;padding:60px 24px 80px;">
-    <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:550px;height:550px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.25),transparent 65%);pointer-events:none;"></div>
-    
-    <div style="max-width:1000px;margin:0 auto;position:relative;z-index:2;text-align:center;">
-        
-        <div style="position:relative;display:inline-block;margin-bottom:24px;">
-            <div style="position:absolute;inset:-18px;border-radius:50%;border:2px dashed rgba(255,215,0,.35);" class="animate-spin"></div>
-            <div class="animate-float" style="position:relative;width:130px;height:130px;border-radius:50%;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 60px rgba(255,107,0,.7),inset 0 0 20px rgba(0,0,0,.2);background:linear-gradient(135deg,#ff8c00,#c2410c);display:flex;align-items:center;justify-content:center;">
-                <i class="ri-motorbike-fill" style="font-size:64px;color:white;"></i>
-            </div>
-        </div>
+<div style="height:80px;"></div>
 
-        <div style="margin-bottom:16px;">
-            <span class="badge-gold"><i class="ri-vip-crown-fill" style="font-size:13px;"></i> LA NUEVA ERA DEL DELIVERY</span>
+<!-- HERO PRINCIPAL -->
+<section class="hero-bg" style="position:relative; overflow:hidden; padding:40px 20px 80px; text-align:center;">
+    <div style="position:relative; display:inline-block; margin-bottom:24px;">
+        <div style="position:absolute; inset:-24px; border-radius:50%; border:2px dashed rgba(255,215,0,.38);" class="animate-ring"></div>
+        <div class="animate-float" style="position:relative; width:160px; height:160px; border-radius:50%; overflow:hidden; border:5px solid #ffd700; box-shadow:0 0 70px rgba(255,107,0,.7);">
+            <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo">
         </div>
-
-        <h1 class="animate-slide-up" style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(36px,6vw,68px);color:white;margin:0 auto 14px;max-width:780px;letter-spacing:-1.5px;line-height:1.02;text-shadow:0 3px 22px rgba(0,0,0,.4);">
-            DELIVERY <span class="text-gradient-gold">MOTO</span>
-        </h1>
-        
-        <p class="animate-slide-up" style="color:rgba(255,255,255,.92);font-size:clamp(15px,2vw,18px);line-height:1.6;margin:0 auto 32px;max-width:620px;font-weight:600;">
-            <strong style="color:white;">Comercios venden</strong>, <strong style="color:white;">clientes compran seguro</strong>, 
-            y nuestros <strong style="color:#ffd700;">Cadetes Certificados</strong> entregan en tu domicilio.
-        </p>
-
-        <div class="animate-slide-up" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:40px;">
-            <button class="btn-premium" style="padding:16px 28px;font-size:16px;" onclick="abrirModalMarketplace()">
-                <i class="ri-store-2-fill" style="font-size:20px;"></i>
-                ABRIR MARKETPLACE
-            </button>
-            <button class="btn-premium-green" style="padding:16px 24px;font-size:16px;" onclick="abrirModalServimoto()">
-                <i class="ri-shield-keyhole-fill" style="font-size:20px;"></i>
-                PANEL SERVIMOTO
-            </button>
-        </div>
-
-        <div class="animate-slide-up glass" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:500px;margin:0 auto;padding:20px 24px;border-radius:18px;">
-            <div>
-                <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:32px;line-height:1;background:linear-gradient(135deg,#ffd700,#ff8c00);-webkit-background-clip:text;color:transparent;">24/7</div>
-                <div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Servicio</div>
-            </div>
-            <div>
-                <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:32px;line-height:1;background:linear-gradient(135deg,#ffd700,#ff8c00);-webkit-background-clip:text;color:transparent;">100%</div>
-                <div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Certificados</div>
-            </div>
-            <div>
-                <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:32px;line-height:1;background:linear-gradient(135deg,#ffd700,#ff8c00);-webkit-background-clip:text;color:transparent;">GPS</div>
-                <div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Rastreo</div>
-            </div>
-        </div>
+    </div>
+    <h1 class="animate-slide-up" style="font-family:'Sora',sans-serif; font-weight:800; font-size:clamp(40px, 6vw, 76px); color:white; margin-bottom:16px; text-shadow:0 4px 25px rgba(0,0,0,.5);">DELIVERY <span class="text-gradient-gold">MOTO</span></h1>
+    <p class="animate-slide-up" style="color:rgba(255,255,255,.9); font-size:18px; max-width:650px; margin:0 auto 36px; font-weight:600;">La plataforma donde comercios venden, clientes compran fácil, y cadetes certificados entregan seguro.</p>
+    <div class="animate-slide-up" style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+        <button class="btn-primary" style="width:auto; padding:18px 36px; font-size:18px;" onclick="abrirModalMarketplace()"><i class="ri-shopping-bag-3-fill"></i> ABRIR PLATAFORMA</button>
     </div>
 </section>
 
-<!-- ========================================== -->
-<!-- CÓMO FUNCIONA -->
-<!-- ========================================== -->
-<section id="funciona" style="padding:70px 24px;position:relative;background:var(--bg);">
-    <div style="max-width:1150px;margin:0 auto;">
-        <div style="text-align:center;margin-bottom:48px;">
-            <span class="badge-orange" style="margin-bottom:14px;">SISTEMA INTEGRAL</span>
-            <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(28px,4vw,44px);color:var(--text);margin:0 0 10px;letter-spacing:-.8px;">
-                ¿Cómo funciona <span class="text-gradient-orange">Delivery Moto</span>?
-            </h2>
-            <p style="color:var(--muted);font-size:16px;max-width:580px;margin:0 auto;line-height:1.6;font-weight:500;">
-                Tres actores, una plataforma. Todo conectado y guardado automáticamente.
-            </p>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr;gap:22px;" class="md:grid-cols-3">
-            
-            <div class="card-premium" style="padding:28px 24px;text-align:center;">
-                <div style="position:relative;display:inline-block;margin-bottom:18px;">
-                    <div class="feature-icon" style="width:72px;height:72px;border-radius:16px;font-size:32px;"><i class="ri-store-3-fill"></i></div>
-                    <div style="position:absolute;top:-8px;right:-8px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(99,102,241,.4);border:2px solid white;">1</div>
-                </div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin:0 0 10px;">Comercios</h3>
-                <p style="color:var(--muted);font-size:14px;line-height:1.65;margin:0 0 16px;">Creá tu tienda gratis. Publicá tu catálogo y vendé en tu ciudad.</p>
-                <button class="btn-premium" style="padding:12px 20px;font-size:13px;width:100%;" onclick="iniciarLogin('comercio')">
-                    <i class="ri-add-circle-fill"></i> CREAR MI COMERCIO
-                </button>
-            </div>
-
-            <div class="card-premium" style="padding:28px 24px;text-align:center;">
-                <div style="position:relative;display:inline-block;margin-bottom:18px;">
-                    <div class="feature-icon" style="width:72px;height:72px;border-radius:16px;font-size:32px;"><i class="ri-shopping-cart-fill"></i></div>
-                    <div style="position:absolute;top:-8px;right:-8px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#c2410c);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(234,88,12,.45);border:2px solid white;">2</div>
-                </div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin:0 0 10px;">Clientes</h3>
-                <p style="color:var(--muted);font-size:14px;line-height:1.65;margin:0 0 16px;">Buscá tu zona, cargá tu dirección y recibí en tu domicilio.</p>
-                <button class="btn-premium" style="padding:12px 20px;font-size:13px;width:100%;" onclick="abrirModalMarketplace()">
-                    <i class="ri-shopping-bag-3-fill"></i> QUIERO COMPRAR
-                </button>
-            </div>
-
-            <div class="card-premium" style="padding:28px 24px;text-align:center;">
-                <div style="position:relative;display:inline-block;margin-bottom:18px;">
-                    <div class="feature-icon" style="width:72px;height:72px;border-radius:16px;font-size:32px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:var(--accent2);border-color:#86efac;"><i class="ri-motorbike-fill"></i></div>
-                    <div style="position:absolute;top:-8px;right:-8px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(22,163,74,.45);border:2px solid white;">3</div>
-                </div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin:0 0 10px;">Cadetes</h3>
-                <p style="color:var(--muted);font-size:14px;line-height:1.65;margin:0 0 16px;">Personas certificadas. Control de viajes y pagos semanales.</p>
-                <button class="btn-premium-green" style="padding:12px 20px;font-size:13px;width:100%;" onclick="abrirModalServimoto()">
-                    <i class="ri-shield-keyhole-fill"></i> PANEL SERVIMOTO
-                </button>
-            </div>
-
-        </div>
-    </div>
-</section>
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
 
 <!-- ========================================== -->
-<!-- CADETES CERTIFICADOS -->
+<!-- MODAL MARKETPLACE (APP CORE)               -->
 <!-- ========================================== -->
-<section id="cadetes" style="padding:70px 24px;background:linear-gradient(180deg,#0f172a 0%,#1a0a00 50%,#2d1200 100%);position:relative;overflow:hidden;">
-    <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(550px 380px at 20% 30%,rgba(255,107,0,.25),transparent 70%),radial-gradient(450px 320px at 80% 70%,rgba(22,163,74,.18),transparent 70%);pointer-events:none;"></div>
-    
-    <div style="max-width:1100px;margin:0 auto;position:relative;z-index:2;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
-        
-        <div>
-            <span class="badge-gold" style="margin-bottom:18px;"><i class="ri-vip-crown-fill"></i> PERSONAS DE CONFIANZA</span>
-            <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(28px,4vw,44px);color:white;margin:0 0 18px;letter-spacing:-.8px;">
-                Cadetes <span class="text-gradient-gold">Certificados</span><br>
-                con <span style="color:#4ade80;">Buena Conducta</span>
-            </h2>
-            <p style="color:rgba(255,255,255,.88);font-size:16px;line-height:1.7;margin:0 0 24px;">
-                Cada cadete pasa por un proceso de certificación estricto. 
-                <strong class="text-gradient-gold">Panel de control completo</strong> con seguimiento de viajes y pagos.
-            </p>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
-                <div class="glass" style="padding:14px;border-radius:14px;display:flex;align-items:flex-start;gap:12px;">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(22,163,74,.22);color:#4ade80;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(74,222,128,.3);">
-                        <i class="ri-file-shield-2-fill"></i>
-                    </div>
-                    <div>
-                        <div style="color:white;font-weight:800;font-size:13px;">Documentos</div>
-                        <div style="color:rgba(255,255,255,.72);font-size:11px;">DNI, Conducta, AFIP</div>
-                    </div>
-                </div>
-                <div class="glass" style="padding:14px;border-radius:14px;display:flex;align-items:flex-start;gap:12px;">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,140,0,.22);color:#ffb380;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(255,179,128,.3);">
-                        <i class="ri-calendar-check-fill"></i>
-                    </div>
-                    <div>
-                        <div style="color:white;font-weight:800;font-size:13px;">Pagos Semanales</div>
-                        <div style="color:rgba(255,255,255,.72);font-size:11px;">Todos los Lunes</div>
-                    </div>
-                </div>
-                <div class="glass" style="padding:14px;border-radius:14px;display:flex;align-items:flex-start;gap:12px;">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,215,0,.22);color:#ffd700;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(255,215,0,.35);">
-                        <i class="ri-road-map-fill"></i>
-                    </div>
-                    <div>
-                        <div style="color:white;font-weight:800;font-size:13px;">Control Viajes</div>
-                        <div style="color:rgba(255,255,255,.72);font-size:11px;">Historial completo</div>
-                    </div>
-                </div>
-                <div class="glass" style="padding:14px;border-radius:14px;display:flex;align-items:flex-start;gap:12px;">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.22);color:#93c5fd;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(147,197,253,.3);">
-                        <i class="ri-customer-service-2-fill"></i>
-                    </div>
-                    <div>
-                        <div style="color:white;font-weight:800;font-size:13px;">Soporte 24/7</div>
-                        <div style="color:rgba(255,255,255,.72);font-size:11px;">WhatsApp Oficial</div>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn-premium-green" style="padding:15px 26px;font-size:15px;" onclick="abrirModalServimoto()">
-                <i class="ri-motorbike-fill" style="font-size:20px;"></i> ENTRAR AL PANEL SERVIMOTO
-            </button>
-        </div>
-
-        <div class="servimoto-panel" style="padding:28px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                <span class="badge-gold" style="border:1px solid rgba(74,222,128,.5);background:rgba(22,163,74,.15);"><i class="ri-shield-check-fill" style="color:#4ade80;"></i> PANEL ACTIVO</span>
-                <span style="color:#4ade80;font-size:11px;font-weight:800;font-family:monospace;">MOTO-001</span>
-            </div>
-            
-            <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;color:white;margin:0 0 6px;text-align:center;">Resumen Semanal</h3>
-            <p style="color:rgba(255,255,255,.6);font-size:12px;text-align:center;margin:0 0 20px;">Próximo pago: Lunes</p>
-            
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
-                <div class="stat-box">
-                    <div style="font-size:11px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;letter-spacing:.8px;">Viajes</div>
-                    <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:28px;color:white;line-height:1;margin-top:4px;" id="demo-viajes">0</div>
-                </div>
-                <div class="stat-box">
-                    <div style="font-size:11px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;letter-spacing:.8px;">Ganado</div>
-                    <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:28px;color:#4ade80;line-height:1;margin-top:4px;" id="demo-ganado">$0</div>
-                </div>
-                <div class="stat-box">
-                    <div style="font-size:11px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;letter-spacing:.8px;">Comisión</div>
-                    <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:28px;color:#fbbf24;line-height:1;margin-top:4px;" id="demo-comision">$0</div>
-                </div>
-                <div class="stat-box">
-                    <div style="font-size:11px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;letter-spacing:.8px;">A Cobrar</div>
-                    <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:28px;color:#ffd700;line-height:1;margin-top:4px;" id="demo-cobrar">$0</div>
-                </div>
-            </div>
-
-            <button onclick="simularViajeDemo()" class="btn-premium" style="width:100%;padding:14px;font-size:14px;background:rgba(255,255,255,.08);border:2px dashed rgba(255,255,255,.2);box-shadow:none;">
-                <i class="ri-add-circle-fill"></i> SIMULAR VIAJE ($300)
-            </button>
-        </div>
-    </div>
-</section>
-
-<!-- ========================================== -->
-<!-- COMERCIOS -->
-<!-- ========================================== -->
-<section id="comercios" style="padding:70px 24px;background:linear-gradient(180deg,var(--bg) 0%,#ffffff 100%);">
-    <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
-        
-        <div>
-            <span class="badge-orange" style="margin-bottom:18px;"><i class="ri-store-3-fill"></i> PARA COMERCIOS</span>
-            <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(28px,4vw,44px);color:var(--text);margin:0 0 18px;letter-spacing:-.8px;">
-                Publicá y vendé<br><span class="text-gradient-orange">en tu ciudad</span>
-            </h2>
-            <p style="color:var(--muted);font-size:16px;line-height:1.7;margin:0 0 24px;font-weight:500;">
-                <strong>Tenés el local, tenés los productos</strong>. Ahora tenés la plataforma para publicar todo tu catálogo y llegar a miles de clientes.
-            </p>
-
-            <div class="card-premium" style="padding:24px;margin-bottom:24px;">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-                    <div class="feature-icon" style="width:48px;height:48px;border-radius:12px;font-size:22px;"><i class="ri-magic-fill"></i></div>
-                    <div>
-                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;">Panel de Gestión</div>
-                        <div style="color:var(--muted);font-size:12px;font-weight:700;">Tu tienda online premium</div>
-                    </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><i class="ri-check-fill" style="color:var(--accent2);"></i><span style="font-size:13px;font-weight:700;">Alta gratis en 2 min</span></div>
-                    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><i class="ri-check-fill" style="color:var(--accent2);"></i><span style="font-size:13px;font-weight:700;">Catálogo con fotos</span></div>
-                    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><i class="ri-check-fill" style="color:var(--accent2);"></i><span style="font-size:13px;font-weight:700;">Datos guardados</span></div>
-                    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;"><i class="ri-check-fill" style="color:var(--accent2);"></i><span style="font-size:13px;font-weight:700;">Pedidos WhatsApp</span></div>
-                </div>
-            </div>
-
-            <button class="btn-premium" style="padding:15px 26px;font-size:15px;" onclick="iniciarLogin('comercio')">
-                <i class="ri-add-circle-fill" style="font-size:20px;"></i> CREAR MI COMERCIO
-            </button>
-        </div>
-
-        <div class="card-premium" style="padding:0;overflow:hidden;">
-            <div style="height:200px;background:linear-gradient(135deg,#ffedd5,#fed7aa);display:flex;align-items:center;justify-content:center;position:relative;">
-                <i class="ri-store-3-fill" style="font-size:80px;color:var(--accent);opacity:.5;"></i>
-                <div style="position:absolute;bottom:-20px;left:20px;background:white;border-radius:16px;padding:14px 20px;box-shadow:0 12px 32px rgba(0,0,0,.15);border:3px solid var(--accent);">
-                    <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:32px;line-height:1;" class="text-gradient-orange">+85%</div>
-                    <div style="color:var(--muted);font-size:11px;font-weight:800;">en ventas promedio</div>
-                </div>
-            </div>
-            <div style="padding:24px;">
-                <h4 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;margin:0 0 12px;">Tu Panel de Artículos</h4>
-                <div style="display:flex;flex-direction:column;gap:10px;">
-                    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#fff7ed;border-radius:12px;border:1.5px solid #fed7aa;">
-                        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ffedd5,#fed7aa);display:flex;align-items:center;justify-content:center;color:var(--accent);"><i class="ri-image-add-fill"></i></div>
-                        <div style="flex:1;">
-                            <div style="font-weight:800;font-size:14px;">Subir fotos</div>
-                            <div style="font-size:11px;color:var(--muted);">Portada + cada artículo</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f0fdf4;border-radius:12px;border:1.5px solid #bbf7d0;">
-                        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);display:flex;align-items:center;justify-content:center;color:var(--accent2);"><i class="ri-save-3-fill"></i></div>
-                        <div style="flex:1;">
-                            <div style="font-weight:800;font-size:14px;">Guardado automático</div>
-                            <div style="font-size:11px;color:var(--muted);">Todo se guarda en tu dispositivo</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ========================================== -->
-<!-- FOOTER -->
-<!-- ========================================== -->
-<footer style="background:#0a0500;color:rgba(255,255,255,.68);padding:48px 24px 24px;border-top:4px solid var(--accent);">
-    <div style="max-width:1100px;margin:0 auto;">
-        <div style="display:grid;grid-template-columns:1fr;gap:32px;margin-bottom:32px;" class="md:grid-cols-3">
-            <div>
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-                    <div style="width:48px;height:48px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 14px rgba(255,107,0,.55);border:2.5px solid #ffd700;background:linear-gradient(135deg,#ff8c00,#c2410c);display:flex;align-items:center;justify-content:center;">
-                        <i class="ri-motorbike-fill" style="font-size:26px;color:white;"></i>
-                    </div>
-                    <div>
-                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:white;letter-spacing:-.5px;line-height:1;">DELIVERY MOTO</div>
-                        <div style="font-size:10px;font-weight:800;color:#ff8c00;text-transform:uppercase;letter-spacing:2px;margin-top:2px;">Premium Marketplace</div>
-                    </div>
-                </div>
-                <p style="font-size:14px;line-height:1.7;margin:0;">
-                    Plataforma integral de delivery que conecta comercios, clientes y cadetes certificados.
-                </p>
-            </div>
-            
-            <div>
-                <h4 style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin:0 0 14px;">Plataforma</h4>
-                <div style="display:flex;flex-direction:column;gap:8px;">
-                    <span style="cursor:pointer;font-size:14px;font-weight:600;" onclick="abrirModalMarketplace()">Ir al Marketplace</span>
-                    <span style="cursor:pointer;font-size:14px;font-weight:600;" onclick="iniciarLogin('comercio')">Soy Comercio</span>
-                    <span style="cursor:pointer;font-size:14px;font-weight:600;" onclick="abrirModalServimoto()">Panel Servimoto</span>
-                </div>
-            </div>
-            
-            <div>
-                <h4 style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin:0 0 14px;">Soporte Oficial</h4>
-                <div style="display:flex;flex-direction:column;gap:12px;">
-                    <a href="https://wa.me/54938155110171" target="_blank" style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:rgba(255,255,255,.85);text-decoration:none;">
-                        <i class="ri-whatsapp-fill" style="color:#4ade80;font-size:20px;"></i>
-                        <div>+54 9 3815 51-10171</div>
-                    </a>
-                    <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;">
-                        <i class="ri-map-pin-2-fill" style="color:#ffd700;font-size:19px;"></i> Argentina
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;font-size:12.5px;font-weight:700;border-top:1px solid rgba(255,255,255,.1);padding-top:20px;">
-            <div>© 2026 Delivery Moto • Premium Marketplace</div>
-            <div>Hecho en Argentina</div>
-        </div>
-    </div>
-</footer>
-
-<!-- ========================================== -->
-<!-- MODAL MARKETPLACE -->
-<!-- ========================================== -->
-<div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModal('modalMarketplace')">
+<div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
     <div class="modal-box">
-        <button class="modal-close" onclick="cerrarModal('modalMarketplace')"><i class="ri-close-line"></i></button>
-        
-        <div class="modal-header">
-            <div style="position:relative;z-index:2;display:flex;align-items:center;gap:14px;">
-                <div style="width:48px;height:48px;border-radius:12px;overflow:hidden;flex-shrink:0;border:2px solid #ffd700;box-shadow:0 6px 20px rgba(255,107,0,.5);background:linear-gradient(135deg,#ff8c00,#c2410c);display:flex;align-items:center;justify-content:center;">
-                    <i class="ri-store-2-fill" style="font-size:24px;color:white;"></i>
+        <button class="modal-close-btn" onclick="cerrarModalMarketplace()"><i class="ri-close-line"></i></button>
+
+        <!-- HEADER APP -->
+        <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:35px 24px 25px; position:relative; overflow:hidden; flex-shrink:0;">
+            <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
+            <div style="display:flex; align-items:center; gap:16px; position:relative; z-index:2;">
+                <div style="width:56px; height:56px; border-radius:1rem; overflow:hidden; border:2px solid #ffd700; box-shadow:0 8px 25px rgba(255,107,0,0.6);">
+                    <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);">
                 </div>
-                <div style="text-align:left;flex:1;">
-                    <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:white;line-height:1;">MARKETPLACE</div>
-                    <div style="font-size:11px;color:#ff8c00;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-top:3px;">Plataforma Oficial</div>
+                <div>
+                    <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:white; line-height:1;">MARKETPLACE</div>
+                    <div style="font-size:12px; color:#ff8c00; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin-top:4px;">Plataforma Oficial</div>
                 </div>
             </div>
         </div>
 
-        <div class="modal-body">
+        <!-- CONTENEDOR DE PASOS -->
+        <div style="flex:1; display:flex; flex-direction:column; overflow-y:auto; background:#f8fafc; position:relative;">
             
-            <!-- PASO 1: SELECCIÓN -->
-            <div id="step-1" class="sub-step active">
-                <h4 style="font-family:'Sora',sans-serif;font-size:18px;font-weight:800;margin-bottom:16px;">¿Qué necesitás hoy?</h4>
-                <div style="display:flex;flex-direction:column;gap:12px;">
-                    
-                    <button class="option-card" onclick="irPaso('cliente-ubicacion')" style="border:2.5px solid var(--accent);background:linear-gradient(to right,#fff,#fff7ed);">
-                        <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#ff8c00,#c2410c);color:white;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 6px 18px rgba(234,88,12,.4);"><i class="ri-shopping-bag-3-fill"></i></div>
-                        <div style="flex:1;text-align:left;">
-                            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;">Quiero Comprar</div>
-                            <div style="font-size:12px;color:var(--muted);font-weight:600;">Elegí zona, dirección y pedí.</div>
+            <!-- STEP 1: MENÚ -->
+            <div id="modal-step-1" class="sub-step active">
+                <h4 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin-bottom:20px; color:#0f172a;">¿Qué necesitás hoy?</h4>
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                    <button class="option-card" onclick="irPaso('cliente-ubicacion')" style="border-color:#ea580c; background:linear-gradient(to right, #fff, #fff7ed);">
+                        <div style="width:54px; height:54px; border-radius:1rem; background:linear-gradient(135deg, #ea580c, #c2410c); color:white; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 6px 20px rgba(234,88,12,.4);"><i class="ri-shopping-bag-3-fill"></i></div>
+                        <div style="flex:1;">
+                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:18px;">Quiero Comprar</div>
+                            <div style="font-size:13px; color:#64748b; font-weight:600; margin-top:2px;">Elegí zona y pedí comida.</div>
                         </div>
-                        <i class="ri-arrow-right-s-line" style="font-size:26px;color:var(--accent);"></i>
+                        <i class="ri-arrow-right-s-line" style="font-size:30px; color:#ea580c;"></i>
                     </button>
-
-                    <button class="option-card" onclick="irPaso('pedido-especial')" style="border-color:#3b82f6;background:linear-gradient(to right,#fff,#eff6ff);">
-                        <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:white;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 6px 18px rgba(59,130,246,.4);"><i class="ri-motorbike-fill"></i></div>
-                        <div style="flex:1;text-align:left;">
-                            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;">Pedir un Cadete</div>
-                            <div style="font-size:12px;color:var(--muted);font-weight:600;">Viajes especiales o paquetes.</div>
-                        </div>
-                        <i class="ri-arrow-right-s-line" style="font-size:26px;color:#3b82f6;"></i>
-                    </button>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
-                        <button class="option-card" style="padding:16px;flex-direction:column;gap:8px;text-align:center;" onclick="iniciarLogin('comercio')">
-                            <div style="width:42px;height:42px;border-radius:12px;background:#fff7ed;color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;border:1.5px solid #fed7aa;margin:0 auto;"><i class="ri-store-2-fill"></i></div>
-                            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:14px;">Soy Comercio</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px;">
+                        <button class="option-card" style="padding:20px; flex-direction:column; gap:10px; text-align:center; border-color:#fed7aa; background:#fff;" onclick="iniciarLogin('comercio')">
+                            <div style="width:48px; height:48px; border-radius:14px; background:#fff7ed; color:#ea580c; display:flex; align-items:center; justify-content:center; font-size:24px; border:2px solid #fed7aa;"><i class="ri-store-2-fill"></i></div>
+                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px;">Soy Comercio</div>
                         </button>
-                        <button class="option-card" style="padding:16px;flex-direction:column;gap:8px;text-align:center;background:linear-gradient(135deg,#0f172a,#1e293b);border-color:var(--accent2);" onclick="abrirModalServimoto()">
-                            <div style="width:42px;height:42px;border-radius:12px;background:rgba(74,222,128,.15);color:#4ade80;display:flex;align-items:center;justify-content:center;font-size:20px;border:1.5px solid rgba(74,222,128,.3);margin:0 auto;"><i class="ri-shield-keyhole-fill"></i></div>
-                            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:white;">Servimoto</div>
+                        <button class="option-card-dark" style="padding:20px; flex-direction:column; gap:10px; text-align:center;" onclick="iniciarLogin('cadete')">
+                            <div style="width:48px; height:48px; border-radius:14px; background:rgba(74,222,128,0.15); color:#4ade80; display:flex; align-items:center; justify-content:center; font-size:24px; border:2px solid rgba(74,222,128,.3);"><i class="ri-motorbike-fill"></i></div>
+                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; color:white;">Servimoto</div>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- LOGIN -->
-            <div id="step-login" class="sub-step">
-                <button class="btn-premium-dark" style="padding:8px 14px;font-size:13px;margin-bottom:16px;background:transparent;border:2px solid #fed7aa;color:var(--accent);box-shadow:none;" onclick="irPaso(1)">
-                    <i class="ri-arrow-left-s-line"></i> Volver
-                </button>
-                <div class="badge-orange" style="margin-bottom:14px;" id="lblTipoLogin">Acceso Comercio</div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin:0 0 4px;">Ingresá tus credenciales</h3>
-                <p style="font-size:12px;color:var(--muted);margin:0 0 16px;">Clave demo: <strong style="color:var(--accent);">ABC123</strong> · Celular: 8 dígitos mínimo</p>
-                <div style="display:flex;flex-direction:column;gap:12px;">
-                    <input type="tel" class="input-premium" id="loginCelular" placeholder="Tu Celular">
-                    <input type="text" class="input-premium" id="loginClave" placeholder="Clave (Ej: ABC123)" maxlength="6" style="text-transform:uppercase;">
-                    <button class="btn-premium" style="padding:14px;font-size:15px;" onclick="validarLogin()">INGRESAR <i class="ri-arrow-right-line"></i></button>
+            <!-- STEP LOGIN -->
+            <div id="modal-step-login" class="sub-step" data-tipo="">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:24px; margin-bottom:8px;">Ingreso Oficial</h3>
+                <p style="font-size:14px; color:#64748b; margin-bottom:24px; font-weight:600;">Clave demo: <strong style="color:#ea580c;">ABC123</strong></p>
+                <div class="input-wrapper">
+                    <input type="tel" class="input-buscar" id="loginCelular" placeholder="Tu Celular (Mín 8 dígitos)" style="margin:0;">
+                    <button class="mic-btn" onclick="activarMicrofono('loginCelular')"><i class="ri-mic-fill"></i></button>
                 </div>
+                <input type="text" class="input-buscar" id="loginClave" placeholder="Clave (Ej: ABC123)" maxlength="6">
+                <button class="btn-primary" onclick="validarLogin()">INGRESAR AL SISTEMA <i class="ri-arrow-right-line"></i></button>
             </div>
 
-            <!-- CLIENTE: UBICACIÓN -->
-            <div id="step-cliente-ubicacion" class="sub-step">
-                <button class="btn-premium-dark" style="padding:8px 14px;font-size:13px;margin-bottom:16px;background:transparent;border:2px solid #fed7aa;color:var(--accent);box-shadow:none;" onclick="irPaso(1)">
-                    <i class="ri-arrow-left-s-line"></i> Volver
-                </button>
-                <div class="badge-orange" style="margin-bottom:14px;"><i class="ri-map-pin-2-fill"></i> 1. Tu Destino</div>
+            <!-- STEP COMERCIO (PANEL) -->
+            <div id="modal-step-comercio" class="sub-step">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:24px; color:#0f172a;">Tu Tienda</h3>
+                    <button onclick="cerrarSesionComercio()" style="background:#f1f5f9; color:#ef4444; border:1px solid #cbd5e1; padding:8px 14px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;"><i class="ri-logout-box-line"></i> Salir</button>
+                </div>
                 
-                <div style="display:flex;flex-direction:column;gap:12px;">
-                    <label class="upload-box" id="boxSelfieCliente" style="background:#f0fdf4;border-color:#86efac;">
-                        <div style="width:60px;height:60px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;border:2px solid #86efac;" id="iconSelfieCliente">
-                            <i class="ri-camera-lens-fill" style="font-size:30px;color:var(--accent2);"></i>
-                        </div>
-                        <span style="font-weight:800;color:#15803d;font-size:14px;" id="txtSelfieCliente">Selfie de Seguridad (Opcional)</span>
-                        <input type="file" accept="image/*" capture="user" style="display:none;" onchange="previewSelfie(this,'boxSelfieCliente','iconSelfieCliente','txtSelfieCliente')">
-                    </label>
+                <div style="background:white; padding:24px; border-radius:1.5rem; border:2px solid #e2e8f0; box-shadow:0 10px 30px rgba(0,0,0,0.05); margin-bottom:24px;">
+                    <div class="input-wrapper"><input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial" style="margin:0;"><button class="mic-btn" onclick="activarMicrofono('comercioNombre')"><i class="ri-mic-fill"></i></button></div>
+                    <div class="input-wrapper"><input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta" style="margin:0;"><button class="mic-btn" onclick="activarMicrofono('comercioDireccionExacta')"><i class="ri-mic-fill"></i></button></div>
+                    <div class="input-wrapper"><input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad (Ej: Famaillá)" style="margin:0;"><button class="mic-btn" onclick="activarMicrofono('comercioCiudad')"><i class="ri-mic-fill"></i></button></div>
+                    <select class="select-provincia" id="comercioProvincia"><option value="Tucumán">Tucumán</option><option value="Buenos Aires">Buenos Aires</option></select>
+                    <select class="select-provincia" id="comercioCategoria"><option value="pizzeria">Pizzería</option><option value="sandwicheria">Sandwichería</option></select>
+                    <button class="btn-primary" style="margin-top:10px;" onclick="guardarComercio()"><i class="ri-save-3-fill"></i> GUARDAR DATOS LOCAL</button>
+                </div>
 
-                    <input type="tel" class="input-premium" id="inputCelularCliente" placeholder="Tu Celular">
-                    <select class="select-premium" id="selProvinciaCliente">
-                        <option value="">Seleccioná tu Provincia...</option>
-                        <option value="Tucumán">Tucumán</option>
-                        <option value="Buenos Aires">Buenos Aires</option>
-                        <option value="Córdoba">Córdoba</option>
-                        <option value="Santa Fe">Santa Fe</option>
-                        <option value="Salta">Salta</option>
-                        <option value="Jujuy">Jujuy</option>
-                    </select>
-                    <input type="text" class="input-premium" id="inputCiudadCliente" placeholder="Ciudad (Ej: San Miguel de Tucumán)">
-                    <input type="text" class="input-premium" id="inputDireccionCliente" placeholder="Dirección exacta y número">
+                <!-- CAJA PREMIUM PARA ARTÍCULOS -->
+                <div style="background:white; border-radius:1.5rem; padding:24px; box-shadow:0 10px 30px rgba(0,0,0,0.05); margin-bottom:24px; border:2px solid #fed7aa;">
+                    <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:18px; margin-bottom:20px; color:#ea580c;"><i class="ri-add-circle-fill"></i> Publicar Plato Nuevo</h4>
                     
-                    <button class="btn-premium" style="padding:16px;font-size:15px;margin-top:8px;" onclick="verComercios()">
-                        VER LOCALES CERCANOS <i class="ri-store-3-fill"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- LISTA COMERCIOS -->
-            <div id="step-lista-comercios" class="sub-step">
-                <button class="btn-premium-dark" style="padding:8px 14px;font-size:13px;margin-bottom:16px;background:transparent;border:2px solid #fed7aa;color:var(--accent);box-shadow:none;" onclick="irPaso('cliente-ubicacion')">
-                    <i class="ri-arrow-left-s-line"></i> Volver
-                </button>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin-bottom:14px;">Locales en tu zona</h3>
-                <div id="gridComercios" style="display:flex;flex-direction:column;gap:12px;"></div>
-            </div>
-
-            <!-- CATÁLOGO -->
-            <div id="step-catalogo" class="sub-step">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:12px 14px;background:#fff7ed;border-radius:14px;border:1.5px solid #fed7aa;">
-                    <button class="btn-premium-dark" style="padding:6px 12px;font-size:12px;background:transparent;border:none;color:var(--accent);box-shadow:none;" onclick="irPaso('lista-comercios')">
-                        <i class="ri-arrow-left-s-line"></i> Locales
-                    </button>
-                    <div style="font-weight:800;font-size:14px;" id="lblComercioActual">Catálogo</div>
-                    <button class="btn-premium" style="padding:8px 14px;font-size:12px;" onclick="verCarrito()">
-                        <i class="ri-shopping-cart-2-fill"></i> Carrito
-                    </button>
-                </div>
-                <div id="catalogoGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;"></div>
-            </div>
-
-            <!-- PEDIDO ESPECIAL -->
-            <div id="step-pedido-especial" class="sub-step">
-                <button class="btn-premium-dark" style="padding:8px 14px;font-size:13px;margin-bottom:16px;background:transparent;border:2px solid #fed7aa;color:var(--accent);box-shadow:none;" onclick="irPaso(1)">
-                    <i class="ri-arrow-left-s-line"></i> Volver
-                </button>
-                <div class="badge-orange" style="margin-bottom:14px;background:rgba(59,130,246,.1);color:#2563eb;border-color:#bfdbfe;"><i class="ri-map-pin-user-fill"></i> Viaje Especial</div>
-                <div style="display:flex;flex-direction:column;gap:12px;">
-                    <input type="text" class="input-premium" id="dirOrigen" placeholder="¿Dónde retira? (Ej: San Martín 100)">
-                    <select class="select-premium" id="selProvinciaEspecial">
-                        <option value="">Provincia Destino...</option>
-                        <option value="Tucumán">Tucumán</option>
-                        <option value="Buenos Aires">Buenos Aires</option>
-                    </select>
-                    <input type="text" class="input-premium" id="ciuDestino" placeholder="Ciudad Destino">
-                    <input type="text" class="input-premium" id="dirDestino" placeholder="¿A dónde lo lleva?">
-                    <textarea class="textarea-premium" id="txtDetalle" placeholder="Detalle del viaje..."></textarea>
-                    <button class="btn-premium" style="padding:14px;font-size:15px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);" onclick="enviarPedidoEspecial()">
-                        CALCULAR ENVÍO <i class="ri-navigation-fill"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- PANEL COMERCIO -->
-            <div id="step-comercio" class="sub-step" style="max-width:100%;">
-                <button class="btn-premium-dark" style="padding:8px 14px;font-size:13px;margin-bottom:16px;background:transparent;border:2px solid #ef4444;color:#ef4444;box-shadow:none;" onclick="cerrarSesionComercio()">
-                    <i class="ri-logout-box-line"></i> Cerrar Sesión
-                </button>
-                
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:22px;margin:0 0 16px;">Panel Comercial</h3>
-                
-                <!-- DATOS DEL LOCAL -->
-                <div class="card-premium" style="padding:22px;margin-bottom:20px;">
-                    <h4 style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;margin:0 0 14px;display:flex;align-items:center;gap:8px;">
-                        <i class="ri-store-3-fill" style="color:var(--accent);"></i> Datos del Local
-                    </h4>
-                    
-                    <label class="upload-box" id="boxPortada" style="margin-bottom:14px;">
-                        <div style="width:52px;height:52px;border-radius:14px;background:#fff7ed;display:flex;align-items:center;justify-content:center;border:2px solid #fed7aa;" id="iconPortada">
-                            <i class="ri-image-add-fill" style="font-size:26px;color:var(--accent);"></i>
-                        </div>
-                        <span style="font-weight:800;color:var(--accent);font-size:13px;" id="txtPortada">Foto de Portada del Local</span>
-                        <input type="file" accept="image/*" style="display:none;" onchange="previewImage(this,'boxPortada','iconPortada','txtPortada','portada')">
-                    </label>
-
-                    <div style="display:grid;grid-template-columns:1fr;gap:12px;">
-                        <input type="text" class="input-premium" id="comercioNombre" placeholder="Nombre Comercial">
-                        <input type="text" class="input-premium" id="comercioDireccion" placeholder="Dirección Exacta">
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                            <select class="select-premium" id="comercioProvincia" style="margin:0;">
-                                <option value="">Provincia...</option>
-                                <option value="Tucumán">Tucumán</option>
-                                <option value="Buenos Aires">Buenos Aires</option>
-                                <option value="Córdoba">Córdoba</option>
-                            </select>
-                            <input type="text" class="input-premium" id="comercioCiudad" placeholder="Ciudad..." style="margin:0;">
-                        </div>
-                        <select class="select-premium" id="comercioCategoria">
-                            <option value="">Rubro / Categoría...</option>
-                            <option value="pizzeria">Pizzería</option>
-                            <option value="sandwicheria">Sandwichería</option>
-                            <option value="kiosco">Kiosco / Almacén</option>
-                            <option value="bebidas">Bebidas</option>
-                            <option value="farmacia">Farmacia</option>
-                            <option value="panaderia">Panadería</option>
-                        </select>
+                    <div style="display:flex; gap:12px; margin-bottom:16px;">
+                        <div class="input-wrapper" style="flex:2; margin:0;"><input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre Plato" style="margin:0;"><button class="mic-btn" onclick="activarMicrofono('newArtNombre')"><i class="ri-mic-fill"></i></button></div>
+                        <input type="number" class="input-buscar" id="newArtPrecio" placeholder="$ Precio" style="flex:1; margin:0;">
                     </div>
                     
-                    <button class="btn-premium" style="width:100%;padding:14px;font-size:15px;margin-top:14px;" onclick="guardarComercio()">
-                        <i class="ri-save-3-fill"></i> GUARDAR DATOS DEL LOCAL
-                    </button>
-                </div>
-
-                <!-- CREAR ARTÍCULO - MÁS GRANDE Y CÓMODO -->
-                <div class="card-premium" style="padding:22px;margin-bottom:20px;border-color:var(--accent2);">
-                    <h4 style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;margin:0 0 14px;display:flex;align-items:center;gap:8px;color:var(--accent2);">
-                        <i class="ri-add-box-fill"></i> Crear Artículo Nuevo
-                    </h4>
-                    
-                    <label class="upload-box" id="boxArtFoto" style="margin-bottom:14px;min-height:180px;background:#f8fafc;border-color:#cbd5e1;">
-                        <div style="width:56px;height:56px;border-radius:14px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;border:2px solid #e2e8f0;" id="iconArtFoto">
-                            <i class="ri-camera-fill" style="font-size:28px;color:#64748b;"></i>
-                        </div>
-                        <span style="font-weight:800;color:#0f172a;font-size:14px;" id="txtArtFoto">Subir Foto del Plato / Producto</span>
-                        <span style="font-size:11px;color:var(--muted);font-weight:600;">Tamaño recomendado: cuadrada</span>
-                        <input type="file" accept="image/*" style="display:none;" onchange="previewImage(this,'boxArtFoto','iconArtFoto','txtArtFoto','artfoto')">
+                    <label id="boxArticuloNuevo" style="background: linear-gradient(145deg, #ffffff, #f8fafc); border: 3px dashed #cbd5e1; padding: 40px 20px; border-radius: 24px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 4px 20px rgba(0,0,0,0.03); transition: all 0.3s; margin-bottom: 20px; min-height:220px; background-size: cover; background-position: center;">
+                        <div style="width: 80px; height: 80px; border-radius: 20px; background: #fff7ed; display: flex; align-items: center; justify-content: center; border: 2px solid #fed7aa; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(234,88,12,0.2);" id="iconPlatoContenedor"><i class="ri-image-add-fill" style="font-size: 36px; color: #ea580c;"></i></div>
+                        <span style="font-size: 16px; font-weight: 800; color: #0f172a; background:rgba(255,255,255,0.9); padding:8px 16px; border-radius:12px;" id="lblArtFoto">Subir Foto Premium del Plato</span>
+                        <input type="file" accept="image/*" style="display:none;" onchange="previewArtFoto(this)">
                     </label>
 
-                    <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:14px;">
-                        <input type="text" class="input-premium" id="newArtNombre" placeholder="Nombre del artículo" style="margin:0;">
-                        <input type="number" class="input-premium" id="newArtPrecio" placeholder="$ Precio" style="margin:0;">
-                    </div>
-                    
-                    <button class="btn-premium-green" style="width:100%;padding:16px;font-size:15px;" onclick="agregarArticulo()">
-                        <i class="ri-pushpin-2-fill" style="font-size:18px;"></i> PUBLICAR EN LA GRILLA
-                    </button>
+                    <button class="btn-primary" style="background:linear-gradient(135deg,#10b981,#059669); box-shadow:0 10px 30px rgba(16,185,129,0.4);" onclick="agregarArticuloComercio()">+ PUBLICAR EN LA GRILLA</button>
                 </div>
 
-                <!-- LISTA DE ARTÍCULOS -->
-                <div class="card-premium" style="padding:22px;">
-                    <h4 style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;margin:0 0 14px;display:flex;align-items:center;gap:8px;">
-                        <i class="ri-list-check-2"></i> Tus Artículos Publicados
-                    </h4>
-                    <div id="listaArticulos" style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;padding-right:4px;"></div>
+                <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:18px; margin-bottom:16px;">Tus Publicaciones Activas</h4>
+                <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:12px;"></div>
+            </div>
+
+            <!-- STEP SERVIMOTO PANEL -->
+            <div id="modal-step-servimoto" class="sub-step">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:24px; color:#0f172a;">Servimoto</h3>
+                    <button onclick="irPaso(1)" style="background:#f1f5f9; color:#ef4444; border:1px solid #cbd5e1; padding:8px 14px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;"><i class="ri-logout-box-line"></i> Salir</button>
                 </div>
+                
+                <div style="background:linear-gradient(135deg, #0f172a, #050505); border-radius:2rem; padding:28px 24px; border:3px solid #ea580c; color:white; box-shadow:0 25px 50px rgba(0,0,0,0.6); position:relative; overflow:hidden;">
+                    <div style="position:absolute; top:-50px; right:-50px; width:150px; height:150px; background:radial-gradient(circle, rgba(234,88,12,0.2), transparent 70%);"></div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; position:relative; z-index:2;">
+                        <span style="background:rgba(74,222,128,0.2); padding:8px 14px; border-radius:10px; color:#4ade80; font-weight:800; font-size:13px; border:1px solid rgba(74,222,128,0.4);"><i class="ri-robot-2-fill"></i> IA ACTIVA</span>
+                        <button id="btnEstadoTrabajo" onclick="toggleEstadoTrabajo()" style="background:#ef4444; color:white; border:none; padding:10px 20px; border-radius:999px; font-weight:800; font-size:14px; cursor:pointer; box-shadow:0 4px 15px rgba(239,68,68,0.5); transition:all 0.3s;">INACTIVO</button>
+                    </div>
+
+                    <div style="display:flex; justify-content:center; margin-bottom: 32px; position:relative; z-index:2;">
+                        <button id="btnRadar" onclick="activarRadar()" style="width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, #1e3a8a, #0f172a); border: 5px solid #3b82f6; box-shadow: 0 0 40px rgba(59,130,246,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor:pointer; color:white; transition:all 0.3s; position:relative;">
+                            <i class="ri-radar-fill" style="font-size: 54px; margin-bottom:4px; z-index:2;"></i>
+                            <span style="font-weight: 800; font-size: 16px; font-family:'Sora',sans-serif; letter-spacing:1px; z-index:2;">RADAR</span>
+                        </button>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.05); padding:24px; border-radius:1.5rem; text-align:center; border:1px solid rgba(255,255,255,0.1); margin-bottom:20px; position:relative; z-index:2;">
+                        <div style="font-size:12px; font-weight:800; color:#ffd700; letter-spacing:1px; margin-bottom:8px;">DEUDA ACUMULADA AL SISTEMA</div>
+                        <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:52px; font-weight:800; color:white; line-height:1; margin-bottom:12px; text-shadow:0 4px 20px rgba(255,215,0,0.3);">$0</div>
+                        <div style="font-size:13px; color:#94a3b8; font-weight:600; margin-bottom:16px;">Viajes realizados: <strong style="color:white;" id="viajesMotoBadge">0</strong></div>
+                        <button onclick="simularViajeCadete()" style="background:rgba(255,255,255,0.1); border:1px dashed rgba(255,255,255,0.4); color:white; padding:14px; width:100%; border-radius:12px; font-weight:800; cursor:pointer; transition:all 0.2s;">+ SIMULAR VIAJE ($200)</button>
+                    </div>
+
+                    <!-- BOTÓN DE SOPORTE OFICIAL ESTILO PREMIUM -->
+                    <button onclick="window.open('https://wa.me/5493815110171?text=Hola%20Soporte%20Servimoto,%20necesito%20ayuda%20con%20mi%20panel.', '_blank')" style="background:linear-gradient(135deg, #25D366, #128C7E); color:white; padding:18px; border-radius:1.2rem; font-family:'Sora',sans-serif; font-weight:800; font-size:16px; width:100%; border:none; box-shadow:0 12px 30px rgba(37,211,102,0.4); display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; position:relative; z-index:2; transition:all 0.3s;">
+                        <i class="ri-whatsapp-fill" style="font-size:26px;"></i> SOPORTE CADETES
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP CLIENTE UBICACION -->
+            <div id="modal-step-cliente-ubicacion" class="sub-step">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:24px; margin-bottom:20px;">¿A dónde enviamos?</h3>
+                <div class="input-wrapper"><input type="text" id="inputCiudadCliente" class="input-buscar" placeholder="Tu Ciudad (Ej: Famaillá)" style="margin:0;"><button class="mic-btn" onclick="activarMicrofono('inputCiudadCliente')"><i class="ri-mic-fill"></i></button></div>
+                <div class="input-wrapper"><input type="text" id="inputDireccionCliente" class="input-buscar" placeholder="Tu Dirección Exacta" style="margin:0;"><button class="mic-btn" onclick="activarMicrofono('inputDireccionCliente')"><i class="ri-mic-fill"></i></button></div>
+                <div class="input-wrapper"><input type="tel" id="inputCelularCliente" class="input-buscar" placeholder="Tu Celular" style="margin:0;"><button class="mic-btn" onclick="activarMicrofono('inputCelularCliente')"><i class="ri-mic-fill"></i></button></div>
+                <button class="btn-primary" style="margin-top:10px;" onclick="validarUbicacionCliente()"><i class="ri-search-2-fill"></i> BUSCAR LOCALES</button>
+            </div>
+            
+            <!-- STEP LISTA COMERCIOS -->
+            <div id="modal-step-lista-comercios" class="sub-step">
+                <button class="btn-volver" onclick="irPaso('cliente-ubicacion')"><i class="ri-map-pin-2-fill"></i> Cambiar Zona</button>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; margin-bottom:20px;">Locales Disponibles</h3>
+                <div id="gridComerciosDisponibles"></div>
+            </div>
+
+            <!-- STEP CATÁLOGO -->
+            <div id="modal-step-catalogo" class="sub-step" style="padding:16px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px; background:white; padding:16px; border-radius:1rem; border:2px solid #e2e8f0; align-items:center;">
+                    <button class="btn-volver" style="margin:0; padding:8px 14px;" onclick="irPaso('lista-comercios')"><i class="ri-arrow-left-s-line"></i></button>
+                    <span id="lblComercioActual" style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a;">Catálogo</span>
+                    <button class="btn-primary" style="width:auto; padding:10px 16px; font-size:13px;" onclick="prepararCheckout()"><i class="ri-shopping-cart-fill"></i> Ver Envío</button>
+                </div>
+                <div id="catalogoGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;"></div>
             </div>
 
         </div>
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL SERVIMOTO - PANEL COMPLETO -->
-<!-- ========================================== -->
-<div id="modalServimoto" class="modal-overlay" onclick="if(event.target===this)cerrarModal('modalServimoto')">
-    <div class="modal-box" style="max-width:560px;">
-        <button class="modal-close" onclick="cerrarModal('modalServimoto')"><i class="ri-close-line"></i></button>
-        
-        <div class="modal-header" style="background:linear-gradient(135deg,#0f172a,#020617,#1a0a00);">
-            <div style="position:relative;z-index:2;display:flex;align-items:center;gap:14px;">
-                <div style="width:48px;height:48px;border-radius:12px;overflow:hidden;flex-shrink:0;border:2px solid var(--accent2);box-shadow:0 6px 20px rgba(22,163,74,.4);background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;">
-                    <i class="ri-shield-keyhole-fill" style="font-size:24px;color:white;"></i>
-                </div>
-                <div style="text-align:left;flex:1;">
-                    <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:white;line-height:1;">PANEL SERVIMOTO</div>
-                    <div style="font-size:11px;color:#4ade80;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-top:3px;">Control Total del Cadete</div>
-                </div>
+<!-- MODAL MAPA GPS -->
+<div id="modalMapaGrande" class="modal-overlay">
+    <div style="width:100%; max-width:600px; background:#0f172a; border-radius:2rem; position:relative; overflow:hidden; box-shadow:0 30px 80px rgba(234,88,12,.5); display:flex; flex-direction:column; border:3px solid #ea580c; max-height:90vh;">
+        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(135deg, #1a0a00, #2d1200); border-bottom:2px solid rgba(255,255,255,0.1);">
+            <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:18px; color:white;"><i class="ri-radar-fill" style="color:#ea580c;"></i> Satélite GPS</h3>
+            <button onclick="cerrarMapa()" style="width:40px; height:40px; border-radius:50%; background:#ef4444; color:white; border:none; font-size:20px; cursor:pointer;"><i class="ri-close-line"></i></button>
+        </div>
+        <div style="flex:1; width:100%; min-height:350px; position:relative; background: linear-gradient(135deg, #e0f2fe, #bae6fd);">
+            <div style="position:absolute; top:30%; left:20%; width:30px; height:30px; background:#16a34a; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; box-shadow:0 4px 15px rgba(0,0,0,.4); z-index:2; border:2px solid white;"><i class="ri-store-2-fill"></i></div>
+            <div style="position:absolute; top:60%; left:75%; width:36px; height:36px; background:#ea580c; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; box-shadow:0 4px 15px rgba(0,0,0,.4); z-index:2; border:2px solid white;"><i class="ri-map-pin-2-fill" style="font-size:18px;"></i></div>
+            <div id="routeLine" style="position:absolute; height:5px; background:linear-gradient(90deg, #ea580c, #fbbf24, #ea580c); border-radius:3px; transform-origin:left center; box-shadow:0 0 15px rgba(234,88,12,.8); width:0; transition:width 1.5s ease-out;"></div>
+            <div style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,.95); padding:10px 24px; border-radius:999px; font-size:13px; font-weight:800; color:#0369d1; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+                <i class="ri-navigation-fill"></i> Ruta Exacta
             </div>
         </div>
-
-        <div class="modal-body" style="background:linear-gradient(180deg,#0f172a 0%,#020617 100%);">
-            <div id="servimoto-content" class="sub-step active" style="padding:20px;">
-                
-                <!-- ESTADO Y BOTÓN PRINCIPAL -->
-                <div style="background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.08);border-radius:20px;padding:20px;margin-bottom:16px;text-align:center;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                        <span class="badge-gold" style="background:rgba(22,163,74,.15);border:1px solid rgba(74,222,128,.4);"><i class="ri-shield-check-fill" style="color:#4ade80;"></i> SISTEMA ACTIVO</span>
-                        <button id="btnEstadoTrabajo" onclick="toggleEstadoTrabajo()" style="background:#ef4444;color:white;border:none;padding:10px 18px;border-radius:999px;font-weight:800;font-size:12px;cursor:pointer;box-shadow:0 4px 14px rgba(239,68,68,.4);transition:all .3s;">
-                            <i class="ri-close-circle-fill"></i> INACTIVO
-                        </button>
-                    </div>
-                    
-                    <div style="display:flex;justify-content:center;margin-bottom:16px;">
-                        <button id="btnRadar" onclick="activarRadar()" class="radar-btn">
-                            <i class="ri-radar-fill" style="font-size:44px;margin-bottom:4px;position:relative;z-index:2;"></i>
-                            <span style="font-weight:800;font-size:13px;font-family:'Sora',sans-serif;position:relative;z-index:2;letter-spacing:1px;">RADAR</span>
-                        </button>
-                    </div>
-                    <p style="color:rgba(255,255,255,.6);font-size:12px;margin:0;">Activá el radar para buscar viajes en tu zona</p>
+        <div style="background:white; padding:24px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+                <div style="background:#f8fafc; padding:16px; border-radius:1rem; border:2px solid #cbd5e1; text-align:center;">
+                    <div style="font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase;">Distancia Real</div>
+                    <div id="mapaKm" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#0f172a; margin-top:4px;">0.0 km</div>
                 </div>
-
-                <!-- ESTADÍSTICAS -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                    <div class="stat-box">
-                        <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;letter-spacing:.8px;">Viajes Semana</div>
-                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:26px;color:white;line-height:1;margin-top:4px;" id="sm-viajes">0</div>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;letter-spacing:.8px;">Total Ganado</div>
-                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:26px;color:#4ade80;line-height:1;margin-top:4px;" id="sm-ganado">$0</div>
-                    </div>
-                    <div class="stat-box">
-                        <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;letter-spacing:.8px;">Comisión 15%</div>
-                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:26px;color:#fbbf24;line-height:1;margin-top:4px;" id="sm-comision">$0</div>
-                    </div>
-                    <div class="stat-box" id="boxACobrar">
-                        <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;letter-spacing:.8px;">A Cobrar</div>
-                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:26px;color:#ffd700;line-height:1;margin-top:4px;" id="sm-cobrar">$0</div>
-                    </div>
+                <div style="background:#fff7ed; padding:16px; border-radius:1rem; border:2px solid #fed7aa; text-align:center;">
+                    <div style="font-size:11px; font-weight:800; color:#c2410c; text-transform:uppercase;" id="lblTarifaBase">Costo Envío</div>
+                    <div id="mapaCosto" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#ea580c; margin-top:4px;">$--</div>
                 </div>
-
-                <!-- PRÓXIMO PAGO -->
-                <div style="background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(234,88,12,.08));border:2px solid rgba(255,215,0,.3);border-radius:18px;padding:16px;margin-bottom:16px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;">
-                        <div>
-                            <div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:800;text-transform:uppercase;letter-spacing:.8px;">Próximo Pago</div>
-                            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#ffd700;margin-top:2px;">
-                                <i class="ri-calendar-event-fill"></i> Cada Lunes
-                            </div>
-                        </div>
-                        <div id="estadoPago" style="text-align:right;">
-                            <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;">Estado</div>
-                            <div style="font-weight:800;font-size:13px;color:#4ade80;margin-top:2px;"><i class="ri-checkbox-circle-fill"></i> Al día</div>
-                        </div>
-                    </div>
-                    <p style="font-size:11px;color:rgba(255,255,255,.55);margin:10px 0 0;line-height:1.5;">
-                        <i class="ri-information-fill" style="color:#ffd700;"></i> 
-                        Si no pagás la comisión el día lunes, el <strong style="color:#ef4444;">GPS se bloquea automáticamente</strong> hasta regularizar.
-                    </p>
-                </div>
-
-                <!-- BOTONES DE ACCIÓN -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-                    <button onclick="agregarViajeServimoto()" class="btn-premium" style="padding:14px;font-size:13px;background:rgba(255,255,255,.06);border:2px dashed rgba(255,255,255,.18);box-shadow:none;">
-                        <i class="ri-add-circle-fill"></i> NUEVO VIAJE
-                    </button>
-                    <button onclick="marcarPagoRealizado()" class="btn-premium-green" style="padding:14px;font-size:13px;">
-                        <i class="ri-bank-card-fill"></i> MARCAR PAGO
-                    </button>
-                </div>
-
-                <!-- HISTORIAL DE VIAJES -->
-                <div style="background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:18px;padding:16px;margin-bottom:16px;">
-                    <h4 style="font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:white;margin:0 0 12px;display:flex;align-items:center;gap:8px;">
-                        <i class="ri-road-map-fill" style="color:var(--accent);"></i> Historial de Viajes
-                    </h4>
-                    <div id="historialViajes" style="display:flex;flex-direction:column;gap:8px;max-height:180px;overflow-y:auto;">
-                        <div style="text-align:center;padding:20px;color:rgba(255,255,255,.4);font-size:13px;font-weight:600;">
-                            Aún no hay viajes registrados
-                        </div>
-                    </div>
-                </div>
-
-                <!-- BOTÓN SOPORTE -->
-                <a href="https://wa.me/54938155110171" target="_blank" class="btn-premium-green" style="width:100%;padding:16px;font-size:15px;text-decoration:none;">
-                    <i class="ri-whatsapp-fill" style="font-size:22px;"></i>
-                    SOPORTE WHATSAPP: 3815 51-10171
-                </a>
-
             </div>
+            <button class="btn-primary" onclick="irAlCheckout()">CONFIRMAR Y AVANZAR <i class="ri-arrow-right-circle-fill" style="font-size:20px;"></i></button>
         </div>
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL CARRITO -->
-<!-- ========================================== -->
-<div id="modalCarrito" class="modal-overlay" onclick="if(event.target===this)cerrarModal('modalCarrito')">
-    <div class="modal-box" style="max-width:460px;">
-        <button class="modal-close" onclick="cerrarModal('modalCarrito')"><i class="ri-close-line"></i></button>
-        
-        <div class="modal-header">
-            <div style="position:relative;z-index:2;">
-                <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:white;line-height:1;">
-                    <i class="ri-shopping-cart-2-fill" style="color:#ffd700;"></i> Tu Pedido
-                </div>
-                <div style="font-size:11px;color:#ff8c00;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-top:3px;">Resumen de compra</div>
-            </div>
+<!-- MODAL CARRITO FINAL -->
+<div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
+    <div class="modal-box" style="padding:28px 24px; border:4px solid #16a34a; max-width:480px; border-radius:2rem; height:auto; box-shadow:0 30px 80px rgba(22,163,74,.3);">
+        <button class="modal-close-btn" style="border-color:#16a34a; color:#15803d; background:rgba(22,163,74,.1);" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
+        <h3 style="font-family:'Sora',sans-serif; font-size:24px; font-weight:800; margin-bottom:20px; color:#0f172a;"><i class="ri-shopping-bag-3-fill" style="color:#16a34a;"></i> Tu Pedido</h3>
+        <div id="contenidoCarrito" style="max-height:300px; overflow-y:auto; margin-bottom:20px; display:flex; flex-direction:column; gap:10px;"></div>
+        <div style="background:#f0fdf4; padding:18px; border-radius:1.2rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <span style="font-size:15px; font-weight:800; color:#166534; text-transform:uppercase;">Total a Pagar</span>
+            <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:32px; font-weight:800; color:#15803d; line-height:1;">$0</span>
         </div>
-
-        <div class="modal-body">
-            <div class="sub-step active" style="padding:20px;">
-                <div id="itemsCarrito" style="display:flex;flex-direction:column;gap:10px;max-height:280px;overflow-y:auto;margin-bottom:16px;"></div>
-                
-                <div style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:16px;padding:16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                    <span style="font-size:14px;font-weight:800;color:#166534;text-transform:uppercase;">Total a Pagar</span>
-                    <span id="totalCarrito" style="font-family:'Sora',sans-serif;font-weight:800;font-size:28px;color:#15803d;line-height:1;">$0</span>
-                </div>
-                
-                <button class="btn-premium-green" style="width:100%;padding:16px;font-size:15px;" onclick="confirmarPedido()">
-                    <i class="ri-whatsapp-fill" style="font-size:22px;"></i> CONFIRMAR POR WHATSAPP
-                </button>
-            </div>
-        </div>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#16a34a,#15803d); box-shadow:0 12px 30px rgba(22,163,74,0.4);" onclick="mandarPedidoSoporte()">
+            <i class="ri-whatsapp-fill" style="font-size:26px;"></i> PEDIR POR WHATSAPP
+        </button>
     </div>
 </div>
 
+<!-- OVERLAY DE CARGA PREMIUM (RELOJITO) -->
+<div id="loadingPremium" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.95); backdrop-filter:blur(15px); z-index:9999999; align-items:center; justify-content:center; flex-direction:column;">
+    <div style="position:relative; width:100px; height:100px;">
+        <div style="position:absolute; inset:0; border:5px solid rgba(255,107,0,0.15); border-radius:50%;"></div>
+        <div style="position:absolute; inset:0; border:5px solid #ff6b00; border-top-color:transparent; border-radius:50%; animation:spinPremium 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;"></div>
+        <div style="position:absolute; inset:8px; border:3px solid #ffd700; border-bottom-color:transparent; border-radius:50%; animation:spinPremium 1.5s linear infinite reverse;"></div>
+        <i class="ri-motorbike-fill" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#ffd700; font-size:32px; filter:drop-shadow(0 0 10px rgba(255,215,0,0.6));"></i>
+    </div>
+    <div style="margin-top:32px; font-family:'Sora', sans-serif; font-weight:800; font-size:18px; color:white; letter-spacing:3px; animation:pulseText 1.5s ease-in-out infinite;">SINCRONIZANDO</div>
 </div>
 
 <script>
 // ==========================================
-// SISTEMA DE PERSISTENCIA
+// 1. SISTEMA DE PERSISTENCIA SEGURA
 // ==========================================
-const Store = {
-    get: (k) => { try { const v = localStorage.getItem('dm_' + k); return v ? JSON.parse(v) : null; } catch(e) { return null; } },
-    set: (k, v) => { try { localStorage.setItem('dm_' + k, JSON.stringify(v)); return true; } catch(e) { return false; } },
-    remove: (k) => localStorage.removeItem('dm_')
+const AppStore = {
+    get: function(key) { try { return JSON.parse(localStorage.getItem('mkt_' + key)); } catch(e) { return null; } },
+    set: function(key, value) { try { localStorage.setItem('mkt_' + key, JSON.stringify(value)); return true; } catch(e) { return false; } },
+    remove: function(key) { localStorage.removeItem('mkt_' + key); }
 };
 
-// ==========================================
-// DATOS GLOBALES
-// ==========================================
-let comercios = Store.get('comercios') || [];
-let productos = Store.get('productos') || [];
-let carrito = [];
-let comercioLogueadoId = Store.get('comercioLogueadoId') || null;
-let tipoLogin = '';
+let baseComercios = AppStore.get('comercios') || [];
+let baseProductosActivos = AppStore.get('productos') || [];
+let carritoGlobal = [];
+let costoEnvioCalculado = 0;
+let direccionOrigenCalculo = "";
+let miComercioLogueadoId = AppStore.get('comercioLogueadoId') || null;
 
-// Datos demo
-const IMG_DEFAULT = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=400';
-const IMG_COMERCIO = 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400';
-const SOPORTE_WA = '54938155110171';
+// Variables Cadete
+let estadoTrabajoServimoto = false;
+let estadoRadar = false;
+let viajesMotoCount = AppStore.get('viajes_moto') || 0;
+let deudaMotoAcumulada = AppStore.get('deuda_moto') || 0;
 
-// Servimoto
-let smEstado = {
-    online: false,
-    radarActivo: false,
-    viajes: Store.get('sm_viajes') || [],
-    pagoAlDia: Store.get('sm_pagoAlDia') !== false,
-    valorViaje: 300,
-    comisionPorc: 0.15
-};
+const NUMERO_SOPORTE = "5493815110171";
+const IMG_DEFAULT_COMERCIO = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400";
+const IMG_DEFAULT_PRODUCTO = "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=400";
+let tempImgPortada = IMG_DEFAULT_COMERCIO;
+let tempImgBase64 = IMG_DEFAULT_PRODUCTO;
 
-// ==========================================
-// INICIALIZAR DATOS DEMO
-// ==========================================
-function initDatosDemo() {
-    if (comercios.length === 0) {
-        comercios = [{
-            id: 1001,
-            nombre: "Pizzería Don Antonio",
-            provincia: "Tucumán",
-            ciudad: "San Miguel de Tucumán",
-            direccion: "9 de Julio 1200",
-            categoria: "pizzeria",
-            img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400"
-        }];
-        Store.set('comercios', comercios);
-        
-        productos = [
-            { id: 2001, idComercio: 1001, nombre: "Pizza Muzzarella Grande", precio: 8500, img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=400" },
-            { id: 2002, idComercio: 1001, nombre: "Pizza Napolitana", precio: 9200, img: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=400" },
-            { id: 2003, idComercio: 1001, nombre: "Pizza Calabresa", precio: 9800, img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=400" },
-            { id: 2004, idComercio: 1001, nombre: "Empanadas x6", precio: 4200, img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=400" },
-            { id: 2005, idComercio: 1001, nombre: "Lomito Completo", precio: 6800, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400" }
-        ];
-        Store.set('productos', productos);
-    }
-    actualizarDemoStats();
-    actualizarServimotoUI();
-}
-initDatosDemo();
-
-// Si hay comercio logueado, cargar datos
-if (comercioLogueadoId) {
-    const c = comercios.find(x => x.id === comercioLogueadoId);
-    if (c) {
-        setTimeout(() => {
-            document.getElementById('comercioNombre').value = c.nombre || '';
-            document.getElementById('comercioDireccion').value = c.direccion || '';
-            document.getElementById('comercioCiudad').value = c.ciudad || '';
-            document.getElementById('comercioProvincia').value = c.provincia || '';
-            document.getElementById('comercioCategoria').value = c.categoria || '';
-            renderizarListaArticulos();
-        }, 100);
-    }
+// Data Demo si está vacío
+if (baseComercios.length === 0) {
+    const d = Date.now();
+    baseComercios.push({ id: d, nombre: "Pizzería Premium", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Centro 100", img: IMG_DEFAULT_COMERCIO });
+    baseProductosActivos.push({ id: d+1, idComercio: d, nombre: "Pizza Especial", precio: 9500, img: IMG_DEFAULT_PRODUCTO });
+    AppStore.set('comercios', baseComercios);
+    AppStore.set('productos', baseProductosActivos);
 }
 
 // ==========================================
-// TOAST
+// 2. UTILIDADES Y TOASTS
 // ==========================================
-function toast(msg, error = false) {
-    const c = document.getElementById('toast-container');
+function mostrarToast(msg, tipo) {
+    const container = document.getElementById('toast-container');
     const t = document.createElement('div');
-    t.className = 'toast-premium' + (error ? ' error' : '');
-    t.innerHTML = `<i class="${error ? 'ri-error-warning-fill' : 'ri-checkbox-circle-fill'}" style="font-size:20px;"></i><span>${msg}</span>`;
-    c.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(50px)'; t.style.transition = 'all .3s'; setTimeout(() => t.remove(), 300); }, 3200);
+    t.className = tipo === 'error' ? 'toast-premium toast-error' : 'toast-premium';
+    t.innerHTML = `<i class="${tipo==='error'?'ri-error-warning-fill':'ri-checkbox-circle-fill'}" style="font-size:22px;"></i> <span>${msg}</span>`;
+    container.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(50px)'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+function guardarConRelojito(callback, mensajeExito) {
+    const loading = document.getElementById('loadingPremium');
+    loading.style.display = 'flex';
+    setTimeout(() => {
+        loading.style.display = 'none';
+        if(callback) callback();
+        if(mensajeExito) mostrarToast(mensajeExito, 'success');
+    }, 1200);
+}
+
+function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
+
+function activarMicrofono(id) {
+    const input = document.getElementById(id);
+    if(!input) return;
+    mostrarToast('Dicta ahora...', 'success');
+    setTimeout(() => { input.value = "Texto dictado demo"; input.focus(); }, 1500); // Simulador
 }
 
 // ==========================================
-// SCROLL
+// 3. NAVEGACIÓN Y MODALES
 // ==========================================
-function scrollToId(id) {
-    const el = document.getElementById(id);
-    if (el) {
-        const y = el.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-}
+function abrirModalMarketplace() { document.getElementById('modalMarketplace').classList.add('show'); irPaso(1); }
+function cerrarModalMarketplace() { document.getElementById('modalMarketplace').classList.remove('show'); }
+function irPaso(paso) { document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active')); const el = document.getElementById(`modal-step-${paso}`); if (el) el.classList.add('active'); }
 
-// ==========================================
-// MODALES
-// ==========================================
-function abrirModal(id) { document.getElementById(id).classList.add('show'); }
-function cerrarModal(id) { document.getElementById(id).classList.remove('show'); }
-
-function abrirModalMarketplace() { abrirModal('modalMarketplace'); irPaso(1); }
-function abrirModalServimoto() { 
-    cerrarModal('modalMarketplace');
-    abrirModal('modalServimoto'); 
-    actualizarServimotoUI(); 
-}
-
-function irPaso(paso) {
-    document.querySelectorAll('#modalMarketplace .sub-step').forEach(e => e.classList.remove('active'));
-    const el = document.getElementById('step-' + paso);
-    if (el) el.classList.add('active');
-}
-
-// ==========================================
-// LOGIN
-// ==========================================
 function iniciarLogin(tipo) {
-    tipoLogin = tipo;
-    document.getElementById('lblTipoLogin').innerHTML = tipo === 'comercio' 
-        ? '<i class="ri-store-2-fill"></i> Acceso Comercio' 
-        : '<i class="ri-motorbike-fill"></i> Acceso Cadete';
+    document.getElementById('loginCelular').value = '';
+    document.getElementById('loginClave').value = '';
+    document.getElementById('modal-step-login').setAttribute('data-tipo', tipo);
     irPaso('login');
 }
 
 function validarLogin() {
     const cel = document.getElementById('loginCelular').value;
     const pwd = document.getElementById('loginClave').value.toUpperCase();
-    if (cel.length < 8) return toast('Celular debe tener al menos 8 dígitos', true);
-    if (!/^[A-Z]{3}[0-9]{3}$/.test(pwd)) return toast('Clave: 3 letras + 3 números (Ej: ABC123)', true);
+    const tipo = document.getElementById('modal-step-login').getAttribute('data-tipo');
     
-    toast('Ingreso exitoso!');
+    if(cel.length < 8) return mostrarToast('El celular debe tener mínimo 8 dígitos', 'error');
+    if(!/^[A-Z]{3}[0-9]{3}$/.test(pwd)) return mostrarToast('Clave incorrecta (Ej: ABC123)', 'error');
     
-    if (tipoLogin === 'comercio') {
-        if (!comercioLogueadoId) {
-            comercioLogueadoId = Date.now();
-            Store.set('comercioLogueadoId', comercioLogueadoId);
+    guardarConRelojito(() => {
+        if(tipo === 'comercio') {
+            if (miComercioLogueadoId) {
+                const c = baseComercios.find(x => x.id === miComercioLogueadoId);
+                if (c) {
+                    document.getElementById('comercioNombre').value = c.nombre || '';
+                    document.getElementById('comercioDireccionExacta').value = c.direccion || '';
+                    document.getElementById('comercioCiudad').value = c.ciudad || '';
+                    tempImgPortada = c.img || IMG_DEFAULT_COMERCIO;
+                    renderizarAdminComercio();
+                }
+            }
+            irPaso('comercio');
+        } else {
+            document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+            document.getElementById('viajesMotoBadge').textContent = viajesMotoCount;
+            irPaso('servimoto');
         }
-        const c = comercios.find(x => x.id === comercioLogueadoId);
-        if (c) {
-            document.getElementById('comercioNombre').value = c.nombre || '';
-            document.getElementById('comercioDireccion').value = c.direccion || '';
-            document.getElementById('comercioCiudad').value = c.ciudad || '';
-            document.getElementById('comercioProvincia').value = c.provincia || '';
-            document.getElementById('comercioCategoria').value = c.categoria || '';
-        }
-        renderizarListaArticulos();
-        irPaso('comercio');
-    } else {
-        abrirModalServimoto();
-    }
+    }, 'Acceso Autorizado');
 }
 
 function cerrarSesionComercio() {
-    comercioLogueadoId = null;
-    Store.remove('comercioLogueadoId');
+    miComercioLogueadoId = null;
+    AppStore.remove('comercioLogueadoId');
+    document.getElementById('comercioNombre').value = '';
+    document.getElementById('comercioDireccionExacta').value = '';
     irPaso(1);
-    toast('Sesión cerrada');
 }
 
 // ==========================================
-// CLIENTE - UBICACIÓN Y COMERCIOS
+// 4. LÓGICA DE COMERCIOS (PUBLICAR PLATOS)
 // ==========================================
-function previewSelfie(input, boxId, iconId, txtId) {
-    if (input.files && input.files[0]) {
+function previewArtFoto(input) {
+    if(input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            const box = document.getElementById(boxId);
-            box.style.backgroundImage = `url(${e.target.result})`;
-            box.classList.add('has-image');
-            document.getElementById(iconId).style.display = 'none';
-            document.getElementById(txtId).textContent = 'Selfie capturada';
-            document.getElementById(txtId).style.background = 'rgba(255,255,255,.95)';
-            document.getElementById(txtId).style.padding = '4px 10px';
-            document.getElementById(txtId).style.borderRadius = '8px';
-            toast('Selfie guardada');
-        };
+            tempImgBase64 = e.target.result;
+            const caja = document.getElementById('boxArticuloNuevo');
+            caja.style.backgroundImage = `url(${e.target.result})`;
+            document.getElementById('lblArtFoto').textContent = 'Foto Lista';
+            document.getElementById('iconPlatoContenedor').style.display = 'none';
+        }
         reader.readAsDataURL(input.files[0]);
     }
 }
 
-function verComercios() {
-    const prov = document.getElementById('selProvinciaCliente').value;
-    const ciu = document.getElementById('inputCiudadCliente').value;
-    const dir = document.getElementById('inputDireccionCliente').value;
-    const cel = document.getElementById('inputCelularCliente').value;
+function guardarComercio() {
+    const nom = document.getElementById('comercioNombre').value.trim();
+    const dir = document.getElementById('comercioDireccionExacta').value.trim();
+    const ciu = document.getElementById('comercioCiudad').value.trim();
+    if(!nom || !dir || !ciu) return mostrarToast('Faltan el nombre, dirección o ciudad', 'error');
     
-    if (!prov || !ciu || !dir || !cel) return toast('Completá todos los campos', true);
+    guardarConRelojito(() => {
+        miComercioLogueadoId = miComercioLogueadoId || Date.now();
+        const index = baseComercios.findIndex(c => c.id === miComercioLogueadoId);
+        const data = { id: miComercioLogueadoId, nombre: nom, ciudad: ciu, direccion: dir, img: tempImgPortada };
+        if(index === -1) baseComercios.push(data); else baseComercios[index] = data;
+        AppStore.set('comercios', baseComercios);
+        AppStore.set('comercioLogueadoId', miComercioLogueadoId);
+    }, 'Tienda guardada en el servidor');
+}
+
+function agregarArticuloComercio() {
+    if(!miComercioLogueadoId) return mostrarToast('Primero GUARDÁ LOS DATOS DEL LOCAL arriba', 'error');
+    const nom = document.getElementById('newArtNombre').value.trim();
+    const pre = parseInt(document.getElementById('newArtPrecio').value);
+    if(!nom || isNaN(pre) || pre <= 0) return mostrarToast('Revisa el nombre y precio del plato', 'error');
     
-    const container = document.getElementById('gridComercios');
-    let html = '';
-    
-    comercios.forEach(c => {
-        html += `
-        <button class="option-card" onclick="verCatalogo(${c.id}, '${c.nombre.replace(/'/g, "\\'")}')" style="padding:14px;">
-            <div style="width:56px;height:56px;border-radius:14px;overflow:hidden;border:2px solid #fed7aa;flex-shrink:0;">
-                <img src="${c.img || IMG_COMERCIO}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='${IMG_COMERCIO}'">
+    guardarConRelojito(() => {
+        baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64 });
+        AppStore.set('productos', baseProductosActivos);
+        
+        document.getElementById('newArtNombre').value = '';
+        document.getElementById('newArtPrecio').value = '';
+        document.getElementById('lblArtFoto').textContent = 'Subir Foto Premium del Plato';
+        document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
+        document.getElementById('iconPlatoContenedor').style.display = 'flex';
+        tempImgBase64 = IMG_DEFAULT_PRODUCTO;
+        renderizarAdminComercio();
+    }, 'Plato publicado exitosamente');
+}
+
+function renderizarAdminComercio() {
+    const cont = document.getElementById('listaAdminComercio');
+    const misProductos = baseProductosActivos.filter(p => p.idComercio === miComercioLogueadoId);
+    if (misProductos.length === 0) { cont.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8; font-weight:700;">No hay artículos publicados aún.</div>'; return; }
+    cont.innerHTML = misProductos.map(p => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:white; border:2px solid #e2e8f0; border-radius:1rem;">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <img src="${p.img}" style="width:50px; height:50px; border-radius:10px; object-fit:cover;">
+                <div><div style="font-size:14px; font-weight:800; color:#0f172a;">${p.nombre}</div><div style="font-size:13px; color:#ea580c; font-weight:800;">$${p.precio.toLocaleString('es-AR')}</div></div>
             </div>
-            <div style="flex:1;text-align:left;">
-                <div style="font-weight:800;font-size:15px;margin-bottom:4px;">${c.nombre}</div>
-                <div style="font-size:12px;color:var(--muted);"><i class="ri-map-pin-line"></i> ${c.direccion}, ${c.ciudad}</div>
-            </div>
-            <i class="ri-arrow-right-s-line" style="font-size:26px;color:var(--accent);"></i>
-        </button>`;
-    });
-    
-    if (html === '') {
-        html = '<div style="text-align:center;padding:30px;font-weight:700;color:var(--muted);background:#f8fafc;border-radius:14px;border:2px dashed #cbd5e1;">Aún no hay comercios en tu zona. Sé el primero en registrarte!</div>';
-    }
-    
-    container.innerHTML = html;
-    irPaso('lista-comercios');
+            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:10px; width:40px; height:40px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
+        </div>
+    `).join('');
+}
+
+function eliminarArticuloAdmin(id) {
+    guardarConRelojito(() => {
+        baseProductosActivos = baseProductosActivos.filter(p => p.id !== id);
+        AppStore.set('productos', baseProductosActivos);
+        renderizarAdminComercio();
+    }, 'Artículo eliminado');
 }
 
 // ==========================================
-// CATÁLOGO
+// 5. CLIENTE (COMPRAR)
 // ==========================================
-function verCatalogo(idComercio, nombre) {
-    document.getElementById('lblComercioActual').textContent = nombre;
-    const prods = productos.filter(p => p.idComercio === idComercio);
-    const container = document.getElementById('catalogoGrid');
-    
-    if (prods.length === 0) {
-        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;font-weight:700;color:var(--muted);background:#f8fafc;border-radius:14px;border:2px dashed #cbd5e1;">Este local aún no tiene artículos publicados.</div>';
-    } else {
-        container.innerHTML = prods.map(p => `
-            <div class="card-premium" style="padding:0;overflow:hidden;border-radius:16px;">
-                <div style="height:130px;width:100%;position:relative;">
-                    <img src="${p.img}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='${IMG_DEFAULT}'">
+function validarUbicacionCliente() {
+    const ciu = document.getElementById('inputCiudadCliente').value;
+    const dir = document.getElementById('inputDireccionCliente').value;
+    if(!ciu || !dir) return mostrarToast('Completá Ciudad y Dirección', 'error');
+    filtrarComerciosPorCiudad();
+    irPaso('lista-comercios');
+}
+
+function filtrarComerciosPorCiudad() {
+    const ciu = quitarAcentos(document.getElementById('inputCiudadCliente').value.trim());
+    const container = document.getElementById('gridComerciosDisponibles');
+    let html = '';
+    baseComercios.forEach(c => {
+        const cCiu = quitarAcentos((c.ciudad || '').trim());
+        if(!ciu || cCiu.includes(ciu)) {
+            const safeNombre = c.nombre.replace(/'/g, "\\'"); const safeDir = c.direccion.replace(/'/g, "\\'");
+            html += `
+            <div class="option-card" onclick="verCatalogoComercio(${c.id}, '${safeNombre}', '${safeDir}')" style="margin-bottom:12px;">
+                <img src="${c.img}" style="width:64px; height:64px; border-radius:14px; object-fit:cover; border:2px solid #fed7aa;">
+                <div style="flex:1;">
+                    <div style="font-weight:800; color:#0f172a; font-size:16px; margin-bottom:4px;">${c.nombre}</div>
+                    <div style="font-size:12px; color:#64748b; font-weight:600;"><i class="ri-map-pin-line"></i> ${c.direccion}</div>
                 </div>
-                <div style="padding:14px;">
-                    <div style="font-weight:800;font-size:13px;line-height:1.3;margin-bottom:6px;min-height:34px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${p.nombre}</div>
-                    <div style="color:var(--accent);font-weight:800;font-size:17px;margin-bottom:10px;">$${p.precio.toLocaleString('es-AR')}</div>
-                    <button class="btn-premium" style="width:100%;padding:10px;font-size:12px;border-radius:10px;box-shadow:0 4px 12px rgba(234,88,12,.3);" onclick="agregarAlCarrito(${p.id})">
-                        AGREGAR <i class="ri-shopping-cart-2-fill"></i>
-                    </button>
+                <i class="ri-arrow-right-s-line" style="font-size:30px; color:#ea580c;"></i>
+            </div>`;
+        }
+    });
+    if(html === '') html = '<div style="text-align:center; padding:30px; font-weight:700; color:#64748b; background:white; border-radius:1rem; border:2px dashed #cbd5e1;">Aún no hay comercios aquí.</div>';
+    container.innerHTML = html;
+}
+
+function verCatalogoComercio(idComercio, nombreComercio, direccionLocal) {
+    direccionOrigenCalculo = direccionLocal; 
+    document.getElementById('lblComercioActual').textContent = nombreComercio;
+    const container = document.getElementById('catalogoGrid');
+    const productos = baseProductosActivos.filter(p => p.idComercio === idComercio);
+    
+    if(productos.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:700; color:#64748b; border:2px dashed #cbd5e1; border-radius:1rem;">Tienda sin platos activos.</div>';
+    } else {
+        container.innerHTML = productos.map(p => `
+            <div class="card-premium" style="padding:0; border-radius:1.2rem; display:flex; flex-direction:column;">
+                <div style="height:130px; width:100%;"><img src="${p.img}" style="width:100%; height:100%; object-fit:cover;"></div>
+                <div style="padding:14px; display:flex; flex-direction:column; flex:1;">
+                    <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#0f172a; margin-bottom:8px;">${p.nombre}</div>
+                    <div style="color:#ea580c; font-weight:800; font-size:18px; margin-bottom:12px;">$${p.precio.toLocaleString('es-AR')}</div>
+                    <button class="btn-primary" style="padding:12px 8px; font-size:13px;" onclick="agregarAlCarrito('${p.nombre.replace(/'/g, "\\'")}', ${p.precio})">AGREGAR <i class="ri-shopping-cart-2-fill"></i></button>
                 </div>
             </div>
         `).join('');
@@ -1489,376 +616,133 @@ function verCatalogo(idComercio, nombre) {
     irPaso('catalogo');
 }
 
-function agregarAlCarrito(idProd) {
-    const p = productos.find(x => x.id === idProd);
-    if (p) {
-        carrito.push({ ...p });
-        toast(`Agregado: ${p.nombre}`);
-    }
+// ==========================================
+// 6. CARRITO Y CHECKOUT MAPA
+// ==========================================
+function agregarAlCarrito(nombre, precio) { 
+    carritoGlobal.push({ nombre, precio, cantidad: 1 }); 
+    mostrarToast('Plato agregado', 'success'); 
 }
 
-function verCarrito() {
-    if (carrito.length === 0) return toast('Tu carrito está vacío', true);
-    renderizarCarrito();
-    abrirModal('modalCarrito');
-}
-
-function renderizarCarrito() {
-    const container = document.getElementById('itemsCarrito');
-    let total = 0;
+function prepararCheckout() {
+    if(carritoGlobal.length === 0) return mostrarToast('Agregá al menos un plato', 'error');
     
-    container.innerHTML = carrito.map((item, idx) => {
-        total += item.precio;
+    guardarConRelojito(() => {
+        document.getElementById('modalMapaGrande').classList.add('show');
+        setTimeout(() => {
+            document.getElementById('mapaBox').style.opacity = '1';
+            document.getElementById('mapaBox').style.transform = 'scale(1)';
+            
+            const km = (1.5 + Math.random() * 3).toFixed(1);
+            document.getElementById('mapaKm').textContent = km + " km";
+            
+            const esNoche = (new Date().getHours() >= 20 || new Date().getHours() < 6);
+            const tarifaBase = esNoche ? 3000 : 2200; 
+            document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche' : 'Base Día';
+            
+            let costoExtra = parseFloat(km) > 1.0 ? Math.ceil((parseFloat(km) - 1.0) / 0.1) * 100 : 0;
+            costoEnvioCalculado = tarifaBase + costoExtra;
+            document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
+            
+            const routeLine = document.getElementById('routeLine');
+            if (routeLine) { routeLine.style.width = '60%'; routeLine.style.left = '22%'; routeLine.style.top = '45%'; routeLine.style.transform = 'rotate(25deg)'; }
+        }, 100);
+    }, 'Calculando trazado satelital...');
+}
+
+function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); document.getElementById('mapaBox').style.opacity = '0'; }
+
+function irAlCheckout() { 
+    cerrarMapa(); cerrarModalMarketplace();
+    document.getElementById('modalCarritoFinal').classList.add('show'); 
+    
+    let subtotal = 0;
+    let listHTML = carritoGlobal.map((item, idx) => {
+        subtotal += item.precio;
         return `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;">
-            <div style="display:flex;align-items:center;gap:10px;flex:1;">
-                <img src="${item.img}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;" onerror="this.src='${IMG_DEFAULT}'">
-                <div>
-                    <div style="font-weight:800;font-size:13px;">${item.nombre}</div>
-                    <div style="color:var(--accent);font-weight:800;font-size:13px;">$${item.precio.toLocaleString('es-AR')}</div>
-                </div>
-            </div>
-            <button onclick="quitarDelCarrito(${idx})" style="background:#ef4444;color:white;border:none;border-radius:10px;width:34px;height:34px;cursor:pointer;margin-left:8px;"><i class="ri-delete-bin-fill"></i></button>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:white; border:2px solid #e2e8f0; border-radius:1rem;">
+            <div><div style="font-weight:800; font-size:15px;">${item.nombre}</div><div style="color:#ea580c; font-weight:800; font-size:14px;">$${item.precio.toLocaleString('es-AR')}</div></div>
+            <button onclick="borrarItemCarrito(${idx})" style="background:#ef4444; color:white; border:none; border-radius:10px; width:40px; height:40px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
         </div>`;
     }).join('');
     
-    document.getElementById('totalCarrito').textContent = '$' + total.toLocaleString('es-AR');
+    listHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:16px; background:#f0fdf4; border:2px solid #bbf7d0; border-radius:1rem; margin-top:12px;"><div style="font-weight:800; font-size:14px; color:#166534;">Envío GPS Calculado</div><div style="color:#166534; font-weight:800; font-size:16px;">$${costoEnvioCalculado.toLocaleString('es-AR')}</div></div>`;
+    
+    document.getElementById('contenidoCarrito').innerHTML = listHTML;
+    document.getElementById('totalFinalCarrito').textContent = '$' + (subtotal + costoEnvioCalculado).toLocaleString('es-AR');
 }
 
-function quitarDelCarrito(idx) {
-    carrito.splice(idx, 1);
-    renderizarCarrito();
-    if (carrito.length === 0) cerrarModal('modalCarrito');
+function cerrarCarrito() { document.getElementById('modalCarritoFinal').classList.remove('show'); }
+
+function borrarItemCarrito(idx) {
+    carritoGlobal.splice(idx, 1);
+    if(carritoGlobal.length === 0) { cerrarCarrito(); costoEnvioCalculado = 0; return mostrarToast('Carrito vacío', 'error'); }
+    irAlCheckout();
 }
 
-function confirmarPedido() {
-    const cel = document.getElementById('inputCelularCliente')?.value || 'No especificado';
-    const dir = document.getElementById('inputDireccionCliente')?.value || 'No especificado';
-    const ciu = document.getElementById('inputCiudadCliente')?.value || '';
+function mandarPedidoSoporte() {
+    let txt = "🚀 *NUEVO PEDIDO MARKETPLACE*%0A%0A";
+    let subtotal = 0;
+    carritoGlobal.forEach(i => { txt += `- ${i.nombre} ($${i.precio})%0A`; subtotal += i.precio; });
+    const dir = document.getElementById('inputDireccionCliente').value;
+    const ciu = document.getElementById('inputCiudadCliente').value;
     
-    let txt = 'NUEVO PEDIDO DELIVERY MOTO%0A%0A';
-    let total = 0;
-    carrito.forEach(i => {
-        txt += `- ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`;
-        total += i.precio;
-    });
-    txt += `%0ADirección: ${dir}, ${ciu}%0A`;
-    txt += `Celular: ${cel}%0A`;
-    txt += `TOTAL: $${total.toLocaleString('es-AR')}`;
-    
-    window.open(`https://wa.me/${SOPORTE_WA}?text=${txt}`, '_blank');
-    toast('Pedido enviado a WhatsApp!');
-    carrito = [];
-    cerrarModal('modalCarrito');
+    txt += `%0A*Local:* ${direccionOrigenCalculo}%0A*Destino:* ${dir}, ${ciu}%0A*Envio:* $${costoEnvioCalculado}%0A*TOTAL:* $${subtotal + costoEnvioCalculado}`;
+    window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
+    mostrarToast('Abriendo WhatsApp', 'success');
 }
 
 // ==========================================
-// PEDIDO ESPECIAL
-// ==========================================
-function enviarPedidoEspecial() {
-    const origen = document.getElementById('dirOrigen').value;
-    const destino = document.getElementById('dirDestino').value;
-    const ciudad = document.getElementById('ciuDestino').value;
-    const detalle = document.getElementById('txtDetalle').value;
-    
-    if (!origen || !destino || !ciudad || !detalle) return toast('Completá todos los campos', true);
-    
-    const txt = `PEDIDO ESPECIAL - DELIVERY MOTO%0A%0ARetiro: ${origen}%0ADestino: ${destino}, ${ciudad}%0ADetalle: ${detalle}`;
-    window.open(`https://wa.me/${SOPORTE_WA}?text=${txt}`, '_blank');
-    toast('Solicitud enviada!');
-    cerrarModal('modalMarketplace');
-}
-
-// ==========================================
-// PANEL COMERCIO
-// ==========================================
-let tempImg = { portada: null, artfoto: null };
-
-function previewImage(input, boxId, iconId, txtId, tipo) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const box = document.getElementById(boxId);
-            box.style.backgroundImage = `url(${e.target.result})`;
-            box.classList.add('has-image');
-            document.getElementById(iconId).style.display = 'none';
-            document.getElementById(txtId).textContent = tipo === 'portada' ? 'Portada lista' : 'Foto lista';
-            document.getElementById(txtId).style.background = 'rgba(255,255,255,.95)';
-            document.getElementById(txtId).style.padding = '4px 10px';
-            document.getElementById(txtId).style.borderRadius = '8px';
-            tempImg[tipo] = e.target.result;
-            toast('Imagen cargada correctamente');
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function guardarComercio() {
-    const nom = document.getElementById('comercioNombre').value.trim();
-    const dir = document.getElementById('comercioDireccion').value.trim();
-    const prov = document.getElementById('comercioProvincia').value;
-    const ciu = document.getElementById('comercioCiudad').value.trim();
-    const cat = document.getElementById('comercioCategoria').value;
-    
-    if (!nom || !dir || !prov || !ciu) return toast('Completá nombre, dirección, provincia y ciudad', true);
-    
-    let idx = comercios.findIndex(c => c.id === comercioLogueadoId);
-    if (idx === -1) {
-        comercios.push({
-            id: comercioLogueadoId,
-            nombre: nom,
-            direccion: dir,
-            provincia: prov,
-            ciudad: ciu,
-            categoria: cat,
-            img: tempImg.portada || IMG_COMERCIO
-        });
-    } else {
-        comercios[idx].nombre = nom;
-        comercios[idx].direccion = dir;
-        comercios[idx].provincia = prov;
-        comercios[idx].ciudad = ciu;
-        comercios[idx].categoria = cat;
-        if (tempImg.portada) comercios[idx].img = tempImg.portada;
-    }
-    
-    Store.set('comercios', comercios);
-    toast('Datos del local guardados!');
-    renderizarListaArticulos();
-}
-
-function agregarArticulo() {
-    const nom = document.getElementById('newArtNombre').value.trim();
-    const pre = parseInt(document.getElementById('newArtPrecio').value);
-    
-    if (!nom || isNaN(pre) || pre <= 0) return toast('Ingresá nombre y precio válidos', true);
-    
-    productos.unshift({
-        id: Date.now(),
-        idComercio: comercioLogueadoId,
-        nombre: nom,
-        precio: pre,
-        img: tempImg.artfoto || IMG_DEFAULT
-    });
-    
-    Store.set('productos', productos);
-    toast('Artículo publicado!');
-    
-    document.getElementById('newArtNombre').value = '';
-    document.getElementById('newArtPrecio').value = '';
-    tempImg.artfoto = null;
-    
-    // Resetear upload box
-    const box = document.getElementById('boxArtFoto');
-    box.style.backgroundImage = '';
-    box.classList.remove('has-image');
-    document.getElementById('iconArtFoto').style.display = 'flex';
-    document.getElementById('txtArtFoto').textContent = 'Subir Foto del Plato / Producto';
-    document.getElementById('txtArtFoto').style.background = '';
-    document.getElementById('txtArtFoto').style.padding = '';
-    
-    renderizarListaArticulos();
-}
-
-function eliminarArticulo(id) {
-    productos = productos.filter(p => p.id !== id);
-    Store.set('productos', productos);
-    renderizarListaArticulos();
-    toast('Artículo eliminado');
-}
-
-function renderizarListaArticulos() {
-    const container = document.getElementById('listaArticulos');
-    if (!container) return;
-    
-    const mis = productos.filter(p => p.idComercio === comercioLogueadoId);
-    
-    if (mis.length === 0) {
-        container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;font-weight:600;">No hay artículos publicados aún. Creá tu primer artículo arriba.</div>';
-        return;
-    }
-    
-    container.innerHTML = mis.map(p => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <img src="${p.img}" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:2px solid #fed7aa;" onerror="this.src='${IMG_DEFAULT}'">
-                <div>
-                    <div style="font-weight:800;font-size:14px;">${p.nombre}</div>
-                    <div style="color:var(--accent);font-weight:800;font-size:13px;">$${p.precio.toLocaleString('es-AR')}</div>
-                </div>
-            </div>
-            <button onclick="eliminarArticulo(${p.id})" style="background:#ef4444;color:white;border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
-        </div>
-    `).join('');
-}
-
-// ==========================================
-// SERVIMOTO - PANEL COMPLETO
+// 7. LÓGICA DE CADETES (RESTRICCIÓN LUNES)
 // ==========================================
 function toggleEstadoTrabajo() {
-    smEstado.online = !smEstado.online;
+    estadoTrabajoServimoto = !estadoTrabajoServimoto;
     const btn = document.getElementById('btnEstadoTrabajo');
-    
-    if (!smEstado.pagoAlDia && smEstado.online) {
-        toast('Tenés pagos pendientes. Regularizá para activar el GPS.', true);
-        smEstado.online = false;
-        return;
-    }
-    
-    if (smEstado.online) {
-        btn.style.background = '#16a34a';
-        btn.style.boxShadow = '0 4px 14px rgba(22,163,74,.4)';
-        btn.innerHTML = '<i class="ri-check-double-line"></i> ONLINE';
-        toast('Estás en línea. Encendé el radar.');
+    if(estadoTrabajoServimoto) {
+        btn.style.background = '#16a34a'; btn.style.boxShadow = '0 4px 15px rgba(22,163,74,0.5)'; btn.innerHTML = '<i class="ri-check-double-line"></i> ONLINE';
+        mostrarToast('Turno Iniciado', 'success');
     } else {
-        btn.style.background = '#ef4444';
-        btn.style.boxShadow = '0 4px 14px rgba(239,68,68,.4)';
-        btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
-        if (smEstado.radarActivo) activarRadar();
+        btn.style.background = '#ef4444'; btn.style.boxShadow = '0 4px 15px rgba(239,68,68,0.5)'; btn.innerHTML = 'INACTIVO';
+        if(estadoRadar) activarRadar(); 
     }
 }
 
 function activarRadar() {
-    if (!smEstado.online) return toast('Primero activá tu estado ONLINE', true);
-    if (!smEstado.pagoAlDia) return toast('Pagos pendientes. GPS bloqueado.', true);
+    if(!estadoTrabajoServimoto) return mostrarToast('Inicia el Turno primero', 'error');
     
-    smEstado.radarActivo = !smEstado.radarActivo;
+    // RESTRICCIÓN ESTRICTA DE LUNES
+    const esLunes = new Date().getDay() === 1; // 1 = Lunes
+    if(esLunes && deudaMotoAcumulada > 0) {
+        return mostrarToast(`⚠️ SISTEMA BLOQUEADO: Es Lunes. Liquida tu deuda de $${deudaMotoAcumulada} para usar el radar.`, 'error');
+    }
+
+    estadoRadar = !estadoRadar;
     const btn = document.getElementById('btnRadar');
-    
-    if (smEstado.radarActivo) {
-        btn.classList.add('active');
-        btn.innerHTML = `
-            <div class="radar-ring"></div>
-            <div class="radar-ring" style="animation-delay:.6s;"></div>
-            <div class="radar-ring" style="animation-delay:1.2s;"></div>
-            <i class="ri-radar-fill animate-spin" style="font-size:44px;margin-bottom:4px;position:relative;z-index:2;color:#93c5fd;"></i>
-            <span style="font-weight:800;font-size:12px;font-family:'Sora',sans-serif;position:relative;z-index:2;color:#bfdbfe;letter-spacing:1px;">BUSCANDO...</span>
-        `;
-        toast('Radar encendido. Buscando viajes...');
+    if(estadoRadar) {
+        btn.innerHTML = `<div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div><i class="ri-radar-fill" style="font-size:54px; animation:spinPremium 2s linear infinite; color:#93c5fd; position:relative; z-index:2;"></i><span style="font-weight:800; font-size:14px; color:#bfdbfe; position:relative; z-index:2; margin-top:4px;">ESCANEANDO</span>`;
+        btn.style.background = 'radial-gradient(circle, #2563eb, #1e3a8a)';
+        btn.style.borderColor = '#60a5fa';
+        btn.style.boxShadow = '0 0 50px rgba(59,130,246,0.8)';
+        mostrarToast('Radar Satelital Encendido', 'success');
     } else {
-        btn.classList.remove('active');
-        btn.innerHTML = `
-            <i class="ri-radar-fill" style="font-size:44px;margin-bottom:4px;position:relative;z-index:2;"></i>
-            <span style="font-weight:800;font-size:13px;font-family:'Sora',sans-serif;position:relative;z-index:2;letter-spacing:1px;">RADAR</span>
-        `;
+        btn.innerHTML = `<i class="ri-radar-fill" style="font-size:54px; z-index:2; position:relative; margin-bottom:4px;"></i><span style="font-weight:800; font-size:16px; font-family:'Sora',sans-serif; letter-spacing:1px; z-index:2; position:relative;">RADAR</span>`;
+        btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)';
+        btn.style.borderColor = '#3b82f6';
+        btn.style.boxShadow = '0 0 40px rgba(59,130,246,0.4)';
     }
 }
 
-function agregarViajeServimoto() {
-    if (!smEstado.online) return toast('Activá el estado ONLINE primero', true);
-    
-    const viaje = {
-        id: Date.now(),
-        fecha: new Date().toLocaleString('es-AR'),
-        monto: smEstado.valorViaje,
-        comision: Math.round(smEstado.valorViaje * smEstado.comisionPorc),
-        neto: Math.round(smEstado.valorViaje * (1 - smEstado.comisionPorc))
-    };
-    
-    smEstado.viajes.unshift(viaje);
-    Store.set('sm_viajes', smEstado.viajes);
-    actualizarServimotoUI();
-    toast(`Viaje #${smEstado.viajes.length} registrado: $${viaje.monto}`);
-}
-
-function actualizarServimotoUI() {
-    const totalViajes = smEstado.viajes.length;
-    const totalGanado = smEstado.viajes.reduce((s, v) => s + v.monto, 0);
-    const totalComision = smEstado.viajes.reduce((s, v) => s + v.comision, 0);
-    const totalACobrar = totalGanado - totalComision;
-    
-    const elV = document.getElementById('sm-viajes');
-    const elG = document.getElementById('sm-ganado');
-    const elC = document.getElementById('sm-comision');
-    const elA = document.getElementById('sm-cobrar');
-    
-    if (elV) elV.textContent = totalViajes;
-    if (elG) elG.textContent = '$' + totalGanado.toLocaleString('es-AR');
-    if (elC) elC.textContent = '$' + totalComision.toLocaleString('es-AR');
-    if (elA) elA.textContent = '$' + totalACobrar.toLocaleString('es-AR');
-    
-    // Estado pago
-    const estadoPago = document.getElementById('estadoPago');
-    if (estadoPago) {
-        if (smEstado.pagoAlDia) {
-            estadoPago.innerHTML = `
-                <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;">Estado</div>
-                <div style="font-weight:800;font-size:13px;color:#4ade80;margin-top:2px;"><i class="ri-checkbox-circle-fill"></i> Al día</div>
-            `;
-        } else {
-            estadoPago.innerHTML = `
-                <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:800;text-transform:uppercase;">Estado</div>
-                <div style="font-weight:800;font-size:13px;color:#ef4444;margin-top:2px;"><i class="ri-error-warning-fill"></i> Pendiente</div>
-            `;
-        }
-    }
-    
-    // Historial
-    const hist = document.getElementById('historialViajes');
-    if (hist) {
-        if (smEstado.viajes.length === 0) {
-            hist.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.4);font-size:13px;font-weight:600;">Aún no hay viajes registrados</div>';
-        } else {
-            hist.innerHTML = smEstado.viajes.slice(0, 20).map((v, i) => `
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:12px;">
-                    <div>
-                        <div style="font-weight:800;font-size:13px;color:white;">Viaje #${smEstado.viajes.length - i}</div>
-                        <div style="font-size:10px;color:rgba(255,255,255,.5);">${v.fecha}</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-weight:800;font-size:14px;color:#4ade80;">+$${v.neto}</div>
-                        <div style="font-size:10px;color:rgba(255,255,255,.5);">Comisión: $${v.comision}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-}
-
-function marcarPagoRealizado() {
-    if (smEstado.viajes.length === 0) return toast('No hay viajes para liquidar', true);
-    
-    smEstado.pagoAlDia = true;
-    smEstado.viajes = [];
-    Store.set('sm_viajes', smEstado.viajes);
-    Store.set('sm_pagoAlDia', true);
-    actualizarServimotoUI();
-    toast('Pago marcado como realizado. Cuenta al día!');
-}
-
-// ==========================================
-// DEMO STATS PARA HERO
-// ==========================================
-function actualizarDemoStats() {
-    const totalViajes = smEstado.viajes.length;
-    const totalGanado = smEstado.viajes.reduce((s, v) => s + v.monto, 0);
-    const totalComision = smEstado.viajes.reduce((s, v) => s + v.comision, 0);
-    const totalACobrar = totalGanado - totalComision;
-    
-    const elV = document.getElementById('demo-viajes');
-    const elG = document.getElementById('demo-ganado');
-    const elC = document.getElementById('demo-comision');
-    const elA = document.getElementById('demo-cobrar');
-    
-    if (elV) elV.textContent = totalViajes;
-    if (elG) elG.textContent = '$' + totalGanado.toLocaleString('es-AR');
-    if (elC) elC.textContent = '$' + totalComision.toLocaleString('es-AR');
-    if (elA) elA.textContent = '$' + totalACobrar.toLocaleString('es-AR');
-}
-
-function simularViajeDemo() {
-    const viaje = {
-        id: Date.now(),
-        fecha: new Date().toLocaleString('es-AR'),
-        monto: 300,
-        comision: 45,
-        neto: 255
-    };
-    smEstado.viajes.unshift(viaje);
-    Store.set('sm_viajes', smEstado.viajes);
-    actualizarDemoStats();
-    actualizarServimotoUI();
-    toast('Viaje demo agregado!');
+function simularViajeCadete() {
+    if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('El radar debe estar encendido', 'error');
+    guardarConRelojito(() => {
+        viajesMotoCount++;
+        deudaMotoAcumulada += 200;
+        AppStore.set('viajes_moto', viajesMotoCount);
+        AppStore.set('deuda_moto', deudaMotoAcumulada);
+        document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+        document.getElementById('viajesMotoBadge').textContent = viajesMotoCount;
+    }, 'Viaje detectado y liquidado en cuenta');
 }
 </script>
+</body>
 </html>
