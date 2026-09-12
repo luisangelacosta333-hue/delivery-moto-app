@@ -5,45 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DELIVERY MOTO | Marketplace Premium</title>
 
-    <!-- ========================================== -->
-    <!-- LIBRERÍAS EXTERNAS Y FUENTES               -->
-    <!-- ========================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- ========================================== -->
-    <!-- PWA MANIFEST                               -->
-    <!-- ========================================== -->
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkRFTElWRVJZIE1PVE8iLAogICJzaG9ydF9uYW1lIjogIkRlbGl2ZXJ5TW90byIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmN2VkIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNmIwMCIKZX0=">
 
     <script>
-        // ==========================================
-        // SEGURIDAD ANTI-COPIA PREMIUM
-        // ==========================================
         document.addEventListener('contextmenu', event => event.preventDefault()); 
-        
         document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false; 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; 
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; 
-            if(e.ctrlKey && e.keyCode == 85) return false; 
-            if(e.ctrlKey && e.keyCode == 83) return false; 
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) return false; 
         };
 
-        // ==========================================
-        // STORE DE MEMORIA Y CONFIGURACIÓN
-        // ==========================================
         const AppStore = (function() {
             const memory = new Map();
             const MAX_SIZE = 500; 
             return {
                 set: function(key, value) {
-                    if(memory.size >= MAX_SIZE) {
-                        const firstKey = memory.keys().next().value;
-                        memory.delete(firstKey);
-                    }
+                    if(memory.size >= MAX_SIZE) { memory.delete(memory.keys().next().value); }
                     memory.set(key, value);
                 },
                 get: function(key) { return memory.get(key); },
@@ -193,8 +173,9 @@
         </div>
 
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-            <button class="mic-btn" id="micBtn" title="Asistente de Voz" onclick="activarMicrofono()">
-                <i class="ri-mic-fill" id="micIcon"></i>
+            <!-- AQUÍ ESTÁ EL BOTÓN PLAY PARA LA LECTURA EN VOZ ALTA -->
+            <button class="mic-btn animate-mic" id="micBtn" title="Escuchar Funciones de la App" onclick="reproducirFunciones()">
+                <i class="ri-play-fill" id="micIcon" style="font-size: 24px;"></i>
             </button>
             <button class="btn-primary animate-pulse-glow" style="padding:10px 16px;font-size:13.5px;" onclick="abrirModalMarketplace()">
                 <i class="ri-store-2-fill" style="font-size:17px;"></i>
@@ -236,9 +217,7 @@
         </div>
 
         <div style="margin-bottom:16px;">
-            <span class="badge-dorado">
-                <i class="ri-vip-crown-fill" style="font-size:14px;"></i> LA NUEVA ERA DEL DELIVERY
-            </span>
+            <span class="badge-dorado"><i class="ri-vip-crown-fill" style="font-size:14px;"></i> LA NUEVA ERA DEL DELIVERY</span>
         </div>
 
         <h1 class="hero-title animate-slide-up" style="font-size:clamp(38px,6vw,72px);color:white;margin:0 auto 14px;max-width:780px;text-shadow:0 3px 25px rgba(0,0,0,.4);">
@@ -253,8 +232,7 @@
 
         <div class="animate-slide-up" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:36px;">
             <button class="btn-primary" style="padding:16px 28px;font-size:16px;" onclick="abrirModalMarketplace()">
-                <i class="ri-store-2-fill" style="font-size:20px;"></i>
-                MARKETPLACE
+                <i class="ri-store-2-fill" style="font-size:20px;"></i> MARKETPLACE
             </button>
             <button class="btn-apk" id="btnInstalarApp" style="padding:16px 24px;font-size:16px;" onclick="descargarAPK()">
                 <i class="ri-android-fill" style="font-size:20px;"></i>
@@ -264,18 +242,9 @@
         </div>
 
         <div class="animate-slide-up" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:520px;margin:0 auto;padding:20px 24px;border-radius:1.25rem;" class="glass">
-            <div>
-                <div class="stat-number" style="font-size:36px;">24/7</div>
-                <div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Servicio</div>
-            </div>
-            <div>
-                <div class="stat-number" style="font-size:36px;">100%</div>
-                <div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Certificados</div>
-            </div>
-            <div>
-                <div class="stat-number" style="font-size:36px;">GPS</div>
-                <div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Rastreo</div>
-            </div>
+            <div><div class="stat-number" style="font-size:36px;">24/7</div><div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Servicio</div></div>
+            <div><div class="stat-number" style="font-size:36px;">100%</div><div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Certificados</div></div>
+            <div><div class="stat-number" style="font-size:36px;">GPS</div><div style="color:rgba(255,255,255,.85);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;">Rastreo</div></div>
         </div>
     </div>
 </section>
@@ -295,15 +264,11 @@
         <div style="display:grid;grid-template-columns:1fr;gap:22px;" class="md:grid-cols-3">
             <div class="card-premium" style="padding:28px 24px;text-align:center;">
                 <div style="position:relative;display:inline-block;margin-bottom:18px;">
-                    <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;">
-                        <i class="ri-store-3-fill"></i>
-                    </div>
+                    <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;"><i class="ri-store-3-fill"></i></div>
                     <div style="position:absolute;top:-8px;right:-8px;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(99,102,241,.4);border:2px solid white;">1</div>
                 </div>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#0f172a;margin:0 0 10px;">Comercios</h3>
-                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">
-                    Creá tu tienda <strong style="color:#cc4400;">gratis</strong>. Publicá tu catálogo con fotos reales y vendé.
-                </p>
+                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">Creá tu tienda <strong style="color:#cc4400;">gratis</strong>. Publicá tu catálogo con fotos reales y vendé.</p>
                 <div style="padding-top:14px;border-top:2px solid #ffe4cc;text-align:left;">
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Alta gratis en 2 min</span></div>
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Catálogo administrable</span></div>
@@ -313,15 +278,11 @@
 
             <div class="card-premium" style="padding:28px 24px;text-align:center;">
                 <div style="position:relative;display:inline-block;margin-bottom:18px;">
-                    <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;">
-                        <i class="ri-shopping-cart-fill"></i>
-                    </div>
+                    <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;"><i class="ri-shopping-cart-fill"></i></div>
                     <div style="position:absolute;top:-8px;right:-8px;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#ff8c00,#cc4400);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(255,107,0,.45);border:2px solid white;">2</div>
                 </div>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#0f172a;margin:0 0 10px;">Clientes</h3>
-                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">
-                    Buscá tu ciudad, cargá tu dirección exacta, calculá envío por GPS y recibí en tu domicilio.
-                </p>
+                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">Buscá tu ciudad, cargá tu dirección exacta, calculá envío por GPS y recibí en tu domicilio.</p>
                 <div style="padding-top:14px;border-top:2px solid #ffe4cc;text-align:left;">
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Direcciones exactas</span></div>
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Cálculo $100 x cuadra extra</span></div>
@@ -331,22 +292,17 @@
 
             <div class="card-premium" style="padding:28px 24px;text-align:center;">
                 <div style="position:relative;display:inline-block;margin-bottom:18px;">
-                    <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#16a34a;border-color:#86efac;">
-                        <i class="ri-motorbike-fill"></i>
-                    </div>
+                    <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#16a34a;border-color:#86efac;"><i class="ri-motorbike-fill"></i></div>
                     <div style="position:absolute;top:-8px;right:-8px;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(22,163,74,.45);border:2px solid white;">3</div>
                 </div>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#0f172a;margin:0 0 10px;">Cadetes</h3>
-                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;">
-                    <strong>Personas certificadas</strong>. Escanean viajes con el radar GPS y pagan liquidación con IA.
-                </p>
+                <p style="color:#64748b;font-size:14.5px;line-height:1.65;margin:0 0 16px;"><strong>Personas certificadas</strong>. Escanean viajes con el radar GPS y pagan liquidación con IA.</p>
                 <div style="padding-top:14px;border-top:2px solid #ffe4cc;text-align:left;">
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Buena conducta y DNI</span></div>
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Auditoría OpenAI</span></div>
                     <div class="check-step"><i class="ri-check-fill"></i><span style="font-size:13px;font-weight:700;color:#0f172a;">Radar de viajes activable</span></div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
@@ -360,23 +316,13 @@
         <div style="display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
                 <div class="glass" style="padding:10px 14px;border-radius:1.1rem;display:flex;align-items:center;gap:12px;box-shadow:0 10px 25px rgba(0,0,0,.3); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4);">
-                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#d4a017);display:flex;align-items:center;justify-content:center;color:#0f172a;font-size:16px;">
-                        <i class="ri-vip-crown-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:800;font-size:12.5px;">Cadete Premium</div>
-                        <div style="color:rgba(255,255,255,.75);font-size:10px;font-weight:600;">Verificado</div>
-                    </div>
+                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#d4a017);display:flex;align-items:center;justify-content:center;color:#0f172a;font-size:16px;"><i class="ri-vip-crown-fill"></i></div>
+                    <div style="text-align:left;"><div style="color:white;font-weight:800;font-size:12.5px;">Cadete Premium</div><div style="color:rgba(255,255,255,.75);font-size:10px;font-weight:600;">Verificado</div></div>
                 </div>
 
                 <div class="glass" style="padding:10px 14px;border-radius:1.1rem;display:flex;align-items:center;gap:12px;box-shadow:0 10px 25px rgba(0,0,0,.3); background: rgba(22,163,74,0.15); border: 1px solid rgba(22,163,74,0.4);">
-                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;">
-                        <i class="ri-shield-check-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:800;font-size:12.5px;">Buena Conducta</div>
-                        <div style="color:rgba(255,255,255,.75);font-size:10px;font-weight:600;">Certificada</div>
-                    </div>
+                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;"><i class="ri-shield-check-fill"></i></div>
+                    <div style="text-align:left;"><div style="color:white;font-weight:800;font-size:12.5px;">Buena Conducta</div><div style="color:rgba(255,255,255,.75);font-size:10px;font-weight:600;">Certificada</div></div>
                 </div>
             </div>
             
@@ -386,57 +332,23 @@
         </div>
 
         <div>
-            <span class="badge-dorado" style="margin-bottom:18px;">
-                <i class="ri-vip-crown-fill"></i> PERSONAS DE CONFIANZA
-            </span>
+            <span class="badge-dorado" style="margin-bottom:18px;"><i class="ri-vip-crown-fill"></i> PERSONAS DE CONFIANZA</span>
             <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:white;margin:0 0 18px;">
-                Cadetes <span class="text-gradient-gold">Certificados</span><br>
-                con <span style="color:#4ade80;">Buena Conducta</span>
+                Cadetes <span class="text-gradient-gold">Certificados</span><br>con <span style="color:#4ade80;">Buena Conducta</span>
             </h2>
             <p style="color:rgba(255,255,255,.88);font-size:16px;line-height:1.7;margin:0 0 24px;">
-                Cada cadete es una <strong>persona real registrada</strong> que pasa por un 
-                <strong class="text-gradient-gold">proceso de certificación estricto</strong> auditado por inteligencia artificial.
+                Cada cadete es una <strong>persona real registrada</strong> que pasa por un <strong class="text-gradient-gold">proceso de certificación estricto</strong> auditado por inteligencia artificial.
             </p>
 
             <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:26px;" class="sm:grid-cols-2">
                 <div class="glass" style="padding:14px;border-radius:1.1rem;display:flex;align-items:flex-start;gap:12px;">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(22,163,74,.22);color:#4ade80;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(74,222,128,.3);">
-                        <i class="ri-file-shield-2-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">Documentos Auditados</div>
-                        <div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">DNI, AFIP, Antecedentes • IA</div>
-                    </div>
+                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(22,163,74,.22);color:#4ade80;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(74,222,128,.3);"><i class="ri-file-shield-2-fill"></i></div>
+                    <div style="text-align:left;"><div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">Documentos Auditados</div><div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">DNI, AFIP, Antecedentes • IA</div></div>
                 </div>
 
                 <div class="glass" style="padding:14px;border-radius:1.1rem;display:flex;align-items:flex-start;gap:12px;">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,140,0,.22);color:#ffb380;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(255,179,128,.3);">
-                        <i class="ri-user-smile-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">Certificado de Conducta</div>
-                        <div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">Evaluación y referencias</div>
-                    </div>
-                </div>
-
-                <div class="glass" style="padding:14px;border-radius:1.1rem;display:flex;align-items:flex-start;gap:12px;">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,215,0,.22);color:#ffd700;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(255,215,0,.35);">
-                        <i class="ri-star-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">Calificación 5 Estrellas</div>
-                        <div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">Sistema de reputación</div>
-                    </div>
-                </div>
-
-                <div class="glass" style="padding:14px;border-radius:1.1rem;display:flex;align-items:flex-start;gap:12px;">
-                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.22);color:#93c5fd;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(147,197,253,.3);">
-                        <i class="ri-satellite-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">GPS en Tiempo Real</div>
-                        <div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">Rastreo satelital</div>
-                    </div>
+                    <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,140,0,.22);color:#ffb380;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(255,179,128,.3);"><i class="ri-user-smile-fill"></i></div>
+                    <div style="text-align:left;"><div style="color:white;font-weight:800;font-size:13.5px;margin-bottom:1px;">Certificado de Conducta</div><div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">Evaluación y referencias</div></div>
                 </div>
             </div>
 
@@ -452,36 +364,13 @@
 <section id="comercios" style="padding:70px 22px;background:linear-gradient(180deg,#fff7ed 0%,#ffffff 100%);position:relative;">
     <div style="max-width:1150px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
         <div>
-            <span class="badge-naranja" style="margin-bottom:18px;">
-                <i class="ri-store-3-fill"></i> PARA COMERCIOS
-            </span>
+            <span class="badge-naranja" style="margin-bottom:18px;"><i class="ri-store-3-fill"></i> PARA COMERCIOS</span>
             <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:#0f172a;margin:0 0 18px;">
-                Publicá y vendé<br>
-                <span class="text-gradient-orange">en tu ciudad</span>
+                Publicá y vendé<br><span class="text-gradient-orange">en tu ciudad</span>
             </h2>
             <p style="color:#64748b;font-size:16.5px;line-height:1.7;margin:0 0 24px;font-weight:500;">
-                <strong>Tenés el personal, tenés los productos</strong>. Ahora tenés la plataforma perfecta para 
-                <strong>publicar todo tu catálogo</strong> y llegar a miles de clientes en tu zona.
+                <strong>Tenés el personal, tenés los productos</strong>. Ahora tenés la plataforma perfecta para publicar todo tu catálogo y llegar a miles de clientes.
             </p>
-
-            <div style="background:white;border-radius:1.4rem;padding:24px;border:2.5px solid #ffd4b3;box-shadow:0 10px 35px rgba(255,107,0,.1);margin-bottom:24px;">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-                    <div style="width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,#fff7ed,#ffe4cc);color:#ff6b00;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid #ffd4b3;">
-                        <i class="ri-magic-fill"></i>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;color:#0f172a;">Publicación Profesional</div>
-                        <div style="color:#64748b;font-size:12px;font-weight:700;">Tu tienda online premium</div>
-                    </div>
-                </div>
-                
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
-                    <div class="check-step" style="padding:4px 0;"><i class="ri-check-fill"></i><span style="font-size:12.5px;font-weight:700;color:#0f172a;">Fotos de Portada y Plato</span></div>
-                    <div class="check-step" style="padding:4px 0;"><i class="ri-check-fill"></i><span style="font-size:12.5px;font-weight:700;color:#0f172a;">Ciudades Exclusivas</span></div>
-                    <div class="check-step" style="padding:4px 0;"><i class="ri-check-fill"></i><span style="font-size:12.5px;font-weight:700;color:#0f172a;">Precios Transparentes</span></div>
-                    <div class="check-step" style="padding:4px 0;"><i class="ri-check-fill"></i><span style="font-size:12.5px;font-weight:700;color:#0f172a;">Conexión WhatsApp</span></div>
-                </div>
-            </div>
 
             <div style="display:flex;flex-wrap:wrap;gap:12px;">
                 <button class="btn-primary" style="padding:15px 26px;font-size:15.5px;" onclick="iniciarLogin('comercio')">
@@ -494,172 +383,26 @@
             <div style="border-radius:1.75rem;overflow:hidden;box-shadow:0 25px 70px rgba(255,107,0,.2);border:4px solid white;">
                 <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/d7131ec1e885488fa6e34a5adb26f105.jpeg~tplv-0es2k971ck-image.image?rcl=20260909234706F5BB7D22F40FD41F6D84&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791560882&x-signature=3%2BYN5DQdeuW94EqVEkXkJwLsfQI%3D" style="width:100%;height:auto;display:block;" alt="Productos">
             </div>
-            
-            <div style="position:absolute;bottom:-20px;left:-16px;background:white;border-radius:1.4rem;padding:18px 24px;box-shadow:0 18px 45px rgba(0,0,0,.18);border:3px solid #ff6b00;">
-                <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:38px;line-height:1;" class="text-gradient-orange">+85%</div>
-                <div style="color:#64748b;font-size:12px;font-weight:800;margin-top:3px;">en ventas promedio</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="funciones" style="padding:70px 22px;background:#fff7ed;position:relative;" class="bg-grid-orange">
-    <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;">
-        <div style="text-align:center;margin-bottom:44px;">
-            <div class="eyebrow" style="justify-content:center;margin-bottom:12px;">Tecnología de Vanguardia</div>
-            <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:#0f172a;margin:0 0 10px;">
-                Todas las <span class="text-gradient-orange">Funciones</span> Incluidas
-            </h2>
-            <p style="color:#64748b;font-size:16.5px;max-width:600px;margin:0 auto;line-height:1.6;font-weight:500;">
-                Todo lo que necesitás para operar al máximo nivel. Sin límites.
-            </p>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr;gap:18px;" class="md:grid-cols-2 lg:grid-cols-3">
-            <div class="card-premium" style="padding:26px;">
-                <div class="feature-icon"><i class="ri-volume-up-fill"></i></div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Asistente de Voz Latino</h3>
-                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Tocá el micrófono y escuchá la plataforma en tu idioma.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:26px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#16a34a;border-color:#86efac;"><i class="ri-robot-2-fill"></i></div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Auditoría IA</h3>
-                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">OpenAI verifica los comprobantes de pago automáticamente.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:26px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#2563eb;border-color:#93c5fd;"><i class="ri-database-2-fill"></i></div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Supabase Realtime</h3>
-                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Base de datos en tiempo real. Todo se actualiza al instante.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:26px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#d97706;border-color:#fcd34d;"><i class="ri-map-2-fill"></i></div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Mapa GPS</h3>
-                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Cálculo exacto de envío por trazado de punta a punta.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:26px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#f3e8ff,#e9d5ff);color:#9333ea;border-color:#d8b4fe;"><i class="ri-camera-3-fill"></i></div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Selfie de Seguridad</h3>
-                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">El cliente sube foto y celular para que el cadete lo reconozca.</p>
-            </div>
-            
-            <div class="card-premium" style="padding:26px;">
-                <div class="feature-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);color:#db2777;border-color:#f9a8d4;"><i class="ri-whatsapp-fill"></i></div>
-                <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Pedidos WhatsApp</h3>
-                <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Toda la info del pedido llega directo al WhatsApp de soporte.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section style="padding:70px 22px;background:linear-gradient(135deg,#1a0a00 0%,#cc4400 50%,#ff6b00 100%);position:relative;overflow:hidden;">
-    <div style="position:absolute;inset:0;background:radial-gradient(450px 280px at 80% 20%,rgba(255,215,0,.25),transparent 70%);pointer-events:none;"></div>
-    
-    <div style="max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:2;">
-        <div style="position:relative;display:inline-block;margin-bottom:24px;">
-            <div style="position:absolute;inset:-18px;border-radius:50%;border:2px dashed rgba(255,215,0,.4);" class="animate-ring"></div>
-            <div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7);position:relative;z-index:1;">
-                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo">
-            </div>
-        </div>
-        
-        <h2 class="section-title" style="font-size:clamp(28px,4.5vw,54px);color:white;margin:0 0 16px;text-shadow:0 4px 22px rgba(0,0,0,.4);">
-            ¿Listo para unirte a<br>
-            <span class="text-gradient-gold">Delivery Moto</span>?
-        </h2>
-        <p style="color:rgba(255,255,255,.92);font-size:17px;max-width:560px;margin:0 auto 32px;line-height:1.6;font-weight:500;">
-            Comerciantes, clientes y cadetes — todos ganan con Delivery Moto.
-        </p>
-        
-        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:24px;">
-            <button class="btn-primary animate-pulse-glow" style="padding:18px 32px;font-size:17px;border-color:rgba(255,255,255,.45);" onclick="abrirModalMarketplace()">
-                <i class="ri-store-2-fill" style="font-size:22px;"></i> ENTRAR AL MARKETPLACE
-            </button>
-            <button class="btn-apk" style="padding:18px 26px;font-size:17px;" onclick="descargarAPK()">
-                <i class="ri-android-fill" style="font-size:22px;"></i> PWA / APK CADETE
-            </button>
         </div>
     </div>
 </section>
 
 <footer style="background:#0a0500;color:rgba(255,255,255,.68);padding:48px 22px 24px;border-top:4px solid #ff6b00;">
-    <div style="max-width:1150px;margin:0 auto;">
-        <div style="display:grid;grid-template-columns:1fr;gap:32px;margin-bottom:32px;" class="md:grid-cols-3">
-            <div>
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-                    <div style="width:50px;height:50px;border-radius:1rem;overflow:hidden;flex-shrink:0;box-shadow:0 4px 16px rgba(255,107,0,.55);border:2.5px solid #ffd700;">
-                        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo">
-                    </div>
-                    <div>
-                        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:white;letter-spacing:-.5px;line-height:1;">DELIVERY MOTO</div>
-                        <div style="font-size:10.5px;font-weight:800;color:#ff8c00;text-transform:uppercase;letter-spacing:2px;margin-top:2px;">Energy Software</div>
-                    </div>
-                </div>
-                <p style="font-size:14px;line-height:1.7;margin:0;color:rgba(255,255,255,.68);">
-                    Plataforma integral de delivery que conecta comercios, clientes y cadetes certificados. Todo bajo control RLS y almacenamiento protegido.
-                </p>
-            </div>
-            
-            <div>
-                <h4 style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin:0 0 14px;">Plataforma</h4>
-                <div style="display:flex;flex-direction:column;gap:8px;">
-                    <span style="cursor:pointer;font-size:14px;font-weight:600;transition:color .2s;display:inline-block;width:fit-content;" onclick="abrirModalMarketplace()">Ir al Marketplace</span>
-                    <span style="cursor:pointer;font-size:14px;font-weight:600;transition:color .2s;display:inline-block;width:fit-content;" onclick="iniciarLogin('comercio')">Soy Comercio</span>
-                    <span style="cursor:pointer;font-size:14px;font-weight:600;transition:color .2s;display:inline-block;width:fit-content;" onclick="iniciarLogin('cadete')">Trabajar como Cadete</span>
-                </div>
-            </div>
-            
-            <div>
-                <h4 style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin:0 0 14px;">Contacto de Soporte</h4>
-                <div style="display:flex;flex-direction:column;gap:12px;">
-                    <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;">
-                        <i class="ri-whatsapp-fill" style="color:#4ade80;font-size:19px;"></i> 
-                        <div>
-                            <div>+54 9 381 60 92 676 <span style="font-size:10px; color:#ff8c00;">(Opción 1)</span></div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;">
-                        <i class="ri-whatsapp-fill" style="color:#4ade80;font-size:19px;"></i> 
-                        <div>
-                            <div>+54 9 381 51 101 71 <span style="font-size:10px; color:#ff8c00;">(Opción 2)</span></div>
-                        </div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;">
-                        <i class="ri-map-pin-2-fill" style="color:#ffd700;font-size:19px;"></i> Argentina
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;font-size:12.5px;font-weight:700; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
-            <div>© 2026 Delivery Moto • Energy Software.</div>
-            <div>Hecho en Argentina 🇦🇷</div>
-        </div>
+    <div style="max-width:1150px;margin:0 auto;text-align:center;">
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:white;">DELIVERY MOTO</div>
+        <div style="font-size:10.5px;font-weight:800;color:#ff8c00;text-transform:uppercase;letter-spacing:2px;margin-top:2px;margin-bottom:12px;">Energy Software</div>
+        <div style="font-size:12.5px;font-weight:700; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">© 2026 Delivery Moto • Hecho en Argentina 🇦🇷</div>
     </div>
 </footer>
 
-<!-- Modales y Audio -->
-<audio id="bgAudio" loop>
-    <!-- REEMPLAZÁ ESTE LINK POR TU AUDIO REAL -->
-    <source src="URL_DE_TU_AUDIO_AQUI.mp3" type="audio/mpeg">
-</audio>
-<button onclick="toggleAudio()" style="position:fixed; bottom:20px; right:20px; width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; border:none; box-shadow:0 8px 25px rgba(255,107,0,0.6); z-index:9999; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:24px;">
-    <i id="audioIcon" class="ri-volume-mute-fill"></i>
-</button>
-
 <!-- ====================================================================== -->
-<!-- MARKETPLACE Y MODALES FULL SCREEN                                      -->
+<!-- MODALES DEL MARKETPLACE                                                -->
 <!-- ====================================================================== -->
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
     <div class="modal-box" style="background:#fff7ed;">
-        
         <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar"><i class="ri-close-line"></i></button>
 
         <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:35px 24px 25px; position:relative; overflow:hidden; flex-shrink:0;">
-            <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
             <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
                 <div style="width:50px; height:50px; border-radius:1rem; overflow:hidden; flex-shrink:0; border:2px solid #ffd700; box-shadow:0 8px 25px rgba(255,107,0,0.6);">
                     <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo Delivery">
@@ -672,7 +415,7 @@
         </div>
 
         <div style="padding:0; flex:1; display:flex; flex-direction:column; overflow-y:auto;">
-            
+            <!-- PASO 1: SELECCIÓN -->
             <div id="modal-step-1" class="sub-step active" style="padding:24px 16px;">
                 <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Qué necesitás hoy?</h4>
                 <div style="display:flex; flex-direction:column; gap:12px;">
@@ -699,7 +442,6 @@
                             <div style="width:42px; height:42px; border-radius:12px; background:#fff7ed; color:#ff6b00; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid #ffd4b3;"><i class="ri-store-2-fill"></i></div>
                             <div><div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#0f172a;">Soy Comercio</div></div>
                         </button>
-                        
                         <button class="option-card-dark" style="padding:16px; flex-direction:column; gap:8px; text-align:center;" onclick="iniciarLogin('cadete')">
                             <div style="width:42px; height:42px; border-radius:12px; background:rgba(74,222,128,0.15); color:#4ade80; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid rgba(74,222,128,0.3);"><i class="ri-shield-keyhole-fill"></i></div>
                             <div><div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:white;">Servimoto</div></div>
@@ -720,53 +462,26 @@
                 </div>
             </div>
 
-            <!-- COMPRADOR: SELECCIÓN UBICACIÓN Y CAJA GIGANTE DE SELFIE -->
+            <!-- COMPRADOR: UBICACIÓN Y SELFIE -->
             <div id="modal-step-cliente-ubicacion" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
                 <div class="step-indicator"><i class="ri-map-pin-2-fill"></i> 1. Destino de Entrega</div>
                 <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
-                    
                     <label id="boxSelfieClienteModal" style="background:#f0fdf4; border:3px dashed #4ade80; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; box-shadow:0 8px 25px rgba(34,197,94,.15); position:relative; overflow:hidden;">
                         <div style="width:70px; height:70px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; border:2px solid #86efac;" id="iconSelfieClienteContenedor">
                             <i class="ri-camera-lens-fill" style="font-size:36px; color:#16a34a;"></i>
                         </div>
                         <span style="font-weight:800; color:#15803d; font-size:15px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblTextSelfieCliente">1. Selfie de Seguridad (Obligatoria)</span>
-                        <span style="font-size:12px; color:#166534; font-weight:600; z-index:2; background: rgba(255,255,255,0.8); padding: 2px 8px; border-radius: 4px;" id="subTextSelfieCliente">Para que el cadete te reconozca</span>
                         <input type="file" accept="image/*" capture="user" style="display:none;" onchange="previewSelfieCliente(this)">
                     </label>
 
                     <input type="tel" class="input-buscar" id="inputCelularCliente" placeholder="Tu Celular (Ej: 381...)" style="margin:0; margin-top:8px;">
-
                     <select class="select-provincia" id="selProvinciaCliente" style="margin:0;">
                         <option value="">Seleccioná tu Provincia...</option>
-                        <option value="Buenos Aires">Buenos Aires</option>
-                        <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
-                        <option value="Catamarca">Catamarca</option>
-                        <option value="Chaco">Chaco</option>
-                        <option value="Chubut">Chubut</option>
-                        <option value="Córdoba">Córdoba</option>
-                        <option value="Corrientes">Corrientes</option>
-                        <option value="Entre Ríos">Entre Ríos</option>
-                        <option value="Formosa">Formosa</option>
-                        <option value="Jujuy">Jujuy</option>
-                        <option value="La Pampa">La Pampa</option>
-                        <option value="La Rioja">La Rioja</option>
-                        <option value="Mendoza">Mendoza</option>
-                        <option value="Misiones">Misiones</option>
-                        <option value="Neuquén">Neuquén</option>
-                        <option value="Río Negro">Río Negro</option>
-                        <option value="Salta">Salta</option>
-                        <option value="San Juan">San Juan</option>
-                        <option value="San Luis">San Luis</option>
-                        <option value="Santa Cruz">Santa Cruz</option>
-                        <option value="Santa Fe">Santa Fe</option>
-                        <option value="Santiago del Estero">Santiago del Estero</option>
-                        <option value="Tierra del Fuego">Tierra del Fuego</option>
                         <option value="Tucumán">Tucumán</option>
                     </select>
                     <input type="text" class="input-buscar" id="inputCiudadCliente" placeholder="Ciudad (Ej: Famaillá)" style="margin:0;">
                     <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro" style="margin:0;">
-                    
                     <button class="btn-primary" style="padding:16px; margin-top: 8px; font-size:15px;" onclick="validarUbicacionCliente()">VER LOCALES CERCANOS</button>
                 </div>
             </div>
@@ -792,7 +507,6 @@
                             <i class="ri-map-pin-2-fill"></i> Ver Envío
                         </button>
                     </div>
-                    
                     <div style="display:grid; grid-template-columns:repeat(2, 1fr); align-items:start; gap:16px; overflow-y:auto; padding:12px 16px; flex:1;" id="catalogoGrid"></div>
                 </div>
             </div>
@@ -805,10 +519,7 @@
                     <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira? (Ej: San Martín 100)">
                     <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;">
                         <option value="">Provincia Destino...</option>
-                        <option value="Buenos Aires">Buenos Aires</option>
-                        <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
                         <option value="Tucumán">Tucumán</option>
-                        <!-- (Añadí más provincias si lo necesitas) -->
                     </select>
                     <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino (Ej: Famaillá)">
                     <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿A dónde lo lleva? (Ej: Rivadavia 200)">
@@ -817,81 +528,59 @@
                 </div>
             </div>
 
-            <!-- COMERCIO: PANEL DE GESTIÓN Y CAJAS GIGANTES -->
+            <!-- COMERCIO ADMIN -->
             <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
-                
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 16px;">Panel Comercial</h3>
-                
                 <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
-                    <label id="boxSelfieComercioModal" style="background:#f0fdf4; border:3px dashed #4ade80; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; transition: all 0.3s; box-shadow:0 8px 25px rgba(34,197,94,.15); min-height: 220px; position:relative; overflow:hidden;">
-                        <div style="width:70px; height:70px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; border:2px solid #86efac;" id="iconSelfieComercioContenedor">
-                            <i class="ri-camera-lens-fill" style="font-size:36px; color:#16a34a;"></i>
-                        </div>
+                    <label id="boxSelfieComercioModal" style="background:#f0fdf4; border:3px dashed #4ade80; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; position:relative; overflow:hidden;">
+                        <div style="width:70px; height:70px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; border:2px solid #86efac;" id="iconSelfieComercioContenedor"><i class="ri-camera-lens-fill" style="font-size:36px; color:#16a34a;"></i></div>
                         <span style="font-weight:800; color:#15803d; font-size:15px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblTextSelfieComercio">1. Selfie de Seguridad (Obligatorio)</span>
                         <input type="file" accept="image/*" capture="user" style="display:none;" onchange="previewSelfieComercioModal(this)">
                     </label>
 
                     <label id="boxPortadaComercio" style="background:#f8fafc; border:3px dashed #ffb380; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; transition: all 0.3s; min-height: 200px; position:relative; overflow:hidden;">
-                        <div style="width:64px; height:64px; border-radius:16px; background:#fff7ed; display:flex; align-items:center; justify-content:center; border:2px solid #ffd4b3;" id="iconPortadaContenedor">
-                            <i class="ri-image-add-fill" style="font-size:32px; color:#ff6b00;"></i>
-                        </div>
+                        <div style="width:64px; height:64px; border-radius:16px; background:#fff7ed; display:flex; align-items:center; justify-content:center; border:2px solid #ffd4b3;" id="iconPortadaContenedor"><i class="ri-image-add-fill" style="font-size:32px; color:#ff6b00;"></i></div>
                         <span style="font-weight:800; color:#cc4400; font-size:14px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblPortadaComercio">2. Subir Foto de Portada (Local)</span>
                         <input type="file" accept="image/*" style="display:none;" onchange="previewPortada(this)">
                     </label>
 
                     <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
-                    <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta del Local (Ej: 9 de Julio 120)" style="margin:0;">
-                    
+                    <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta del Local" style="margin:0;">
                     <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:14px; font-size:14px;">
                         <option value="">Rubro / Categoría...</option>
                         <option value="pizza">🍕 Pizzería</option>
-                        <option value="sandwicheria">🍔 Sandwichería</option>
-                        <option value="kiosco">🛒 Kiosco / Almacén</option>
                     </select>
-
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:14px; font-size:14px;">
                             <option value="">Provincia...</option>
                             <option value="Tucumán">Tucumán</option>
-                            <option value="Buenos Aires">Buenos Aires</option>
                         </select>
                         <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:14px; font-size:14px;">
                     </div>
-
-                    <button class="btn-primary" style="padding:16px; font-size:15px; margin-top:8px;" onclick="guardarComercio()">
-                        GUARDAR DATOS DEL LOCAL
-                    </button>
+                    <button class="btn-primary" style="padding:16px; font-size:15px; margin-top:8px;" onclick="guardarComercio()">GUARDAR DATOS DEL LOCAL</button>
                 </div>
 
                 <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:1.5rem; padding:20px; margin-bottom:20px;">
                     <h4 style="font-weight:800; font-size:16px; margin-bottom:14px; color:#0f172a;">Crear Artículo Nuevo</h4>
-                    
                     <div style="display:flex; gap:12px; margin-bottom:14px;">
                         <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre Plato" style="margin:0; flex:2; padding:14px;">
                         <input type="number" class="input-buscar" id="newArtPrecio" placeholder="$ Precio" style="margin:0; flex:1; padding:14px;">
                     </div>
-                    
                     <label id="boxArticuloNuevo" style="background:white; border:3px dashed #cbd5e1; padding:32px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:16px; background-size: cover; background-position: center; min-height: 160px; position: relative; overflow:hidden;">
-                        <div style="width:54px; height:54px; border-radius:14px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border:2px solid #e2e8f0; margin-bottom:8px;" id="iconPlatoContenedor">
-                            <i class="ri-camera-fill" style="font-size:28px; color:#64748b;"></i>
-                        </div>
+                        <div style="width:54px; height:54px; border-radius:14px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border:2px solid #e2e8f0; margin-bottom:8px;" id="iconPlatoContenedor"><i class="ri-camera-fill" style="font-size:28px; color:#64748b;"></i></div>
                         <span style="font-size:14px; font-weight:800; color:#0f172a; position: relative; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblArtFoto">Subir Foto Real del Plato</span>
                         <input type="file" accept="image/*" style="display:none;" onchange="previewArtFoto(this)">
                     </label>
-                    
-                    <button class="btn-secondary" style="width:100%; padding:14px; font-size:14px;" onclick="agregarArticuloComercio()">
-                        + PUBLICAR EN LA GRILLA
-                    </button>
+                    <button class="btn-secondary" style="width:100%; padding:14px; font-size:14px;" onclick="agregarArticuloComercio()">+ PUBLICAR EN LA GRILLA</button>
                 </div>
-
                 <div style="background:white; border-radius:1.5rem; padding:20px; border:2px solid #ffe4cc;">
                     <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#0f172a;">Tus Artículos Publicados</h4>
                     <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:10px; max-height:220px; overflow-y:auto; padding-right:4px;"></div>
                 </div>
             </div>
 
-            <!-- ONBOARDING SERVIMOTO -->
+            <!-- CADETE ADMIN -->
             <div id="modal-step-servimoto-onboarding" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Volver</button>
                 <div class="step-indicator" style="background:#dcfce7; color:#166534; border-color:#86efac;"><i class="ri-shield-keyhole-fill"></i> Registro Oficial Cadetes</div>
@@ -901,7 +590,6 @@
                 </button>
             </div>
 
-            <!-- PANEL SERVIMOTO -->
             <div id="modal-step-servimoto" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 <div style="background:linear-gradient(135deg, #0f172a, #050505); border-radius:1.5rem; padding:22px; border:3px solid #ff6b00; color:white;">
@@ -909,14 +597,12 @@
                          <div style="font-size:14px; font-weight:800;">Turno Actual:</div>
                          <button id="btnEstadoTrabajo" onclick="toggleEstadoTrabajo()" style="background:#ef4444; color:white; border:none; padding:10px 18px; border-radius:999px; font-weight:800; font-size:12px; cursor:pointer;"><i class="ri-close-circle-fill"></i> INACTIVO</button>
                     </div>
-
                     <div style="display:flex; justify-content:center; margin-bottom: 32px; margin-top: 20px;">
                         <button id="btnRadar" onclick="activarRadar()" style="width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #1e3a8a, #0f172a); color: white; border: 4px solid #3b82f6; box-shadow: 0 0 30px rgba(59,130,246,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; cursor:pointer; position: relative;">
                             <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
                             <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
                         </button>
                     </div>
-
                     <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:20px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
                         <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase;">Deuda Acumulada a Pagar</div>
                         <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:46px; font-weight:800; color:white; margin-bottom:8px;">$0</div>
@@ -927,12 +613,10 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-<!-- MAPA MODAL Y GPS FORZADO PARA QUE DIBUJE A COLOR -->
 <div id="modalMapaGrande" class="modal-overlay" style="background:rgba(15,23,42,.98);">
     <div style="width:100%; max-width:850px; height:100vh; background:#0f172a; border-radius:0; border:none; position:relative; overflow:hidden; box-shadow:0 0 100px rgba(255,107,0,0.5); display:flex; flex-direction:column; transform:scale(0.95); transition:all .35s; opacity:0;" id="mapaBox">
         <div style="position:absolute; top:16px; left:16px; right:16px; z-index:10; display:flex; justify-content:space-between; align-items:flex-start;">
@@ -953,14 +637,11 @@
                     <div id="mapaCosto" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#ff6b00; margin-top:2px;">$--</div>
                 </div>
             </div>
-            <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="irAlCheckout()">
-                CONFIRMAR RUTA Y AVANZAR <i class="ri-arrow-right-circle-fill"></i>
-            </button>
+            <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="irAlCheckout()">CONFIRMAR RUTA Y AVANZAR <i class="ri-arrow-right-circle-fill"></i></button>
         </div>
     </div>
 </div>
 
-<!-- CARRITO FINAL -->
 <div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
     <div class="modal-box" style="padding:24px; border:3.5px solid #16a34a; max-width:440px; border-radius:1.5rem; height:auto;">
         <button class="modal-close-btn" style="border-color:#16a34a; color:#15803d;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
@@ -970,9 +651,7 @@
             <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Total a Pagar</span>
             <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
         </div>
-        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()">
-            <i class="ri-whatsapp-fill" style="font-size:22px;"></i> CONFIRMAR POR WHATSAPP
-        </button>
+        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()"><i class="ri-whatsapp-fill" style="font-size:22px;"></i> CONFIRMAR POR WHATSAPP</button>
     </div>
 </div>
 <!-- ======================================================= -->
@@ -988,9 +667,11 @@ let supabase = null;
 try {
     const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co'; 
     const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4'; 
-    supabase = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
+    if(window.supabase) {
+        supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    }
 } catch(e) {
-    console.error("Supabase tardó en cargar o tiró error, pero la app no se va a colgar.", e);
+    console.error("Supabase protegido ante fallas.");
 }
 
 // ==========================================
@@ -1014,56 +695,57 @@ const AppStore = {
 };
 
 // ==========================================
-// FUNCIONES NUEVAS: MICRÓFONO, DESCARGA Y AUDITORÍA
+// NUEVA FUNCIÓN: BOTÓN PLAY (TEXT-TO-SPEECH)
 // ==========================================
-function activarMicrofono() {
+function reproducirFunciones() {
+    if (!('speechSynthesis' in window)) {
+        mostrarToast('Tu navegador no soporta lectura por voz.', 'error');
+        return;
+    }
+    
     const btn = document.getElementById('micBtn');
     const icon = document.getElementById('micIcon');
-    
-    // Acá está el código REAL del micrófono de Google.
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
-    if (!SpeechRecognition) {
-        mostrarToast('Tu navegador actual no soporta el reconocimiento de voz. Usá Chrome.', 'error');
+
+    // Si ya está hablando, lo detenemos
+    if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        icon.className = 'ri-play-fill';
+        btn.style.boxShadow = '0 4px 15px rgba(22,163,74,.4)';
+        mostrarToast('Audio detenido.', 'success');
         return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'es-AR'; // Español de Argentina configurado
-    recognition.continuous = false;
-    
-    recognition.onstart = function() {
+    // El texto oficial que detalla la app y el certificado de conducta
+    const textoLocucion = "Bienvenido a Delivery Moto. El Marketplace Premium donde los comercios publican y venden gratis. Los clientes compran de forma segura con cálculo exacto de envío por G P S. Para tu total tranquilidad, todo nuestro personal está registrado y cuenta con certificado de buena conducta, siendo auditados por inteligencia artificial. Entrá al Marketplace tocando el botón naranja para conocer y usar todas nuestras funciones.";
+
+    const utterance = new SpeechSynthesisUtterance(textoLocucion);
+    utterance.lang = 'es-AR'; // Voz en Español
+    utterance.rate = 1.0;     // Velocidad normal
+
+    utterance.onstart = function() {
         btn.style.boxShadow = '0 0 0 18px rgba(22,163,74,0.3)';
-        icon.className = 'ri-mic-2-fill';
-        mostrarToast('🎤 Te escucho... Hablá ahora.', 'success');
+        icon.className = 'ri-stop-fill'; // Cambia el ícono a "Stop"
+        mostrarToast('🔊 Explicando funciones de la app...', 'success');
     };
-    
-    recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        mostrarToast(`Escuché: "${transcript}"`, 'success');
-        // A futuro esto manda la orden a la base de datos o buscador
-    };
-    
-    recognition.onerror = function(event) {
-        mostrarToast('No te pude escuchar bien. Volvé a intentarlo.', 'error');
+
+    utterance.onend = function() {
         btn.style.boxShadow = '0 4px 15px rgba(22,163,74,.4)';
-        icon.className = 'ri-mic-fill';
+        icon.className = 'ri-play-fill'; // Vuelve al ícono de Play
     };
-    
-    recognition.onend = function() {
+
+    utterance.onerror = function() {
         btn.style.boxShadow = '0 4px 15px rgba(22,163,74,.4)';
-        icon.className = 'ri-mic-fill';
+        icon.className = 'ri-play-fill';
     };
-    
-    recognition.start();
+
+    window.speechSynthesis.speak(utterance);
 }
 
+// ==========================================
+// RESTO DE FUNCIONES (DESCARGA, APP Y MODALES)
+// ==========================================
 function descargarAPK() {
     mostrarToast("📥 Preparando descarga segura de la APK...", "success");
-    // Redirección segura a un archivo si existiese.
-    setTimeout(() => {
-        mostrarToast("Falta enlazar el archivo al servidor", "error");
-    }, 1500);
 }
 
 function auditarDocumentosIA() {
@@ -1072,29 +754,6 @@ function auditarDocumentosIA() {
         mostrarToast("✅ Identidad certificada con éxito. Ya podés trabajar.", "success");
         irPaso('servimoto'); 
     }, 2500);
-}
-
-// ==========================================
-// SCROLL Y AUDIO DE LA LANDING
-// ==========================================
-function toggleAudio() {
-    const audio = document.getElementById('bgAudio');
-    const icon = document.getElementById('audioIcon');
-    if (audio.paused) {
-        audio.play();
-        icon.className = "ri-volume-up-fill";
-    } else {
-        audio.pause();
-        icon.className = "ri-volume-mute-fill";
-    }
-}
-
-function scrollToId(id) { 
-    const el = document.getElementById(id);
-    if(el) {
-        const y = el.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({top: y, behavior: 'smooth'});
-    }
 }
 
 // ==========================================
@@ -1136,8 +795,6 @@ function abrirModalMarketplace() {
         modal.classList.add('show'); 
         document.body.style.overflow = 'hidden'; 
         irPaso(1); 
-    } else {
-        mostrarToast('Error cargando el Marketplace. Recargá la página.', 'error');
     }
 }
 function cerrarModalMarketplace() { 
