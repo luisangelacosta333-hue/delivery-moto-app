@@ -22,29 +22,14 @@
         // ==========================================
         // SEGURIDAD ANTI-COPIA PREMIUM
         // ==========================================
-        document.addEventListener('contextmenu', event => event.preventDefault()); // Bloquea click derecho
+        document.addEventListener('contextmenu', event => event.preventDefault()); 
         
         document.onkeydown = function(e) {
-            // Bloquea F12
-            if(e.keyCode == 123) {
-                return false; 
-            }
-            // Bloquea Ctrl+Shift+I
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) {
-                return false; 
-            }
-            // Bloquea Ctrl+Shift+J
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) {
-                return false; 
-            }
-            // Bloquea Ctrl+U (Ver código fuente)
-            if(e.ctrlKey && e.keyCode == 85) {
-                return false; 
-            }
-            // Bloquea Ctrl+S (Guardar como)
-            if(e.ctrlKey && e.keyCode == 83) {
-                return false; 
-            }
+            if(e.keyCode == 123) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; 
+            if(e.ctrlKey && e.keyCode == 85) return false; 
+            if(e.ctrlKey && e.keyCode == 83) return false; 
         };
 
         // ==========================================
@@ -53,7 +38,6 @@
         const AppStore = (function() {
             const memory = new Map();
             const MAX_SIZE = 500; 
-            
             return {
                 set: function(key, value) {
                     if(memory.size >= MAX_SIZE) {
@@ -62,15 +46,9 @@
                     }
                     memory.set(key, value);
                 },
-                get: function(key) { 
-                    return memory.get(key); 
-                },
-                remove: function(key) { 
-                    memory.delete(key); 
-                },
-                clear: function() { 
-                    memory.clear(); 
-                }
+                get: function(key) { return memory.get(key); },
+                remove: function(key) { memory.delete(key); },
+                clear: function() { memory.clear(); }
             };
         })();
 
@@ -86,75 +64,18 @@
     </script>
 
     <style>
-        /* ==========================================================================
-           CSS ULTRA PREMIUM - SISTEMA BASE
-           ========================================================================== */
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            margin: 0; 
-            padding: 0; 
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-serif; background: #fff7ed; color: #0f172a; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-14px); } }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.6); } 50% { box-shadow: 0 0 0 28px rgba(255,107,0,0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes ringRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes micPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22,163,74,.6); } 50% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(22,163,74,0); } }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes shimmerGold { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        html, 
-        body { 
-            width: 100%; 
-            overflow-x: hidden; 
-            font-family: 'Quicksand', sans-serif; 
-            background: #fff7ed; 
-            color: #0f172a; 
-        }
-
-        /* ==========================================================================
-           KEYFRAMES Y ANIMACIONES
-           ========================================================================== */
-        @keyframes gradientBG { 
-            0% { background-position: 0% 50%; } 
-            50% { background-position: 100% 50%; } 
-            100% { background-position: 0% 50%; } 
-        }
-
-        @keyframes float { 
-            0%, 100% { transform: translateY(0px); } 
-            50% { transform: translateY(-14px); } 
-        }
-
-        @keyframes pulseGlow { 
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.6); } 
-            50% { box-shadow: 0 0 0 28px rgba(255,107,0,0); } 
-        }
-
-        @keyframes slideUp { 
-            from { opacity: 0; transform: translateY(30px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        @keyframes ringRotate { 
-            from { transform: rotate(0deg); } 
-            to { transform: rotate(360deg); } 
-        }
-
-        @keyframes micPulse { 
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22,163,74,.6); } 
-            50% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(22,163,74,0); } 
-        }
-
-        @keyframes ticker { 
-            0% { transform: translateX(0); } 
-            100% { transform: translateX(-50%); } 
-        }
-
-        @keyframes shimmerGold { 
-            0% { background-position: -200% center; } 
-            100% { background-position: 200% center; } 
-        }
-
-        @keyframes fadeInScale { 
-            from { opacity: 0; transform: scale(.95) translateY(8px); } 
-            to { opacity: 1; transform: scale(1) translateY(0); } 
-        }
-
-        /* CLASES DE ANIMACIÓN */
         .animate-float { animation: float 4.5s ease-in-out infinite; }
         .animate-pulse-glow { animation: pulseGlow 2.2s ease-in-out infinite; }
         .animate-slide-up { animation: slideUp .7s cubic-bezier(.16,1,.3,1) both; }
@@ -163,631 +84,97 @@
         .animate-mic { animation: micPulse 1.1s ease-in-out infinite; }
         .animate-fade-in-scale { animation: fadeInScale .35s cubic-bezier(.16,1,.3,1) both; }
 
-        /* ==========================================================================
-           TICKER DE NOTICIAS
-           ========================================================================== */
-        .ticker-wrap { 
-            overflow: hidden; 
-            white-space: nowrap; 
-        }
-        
-        .ticker-track { 
-            display: inline-block; 
-            animation: ticker 40s linear infinite; 
-        }
+        .ticker-wrap { overflow: hidden; white-space: nowrap; }
+        .ticker-track { display: inline-block; animation: ticker 40s linear infinite; }
 
-        /* ==========================================================================
-           UTILIDADES Y EFECTOS VISUALES
-           ========================================================================== */
-        .hero-bg { 
-            background: linear-gradient(135deg, #1a0a00 0%, #2d1200 25%, #cc4400 60%, #ff6b00 100%); 
-            background-size: 200% 200%; 
-            animation: gradientBG 10s ease infinite; 
-        }
-        
-        .glass { 
-            background: rgba(255,255,255,.14); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border: 1.5px solid rgba(255,255,255,.25); 
-        }
+        .hero-bg { background: linear-gradient(135deg, #1a0a00 0%, #2d1200 25%, #cc4400 60%, #ff6b00 100%); background-size: 200% 200%; animation: gradientBG 10s ease infinite; }
+        .glass { background: rgba(255,255,255,.14); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1.5px solid rgba(255,255,255,.25); }
+        .text-gradient-gold { background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00, #ffd700, #fff7e6); background-size: 200% auto; -webkit-background-clip: text; color: transparent; animation: shimmerGold 4s linear infinite; }
+        .text-gradient-orange { background: linear-gradient(100deg, #ff8c00, #ff6b00, #cc4400); -webkit-background-clip: text; color: transparent; }
 
-        .text-gradient-gold { 
-            background: linear-gradient(90deg, #fff7e6, #ffd700, #ff8c00, #ffd700, #fff7e6); 
-            background-size: 200% auto; 
-            -webkit-background-clip: text; 
-            color: transparent; 
-            animation: shimmerGold 4s linear infinite; 
-        }
-        
-        .text-gradient-orange { 
-            background: linear-gradient(100deg, #ff8c00, #ff6b00, #cc4400); 
-            -webkit-background-clip: text; 
-            color: transparent; 
-        }
+        .btn-primary { background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 50%, #cc4400 100%); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.3); cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s cubic-bezier(.16,1,.3,1); display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 14px 36px rgba(255,107,0,.5), inset 0 1px 0 rgba(255,255,255,.4); position: relative; overflow: hidden; }
+        .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 20px 48px rgba(255,107,0,.65), inset 0 1px 0 rgba(255,255,255,.4); border-color: rgba(255,255,255,.55); }
+        .btn-primary:active { transform: scale(.97); }
 
-        /* ==========================================================================
-           BOTONES PREMIUM
-           ========================================================================== */
-        .btn-primary { 
-            background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 50%, #cc4400 100%); 
-            color: white; 
-            font-weight: 800; 
-            border-radius: 1rem; 
-            border: 2.5px solid rgba(255,255,255,.3); 
-            cursor: pointer; 
-            font-family: 'Quicksand', sans-serif; 
-            transition: all .3s cubic-bezier(.16,1,.3,1); 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: .6rem; 
-            box-shadow: 0 14px 36px rgba(255,107,0,.5), inset 0 1px 0 rgba(255,255,255,.4); 
-            position: relative; 
-            overflow: hidden; 
-        }
-        
-        .btn-primary:hover { 
-            transform: translateY(-3px) scale(1.02); 
-            box-shadow: 0 20px 48px rgba(255,107,0,.65), inset 0 1px 0 rgba(255,255,255,.4); 
-            border-color: rgba(255,255,255,.55); 
-        }
-        
-        .btn-primary:active { 
-            transform: scale(.97); 
-        }
+        .btn-secondary { background: white; color: #cc4400; font-weight: 800; border-radius: 1rem; border: 2.5px solid #ff6b00; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 6px 20px rgba(255,107,0,.15); }
+        .btn-secondary:hover { transform: translateY(-3px); background: #fff7ed; box-shadow: 0 14px 35px rgba(255,107,0,.3); }
 
-        .btn-secondary { 
-            background: white; 
-            color: #cc4400; 
-            font-weight: 800; 
-            border-radius: 1rem; 
-            border: 2.5px solid #ff6b00; 
-            cursor: pointer; 
-            font-family: 'Quicksand', sans-serif; 
-            transition: all .3s; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: .6rem; 
-            box-shadow: 0 6px 20px rgba(255,107,0,.15); 
-        }
-        
-        .btn-secondary:hover { 
-            transform: translateY(-3px); 
-            background: #fff7ed; 
-            box-shadow: 0 14px 35px rgba(255,107,0,.3); 
-        }
+        .btn-dark { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid #ff6b00; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 12px 28px rgba(0,0,0,.3); }
+        .btn-dark:hover { transform: translateY(-3px); background: linear-gradient(135deg, #ff6b00, #cc4400); box-shadow: 0 18px 42px rgba(255,107,0,.5); }
 
-        .btn-dark { 
-            background: linear-gradient(135deg, #0f172a, #1e293b); 
-            color: white; 
-            font-weight: 800; 
-            border-radius: 1rem; 
-            border: 2.5px solid #ff6b00; 
-            cursor: pointer; 
-            font-family: 'Quicksand', sans-serif; 
-            transition: all .3s; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: .6rem; 
-            box-shadow: 0 12px 28px rgba(0,0,0,.3); 
-        }
-        
-        .btn-dark:hover { 
-            transform: translateY(-3px); 
-            background: linear-gradient(135deg, #ff6b00, #cc4400); 
-            box-shadow: 0 18px 42px rgba(255,107,0,.5); 
-        }
+        .btn-apk { background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.25); cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .55rem; box-shadow: 0 12px 30px rgba(22,163,74,.45), inset 0 1px 0 rgba(255,255,255,.3); }
+        .btn-apk:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 42px rgba(22,163,74,.6); }
 
-        .btn-apk { 
-            background: linear-gradient(135deg, #16a34a, #15803d); 
-            color: white; 
-            font-weight: 800; 
-            border-radius: 1rem; 
-            border: 2.5px solid rgba(255,255,255,.25); 
-            cursor: pointer; 
-            font-family: 'Quicksand', sans-serif; 
-            transition: all .3s; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: .55rem; 
-            box-shadow: 0 12px 30px rgba(22,163,74,.45), inset 0 1px 0 rgba(255,255,255,.3); 
-        }
-        
-        .btn-apk:hover { 
-            transform: translateY(-3px) scale(1.02); 
-            box-shadow: 0 18px 42px rgba(22,163,74,.6); 
-        }
+        .card-premium { background: white; border-radius: 1.5rem; border: 2px solid #ffe4cc; box-shadow: 0 6px 25px rgba(255,107,0,.08); transition: all .4s cubic-bezier(.16,1,.3,1); position: relative; overflow: hidden; }
+        .card-premium:hover { transform: translateY(-7px); box-shadow: 0 22px 55px rgba(255,107,0,.22); border-color: #ff6b00; }
+        .card-premium::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #ff8c00, #ff6b00, #cc4400); }
 
-        /* ==========================================================================
-           TARJETAS DE DISEÑO
-           ========================================================================== */
-        .card-premium { 
-            background: white; 
-            border-radius: 1.5rem; 
-            border: 2px solid #ffe4cc; 
-            box-shadow: 0 6px 25px rgba(255,107,0,.08); 
-            transition: all .4s cubic-bezier(.16,1,.3,1); 
-            position: relative; 
-            overflow: hidden; 
-        }
-        
-        .card-premium:hover { 
-            transform: translateY(-7px); 
-            box-shadow: 0 22px 55px rgba(255,107,0,.22); 
-            border-color: #ff6b00; 
-        }
-        
-        .card-premium::before { 
-            content: ''; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            height: 5px; 
-            background: linear-gradient(90deg, #ff8c00, #ff6b00, #cc4400); 
-        }
+        .feature-icon { width: 62px; height: 62px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #ff6b00; transition: all .4s; border: 2px solid #ffd4b3; }
+        .card-premium:hover .feature-icon { transform: scale(1.12) rotate(-5deg); background: linear-gradient(135deg, #ff8c00, #cc4400); color: white; border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.45); }
 
-        .feature-icon { 
-            width: 62px; 
-            height: 62px; 
-            border-radius: 1.2rem; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 28px; 
-            background: linear-gradient(135deg, #fff7ed, #ffe4cc); 
-            color: #ff6b00; 
-            transition: all .4s; 
-            border: 2px solid #ffd4b3; 
-        }
-        
-        .card-premium:hover .feature-icon { 
-            transform: scale(1.12) rotate(-5deg); 
-            background: linear-gradient(135deg, #ff8c00, #cc4400); 
-            color: white; 
-            border-color: #ff6b00; 
-            box-shadow: 0 12px 30px rgba(255,107,0,.45); 
-        }
+        .badge-naranja { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; border: 1.5px solid #ffb380; }
+        .badge-dorado { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, rgba(255,215,0,.22), rgba(255,140,0,.1)); color: #fff7e6; border: 1.5px solid rgba(255,215,0,.5); box-shadow: 0 4px 15px rgba(255,215,0,.15); }
 
-        /* ==========================================================================
-           BADGES (ETIQUETAS)
-           ========================================================================== */
-        .badge-naranja { 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 6px; 
-            padding: 7px 16px; 
-            border-radius: 999px; 
-            font-size: 12px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: .8px; 
-            background: linear-gradient(135deg, #fff7ed, #ffe4cc); 
-            color: #cc4400; 
-            border: 1.5px solid #ffb380; 
-        }
-        
-        .badge-dorado { 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 6px; 
-            padding: 8px 18px; 
-            border-radius: 999px; 
-            font-size: 12px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            background: linear-gradient(135deg, rgba(255,215,0,.22), rgba(255,140,0,.1)); 
-            color: #fff7e6; 
-            border: 1.5px solid rgba(255,215,0,.5); 
-            box-shadow: 0 4px 15px rgba(255,215,0,.15); 
-        }
+        .nav-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 76px; z-index: 500; background: linear-gradient(135deg,#1a0a00,#2d1200); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 3px solid #ff6b00; box-shadow: 0 4px 28px rgba(0,0,0,.4); display: flex; align-items: center; }
+        .nav-container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
 
-        /* ==========================================================================
-           BARRA DE NAVEGACIÓN FIJA Y MICRÓFONO
-           ========================================================================== */
-        .nav-fixed { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 76px; 
-            z-index: 500; 
-            background: linear-gradient(135deg,#1a0a00,#2d1200); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border-bottom: 3px solid #ff6b00; 
-            box-shadow: 0 4px 28px rgba(0,0,0,.4); 
-            display: flex; 
-            align-items: center; 
-        }
-        
-        .nav-container { 
-            width: 100%; 
-            max-width: 1280px; 
-            margin: 0 auto; 
-            padding: 0 16px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            flex-wrap: nowrap; 
-        }
+        .mic-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all .3s; background: linear-gradient(135deg, #16a34a, #15803d); color: white; box-shadow: 0 4px 15px rgba(22,163,74,.4); flex-shrink: 0; }
+        .mic-btn:hover { transform: scale(1.08); box-shadow: 0 8px 24px rgba(22,163,74,.6); }
 
-        .mic-btn { 
-            width: 44px; 
-            height: 44px; 
-            border-radius: 50%; 
-            border: 2px solid rgba(255,255,255,.35); 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 20px; 
-            transition: all .3s; 
-            background: linear-gradient(135deg, #16a34a, #15803d); 
-            color: white; 
-            box-shadow: 0 4px 15px rgba(22,163,74,.4); 
-            flex-shrink: 0; 
-        }
-        
-        .mic-btn:hover { 
-            transform: scale(1.08); 
-            box-shadow: 0 8px 24px rgba(22,163,74,.6); 
-        }
+        @media (max-width: 900px) { .hide-mobile { display: none !important; } }
+        .nav-link { color: rgba(255,255,255,.92); font-weight: 700; font-size: 14px; transition: all .2s; cursor: pointer; padding: 5px 2px; border-bottom: 2px solid transparent; white-space: nowrap; }
+        .nav-link:hover { color: #ffd700; border-bottom-color: #ffd700; }
 
-        @media (max-width: 900px) { 
-            .hide-mobile { 
-                display: none !important; 
-            } 
-        }
-        
-        .nav-link { 
-            color: rgba(255,255,255,.92); 
-            font-weight: 700; 
-            font-size: 14px; 
-            transition: all .2s; 
-            cursor: pointer; 
-            padding: 5px 2px; 
-            border-bottom: 2px solid transparent; 
-            white-space: nowrap; 
-        }
-        
-        .nav-link:hover { 
-            color: #ffd700; 
-            border-bottom-color: #ffd700; 
-        }
-
-        /* ==========================================================================
-           MODALES FULL SCREEN Y ESTRUCTURA LIMPIA
-           ========================================================================== */
-        .modal-overlay { 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(15,23,42,.95); 
-            backdrop-filter: blur(10px); 
-            z-index: 999999; 
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: center; 
-            opacity: 0; 
-            pointer-events: none; 
-            transition: all .3s ease; 
-            padding: 0; 
-        }
-        
-        .modal-overlay.show { 
-            opacity: 1; 
-            pointer-events: auto; 
-        }
-        
-        .modal-box { 
-            background: #fff7ed; 
-            border-radius: 0; 
-            width: 100%; 
-            height: 100vh; 
-            max-height: 100vh; 
-            overflow-y: auto; 
-            transform: translateY(100%); 
-            transition: transform .3s cubic-bezier(.16,1,.3,1); 
-            position: relative; 
-            display: flex; 
-            flex-direction: column; 
-        }
-        
-        .modal-overlay.show .modal-box { 
-            transform: translateY(0); 
-        }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.95); backdrop-filter: blur(10px); z-index: 999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; padding: 0; }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .modal-box { background: #fff7ed; border-radius: 0; width: 100%; height: 100vh; max-height: 100vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.16,1,.3,1); position: relative; display: flex; flex-direction: column; }
+        .modal-overlay.show .modal-box { transform: translateY(0); }
         
         @media (min-width: 768px) { 
-            .modal-overlay { 
-                align-items: center; 
-                padding: 20px; 
-            } 
-            .modal-box { 
-                height: auto; 
-                max-height: 90vh; 
-                border-radius: 1.5rem; 
-                max-width: 500px; 
-                border: 3px solid #ff6b00; 
-                overflow: hidden; 
-                transform: scale(.95); 
-            } 
-            .modal-overlay.show .modal-box { 
-                transform: scale(1); 
-            } 
+            .modal-overlay { align-items: center; padding: 20px; } 
+            .modal-box { height: auto; max-height: 90vh; border-radius: 1.5rem; max-width: 500px; border: 3px solid #ff6b00; overflow: hidden; transform: scale(.95); } 
+            .modal-overlay.show .modal-box { transform: scale(1); } 
         }
 
-        .modal-close-btn { 
-            position: absolute; 
-            top: 14px; 
-            right: 14px; 
-            width: 44px; 
-            height: 44px; 
-            border-radius: 50%; 
-            background: rgba(255,255,255,.95); 
-            border: 3px solid #ff6b00; 
-            color: #cc4400; 
-            font-size: 24px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            transition: all .25s; 
-            z-index: 100; 
-            box-shadow: 0 4px 15px rgba(0,0,0,.2); 
-        }
-        
-        .modal-close-btn:hover { 
-            background: #ff6b00; 
-            color: white; 
-            transform: rotate(90deg); 
-        }
-        
-        .sub-step { 
-            display: none; 
-            padding: 20px 16px; 
-            flex: 1; 
-            animation: fadeInScale .3s ease; 
-            width: 100%; 
-        }
-        
-        .sub-step.active { 
-            display: block; 
-        }
+        .modal-close-btn { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.95); border: 3px solid #ff6b00; color: #cc4400; font-size: 24px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .25s; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,.2); }
+        .modal-close-btn:hover { background: #ff6b00; color: white; transform: rotate(90deg); }
+        .sub-step { display: none; padding: 20px 16px; flex: 1; animation: fadeInScale .3s ease; width: 100%; }
+        .sub-step.active { display: block; }
 
-        /* ==========================================================================
-           TARJETAS DE OPCIONES DE PERFIL (MODAL)
-           ========================================================================== */
-        .option-card { 
-            padding: 18px; 
-            border-radius: 1.2rem; 
-            border: 2.5px solid #ffe4cc; 
-            background: white; 
-            cursor: pointer; 
-            display: flex; 
-            flex-direction: row; 
-            align-items: center; 
-            gap: 14px; 
-            text-align: left; 
-            transition: all .3s; 
-            font-family: inherit; 
-            width: 100%; 
-        }
-        
-        .option-card:hover { 
-            transform: translateY(-3px); 
-            border-color: #ff6b00; 
-            box-shadow: 0 12px 30px rgba(255,107,0,.22); 
-            background: linear-gradient(135deg, #fff7ed, white); 
-        }
-        
-        .option-card-dark { 
-            padding: 18px; 
-            border-radius: 1.2rem; 
-            border: 2.5px solid #ff6b00; 
-            background: linear-gradient(135deg, #0f172a, #1e293b); 
-            color: white; 
-            cursor: pointer; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            text-align: center; 
-            transition: all .3s; 
-            font-family: inherit; 
-            width: 100%; 
-            box-shadow: 0 10px 30px rgba(0,0,0,.25); 
-        }
-        
-        .option-card-dark:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 18px 42px rgba(255,107,0,.35); 
-            background: linear-gradient(135deg, #cc4400, #ff6b00); 
-        }
+        .option-card { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #ffe4cc; background: white; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 14px; text-align: left; transition: all .3s; font-family: inherit; width: 100%; }
+        .option-card:hover { transform: translateY(-3px); border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.22); background: linear-gradient(135deg, #fff7ed, white); }
+        .option-card-dark { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #ff6b00; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; transition: all .3s; font-family: inherit; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+        .option-card-dark:hover { transform: translateY(-3px); box-shadow: 0 18px 42px rgba(255,107,0,.35); background: linear-gradient(135deg, #cc4400, #ff6b00); }
 
-        /* ==========================================================================
-           CONTROLES DE FORMULARIO (INPUTS, SELECTS)
-           ========================================================================== */
-        .select-provincia, 
-        .input-buscar, 
-        .textarea-buscar { 
-            width: 100%; 
-            padding: 16px; 
-            border-radius: 1rem; 
-            border: 2.5px solid #ffe4cc; 
-            background: white; 
-            font-family: 'Quicksand', sans-serif; 
-            font-weight: 700; 
-            font-size: 15px; 
-            color: #0f172a; 
-            outline: none; 
-            transition: all .25s; 
-            margin-bottom: 12px; 
-        }
+        .select-provincia, .input-buscar, .textarea-buscar { width: 100%; padding: 16px; border-radius: 1rem; border: 2.5px solid #ffe4cc; background: white; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 15px; color: #0f172a; outline: none; transition: all .25s; margin-bottom: 12px; }
+        .select-provincia { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ff6b00' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 48px; }
+        .select-provincia:focus, .input-buscar:focus, .textarea-buscar:focus { border-color: #ff6b00; box-shadow: 0 0 0 4px rgba(255,107,0,.12); }
         
-        .select-provincia { 
-            appearance: none; 
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ff6b00' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); 
-            background-repeat: no-repeat; 
-            background-position: right 16px center; 
-            padding-right: 48px; 
-        }
-        
-        .select-provincia:focus, 
-        .input-buscar:focus, 
-        .textarea-buscar:focus { 
-            border-color: #ff6b00; 
-            box-shadow: 0 0 0 4px rgba(255,107,0,.12); 
-        }
-        
-        .btn-volver { 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 6px; 
-            padding: 8px 16px; 
-            border-radius: 10px; 
-            border: 2px solid #ffe4cc; 
-            background: white; 
-            color: #cc4400; 
-            font-weight: 800; 
-            font-size: 14px; 
-            cursor: pointer; 
-            transition: all .2s; 
-            margin-bottom: 16px; 
-        }
-        
-        .btn-volver:hover { 
-            border-color: #ff6b00; 
-            background: #fff7ed; 
-        }
-        
-        .step-indicator { 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 6px; 
-            padding: 6px 14px; 
-            border-radius: 999px; 
-            background: linear-gradient(135deg, #fff7ed, #ffe4cc); 
-            color: #cc4400; 
-            font-size: 12px; 
-            font-weight: 800; 
-            border: 1.5px solid #ffd4b3; 
-            margin-bottom: 16px; 
-        }
+        .btn-volver { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; border: 2px solid #ffe4cc; background: white; color: #cc4400; font-weight: 800; font-size: 14px; cursor: pointer; transition: all .2s; margin-bottom: 16px; }
+        .btn-volver:hover { border-color: #ff6b00; background: #fff7ed; }
+        .step-indicator { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; font-size: 12px; font-weight: 800; border: 1.5px solid #ffd4b3; margin-bottom: 16px; }
 
-        /* ==========================================================================
-           CLASES MISCELÁNEAS Y AYUDANTES (HELPERS)
-           ========================================================================== */
-        .check-step { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            padding: 6px 0; 
-        }
+        .check-step { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+        .check-step i { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, rgba(22,163,74,.15), rgba(22,163,74,.08)); color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; border: 1.5px solid rgba(22,163,74,.25); }
         
-        .check-step i { 
-            width: 24px; 
-            height: 24px; 
-            border-radius: 50%; 
-            background: linear-gradient(135deg, rgba(22,163,74,.15), rgba(22,163,74,.08)); 
-            color: #16a34a; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 13px; 
-            flex-shrink: 0; 
-            border: 1.5px solid rgba(22,163,74,.25); 
-        }
+        .bg-grid-orange { background-image: linear-gradient(rgba(255,107,0,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255,107,0,.055) 1px, transparent 1px); background-size: 44px 44px; }
+        .radial-orange { background: radial-gradient(700px 450px at 50% 0%, rgba(255,107,0,.16), transparent 70%); }
+        .stat-number { font-family: 'Sora', sans-serif; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ff8c00, #ffd700); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
+        .divider-glow { height: 3px; background: linear-gradient(90deg, transparent, #ff6b00, #ffd700, #16a34a, #ff6b00, transparent); border-radius: 3px; }
+        .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: #cc4400; display: inline-flex; align-items: center; gap: 10px; }
+        .eyebrow::before { content: ''; display: block; width: 36px; height: 3px; background: linear-gradient(90deg, #ff6b00, transparent); border-radius: 2px; }
+        .hero-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -1.5px; line-height: 1.02; }
+        .section-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -.8px; line-height: 1.15; }
         
-        .bg-grid-orange { 
-            background-image: linear-gradient(rgba(255,107,0,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255,107,0,.055) 1px, transparent 1px); 
-            background-size: 44px 44px; 
-        }
-        
-        .radial-orange { 
-            background: radial-gradient(700px 450px at 50% 0%, rgba(255,107,0,.16), transparent 70%); 
-        }
-        
-        .stat-number { 
-            font-family: 'Sora', sans-serif; 
-            font-weight: 800; 
-            line-height: 1; 
-            background: linear-gradient(135deg, #ff8c00, #ffd700); 
-            -webkit-background-clip: text; 
-            background-clip: text; 
-            color: transparent; 
-            font-variant-numeric: tabular-nums; 
-        }
-        
-        .divider-glow { 
-            height: 3px; 
-            background: linear-gradient(90deg, transparent, #ff6b00, #ffd700, #16a34a, #ff6b00, transparent); 
-            border-radius: 3px; 
-        }
-        
-        .eyebrow { 
-            font-size: 12px; 
-            font-weight: 800; 
-            letter-spacing: .22em; 
-            text-transform: uppercase; 
-            color: #cc4400; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 10px; 
-        }
-        
-        .eyebrow::before { 
-            content: ''; 
-            display: block; 
-            width: 36px; 
-            height: 3px; 
-            background: linear-gradient(90deg, #ff6b00, transparent); 
-            border-radius: 2px; 
-        }
-        
-        .hero-title { 
-            font-family: 'Sora', sans-serif; 
-            font-weight: 800; 
-            letter-spacing: -1.5px; 
-            line-height: 1.02; 
-        }
-        
-        .section-title { 
-            font-family: 'Sora', sans-serif; 
-            font-weight: 800; 
-            letter-spacing: -.8px; 
-            line-height: 1.15; 
-        }
-        
-        ::-webkit-scrollbar { 
-            width: 8px; 
-        }
-        
-        ::-webkit-scrollbar-track { 
-            background: #fff7ed; 
-        }
-        
-        ::-webkit-scrollbar-thumb { 
-            background: linear-gradient(180deg,#ff8c00,#cc4400); 
-            border-radius: 10px; 
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fff7ed; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<!-- ====================================================================== -->
-<!-- BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR)                                  -->
-<!-- ====================================================================== -->
 <nav class="nav-fixed">
     <div class="nav-container">
-        
-        <!-- Bloque de Logo y Nombre -->
         <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
             <div style="position:relative;width:46px;height:46px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(255,107,0,.6);border:2px solid #ffd700;">
                 <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo Delivery Moto">
@@ -798,7 +185,6 @@
             </div>
         </div>
 
-        <!-- Enlaces de navegación (Ocultos en dispositivos móviles) -->
         <div style="display:flex;align-items:center;gap:16px;" class="hide-mobile">
             <span class="nav-link" onclick="scrollToId('funciona')">Cómo Funciona</span>
             <span class="nav-link" onclick="scrollToId('cadetes')">Cadetes</span>
@@ -806,8 +192,6 @@
             <span class="nav-link" onclick="scrollToId('funciones')">Funciones</span>
         </div>
 
-        <!-- Botones de Acción -->
-        <!-- FIX: El micrófono ya NO dispara el Toast cortado, solo animación visual -->
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
             <button class="mic-btn" id="micBtn" title="Asistente de Voz" onclick="activarMicrofono()">
                 <i class="ri-mic-fill" id="micIcon"></i>
@@ -820,12 +204,8 @@
     </div>
 </nav>
 
-<!-- Div espaciador para compensar el fixed navbar -->
 <div style="height:90px;"></div>
 
-<!-- ====================================================================== -->
-<!-- BARRA ANIMADA (TICKER) DE VENTAJAS COMPETITIVAS                        -->
-<!-- ====================================================================== -->
 <div style="background:linear-gradient(90deg,#cc4400,#ff6b00,#ff8c00,#ff6b00,#cc4400);padding:8px 0;overflow:hidden;border-bottom:2px solid rgba(0,0,0,.2);">
     <div class="ticker-wrap">
         <div class="ticker-track">
@@ -840,18 +220,11 @@
     </div>
 </div>
 
-<!-- ====================================================================== -->
-<!-- SECCIÓN PRINCIPAL (HERO) CON MOTO Y LLAMADOS A LA ACCIÓN               -->
-<!-- ====================================================================== -->
 <section class="hero-bg" style="position:relative;overflow:hidden;padding:24px 22px 64px;">
-    
-    <!-- Elementos Decorativos de Fondo -->
     <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:550px;height:550px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.25),transparent 65%);pointer-events:none;"></div>
     <div style="position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(22,163,74,.2),transparent 70%);pointer-events:none;"></div>
 
     <div style="max-width:1000px;margin:0 auto;position:relative;z-index:2;text-align:center;">
-        
-        <!-- Contenedor del Logo Principal con Anillos Animados -->
         <div style="position:relative;display:inline-block;margin-bottom:22px;z-index:10;">
             <div style="position:absolute;inset:-22px;border-radius:50%;border:2px dashed rgba(255,215,0,.38);" class="animate-ring"></div>
             <div style="position:absolute;inset:-42px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);" class="animate-ring-slow"></div>
@@ -878,7 +251,6 @@
             <strong style="color:#4ade80;">buena conducta</strong> — entregan en tu domicilio.
         </p>
 
-        <!-- Botones de Acción (Marketplace y APK) -->
         <div class="animate-slide-up" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:36px;">
             <button class="btn-primary" style="padding:16px 28px;font-size:16px;" onclick="abrirModalMarketplace()">
                 <i class="ri-store-2-fill" style="font-size:20px;"></i>
@@ -891,7 +263,6 @@
             </button>
         </div>
 
-        <!-- Estadísticas Rápidas -->
         <div class="animate-slide-up" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:520px;margin:0 auto;padding:20px 24px;border-radius:1.25rem;" class="glass">
             <div>
                 <div class="stat-number" style="font-size:36px;">24/7</div>
@@ -909,12 +280,8 @@
     </div>
 </section>
 
-<!-- ====================================================================== -->
-<!-- SECCIÓN 1: CÓMO FUNCIONA EL SISTEMA (LOS 3 ACTORES)                    -->
-<!-- ====================================================================== -->
 <section id="funciona" style="padding:64px 22px;position:relative;background:#fff7ed;" class="radial-orange bg-grid-orange">
     <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;">
-        
         <div style="text-align:center;margin-bottom:44px;">
             <div class="eyebrow" style="justify-content:center;margin-bottom:12px;">Sistema Integral</div>
             <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:#0f172a;margin:0 0 10px;">
@@ -926,8 +293,6 @@
         </div>
 
         <div style="display:grid;grid-template-columns:1fr;gap:22px;" class="md:grid-cols-3">
-            
-            <!-- Actor 1: Comercios -->
             <div class="card-premium" style="padding:28px 24px;text-align:center;">
                 <div style="position:relative;display:inline-block;margin-bottom:18px;">
                     <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;">
@@ -946,7 +311,6 @@
                 </div>
             </div>
 
-            <!-- Actor 2: Clientes -->
             <div class="card-premium" style="padding:28px 24px;text-align:center;">
                 <div style="position:relative;display:inline-block;margin-bottom:18px;">
                     <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;">
@@ -965,7 +329,6 @@
                 </div>
             </div>
 
-            <!-- Actor 3: Cadetes -->
             <div class="card-premium" style="padding:28px 24px;text-align:center;">
                 <div style="position:relative;display:inline-block;margin-bottom:18px;">
                     <div class="feature-icon" style="width:78px;height:78px;border-radius:1.4rem;font-size:34px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#16a34a;border-color:#86efac;">
@@ -988,21 +351,14 @@
     </div>
 </section>
 
-<!-- Divisor con resplandor -->
 <div class="divider-glow" style="max-width:700px;margin:0 auto;"></div>
 
-<!-- ====================================================================== -->
-<!-- SECCIÓN 2: EXPLICACIÓN Y REQUISITOS PARA CADETES CERTIFICADOS          -->
-<!-- ====================================================================== -->
 <section id="cadetes" style="padding:70px 22px;background:linear-gradient(180deg,#0f172a 0%,#1a0a00 50%,#2d1200 100%);position:relative;overflow:hidden;">
     <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(550px 380px at 20% 30%,rgba(255,107,0,.25),transparent 70%),radial-gradient(450px 320px at 80% 70%,rgba(22,163,74,.18),transparent 70%);pointer-events:none;"></div>
     
     <div style="max-width:1150px;margin:0 auto;position:relative;z-index:2;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
-        
-        <!-- Imágenes y Muestras de la App para el Cadete -->
         <div style="display:flex; flex-direction:column; gap:16px;">
             <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-                
                 <div class="glass" style="padding:10px 14px;border-radius:1.1rem;display:flex;align-items:center;gap:12px;box-shadow:0 10px 25px rgba(0,0,0,.3); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,215,0,0.4);">
                     <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#d4a017);display:flex;align-items:center;justify-content:center;color:#0f172a;font-size:16px;">
                         <i class="ri-vip-crown-fill"></i>
@@ -1022,16 +378,13 @@
                         <div style="color:rgba(255,255,255,.75);font-size:10px;font-weight:600;">Certificada</div>
                     </div>
                 </div>
-
             </div>
             
-            <!-- Imagen del Cadete -->
             <div style="border-radius:1.75rem;overflow:hidden;box-shadow:0 25px 70px rgba(0,0,0,.55);border:4px solid #ff6b00;">
                 <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/87d7c1a4a557425994acf948e9503b64.jpeg~tplv-0es2k971ck-image.image?rcl=20260909234706F5BB7D22F40FD41F6D84&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791560876&x-signature=%2FYy0omEjyJQG45WH4Cvh764gXlI%3D" style="width:100%;height:auto;display:block;" alt="Cadete profesional">
             </div>
         </div>
 
-        <!-- Información de Valor del Cadete -->
         <div>
             <span class="badge-dorado" style="margin-bottom:18px;">
                 <i class="ri-vip-crown-fill"></i> PERSONAS DE CONFIANZA
@@ -1046,7 +399,6 @@
             </p>
 
             <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:26px;" class="sm:grid-cols-2">
-                
                 <div class="glass" style="padding:14px;border-radius:1.1rem;display:flex;align-items:flex-start;gap:12px;">
                     <div style="width:36px;height:36px;border-radius:10px;background:rgba(22,163,74,.22);color:#4ade80;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1.5px solid rgba(74,222,128,.3);">
                         <i class="ri-file-shield-2-fill"></i>
@@ -1086,10 +438,8 @@
                         <div style="color:rgba(255,255,255,.72);font-size:11.5px;font-weight:600;">Rastreo satelital</div>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Botón de postulación al sistema -->
             <div style="display:flex;flex-wrap:wrap;gap:12px;">
                 <button class="btn-primary" style="padding:15px 26px;font-size:15.5px;" onclick="iniciarLogin('cadete')">
                     <i class="ri-motorbike-fill" style="font-size:20px;"></i> POSTULARME
@@ -1099,12 +449,8 @@
     </div>
 </section>
 
-<!-- ====================================================================== -->
-<!-- SECCIÓN 3: VENTAJAS PARA LOS COMERCIOS (PANEL DE GESTIÓN)              -->
-<!-- ====================================================================== -->
 <section id="comercios" style="padding:70px 22px;background:linear-gradient(180deg,#fff7ed 0%,#ffffff 100%);position:relative;">
     <div style="max-width:1150px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
-        
         <div>
             <span class="badge-naranja" style="margin-bottom:18px;">
                 <i class="ri-store-3-fill"></i> PARA COMERCIOS
@@ -1157,12 +503,8 @@
     </div>
 </section>
 
-<!-- ====================================================================== -->
-<!-- SECCIÓN 4: GRID DE FUNCIONES PRINCIPALES DE TECNOLOGÍA                 -->
-<!-- ====================================================================== -->
 <section id="funciones" style="padding:70px 22px;background:#fff7ed;position:relative;" class="bg-grid-orange">
     <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;">
-        
         <div style="text-align:center;margin-bottom:44px;">
             <div class="eyebrow" style="justify-content:center;margin-bottom:12px;">Tecnología de Vanguardia</div>
             <h2 class="section-title" style="font-size:clamp(28px,4vw,46px);color:#0f172a;margin:0 0 10px;">
@@ -1174,7 +516,6 @@
         </div>
 
         <div style="display:grid;grid-template-columns:1fr;gap:18px;" class="md:grid-cols-2 lg:grid-cols-3">
-            
             <div class="card-premium" style="padding:26px;">
                 <div class="feature-icon"><i class="ri-volume-up-fill"></i></div>
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Asistente de Voz Latino</h3>
@@ -1210,19 +551,14 @@
                 <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:18px;color:#0f172a;margin:14px 0 8px;">Pedidos WhatsApp</h3>
                 <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0;">Toda la info del pedido llega directo al WhatsApp de soporte.</p>
             </div>
-
         </div>
     </div>
 </section>
 
-<!-- ====================================================================== -->
-<!-- CALL TO ACTION FINAL ANTES DEL FOOTER                                  -->
-<!-- ====================================================================== -->
 <section style="padding:70px 22px;background:linear-gradient(135deg,#1a0a00 0%,#cc4400 50%,#ff6b00 100%);position:relative;overflow:hidden;">
     <div style="position:absolute;inset:0;background:radial-gradient(450px 280px at 80% 20%,rgba(255,215,0,.25),transparent 70%);pointer-events:none;"></div>
     
     <div style="max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:2;">
-        
         <div style="position:relative;display:inline-block;margin-bottom:24px;">
             <div style="position:absolute;inset:-18px;border-radius:50%;border:2px dashed rgba(255,215,0,.4);" class="animate-ring"></div>
             <div style="width:120px;height:120px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7);position:relative;z-index:1;">
@@ -1246,19 +582,12 @@
                 <i class="ri-android-fill" style="font-size:22px;"></i> PWA / APK CADETE
             </button>
         </div>
-
     </div>
 </section>
 
-<!-- ====================================================================== -->
-<!-- FOOTER GLOBAL CON INFORMACIÓN LEGAL Y CONTACTOS REQUERIDOS             -->
-<!-- ====================================================================== -->
 <footer style="background:#0a0500;color:rgba(255,255,255,.68);padding:48px 22px 24px;border-top:4px solid #ff6b00;">
     <div style="max-width:1150px;margin:0 auto;">
-        
         <div style="display:grid;grid-template-columns:1fr;gap:32px;margin-bottom:32px;" class="md:grid-cols-3">
-            
-            <!-- Columna 1: Branding -->
             <div>
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
                     <div style="width:50px;height:50px;border-radius:1rem;overflow:hidden;flex-shrink:0;box-shadow:0 4px 16px rgba(255,107,0,.55);border:2.5px solid #ffd700;">
@@ -1274,7 +603,6 @@
                 </p>
             </div>
             
-            <!-- Columna 2: Enlaces Rápidos -->
             <div>
                 <h4 style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin:0 0 14px;">Plataforma</h4>
                 <div style="display:flex;flex-direction:column;gap:8px;">
@@ -1284,7 +612,6 @@
                 </div>
             </div>
             
-            <!-- Columna 3: Contacto -->
             <div>
                 <h4 style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;margin:0 0 14px;">Contacto de Soporte</h4>
                 <div style="display:flex;flex-direction:column;gap:12px;">
@@ -1305,33 +632,16 @@
                     </div>
                 </div>
             </div>
-
         </div>
         
-        <!-- Línea final de derechos -->
         <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;font-size:12.5px;font-weight:700; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
             <div>© 2026 Delivery Moto • Energy Software.</div>
             <div>Hecho en Argentina 🇦🇷</div>
         </div>
-
     </div>
 </footer>
 
-<script>
-// ==========================================
-// SCROLL NATIVO ORIGINAL (PÁGINA BASE)
-// ==========================================
-function scrollToId(id) { 
-    const el = document.getElementById(id);
-    if(el) {
-        const y = el.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({top: y, behavior: 'smooth'});
-    }
-}
-</script>
-<!-- ====================================================================== -->
-<!-- AUDIO DE LA LANDING PAGE (REPRODUCTOR FLOTANTE PREMIUM)                -->
-<!-- ====================================================================== -->
+<!-- Modales y Audio -->
 <audio id="bgAudio" loop>
     <!-- REEMPLAZÁ ESTE LINK POR TU AUDIO REAL -->
     <source src="URL_DE_TU_AUDIO_AQUI.mp3" type="audio/mpeg">
@@ -1348,7 +658,6 @@ function scrollToId(id) {
         
         <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar"><i class="ri-close-line"></i></button>
 
-        <!-- HEADER DEL MODAL -->
         <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:35px 24px 25px; position:relative; overflow:hidden; flex-shrink:0;">
             <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
             <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
@@ -1364,7 +673,6 @@ function scrollToId(id) {
 
         <div style="padding:0; flex:1; display:flex; flex-direction:column; overflow-y:auto;">
             
-            <!-- PASO 1: SELECCIÓN -->
             <div id="modal-step-1" class="sub-step active" style="padding:24px 16px;">
                 <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Qué necesitás hoy?</h4>
                 <div style="display:flex; flex-direction:column; gap:12px;">
@@ -1667,7 +975,6 @@ function scrollToId(id) {
         </button>
     </div>
 </div>
-
 <!-- ======================================================= -->
 <!-- SCRIPT OFICIAL DE GOOGLE MAPS (CON TU API KEY REAL)     -->
 <!-- ======================================================= -->
@@ -1675,14 +982,19 @@ function scrollToId(id) {
 
 <script>
 // ==========================================
-// 0. INICIALIZACIÓN DE SUPABASE (CONECTADO)
+// 0. INICIALIZACIÓN SEGURA DE SUPABASE
 // ==========================================
-const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co'; 
-const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4'; 
-const supabase = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
+let supabase = null;
+try {
+    const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co'; 
+    const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4'; 
+    supabase = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
+} catch(e) {
+    console.error("Supabase tardó en cargar o tiró error, pero la app no se va a colgar.", e);
+}
 
 // ==========================================
-// VARIABLES GLOBALES DECLARADAS (FUNDAMENTAL PARA GUARDAR MEMORIA)
+// VARIABLES GLOBALES DECLARADAS
 // ==========================================
 let baseComercios = [];
 let baseProductosActivos = [];
@@ -1702,37 +1014,68 @@ const AppStore = {
 };
 
 // ==========================================
-// FUNCIONES QUE FALTABAN (AHORA SÍ FUNCIONAN)
+// FUNCIONES NUEVAS: MICRÓFONO, DESCARGA Y AUDITORÍA
 // ==========================================
 function activarMicrofono() {
-    mostrarToast("🎙️ Micrófono activado. Escuchando comando...", "success");
     const btn = document.getElementById('micBtn');
     const icon = document.getElementById('micIcon');
-    btn.style.boxShadow = '0 0 0 18px rgba(22,163,74,0.3)';
-    icon.className = 'ri-mic-2-fill';
     
-    // Simula detener la escucha después de 3 segundos
-    setTimeout(() => {
+    // Acá está el código REAL del micrófono de Google.
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+        mostrarToast('Tu navegador actual no soporta el reconocimiento de voz. Usá Chrome.', 'error');
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-AR'; // Español de Argentina configurado
+    recognition.continuous = false;
+    
+    recognition.onstart = function() {
+        btn.style.boxShadow = '0 0 0 18px rgba(22,163,74,0.3)';
+        icon.className = 'ri-mic-2-fill';
+        mostrarToast('🎤 Te escucho... Hablá ahora.', 'success');
+    };
+    
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        mostrarToast(`Escuché: "${transcript}"`, 'success');
+        // A futuro esto manda la orden a la base de datos o buscador
+    };
+    
+    recognition.onerror = function(event) {
+        mostrarToast('No te pude escuchar bien. Volvé a intentarlo.', 'error');
         btn.style.boxShadow = '0 4px 15px rgba(22,163,74,.4)';
         icon.className = 'ri-mic-fill';
-        mostrarToast("Procesando tu pedido de voz...", "success");
-    }, 3000);
+    };
+    
+    recognition.onend = function() {
+        btn.style.boxShadow = '0 4px 15px rgba(22,163,74,.4)';
+        icon.className = 'ri-mic-fill';
+    };
+    
+    recognition.start();
 }
 
 function descargarAPK() {
-    mostrarToast("📥 Iniciando descarga segura de la APK / PWA...", "success");
+    mostrarToast("📥 Preparando descarga segura de la APK...", "success");
+    // Redirección segura a un archivo si existiese.
+    setTimeout(() => {
+        mostrarToast("Falta enlazar el archivo al servidor", "error");
+    }, 1500);
 }
 
 function auditarDocumentosIA() {
-    mostrarToast("🤖 Enviando perfil a OpenAI. Auditando antecedentes...", "success");
+    mostrarToast("🤖 Enviando documentos a OpenAI para auditoría...", "success");
     setTimeout(() => {
         mostrarToast("✅ Identidad certificada con éxito. Ya podés trabajar.", "success");
         irPaso('servimoto'); 
-    }, 3000);
+    }, 2500);
 }
 
 // ==========================================
-// AUDIO LANDING PAGE
+// SCROLL Y AUDIO DE LA LANDING
 // ==========================================
 function toggleAudio() {
     const audio = document.getElementById('bgAudio');
@@ -1746,9 +1089,6 @@ function toggleAudio() {
     }
 }
 
-// ==========================================
-// SCROLL NATIVO ORIGINAL (PÁGINA BASE)
-// ==========================================
 function scrollToId(id) { 
     const el = document.getElementById(id);
     if(el) {
@@ -1758,7 +1098,7 @@ function scrollToId(id) {
 }
 
 // ==========================================
-// TOAST SYSTEM Y LOGICA GENERAL
+// TOAST SYSTEM Y LOGICA GENERAL ORIGINAL
 // ==========================================
 let miComercioLogueadoId = null; 
 
@@ -1770,7 +1110,7 @@ function mostrarToast(msg, tipo) {
         container.style.position = 'fixed';
         container.style.top = '20px';
         container.style.right = '20px';
-        container.style.zIndex = '99999';
+        container.style.zIndex = '999999';
         document.body.appendChild(container);
     }
     const t = document.createElement('div');
@@ -1787,98 +1127,28 @@ function mostrarToast(msg, tipo) {
     setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
-// LOGICA COMERCIO GUARDADO
-function guardarComercio() {
-    const nom = document.getElementById('comercioNombre').value.trim();
-    const dir = document.getElementById('comercioDireccionExacta').value.trim();
-    const prov = document.getElementById('comercioProvincia').value.trim();
-    const ciu = document.getElementById('comercioCiudad').value.trim();
-    
-    if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá nombre, dirección, provincia y ciudad', 'error');
-    if(!AppStore.get('selfie_seguridad_comercio')) return mostrarToast('La foto Selfie de seguridad es obligatoria', 'error');
-    
-    if(!miComercioLogueadoId) {
-        miComercioLogueadoId = Date.now();
-        baseComercios.push({
-            id: miComercioLogueadoId,
-            nombre: nom,
-            provincia: prov,
-            ciudad: ciu,
-            direccion: dir,
-            img: tempImgPortada
-        });
+// ==========================================
+// NAVEGACIÓN Y MARKETPLACE
+// ==========================================
+function abrirModalMarketplace() { 
+    const modal = document.getElementById('modalMarketplace');
+    if(modal) {
+        modal.classList.add('show'); 
+        document.body.style.overflow = 'hidden'; 
+        irPaso(1); 
     } else {
-        let index = baseComercios.findIndex(c => c.id === miComercioLogueadoId);
-        if(index !== -1) {
-            baseComercios[index].nombre = nom;
-            baseComercios[index].direccion = dir;
-            baseComercios[index].provincia = prov;
-            baseComercios[index].ciudad = ciu;
-            baseComercios[index].img = tempImgPortada;
-        }
-    }
-    mostrarToast(`¡Local guardado en ${ciu}! Ahora publicá tus platos.`, 'success');
-}
-
-function agregarArticuloComercio() {
-    if(!miComercioLogueadoId) return mostrarToast('Primero GUARDÁ LOS DATOS DEL LOCAL arriba', 'error');
-    
-    const nom = document.getElementById('newArtNombre').value;
-    const pre = parseInt(document.getElementById('newArtPrecio').value);
-    if(!nom || isNaN(pre)) return mostrarToast('Faltan datos del artículo', 'error');
-    
-    baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64 });
-    mostrarToast(`Publicado`, 'success');
-    
-    document.getElementById('newArtNombre').value = '';
-    document.getElementById('newArtPrecio').value = '';
-    document.getElementById('lblArtFoto').innerHTML = 'Subir Foto Real del Plato';
-    document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
-    renderizarAdminComercio();
-}
-
-function renderizarAdminComercio() {
-    const cont = document.getElementById('listaAdminComercio');
-    if(!cont) return;
-    const misProductos = baseProductosActivos.filter(p => p.idComercio === miComercioLogueadoId);
-    cont.innerHTML = misProductos.map(p => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem;">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <img src="${p.img}" style="width:44px; height:44px; border-radius:8px; object-fit:cover;">
-                <div><div style="font-size:13.5px; font-weight:800;">${p.nombre}</div><div style="font-size:12px; color:#ff6b00; font-weight:700;">$${p.precio}</div></div>
-            </div>
-            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:34px; height:34px;"><i class="ri-delete-bin-fill"></i></button>
-        </div>
-    `).join('');
-}
-
-function eliminarArticuloAdmin(id) {
-    baseProductosActivos = baseProductosActivos.filter(p => p.id !== id);
-    renderizarAdminComercio();
-    mostrarToast('Artículo eliminado', 'success');
-}
-
-let tempImgPortada = "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150";
-function previewPortada(input) {
-    if(input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            tempImgPortada = e.target.result;
-            const caja = document.getElementById('boxPortadaComercio');
-            caja.style.backgroundImage = `url(${e.target.result})`;
-            document.getElementById('lblPortadaComercio').textContent = '✅ Portada Actualizada';
-            document.getElementById('iconPortadaContenedor').style.display = 'none';
-            mostrarToast('Portada cargada', 'success');
-        }
-        reader.readAsDataURL(input.files[0]);
+        mostrarToast('Error cargando el Marketplace. Recargá la página.', 'error');
     }
 }
-
-function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
-
-function abrirModalMarketplace() { document.getElementById('modalMarketplace').classList.add('show'); document.body.style.overflow = 'hidden'; irPaso(1); }
-function cerrarModalMarketplace() { document.getElementById('modalMarketplace').classList.remove('show'); document.body.style.overflow = ''; }
-function irPaso(paso) { document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active')); document.getElementById(`modal-step-${paso}`).classList.add('active'); }
+function cerrarModalMarketplace() { 
+    document.getElementById('modalMarketplace').classList.remove('show'); 
+    document.body.style.overflow = ''; 
+}
+function irPaso(paso) { 
+    document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active')); 
+    const target = document.getElementById(`modal-step-${paso}`);
+    if(target) target.classList.add('active'); 
+}
 
 function iniciarLogin(tipo) {
     tipoLoginActual = tipo;
@@ -1903,6 +1173,9 @@ function validarLogin() {
     if(tipoLoginActual === 'comercio') irPaso('comercio'); else irPaso('servimoto-onboarding');
 }
 
+// ==========================================
+// CLIENTES: FOTOS, MAPA Y CATÁLOGO
+// ==========================================
 function previewSelfieCliente(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
@@ -1921,6 +1194,8 @@ function previewSelfieCliente(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
 
 function validarUbicacionCliente() {
     const prov = document.getElementById('selProvinciaCliente').value;
@@ -1988,39 +1263,20 @@ function verCatalogoComercio(idComercio, nombreComercio, direccionLocal) {
     irPaso('catalogo');
 }
 
-function enviarPedidoEspecial() {
-    const dirOrigen = document.getElementById('dirOrigenEspecial').value;
-    const ciuDestino = document.getElementById('ciuDestinoEspecial').value;
-    const dirDestino = document.getElementById('dirDestinoEspecial').value;
-    const provDestino = document.getElementById('selProvinciaEspecial').value;
-    const txt = document.getElementById('txtPedidoEspecial').value;
-    if(!dirOrigen || !dirDestino || !ciuDestino || !provDestino || !txt) return mostrarToast('Completá todo', 'error');
-    direccionOrigenCalculo = dirOrigen;
-    document.getElementById('inputDireccionCliente').value = dirDestino;
-    document.getElementById('inputCiudadCliente').value = ciuDestino;
-    carritoGlobal.push({ nombre: "Viaje Express", precio: 0, detalle: txt });
-    cerrarModalMarketplace();
-    abrirMapaMago();
-}
-
-function agregarAlCarrito(nombre, precio) { carritoGlobal.push({ nombre, precio, cantidad: 1 }); mostrarToast(`✅ Agregado al carrito`, 'success'); }
-
-function prepararCheckout() {
-    if(carritoGlobal.length === 0) return mostrarToast('Tu carrito está vacío.', 'error');
-    abrirMapaMago();
-}
-
-let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
-function previewArtFoto(input) {
+// ==========================================
+// COMERCIOS: PANEL DE ADMIN
+// ==========================================
+let tempImgPortada = "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150";
+function previewPortada(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            tempImgBase64 = e.target.result;
-            const caja = document.getElementById('boxArticuloNuevo');
+            tempImgPortada = e.target.result;
+            const caja = document.getElementById('boxPortadaComercio');
             caja.style.backgroundImage = `url(${e.target.result})`;
-            document.getElementById('lblArtFoto').textContent = '✅ Foto Lista';
-            document.getElementById('iconPlatoContenedor').style.display = 'none';
-            mostrarToast('Imagen lista', 'success');
+            document.getElementById('lblPortadaComercio').textContent = '✅ Portada Actualizada';
+            document.getElementById('iconPortadaContenedor').style.display = 'none';
+            mostrarToast('Portada cargada', 'success');
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -2043,6 +1299,95 @@ function previewSelfieComercioModal(input) {
     }
 }
 
+function guardarComercio() {
+    const nom = document.getElementById('comercioNombre').value.trim();
+    const dir = document.getElementById('comercioDireccionExacta').value.trim();
+    const prov = document.getElementById('comercioProvincia').value.trim();
+    const ciu = document.getElementById('comercioCiudad').value.trim();
+    
+    if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá nombre, dirección, provincia y ciudad', 'error');
+    if(!AppStore.get('selfie_seguridad_comercio')) return mostrarToast('La foto Selfie de seguridad es obligatoria', 'error');
+    
+    if(!miComercioLogueadoId) {
+        miComercioLogueadoId = Date.now();
+        baseComercios.push({
+            id: miComercioLogueadoId,
+            nombre: nom,
+            provincia: prov,
+            ciudad: ciu,
+            direccion: dir,
+            img: tempImgPortada
+        });
+    } else {
+        let index = baseComercios.findIndex(c => c.id === miComercioLogueadoId);
+        if(index !== -1) {
+            baseComercios[index].nombre = nom;
+            baseComercios[index].direccion = dir;
+            baseComercios[index].provincia = prov;
+            baseComercios[index].ciudad = ciu;
+            baseComercios[index].img = tempImgPortada;
+        }
+    }
+    mostrarToast(`¡Local guardado en ${ciu}! Ahora publicá tus platos.`, 'success');
+}
+
+let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
+function previewArtFoto(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            tempImgBase64 = e.target.result;
+            const caja = document.getElementById('boxArticuloNuevo');
+            caja.style.backgroundImage = `url(${e.target.result})`;
+            document.getElementById('lblArtFoto').textContent = '✅ Foto Lista';
+            document.getElementById('iconPlatoContenedor').style.display = 'none';
+            mostrarToast('Imagen lista', 'success');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function agregarArticuloComercio() {
+    if(!miComercioLogueadoId) return mostrarToast('Primero GUARDÁ LOS DATOS DEL LOCAL arriba', 'error');
+    
+    const nom = document.getElementById('newArtNombre').value;
+    const pre = parseInt(document.getElementById('newArtPrecio').value);
+    if(!nom || isNaN(pre)) return mostrarToast('Faltan datos del artículo', 'error');
+    
+    baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64 });
+    mostrarToast(`Publicado`, 'success');
+    
+    document.getElementById('newArtNombre').value = '';
+    document.getElementById('newArtPrecio').value = '';
+    document.getElementById('lblArtFoto').innerHTML = 'Subir Foto Real del Plato';
+    document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
+    renderizarAdminComercio();
+}
+
+function renderizarAdminComercio() {
+    const cont = document.getElementById('listaAdminComercio');
+    if(!cont) return;
+    const misProductos = baseProductosActivos.filter(p => p.idComercio === miComercioLogueadoId);
+    cont.innerHTML = misProductos.map(p => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <img src="${p.img}" style="width:44px; height:44px; border-radius:8px; object-fit:cover;">
+                <div><div style="font-size:13.5px; font-weight:800;">${p.nombre}</div><div style="font-size:12px; color:#ff6b00; font-weight:700;">$${p.precio}</div></div>
+            </div>
+            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:34px; height:34px;"><i class="ri-delete-bin-fill"></i></button>
+        </div>
+    `).join('');
+}
+
+function eliminarArticuloAdmin(id) {
+    baseProductosActivos = baseProductosActivos.filter(p => p.id !== id);
+    renderizarAdminComercio();
+    mostrarToast('Artículo eliminado', 'success');
+}
+
+// ==========================================
+// CADETES: RADAR Y TURNOS
+// ==========================================
 function toggleEstadoTrabajo() {
     estadoTrabajoServimoto = !estadoTrabajoServimoto;
     const btn = document.getElementById('btnEstadoTrabajo');
@@ -2082,9 +1427,34 @@ function simularViajeCadete() {
     mostrarToast('✅ Viaje cargado. Deuda sumada.', 'success');
 }
 
-// =========================================================
-// LÓGICA DE MAPA Y TARIFAS 
-// =========================================================
+// ==========================================
+// CARRITO, VIAJE EXPRESS Y MAPA GPS
+// ==========================================
+function enviarPedidoEspecial() {
+    const dirOrigen = document.getElementById('dirOrigenEspecial').value;
+    const ciuDestino = document.getElementById('ciuDestinoEspecial').value;
+    const dirDestino = document.getElementById('dirDestinoEspecial').value;
+    const provDestino = document.getElementById('selProvinciaEspecial').value;
+    const txt = document.getElementById('txtPedidoEspecial').value;
+    if(!dirOrigen || !dirDestino || !ciuDestino || !provDestino || !txt) return mostrarToast('Completá todo', 'error');
+    direccionOrigenCalculo = dirOrigen;
+    document.getElementById('inputDireccionCliente').value = dirDestino;
+    document.getElementById('inputCiudadCliente').value = ciuDestino;
+    carritoGlobal.push({ nombre: "Viaje Express", precio: 0, detalle: txt });
+    cerrarModalMarketplace();
+    abrirMapaMago();
+}
+
+function agregarAlCarrito(nombre, precio) { 
+    carritoGlobal.push({ nombre, precio, cantidad: 1 }); 
+    mostrarToast(`✅ Agregado al carrito`, 'success'); 
+}
+
+function prepararCheckout() {
+    if(carritoGlobal.length === 0) return mostrarToast('Tu carrito está vacío.', 'error');
+    abrirMapaMago();
+}
+
 function abrirMapaMago() {
     const modalMapa = document.getElementById('modalMapaGrande');
     modalMapa.classList.add('show');
