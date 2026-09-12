@@ -116,10 +116,12 @@
         .feature-icon { width: 62px; height: 62px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #ff6b00; transition: all .4s; border: 2px solid #ffd4b3; }
         .card-premium:hover .feature-icon { transform: scale(1.12) rotate(-5deg); background: linear-gradient(135deg, #ff8c00, #cc4400); color: white; border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.45); }
 
-        .badge-naranja { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; border: 1.5px solid #ffb380; }
+        .badge-naranja { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; border: 1.5px solid #ffb380; cursor: pointer; transition: all 0.2s;}
+        .badge-naranja:hover { background: #ff6b00; color: white; }
+        
         .badge-dorado { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, rgba(255,215,0,.22), rgba(255,140,0,.1)); color: #fff7e6; border: 1.5px solid rgba(255,215,0,.5); box-shadow: 0 4px 15px rgba(255,215,0,.15); }
 
-        .nav-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 76px; z-index: 500; background: linear-gradient(135deg,#1a0a00,#2d1200); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 3px solid #ff6b00; box-shadow: 0 4px 28px rgba(0,0,0,.4); display: flex; align-items: center; }
+        .nav-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 76px; z-index: 500; background: linear-gradient(135deg,#1a0a00,#2d1200); backdrop-filter: blur(20px); border-bottom: 3px solid #ff6b00; box-shadow: 0 4px 28px rgba(0,0,0,.4); display: flex; align-items: center; }
         .nav-container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
 
         .mic-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all .3s; background: linear-gradient(135deg, #16a34a, #15803d); color: white; box-shadow: 0 4px 15px rgba(22,163,74,.4); flex-shrink: 0; }
@@ -141,8 +143,9 @@
             .modal-overlay.show .modal-box { transform: scale(1); } 
         }
 
-        .modal-close-btn { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.95); border: 3px solid #ff6b00; color: #cc4400; font-size: 24px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .25s; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,.2); }
-        .modal-close-btn:hover { background: #ff6b00; color: white; transform: rotate(90deg); }
+        /* Modificado: Botones de cerrar ahora son naranjas para evitar el rojo */
+        .modal-close-btn { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.95); border: 3px solid #f97316; color: #ea580c; font-size: 24px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .25s; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,.2); }
+        .modal-close-btn:hover { background: #f97316; color: white; transform: rotate(90deg); }
         
         .sub-step { display: none; padding: 20px 16px; flex: 1; animation: fadeInScale .3s ease; width: 100%; }
         .sub-step.active { display: block; }
@@ -218,7 +221,7 @@
     </div>
 </nav>
 
-<!-- BOTÓN FLOTANTE DEL CARRITO (Se activa por JS cuando agregás algo) -->
+<!-- BOTÓN FLOTANTE DEL CARRITO -->
 <button id="btnFloatingCart" onclick="abrirCarritoFinal()" style="display:none; position:fixed; bottom:24px; right:24px; width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:3px solid #bbf7d0; box-shadow:0 10px 30px rgba(22,163,74,0.6); z-index:9999999; font-size:26px; cursor:pointer; align-items:center; justify-content:center; transition:transform 0.2s;">
     <i class="ri-shopping-cart-2-fill"></i>
     <div id="badgeCarrito" style="position:absolute; top:-5px; right:-5px; background:white; color:#15803d; font-size:13px; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #16a34a; box-shadow:0 4px 10px rgba(0,0,0,0.3);">0</div>
@@ -557,11 +560,11 @@
     </div>
 </footer>
 
-<div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9999999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
-
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
     <div class="modal-box" style="background:#fff7ed;">
+        <!-- BOTÓN DE CERRAR EN NARANJA PREMIUM (No rojo) -->
         <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar"><i class="ri-close-line"></i></button>
+        
         <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:35px 24px 25px; position:relative; overflow:hidden; flex-shrink:0;">
             <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
             <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
@@ -579,6 +582,7 @@
             <div id="modal-step-1" class="sub-step active" style="padding:24px 16px;">
                 <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Qué necesitás hoy?</h4>
                 <div style="display:flex; flex-direction:column; gap:12px;">
+                    <!-- MODIFICACIÓN ACÁ: VA DIRECTO AL FEED GLOBAL DE MERCADO LIBRE -->
                     <button class="option-card" onclick="irPaso('feed-global')" style="border:2px solid #ff6b00; background:linear-gradient(to right, #fff, #fff7ed);">
                         <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(255,107,0,0.4);"><i class="ri-shopping-bag-3-fill"></i></div>
                         <div style="flex:1; text-align:left;">
@@ -591,7 +595,7 @@
                         <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #3b82f6, #1d4ed8); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(59,130,246,0.4);"><i class="ri-motorbike-fill"></i></div>
                         <div style="flex:1; text-align:left;">
                             <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px;">Pedir un Cadete</div>
-                            <div style="font-size:12px; color:#64748b; font-weight:600;">Viajes especiales o paquetes.</div>
+                            <div style="font-size:12px; color:#64748b; font-weight:600;">Viajes especiales o paquetes rápidos.</div>
                         </div>
                         <i class="ri-arrow-right-s-line" style="font-size:26px; color:#3b82f6;"></i>
                     </button>
@@ -608,16 +612,54 @@
                 </div>
             </div>
 
-            <!-- FEED GLOBAL DE MERCADO LIBRE -->
+            <!-- EL NUEVO FEED GLOBAL (ESTILO MERCADO LIBRE) CON FILTROS EN HTML -->
             <div id="modal-step-feed-global" class="sub-step" style="padding:0;">
                 <div style="padding:16px; background:white; position:sticky; top:0; z-index:10; border-bottom:2px solid #ffe4cc; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
                     <button class="btn-volver" style="margin-bottom:12px;" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Inicio</button>
                     <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin-bottom:12px;">Catálogo Global</h3>
-                    <div style="display:flex; gap:8px;" id="cajaFiltrosFeed">
-                        <!-- Selectores manejados por JS para no duplicar -->
+                    
+                    <!-- BURBUJAS DE CATEGORÍAS -->
+                    <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom:12px; scrollbar-width:none;">
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:8px 16px; cursor:pointer;" onclick="filtrarFeedGlobal('')">Todos</button>
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:8px 16px; cursor:pointer;" onclick="filtrarFeedGlobal('pizza')">🍕 Pizzería</button>
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:8px 16px; cursor:pointer;" onclick="filtrarFeedGlobal('comida rápida')">🍔 Rápida</button>
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:8px 16px; cursor:pointer;" onclick="filtrarFeedGlobal('farmacia')">💊 Farmacia</button>
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:8px 16px; cursor:pointer;" onclick="filtrarFeedGlobal('kiosco')">🍫 Kiosco</button>
+                    </div>
+
+                    <div style="display:flex; gap:8px;" id="cajaFiltrosFeedHTML">
+                        <select class="select-provincia" id="filtroProvincia" style="margin:0; padding:10px; font-size:13px; flex:1;" onchange="filtrarFeedGlobal()">
+                            <option value="">Todas las Provincias...</option>
+                            <option value="Tucumán" selected>Tucumán</option>
+                            <option value="Buenos Aires">Buenos Aires</option>
+                            <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                            <option value="Catamarca">Catamarca</option>
+                            <option value="Chaco">Chaco</option>
+                            <option value="Chubut">Chubut</option>
+                            <option value="Córdoba">Córdoba</option>
+                            <option value="Corrientes">Corrientes</option>
+                            <option value="Entre Ríos">Entre Ríos</option>
+                            <option value="Formosa">Formosa</option>
+                            <option value="Jujuy">Jujuy</option>
+                            <option value="La Pampa">La Pampa</option>
+                            <option value="La Rioja">La Rioja</option>
+                            <option value="Mendoza">Mendoza</option>
+                            <option value="Misiones">Misiones</option>
+                            <option value="Neuquén">Neuquén</option>
+                            <option value="Río Negro">Río Negro</option>
+                            <option value="Salta">Salta</option>
+                            <option value="San Juan">San Juan</option>
+                            <option value="San Luis">San Luis</option>
+                            <option value="Santa Cruz">Santa Cruz</option>
+                            <option value="Santa Fe">Santa Fe</option>
+                            <option value="Santiago del Estero">Santiago del Estero</option>
+                            <option value="Tierra del Fuego">Tierra del Fuego</option>
+                        </select>
+                        <input type="text" class="input-buscar" id="filtroCiudad" placeholder="Tu Ciudad (Ej: Famaillá)..." style="margin:0; padding:10px; font-size:13px; flex:1;" onkeyup="filtrarFeedGlobal()">
                     </div>
                 </div>
                 <div style="display:grid; grid-template-columns:repeat(2, 1fr); align-items:start; gap:12px; padding:16px;" id="gridMercadoLibre">
+                    <!-- ACÁ SE INYECTAN TODOS LOS PRODUCTOS POR JS -->
                 </div>
             </div>
 
@@ -634,7 +676,7 @@
                 </div>
             </div>
 
-            <!-- COMPLETAR PERFIL DEL CLIENTE -->
+            <!-- COMPLETAR PERFIL DEL CLIENTE: SELFIE Y UBICACIÓN -->
             <div id="modal-step-cliente-ubicacion" class="sub-step" style="padding:24px 16px;">
                 <div class="step-indicator" style="background:#dcfce7; color:#166534; border-color:#86efac;"><i class="ri-map-pin-user-fill"></i> Completar Perfil</div>
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin-bottom:4px;">Selfie y Destino</h3>
@@ -685,6 +727,7 @@
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 16px;">Panel Comercial</h3>
                 
+                <!-- BANDEJA DE ENTRADA DE PEDIDOS (VERDE/NARANJA) -->
                 <div id="bandejaPedidosComercio" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;"></div>
 
                 <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
@@ -824,6 +867,38 @@
                 </button>
             </div>
 
+            <!-- PANEL CADETE RADAR -->
+            <div id="modal-step-servimoto" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
+                <div style="background:linear-gradient(135deg, #0f172a, #050505); border-radius:1.5rem; padding:22px; border:3px solid #ff6b00; color:white; box-shadow:0 15px 35px rgba(0,0,0,0.5);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                        <span class="badge-dorado" style="border:1px solid rgba(74,222,128,0.5);"><i class="ri-shield-check-fill" style="color:#4ade80;"></i> IA ACTIVA</span>
+                        <span style="color:#4ade80; font-size:11.5px; font-weight:800; font-family:monospace;">MOTO-902</span>
+                    </div>
+                    <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px; text-align:center;">Panel de Operación</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:1rem; margin-top:16px; margin-bottom:24px;">
+                         <div style="font-size:14px; font-weight:800; color:rgba(255,255,255,0.9);">Turno Actual:</div>
+                         <button id="btnEstadoTrabajo" onclick="toggleEstadoTrabajo()" style="background:#f97316; color:white; border:none; padding:10px 18px; border-radius:999px; font-weight:800; font-size:12px; cursor:pointer; box-shadow:0 4px 12px rgba(249,115,22,0.4); transition:all 0.3s;"><i class="ri-close-circle-fill"></i> INACTIVO</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; margin-bottom: 32px; margin-top: 20px;">
+                        <button id="btnRadar" onclick="activarRadar()" style="width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #1e3a8a, #0f172a); color: white; border: 4px solid #3b82f6; box-shadow: 0 0 30px rgba(59,130,246,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; cursor:pointer; position: relative;">
+                            <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
+                            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
+                        </button>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:20px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
+                        <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">Deuda Acumulada a Pagar</div>
+                        <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:46px; font-weight:800; color:white; line-height:1; margin-bottom:8px;">$0</div>
+                        <div style="font-size:13px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:6px 16px; border-radius:999px;" id="viajesMotoBadge">0 Viajes Realizados</div>
+                        <button onclick="simularViajeCadete()" style="margin-top:16px; width:100%; background:rgba(255,255,255,0.1); color:white; border:1px dashed rgba(255,255,255,0.3); padding:12px; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer;">+ SIMULAR VIAJE TERMINADO ($200)</button>
+                    </div>
+                    <label class="btn-primary" style="width:100%; padding:18px; font-size:14.5px; cursor:pointer; background:linear-gradient(135deg,#16a34a,#15803d); border:none; justify-content:center;">
+                        <i class="ri-upload-cloud-2-fill" style="font-size:22px;"></i> SUBIR COMPROBANTE Y AUDITAR
+                        <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">
+                    </label>
+                </div>
+            </div>
+
             <!-- PEDIDO ESPECIAL -->
             <div id="modal-step-pedido-especial" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
@@ -848,7 +923,7 @@
 </div>
 
 <!-- ========================================== -->
-<!-- MODAL DEL CARRITO DE COMPRAS (BOTÓN VERDE DE LA CAJA)-->
+<!-- MODAL DEL CARRITO DE COMPRAS -->
 <!-- ========================================== -->
 <div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
     <div class="modal-box" style="padding:24px; border:3.5px solid #ff6b00; max-width:440px; border-radius:1.5rem; height:auto;">
@@ -880,7 +955,7 @@
             <div style="background:rgba(255,255,255,.95); padding:12px 18px; border-radius:1rem; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:2px solid #ff6b00;">
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:17px; color:#0f172a; margin:0;"><i class="ri-radar-fill" style="color:#ff6b00;"></i> Trazado GPS</h3>
             </div>
-            <button onclick="cerrarMapa()" style="width:40px; height:40px; border-radius:50%; background:#ef4444; color:white; border:2px solid #fff; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ri-close-line"></i></button>
+            <button onclick="cerrarMapa()" style="width:40px; height:40px; border-radius:50%; background:#f97316; color:white; border:2px solid #fff; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ri-close-line"></i></button>
         </div>
         
         <!-- PANTALLA DE CARGA (MOTITO) SI EL MAPA DE GOOGLE FALLA / TARDA -->
@@ -924,12 +999,21 @@
 
 <script>
 // ==========================================
-// 1. INICIALIZACIÓN DE VARIABLES GLOBALES
+// TRUCO DE ORO: EVITAR QUE EL MAPA GRIS ROMPA LA APP
+// ==========================================
+window.gm_authFailure = function() {
+    console.warn("Google Maps bloqueado por facturación. Activando cálculo matemático automático.");
+    // Si Google bloquea el mapa, forzamos un cálculo estándar de 2.5km para que el cliente pueda pagar el envío.
+    calcularMatematicaEnvio("2.5");
+};
+
+// ==========================================
+// 1. DATOS GLOBALES (Con categorías para las burbujas)
 // ==========================================
 let baseComercios = [
-    { id: 1, nombre: "Kiosco Mamoly", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Azcuénaga 474", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150", abre: "09:00", cierra: "23:00" },
-    { id: 2, nombre: "Pizzería Roma", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Lavalle 200", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=150", abre: "20:00", cierra: "02:00" },
-    { id: 3, nombre: "Burger Famaillá", provincia: "Tucumán", ciudad: "Famaillá", direccion: "San Martín 150", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150", abre: "19:00", cierra: "01:00" }
+    { id: 1, nombre: "Kiosco Mamoly", categoria: "kiosco", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Azcuénaga 474", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150", abre: "09:00", cierra: "23:00" },
+    { id: 2, nombre: "Pizzería Roma", categoria: "pizza", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Lavalle 200", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=150", abre: "20:00", cierra: "02:00" },
+    { id: 3, nombre: "Burger Famaillá", categoria: "comida rápida", provincia: "Tucumán", ciudad: "Famaillá", direccion: "San Martín 150", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150", abre: "19:00", cierra: "01:00" }
 ];
 
 let baseProductosActivos = [
@@ -944,6 +1028,7 @@ let pedidosComercio = [];
 let costoEnvioCalculado = 0;
 let direccionOrigenCalculo = ""; 
 let tipoLoginActual = "";
+let categoriaActiva = ""; // Memoria para las burbujas
 
 let clienteLogueado = false; 
 let productoPendienteAdd = null; 
@@ -958,14 +1043,14 @@ let tempImgPortada = "https://images.unsplash.com/photo-1550547660-d9450f859349?
 let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
 
 // ==========================================
-// 2. SUPABASE E IA RLS (Básico)
+// 2. SUPABASE
 // ==========================================
 const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co';
 const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
-// 3. MICRÓFONO REPARADO (Voz Energy Software)
+// 3. MICRÓFONO REPARADO 
 // ==========================================
 function activarMicrofono() {
     const btn = document.getElementById('micIcon');
@@ -976,7 +1061,7 @@ function activarMicrofono() {
 
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel(); 
-        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto, una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos a los ServiMoto calificados con certificado de buena conducta para prestar un buen servicio. Los comerciantes pueden publicar y hacer sus ventas y llega rápido toda la información. ¡Y ahora vamos al marketplace!";
+        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto. Una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos a los ServiMoto calificados con certificado de buena conducta para prestar un buen servicio. Los comerciantes pueden publicar y hacer sus ventas y llega rápido toda la información. Y bueno, ¡ahora vamos al marketplace!";
         
         const speech = new SpeechSynthesisUtterance(mensaje);
         speech.lang = 'es-AR';
@@ -993,17 +1078,22 @@ function activarMicrofono() {
         mostrarToast("Asistente de voz activado 🎙️", "success");
     } else {
         mostrarToast("Audio no compatible", "error");
+        if(btn) {
+            btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow');
+            btn.classList.add('ri-mic-fill');
+        }
     }
 }
 
 // ==========================================
-// TOAST Y NOTIFICACIONES
+// TOAST PREMIUM (Naranja para errores, Verde para éxito)
 // ==========================================
 function mostrarToast(msg, tipo) {
     const container = document.getElementById('toast-container');
     if(!container) return;
     const t = document.createElement('div');
     t.className = 'toast-premium';
+    // Éxito = Verde | Error = Naranja
     t.style.background = tipo === 'error' ? '#f97316' : '#16a34a'; 
     t.style.color = 'white';
     t.style.padding = '12px 20px';
@@ -1018,7 +1108,7 @@ function mostrarToast(msg, tipo) {
 }
 
 // ==========================================
-// NAVEGACIÓN Y FEED GLOBAL LIMPIO (SIN DUPLICADOS)
+// NAVEGACIÓN Y FEED GLOBAL LIMPIO (SIN DUPLICAR)
 // ==========================================
 function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
 
@@ -1043,35 +1133,39 @@ function irPaso(paso) {
     }
 }
 
-function filtrarFeedGlobal() {
+// Lógica de las Burbujas de Categoría
+function filtrarFeedGlobal(categoriaCat) {
+    if (categoriaCat !== undefined) {
+        categoriaActiva = quitarAcentos(categoriaCat);
+    }
     renderizarFeedGlobal();
 }
 
-// Renderizado directo usando los inputs del HTML
 function renderizarFeedGlobal() {
     const container = document.getElementById('gridMercadoLibre');
     if(!container) return; 
     
+    // Lee directamente de los inputs de tu HTML
     const inputProv = document.getElementById('filtroProvincia');
     const inputCiu = document.getElementById('filtroCiudad');
     let provFiltro = inputProv ? quitarAcentos(inputProv.value.trim()) : "";
     let ciuFiltro = inputCiu ? quitarAcentos(inputCiu.value.trim()) : "";
 
     let comerciosValidos = baseComercios;
-    if(provFiltro || ciuFiltro) {
-        comerciosValidos = baseComercios.filter(c => {
-            let matchProv = provFiltro === "" || quitarAcentos(c.provincia).includes(provFiltro);
-            let matchCiu = ciuFiltro === "" || quitarAcentos(c.ciudad).includes(ciuFiltro);
-            return matchProv && matchCiu;
-        });
-    }
+    
+    // Filtro por Provincia, Ciudad y Categoría
+    comerciosValidos = baseComercios.filter(c => {
+        let matchProv = provFiltro === "" || quitarAcentos(c.provincia).includes(provFiltro);
+        let matchCiu = ciuFiltro === "" || quitarAcentos(c.ciudad).includes(ciuFiltro);
+        let matchCat = categoriaActiva === "" || quitarAcentos(c.categoria).includes(categoriaActiva);
+        return matchProv && matchCiu && matchCat;
+    });
 
     const idsValidos = comerciosValidos.map(c => c.id);
-    // Solo muestra los productos que NO están pausados
     const productosAFiltrar = baseProductosActivos.filter(p => idsValidos.includes(p.idComercio) && !p.pausado);
 
     if(productosAFiltrar.length === 0) {
-        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay productos en esta zona. ¡Sé el primero en vender acá!</div>`;
+        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay productos en esta zona/categoría. ¡Sé el primero en vender acá!</div>`;
         return;
     }
     
@@ -1107,7 +1201,7 @@ function intentarComprar(idProducto, direccionComercio) {
     productoPendienteAdd = { id: idProducto, direccion: direccionComercio };
     
     if(!clienteLogueado) {
-        mostrarToast('Debés loguearte primero para comprar', 'error');
+        mostrarToast('Para sumar al carrito, iniciá sesión', 'error');
         iniciarLogin('cliente');
         return;
     }
@@ -1129,7 +1223,7 @@ function procesarAgregadoCarrito() {
         carritoGlobal.push({ nombre: prodEncontrado.nombre, precio: prodEncontrado.precio, cantidad: 1 });
         direccionOrigenCalculo = productoPendienteAdd.direccion; 
         
-        mostrarToast(`✅ Agregado al carrito: ${prodEncontrado.nombre}`, 'success');
+        mostrarToast(`✅ Agregaste: ${prodEncontrado.nombre}`, 'success');
         
         const floatBtn = document.getElementById('btnFloatingCart');
         const badge = document.getElementById('badgeCarrito');
@@ -1163,7 +1257,6 @@ function iniciarLogin(tipo) {
     
     document.getElementById('loginCelular').value = '';
     document.getElementById('loginClave').value = '';
-    
     miComercioLogueadoId = null;
     irPaso('login');
 }
@@ -1176,22 +1269,22 @@ function validarLogin() {
     if(pwd.length < 4) return mostrarToast('La clave debe tener al menos 4 caracteres', 'error');
     
     mostrarToast('Ingreso exitoso.', 'success');
-    AppStore.set('cliente_celular', cel); 
     
     if(tipoLoginActual === 'comercio') {
         irPaso('comercio');
-        renderizarBandejaPedidos();
+        renderizarBandejaPedidos(); 
     } else if(tipoLoginActual === 'cadete') {
         if(AppStore.get('cadete_aprobado') === true) {
-            irPaso('servimoto');
+            irPaso('servimoto'); // Entra directo al radar si ya está aprobado
         } else {
-            irPaso('servimoto-onboarding');
+            irPaso('servimoto-onboarding'); // Si es nuevo, va a las fotos
         }
     } else if(tipoLoginActual === 'cliente') {
         clienteLogueado = true;
+        AppStore.set('cliente_celular', cel); 
         
         if(!AppStore.get('cliente_dir')) {
-            irPaso('cliente-ubicacion');
+            irPaso('cliente-ubicacion'); 
         } else {
             if(productoPendienteAdd) procesarAgregadoCarrito();
             irPaso('feed-global');
@@ -1231,12 +1324,55 @@ function guardarPerfilCliente() {
     AppStore.set('cliente_ciu', ciu);
     AppStore.set('cliente_dir', dir);
     
-    mostrarToast('✅ Perfil guardado. Procesando compra...', 'success');
-    
-    if(productoPendienteAdd) {
-        procesarAgregadoCarrito();
-    }
+    mostrarToast('✅ Perfil guardado con éxito.', 'success');
+    if(productoPendienteAdd) procesarAgregadoCarrito();
     irPaso('feed-global');
+}
+
+// ==========================================
+// BANDEJA DE ENTRADA DEL COMERCIANTE (Solo en panel)
+// ==========================================
+function agregarPedidoBandejaComercio(total, destino) {
+    pedidosComercio.unshift({ total: total, destino: destino });
+    
+    if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
+    if('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        let msg = new SpeechSynthesisUtterance("Tin. Ingresaste un nuevo pedido al panel del comercio.");
+        msg.lang = 'es-AR';
+        msg.rate = 1.1;
+        window.speechSynthesis.speak(msg);
+    }
+    
+    renderizarBandejaPedidos();
+    mostrarToast("¡Pedido notificado al comercio!", "success");
+}
+
+function renderizarBandejaPedidos() {
+    const bandeja = document.getElementById('bandejaPedidosComercio');
+    if(!bandeja) return;
+    
+    if(pedidosComercio.length === 0) {
+        bandeja.innerHTML = '<div style="color:#64748b; font-size:13px; text-align:center; padding:10px; border:1px dashed #cbd5e1; border-radius:10px;">Tu bandeja de pedidos está vacía.</div>';
+        return;
+    }
+    
+    bandeja.innerHTML = pedidosComercio.map((p, idx) => `
+        <div style="background:#f0fdf4; border:2px solid #4ade80; padding:14px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 10px rgba(74,222,128,0.2);">
+            <div>
+                <div style="color:#15803d; font-weight:800; font-size:15px;">💰 Cobro: $${p.total.toLocaleString('es-AR')}</div>
+                <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;">📍 ${p.destino}</div>
+            </div>
+            <!-- Botón Naranja para Eliminar -->
+            <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
+        </div>
+    `).join('');
+}
+
+function eliminarPedidoComercio(idx) {
+    pedidosComercio.splice(idx, 1);
+    mostrarToast('Pedido archivado', 'success');
+    renderizarBandejaPedidos();
 }
 
 // ==========================================
@@ -1253,7 +1389,6 @@ function previewSelfieComercioModal(input) {
             if(iconoContenedor) iconoContenedor.style.display = 'none';
             if(texto1) texto1.innerHTML = '<span style="color:#15803d;">✅ Selfie Verificada</span>';
             AppStore.set('selfie_seguridad_comercio', e.target.result);
-            mostrarToast('Selfie de seguridad verificada', 'success');
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -1282,15 +1417,16 @@ function guardarComercio() {
     const ciu = document.getElementById('comercioCiudad').value.trim();
     const hAbre = document.getElementById('comercioAbre') ? document.getElementById('comercioAbre').value : "";
     const hCierra = document.getElementById('comercioCierra') ? document.getElementById('comercioCierra').value : "";
+    const cat = document.getElementById('comercioCategoria') ? document.getElementById('comercioCategoria').value : "Varios";
     
-    if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá todos los datos', 'error');
+    if(!nom || !dir || !prov || !ciu || !hAbre || !hCierra) return mostrarToast('Completá todos los datos, incluyendo horarios', 'error');
     if(!AppStore.get('selfie_seguridad_comercio')) return mostrarToast('La Selfie del dueño es obligatoria', 'error');
     
     if(!miComercioLogueadoId) {
         miComercioLogueadoId = Date.now();
-        baseComercios.push({ id: miComercioLogueadoId, nombre: nom, provincia: prov, ciudad: ciu, direccion: dir, img: tempImgPortada, abre: hAbre, cierra: hCierra });
+        baseComercios.push({ id: miComercioLogueadoId, nombre: nom, categoria: cat, provincia: prov, ciudad: ciu, direccion: dir, img: tempImgPortada, abre: hAbre, cierra: hCierra });
     }
-    mostrarToast(`¡Local registrado! Ahora cargá tus platos.`, 'success');
+    mostrarToast(`¡Local registrado!`, 'success');
 }
 
 function previewArtFoto(input) {
@@ -1313,10 +1449,11 @@ function agregarArticuloComercio() {
     if(!miComercioLogueadoId) return mostrarToast('Primero GUARDÁ LOS DATOS DEL LOCAL arriba', 'error');
     const nom = document.getElementById('newArtNombre').value;
     const pre = parseInt(document.getElementById('newArtPrecio').value);
-    if(!nom || isNaN(pre)) return mostrarToast('Faltan datos del artículo', 'error');
+    
+    if(!nom || isNaN(pre)) return mostrarToast('Completá nombre y precio del artículo', 'error');
     
     baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64, pausado: false });
-    mostrarToast(`¡Artículo publicado en el Feed Global!`, 'success');
+    mostrarToast(`¡Artículo publicado en el Feed!`, 'success');
     
     document.getElementById('newArtNombre').value = '';
     document.getElementById('newArtPrecio').value = '';
@@ -1342,7 +1479,7 @@ function renderizarAdminComercio() {
             <div style="display:flex; gap:6px;">
                 <!-- Botón Pausar -->
                 <button onclick="pausarArticuloAdmin(${p.id})" style="background:${p.pausado ? '#10b981' : '#f59e0b'}; color:white; border:none; border-radius:8px; width:34px; height:34px; cursor:pointer;" title="${p.pausado ? 'Activar' : 'Pausar'}"><i class="ri-${p.pausado ? 'play-fill' : 'pause-fill'}"></i></button>
-                <!-- Botón Eliminar -->
+                <!-- Botón Eliminar Naranja -->
                 <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#f97316; color:white; border:none; border-radius:8px; width:34px; height:34px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
             </div>
         </div>
@@ -1384,51 +1521,6 @@ function togglePantallaCompletaArticulos() {
         texto.textContent = 'Minimizar';
         document.body.style.overflow = 'hidden';
     }
-}
-
-// ==========================================
-// BANDEJA DE ENTRADA DEL COMERCIANTE 
-// ==========================================
-function agregarPedidoBandejaComercio(total, destino) {
-    pedidosComercio.unshift({ total: total, destino: destino });
-    
-    // Suena la voz y vibra
-    if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
-    if('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        let msg = new SpeechSynthesisUtterance("Tin. Ingresaste un nuevo pedido al panel del comercio.");
-        msg.lang = 'es-AR';
-        msg.rate = 1.1;
-        window.speechSynthesis.speak(msg);
-    }
-    
-    renderizarBandejaPedidos();
-}
-
-function renderizarBandejaPedidos() {
-    const bandeja = document.getElementById('bandejaPedidosComercio');
-    if(!bandeja) return;
-    
-    if(pedidosComercio.length === 0) {
-        bandeja.innerHTML = '<div style="color:#64748b; font-size:13px; text-align:center; padding:10px; border:1px dashed #cbd5e1; border-radius:10px;">Tu bandeja de pedidos está vacía.</div>';
-        return;
-    }
-    
-    bandeja.innerHTML = pedidosComercio.map((p, idx) => `
-        <div style="background:#f0fdf4; border:2px solid #4ade80; padding:14px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 10px rgba(74,222,128,0.2);">
-            <div>
-                <div style="color:#15803d; font-weight:800; font-size:15px;">💰 Cobro: $${p.total.toLocaleString('es-AR')}</div>
-                <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;">📍 ${p.destino}</div>
-            </div>
-            <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
-        </div>
-    `).join('');
-}
-
-function eliminarPedidoComercio(idx) {
-    pedidosComercio.splice(idx, 1);
-    mostrarToast('Pedido archivado', 'success');
-    renderizarBandejaPedidos();
 }
 
 // ==========================================
@@ -1538,7 +1630,7 @@ function procesarLiquidacionIA(input) {
 }
 
 // ==========================================
-// 4. MAPA GPS Y MATEMÁTICA EXACTA (ANTI-GRIS)
+// 4. MAPA GPS Y MATEMÁTICA EXACTA (CERO GRIS ERROR)
 // ==========================================
 function abrirCarritoFinal() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
@@ -1565,10 +1657,18 @@ function abrirMapaMago() {
         }
         
         setTimeout(() => {
-            let destinoAddress = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu') + ", " + AppStore.get('cliente_prov') + ", Argentina";
-            if(!AppStore.get('cliente_dir')) destinoAddress = "Famaillá, Tucumán, Argentina"; // Respaldo
-            
-            const origenAddress = direccionOrigenCalculo ? (direccionOrigenCalculo + ", Argentina") : "Tucumán, Argentina";
+            let destinoAddress = "";
+            let origenAddress = "";
+
+            if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
+                // VIENE DE VIAJE ESPECIAL
+                destinoAddress = document.getElementById('dirDestinoEspecial').value.trim() + ", " + document.getElementById('ciuDestinoEspecial').value.trim() + ", Argentina";
+                origenAddress = document.getElementById('dirOrigenEspecial').value.trim() + ", Argentina";
+            } else {
+                // VIENE DEL CARRITO (MERCADO LIBRE)
+                destinoAddress = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu') + ", " + AppStore.get('cliente_prov') + ", Argentina";
+                origenAddress = direccionOrigenCalculo ? (direccionOrigenCalculo + ", Argentina") : "Tucumán, Argentina";
+            }
             
             try {
                 const canvas = document.getElementById("googleMapCanvas");
@@ -1591,12 +1691,13 @@ function abrirMapaMago() {
                             const distanceMeters = response.routes[0].legs[0].distance.value;
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
-                            calcularMatematicaEnvio("1.5"); 
+                            calcularMatematicaEnvio("2.5"); 
+                            mostrarToast("Tarifa estándar aplicada por distancia.", "success");
                         } 
                     });
                 }
             } catch(e) {
-                calcularMatematicaEnvio("1.5");
+                calcularMatematicaEnvio("2.5");
             }
         }, 400); 
     }, 100); 
@@ -1636,7 +1737,7 @@ function irAlCheckout() { mandarPedidoSoporte(); }
 function cerrarCarrito() { document.getElementById('modalCarritoFinal').classList.remove('show'); }
 
 // ==========================================
-// 5. RENDERIZADO DEL CARRITO FINAL (CAJA VERDE)
+// 5. RENDERIZADO DEL CARRITO FINAL
 // ==========================================
 function renderizarCarritoDOM() {
     const cont = document.getElementById('contenidoCarrito');
@@ -1700,6 +1801,25 @@ function borrarItemCarrito(idx) {
     }
 }
 
+function enviarPedidoEspecial() {
+    const dirOrigen = document.getElementById('dirOrigenEspecial').value;
+    const ciuDestino = document.getElementById('ciuDestinoEspecial').value;
+    const dirDestino = document.getElementById('dirDestinoEspecial').value;
+    const provDestino = document.getElementById('selProvinciaEspecial').value;
+    const txt = document.getElementById('txtPedidoEspecial').value;
+    
+    if(!dirOrigen || !dirDestino || !ciuDestino || !provDestino || !txt) return mostrarToast('Completá todos los datos', 'error');
+    
+    direccionOrigenCalculo = dirOrigen; 
+    AppStore.set('cliente_dir', dirDestino);
+    AppStore.set('cliente_ciu', ciuDestino);
+    AppStore.set('cliente_prov', provDestino);
+    
+    carritoGlobal.push({ nombre: "Viaje Express", precio: 0, detalle: txt });
+    cerrarModalMarketplace();
+    abrirMapaMago();
+}
+
 function mandarPedidoSoporte() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     
@@ -1709,7 +1829,6 @@ function mandarPedidoSoporte() {
     
     let destClient = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu');
     
-    // Inyecta notificación visual en el panel del comercio
     agregarPedidoBandejaComercio(totalCajaVerde, destClient);
 
     let txt = "🔥 *NUEVO PEDIDO EN LA RED* 🔥%0A%0A";
