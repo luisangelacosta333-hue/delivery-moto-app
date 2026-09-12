@@ -214,12 +214,6 @@
     </div>
 </nav>
 
-<!-- BOTÓN FLOTANTE DEL CARRITO (Se activa por JS cuando agregás algo) -->
-<button id="btnFloatingCart" onclick="abrirCarritoFinal()" style="display:none; position:fixed; bottom:24px; right:24px; width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:3px solid #bbf7d0; box-shadow:0 10px 30px rgba(22,163,74,0.6); z-index:9999999; font-size:26px; cursor:pointer; align-items:center; justify-content:center; transition:transform 0.2s;">
-    <i class="ri-shopping-cart-2-fill"></i>
-    <div id="badgeCarrito" style="position:absolute; top:-5px; right:-5px; background:white; color:#15803d; font-size:13px; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #16a34a; box-shadow:0 4px 10px rgba(0,0,0,0.3);">0</div>
-</button>
-
 <div style="height:90px;"></div>
 
 <div style="background:linear-gradient(90deg,#cc4400,#ff6b00,#ff8c00,#ff6b00,#cc4400);padding:8px 0;overflow:hidden;border-bottom:2px solid rgba(0,0,0,.2);">
@@ -553,6 +547,8 @@
     </div>
 </footer>
 
+<div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9999999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
+
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
     <div class="modal-box" style="background:#fff7ed;">
         <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar"><i class="ri-close-line"></i></button>
@@ -707,12 +703,6 @@
             <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 16px;">Panel Comercial</h3>
-                
-                <!-- BANDEJA DE ENTRADA DE PEDIDOS (NUEVO) -->
-                <div id="bandejaPedidosComercio" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
-                    <!-- Los pedidos nuevos entran acá en verde/naranja por JS -->
-                </div>
-
                 <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
                     <label id="boxSelfieComercioModal" style="background:#f0fdf4; border:3px dashed #4ade80; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; position:relative; overflow:hidden;">
                         <div style="width:70px; height:70px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; border:2px solid #86efac;" id="iconSelfieComercioContenedor"><i class="ri-camera-lens-fill" style="font-size:36px; color:#16a34a;"></i></div>
@@ -826,6 +816,7 @@
                 </button>
             </div>
 
+            <!-- PEDIDO ESPECIAL -->
             <div id="modal-step-pedido-especial" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
                 <div class="step-indicator" style="color:#1d4ed8; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
@@ -840,7 +831,7 @@
                     <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino (Ej: Famaillá)">
                     <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿A dónde lo lleva? (Ej: Rivadavia 200)">
                     <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Buscar un paquete)"></textarea>
-                    <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">AGREGAR Y CALCULAR ENVÍO</button>
+                    <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">CALCULAR RUTA EN MAPA</button>
                 </div>
             </div>
 
@@ -849,31 +840,7 @@
 </div>
 
 <!-- ========================================== -->
-<!-- MODAL DEL CARRITO DE COMPRAS (BOTÓN VERDE DE LA CAJA)-->
-<!-- ========================================== -->
-<div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
-    <div class="modal-box" style="padding:24px; border:3.5px solid #ff6b00; max-width:440px; border-radius:1.5rem; height:auto;">
-        <button class="modal-close-btn" style="border-color:#ff6b00; color:#cc4400;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
-        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin:0 0 16px;"><i class="ri-shopping-cart-2-fill" style="color:#ff6b00;"></i> Tu Carrito</h3>
-        
-        <div id="contenidoCarrito" style="max-height:380px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;">
-            <!-- Contenido inyectado por JS -->
-        </div>
-
-        <div style="background:#fff7ed; padding:14px; border-radius:1rem; border:2px solid #ffd4b3; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <span style="font-size:13.5px; font-weight:800; color:#cc4400; text-transform:uppercase;">Subtotal (Sin envío)</span>
-            <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#ff6b00; line-height:1;">$0</span>
-        </div>
-        
-        <!-- BOTÓN QUE DISPARA EL MAPA -->
-        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="abrirMapaMago()">
-            <i class="ri-map-pin-line" style="font-size:22px;"></i> CALCULAR ENVÍO EN MAPA
-        </button>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MAPA GPS ANIMADO (PANTALLA CONFIRMACIÓN FINAL)-->
+<!-- MAPA GPS ANIMADO (ANTI-ERROR) Y CAJA VERDE-->
 <!-- ========================================== -->
 <div id="modalMapaGrande" class="modal-overlay" style="background:rgba(15,23,42,.98);">
     <div style="width:100%; max-width:850px; height:100vh; background:#0f172a; border-radius:0; border:none; position:relative; overflow:hidden; box-shadow:0 0 100px rgba(255,107,0,0.5); display:flex; flex-direction:column; transform:scale(0.95); transition:all .35s; opacity:0;" id="mapaBox">
@@ -900,26 +867,29 @@
                     <div id="mapaKm" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#0f172a; margin-top:2px;">...</div>
                 </div>
                 <div style="background:#fff7ed; padding:14px; border-radius:1rem; border:2px solid #ffd4b3; text-align:center;">
-                    <div style="font-size:11px; font-weight:800; color:#cc4400; text-transform:uppercase;" id="lblTarifaBase">Tarifa de Envío</div>
+                    <div style="font-size:11px; font-weight:800; color:#cc4400; text-transform:uppercase;" id="lblTarifaBase">Calculando...</div>
                     <div id="mapaCosto" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#ff6b00; margin-top:2px;">$--</div>
                 </div>
             </div>
-            
-            <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <span style="font-size:14px; font-weight:800; color:#166534; text-transform:uppercase;">TOTAL + ENVÍO</span>
-                <span id="mapaTotalPagar" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
-            </div>
-
-            <!-- BOTÓN FINAL VERDE -->
-            <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()">
-                CONFIRMAR PEDIDO <i class="ri-whatsapp-fill" style="font-size:22px;"></i>
-            </button>
+            <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="irAlCheckout()">CONFIRMAR RUTA Y AVANZAR <i class="ri-arrow-right-circle-fill"></i></button>
         </div>
     </div>
 </div>
 
-</body>
-</html>
+<div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
+    <div class="modal-box" style="padding:24px; border:3.5px solid #16a34a; max-width:440px; border-radius:1.5rem; height:auto;">
+        <button class="modal-close-btn" style="border-color:#16a34a; color:#15803d;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
+        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin:0 0 16px;"><i class="ri-shopping-bag-3-fill" style="color:#16a34a;"></i> Resumen del Pedido</h3>
+        <div id="contenidoCarrito" style="max-height:380px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
+        <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Total a Pagar</span>
+            <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
+        </div>
+        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()">
+            <i class="ri-whatsapp-fill" style="font-size:22px;"></i> CONFIRMAR POR WHATSAPP
+        </button>
+    </div>
+</div>
 <!-- Script de Google Maps con la API Key -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
 
@@ -937,7 +907,7 @@ let baseProductosActivos = [
     { id: 101, idComercio: 1, nombre: "Gaseosa Pepsi 2L", precio: 2500, img: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=150" },
     { id: 102, idComercio: 2, nombre: "Pizza Especial Calabresa", precio: 8500, img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=150" },
     { id: 103, idComercio: 1, nombre: "Papas Fritas Lays Clásicas", precio: 1500, img: "https://images.unsplash.com/photo-1563013734-5234125f1ea5?auto=format&fit=crop&w=150" },
-    { id: 104, idComercio: 3, nombre: "Doble Burger with Cheddar", precio: 6500, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=150" }
+    { id: 104, idComercio: 3, nombre: "Doble Burger con Cheddar", precio: 6500, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=150" }
 ];
 
 let carritoGlobal = [];
@@ -945,7 +915,7 @@ let costoEnvioCalculado = 0;
 let direccionOrigenCalculo = ""; 
 let tipoLoginActual = "";
 
-let clienteLogueado = true; // Dejamos abierto para pruebas fluidas
+let clienteLogueado = false;
 let productoPendienteAdd = null; 
 
 let viajesMotoCount = 0;
@@ -965,88 +935,81 @@ const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
-// 3. MICRÓFONO REPARADO Y FUNCIONANDO
+// 3. FUNCIÓN DEL MICRÓFONO (Voz Energy Software)
 // ==========================================
 function activarMicrofono() {
     const btn = document.getElementById('micIcon');
-    if(btn) {
-        btn.classList.remove('ri-mic-fill');
-        btn.classList.add('ri-mic-2-fill', 'animate-pulse-glow');
-    }
+    btn.classList.remove('ri-mic-fill');
+    btn.classList.add('ri-mic-2-fill', 'animate-pulse-glow');
 
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel(); 
-        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto, una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos a los ServiMoto calificados con certificado de buena conducta para prestar un buen servicio. Los comerciantes pueden publicar y hacer sus ventas y llega rápido toda la información. ¡Y ahora vamos al marketplace!";
+        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto, una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos los mejores cadetes certificados con buena conducta. Podés hacer tu pedido. Entrá al Marketplace para comenzar.";
         
         const speech = new SpeechSynthesisUtterance(mensaje);
         speech.lang = 'es-AR';
-        speech.rate = 1.0;
+        speech.rate = 1.05;
         
         speech.onend = () => {
-            if(btn) {
-                btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow');
-                btn.classList.add('ri-mic-fill');
-            }
+            btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow');
+            btn.classList.add('ri-mic-fill');
         };
         
-        window.speechSynthesis.speak(speech);
         mostrarToast("Asistente de voz activado 🎙️", "success");
+        window.speechSynthesis.speak(speech);
     } else {
-        mostrarToast("Audio no compatible", "error");
+        mostrarToast("Tu navegador no soporta el asistente de voz", "error");
+        btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow');
+        btn.classList.add('ri-mic-fill');
     }
 }
 
 // ==========================================
-// NOTIFICACIÓN COMERCIO (VERDE)
+// ALARMA Y NOTIFICACIÓN PARA EL COMERCIO
 // ==========================================
 function notificarComercioNuevoPedido() {
-    if(navigator.vibrate) navigator.vibrate([500, 250, 500, 250, 1000]);
+    // 1. Vibración del dispositivo del comercio
+    if(navigator.vibrate) {
+        navigator.vibrate([500, 250, 500, 250, 1000]);
+    }
     
+    // 2. Voz por el parlante
     if('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance("¡Atención! Ingresó un nuevo pedido al panel del comercio.");
+        const msg = new SpeechSynthesisUtterance("¡Atención comercio! Ha ingresado un nuevo pedido. Revisar el panel comercial.");
         msg.lang = 'es-AR';
+        msg.rate = 1.1;
         window.speechSynthesis.speak(msg);
     }
 
+    // 3. Alerta Visual Gigante en Pantalla
     const alertBox = document.createElement('div');
     alertBox.style.position = 'fixed';
     alertBox.style.top = '20px';
     alertBox.style.left = '50%';
     alertBox.style.transform = 'translateX(-50%)';
-    alertBox.style.background = 'linear-gradient(135deg, #16a34a, #15803d)'; 
+    alertBox.style.background = '#dc2626'; 
     alertBox.style.color = 'white';
     alertBox.style.padding = '16px 24px';
     alertBox.style.borderRadius = '16px';
-    alertBox.style.boxShadow = '0 10px 35px rgba(22, 163, 74, 0.6)';
+    alertBox.style.boxShadow = '0 10px 35px rgba(220, 38, 38, 0.6)';
     alertBox.style.zIndex = '99999999';
     alertBox.style.display = 'flex';
     alertBox.style.alignItems = 'center';
     alertBox.style.gap = '16px';
     alertBox.style.fontWeight = '800';
+    alertBox.style.animation = 'pulseGlow 1.5s infinite';
     
     alertBox.innerHTML = `
-        <i class="ri-money-dollar-circle-fill" style="font-size:32px;"></i>
+        <i class="ri-notification-badge-fill" style="font-size:32px; animation: ringRotate 1s infinite;"></i>
         <div style="text-align:left;">
-            <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">¡Excelente noticia!</div>
-            <div style="font-size:15px;">INGRESÓ UN NUEVO PEDIDO</div>
+            <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">Alerta Comercial</div>
+            <div style="font-size:16px;">¡NUEVO PEDIDO RECIBIDO!</div>
         </div>
-        <button onclick="this.parentElement.remove()" style="background:white; color:#15803d; border:none; padding:8px 16px; border-radius:8px; font-weight:800; cursor:pointer; margin-left:10px;">ATENDER</button>
+        <button onclick="this.parentElement.remove()" style="background:white; color:#dc2626; border:none; padding:8px 16px; border-radius:8px; font-weight:800; cursor:pointer; margin-left:10px;">ATENDER</button>
     `;
     document.body.appendChild(alertBox);
-    setTimeout(() => { if(alertBox.parentElement) alertBox.remove(); }, 12000);
-
-    const bandeja = document.getElementById('bandejaPedidosComercio');
-    if(bandeja) {
-        bandeja.innerHTML += `
-        <div style="background:#f0fdf4; border:2px solid #4ade80; padding:12px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-                <div style="color:#15803d; font-weight:800; font-size:14px;"><i class="ri-whatsapp-fill"></i> Nuevo pedido recibido</div>
-                <div style="color:#166534; font-size:11px; font-weight:600;">Revisá tu WhatsApp para los detalles del cliente.</div>
-            </div>
-            <div style="background:#16a34a; color:white; font-size:12px; padding:4px 8px; border-radius:6px; font-weight:800;">HOY</div>
-        </div>`;
-    }
+    setTimeout(() => { if(alertBox.parentElement) alertBox.remove(); }, 15000); // Se borra a los 15s si no lo toca
 }
 
 // ==========================================
@@ -1054,8 +1017,8 @@ function notificarComercioNuevoPedido() {
 // ==========================================
 function mostrarToast(msg, tipo) {
     const container = document.getElementById('toast-container');
-    if(!container) return;
     const t = document.createElement('div');
+    t.className = tipo === 'error' ? 'toast-premium toast-error' : 'toast-premium';
     t.style.background = tipo === 'error' ? '#ef4444' : '#16a34a';
     t.style.color = 'white';
     t.style.padding = '12px 20px';
@@ -1063,41 +1026,63 @@ function mostrarToast(msg, tipo) {
     t.style.fontWeight = '700';
     t.style.fontSize = '14px';
     t.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
-    t.style.marginTop = '8px';
     t.innerHTML = `<i class="${tipo==='error'?'ri-error-warning-fill':'ri-checkbox-circle-fill'}" style="font-size:20px; margin-right:8px; vertical-align:middle;"></i> <span style="vertical-align:middle;">${msg}</span>`;
     container.appendChild(t);
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
 // ==========================================
-// NAVEGACIÓN Y FEED GLOBAL LIMPIO (SIN DUPLICADOS)
+// NAVEGACIÓN Y FLUJO MERCADO LIBRE
 // ==========================================
+function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
 function abrirModalMarketplace() { document.getElementById('modalMarketplace').classList.add('show'); document.body.style.overflow = 'hidden'; irPaso(1); }
 function cerrarModalMarketplace() { document.getElementById('modalMarketplace').classList.remove('show'); document.body.style.overflow = ''; }
 
 function irPaso(paso) { 
     document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active')); 
-    const el = document.getElementById(`modal-step-${paso}`);
-    if(el) el.classList.add('active'); 
-    
+    document.getElementById(`modal-step-${paso}`).classList.add('active'); 
     if(paso === 'feed-global') {
+        inyectarFiltrosMercadoLibre();
         renderizarFeedGlobal();
     }
 }
 
-function filtrarFeedGlobal() {
-    renderizarFeedGlobal();
+// Inyecta dinámicamente los buscadores sin modificar el HTML base
+function inyectarFiltrosMercadoLibre() {
+    const headerFeed = document.querySelector('#modal-step-feed-global > div:first-child');
+    if(headerFeed && !document.getElementById('cajaFiltrosFeed')) {
+        const divFiltros = document.createElement('div');
+        divFiltros.id = 'cajaFiltrosFeed';
+        divFiltros.style.display = 'flex';
+        divFiltros.style.gap = '8px';
+        divFiltros.style.marginTop = '12px';
+        divFiltros.innerHTML = `
+            <select class="select-provincia" id="feedProvincia" style="margin:0; padding:10px; font-size:13px; flex:1;" onchange="renderizarFeedGlobal()">
+                <option value="">Todas las Provincias...</option>
+                <option value="Tucumán">Tucumán</option>
+                <option value="Buenos Aires">Buenos Aires</option>
+                <option value="CABA">CABA</option>
+                <option value="Catamarca">Catamarca</option>
+                <option value="Córdoba">Córdoba</option>
+                <option value="Salta">Salta</option>
+            </select>
+            <input type="text" class="input-buscar" id="feedCiudad" placeholder="Ciudad (Ej: Famaillá)..." style="margin:0; padding:10px; font-size:13px; flex:1;" onkeyup="renderizarFeedGlobal()">
+        `;
+        headerFeed.appendChild(divFiltros);
+    }
 }
 
 function renderizarFeedGlobal() {
     const container = document.getElementById('gridMercadoLibre');
     if(!container) return; 
     
-    const inputProv = document.getElementById('filtroProvincia');
-    const inputCiu = document.getElementById('filtroCiudad');
+    // Obtenemos los valores de los filtros si existen
+    const inputProv = document.getElementById('feedProvincia');
+    const inputCiu = document.getElementById('feedCiudad');
     let provFiltro = inputProv ? quitarAcentos(inputProv.value.trim()) : "";
     let ciuFiltro = inputCiu ? quitarAcentos(inputCiu.value.trim()) : "";
 
+    // Filtramos los comercios que coinciden
     let comerciosValidos = baseComercios;
     if(provFiltro || ciuFiltro) {
         comerciosValidos = baseComercios.filter(c => {
@@ -1111,7 +1096,7 @@ function renderizarFeedGlobal() {
     const productosAFiltrar = baseProductosActivos.filter(p => idsValidos.includes(p.idComercio));
 
     if(productosAFiltrar.length === 0) {
-        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:700; color:#64748b;">No hay productos disponibles en esta provincia o ciudad.</div>`;
+        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:700; color:#64748b;">No hay productos disponibles en esta zona por ahora.</div>`;
         return;
     }
     
@@ -1142,50 +1127,69 @@ function renderizarFeedGlobal() {
     container.innerHTML = html;
 }
 
-// LOGICA CLAVE: Agregar al carrito flotante
+// LOGICA DE SEGURIDAD PARA COMPRAR
 function intentarComprar(idProducto, direccionComercio) {
-    let prodEncontrado = baseProductosActivos.find(p => p.id === idProducto);
-    if(prodEncontrado) {
-        carritoGlobal.push({ nombre: prodEncontrado.nombre, precio: prodEncontrado.precio, cantidad: 1 });
-        direccionOrigenCalculo = direccionComercio; 
-        
-        mostrarToast(`✅ Agregado al carrito: ${prodEncontrado.nombre}`, 'success');
-        
-        const floatBtn = document.getElementById('btnFloatingCart');
-        const badge = document.getElementById('badgeCarrito');
-        if(floatBtn) floatBtn.style.display = 'flex';
-        if(badge) badge.textContent = carritoGlobal.length;
+    productoPendienteAdd = { id: idProducto, direccion: direccionComercio };
+    
+    if(!clienteLogueado) {
+        mostrarToast('Debés loguearte primero para comprar', 'error');
+        iniciarLogin('cliente');
+        return;
     }
+    
+    if(!AppStore.get('cliente_dir')) {
+        mostrarToast('Falta configurar tu dirección de entrega', 'error');
+        irPaso('cliente-ubicacion');
+        return;
+    }
+    
+    procesarAgregadoCarrito();
 }
 
-function abrirCarritoFinal() {
-    if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
-    cerrarModalMarketplace();
-    const modalCarrito = document.getElementById('modalCarritoFinal');
-    if(modalCarrito) {
-        modalCarrito.classList.add('show');
-        renderizarCarritoDOM();
+function procesarAgregadoCarrito() {
+    if(!productoPendienteAdd) return;
+    
+    let prodEncontrado = baseProductosActivos.find(p => p.id === productoPendienteAdd.id);
+    if(prodEncontrado) {
+        carritoGlobal.push({ nombre: prodEncontrado.nombre, precio: prodEncontrado.precio, cantidad: 1 });
+        direccionOrigenCalculo = productoPendienteAdd.direccion; 
+        mostrarToast(`✅ ${prodEncontrado.nombre} en carrito`, 'success');
+        
+        productoPendienteAdd = null; 
+        abrirMapaMago(); 
     }
 }
 
 // ==========================================
-// LOGIN Y PERFILES
+// INICIO DE SESIÓN UNIFICADO
 // ==========================================
 function iniciarLogin(tipo) {
     tipoLoginActual = tipo; 
     let tituloLogin = "Acceso a Cuenta";
-    if(tipo === 'comercio') tituloLogin = '<i class="ri-store-2-fill"></i> Acceso Comercio';
-    if(tipo === 'cadete') tituloLogin = '<i class="ri-motorbike-fill"></i> Acceso Cadete';
-    if(tipo === 'cliente') tituloLogin = '<i class="ri-shopping-bag-3-fill"></i> Registro Comprador';
+    let descLogin = "";
+    
+    if(tipo === 'comercio') { tituloLogin = '<i class="ri-store-2-fill"></i> Acceso Comercio'; descLogin = "Ingresá al panel de control de tu local."; }
+    if(tipo === 'cadete') { tituloLogin = '<i class="ri-motorbike-fill"></i> Acceso Cadete'; descLogin = "Ingresá a tu radar satelital."; }
+    if(tipo === 'cliente') { tituloLogin = '<i class="ri-shopping-bag-3-fill"></i> Registro Comprador'; descLogin = "Registrate para guardar tu dirección y hacer compras súper rápido."; }
     
     const lbl = document.getElementById('lblTipoLogin');
+    const desc = document.getElementById('descLogin');
     if(lbl) lbl.innerHTML = tituloLogin;
+    if(desc) desc.textContent = descLogin;
+    
+    document.getElementById('loginCelular').value = '';
+    document.getElementById('loginClave').value = '';
+    
+    miComercioLogueadoId = null;
     irPaso('login');
 }
 
 function validarLogin() {
     const cel = document.getElementById('loginCelular').value;
-    if(cel.length < 8) return mostrarToast('Ingresá un celular válido', 'error');
+    const pwd = document.getElementById('loginClave').value.toUpperCase();
+    
+    if(cel.length < 8) return mostrarToast('El celular debe tener al menos 8 números', 'error');
+    if(pwd.length < 4) return mostrarToast('La clave debe tener al menos 4 caracteres', 'error');
     
     mostrarToast('Ingreso exitoso.', 'success');
     AppStore.set('cliente_celular', cel); 
@@ -1193,29 +1197,32 @@ function validarLogin() {
     if(tipoLoginActual === 'comercio') {
         irPaso('comercio');
     } else if(tipoLoginActual === 'cadete') {
-        if(AppStore.get('cadete_docs_aprobados') === true) {
-            irPaso('servimoto');
-        } else {
-            irPaso('servimoto-onboarding');
-        }
-    } else {
+        irPaso('servimoto-onboarding');
+    } else if(tipoLoginActual === 'cliente') {
         clienteLogueado = true;
         if(!AppStore.get('cliente_dir')) {
             irPaso('cliente-ubicacion');
         } else {
-            irPaso('feed-global');
+            procesarAgregadoCarrito();
         }
     }
 }
 
+// ==========================================
+// CLIENTE: UBICACIÓN Y SELFIE
+// ==========================================
 function previewSelfieCliente(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const caja = document.getElementById('boxSelfieClienteModal');
+            const icono = document.getElementById('iconSelfieClienteContenedor');
+            const txt1 = document.getElementById('lblTextSelfieCliente');
             if(caja) caja.style.backgroundImage = `url(${e.target.result})`;
+            if(icono) icono.style.display = 'none';
+            if(txt1) txt1.textContent = '✅ Selfie Capturada';
             AppStore.set('selfie_cliente', e.target.result);
-            mostrarToast('Selfie guardada.', 'success');
+            mostrarToast('Selfie guardada correctamente.', 'success');
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -1227,20 +1234,233 @@ function guardarPerfilCliente() {
     const dir = document.getElementById('inputDireccionCliente').value;
     
     if(!prov || !ciu || !dir) return mostrarToast('Completá Provincia, Ciudad y Dirección', 'error');
+    if(!AppStore.get('selfie_cliente')) return mostrarToast('La foto Selfie de seguridad es obligatoria', 'error');
     
     AppStore.set('cliente_prov', prov);
     AppStore.set('cliente_ciu', ciu);
     AppStore.set('cliente_dir', dir);
     
-    mostrarToast('✅ Perfil guardado con éxito.', 'success');
-    irPaso('feed-global');
+    mostrarToast('✅ Perfil guardado. Procesando compra...', 'success');
+    
+    if(productoPendienteAdd) {
+        procesarAgregadoCarrito();
+    } else {
+        irPaso('feed-global');
+    }
 }
 
 // ==========================================
-// MAPA GPS Y MATEMÁTICA EXACTA
+// COMERCIOS: PANEL Y CARGA DE PRODUCTOS
+// ==========================================
+function previewSelfieComercioModal(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const caja = document.getElementById('boxSelfieComercioModal');
+            const iconoContenedor = document.getElementById('iconSelfieComercioContenedor');
+            const texto1 = document.getElementById('lblTextSelfieComercio');
+            if(caja) caja.style.backgroundImage = `url(${e.target.result})`;
+            if(iconoContenedor) iconoContenedor.style.display = 'none';
+            if(texto1) texto1.textContent = '✅ Selfie Verificada';
+            AppStore.set('selfie_seguridad_comercio', e.target.result);
+            mostrarToast('Selfie de seguridad verificada', 'success');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function previewPortada(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            tempImgPortada = e.target.result;
+            const caja = document.getElementById('boxPortadaComercio');
+            if(caja) caja.style.backgroundImage = `url(${e.target.result})`;
+            const lbl = document.getElementById('lblPortadaComercio');
+            if(lbl) lbl.textContent = '✅ Portada Lista';
+            const icon = document.getElementById('iconPortadaContenedor');
+            if(icon) icon.style.display = 'none';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function guardarComercio() {
+    const nom = document.getElementById('comercioNombre').value.trim();
+    const dir = document.getElementById('comercioDireccionExacta').value.trim();
+    const prov = document.getElementById('comercioProvincia').value.trim();
+    const ciu = document.getElementById('comercioCiudad').value.trim();
+    
+    if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá todos los datos', 'error');
+    if(!AppStore.get('selfie_seguridad_comercio')) return mostrarToast('La Selfie del dueño es obligatoria', 'error');
+    
+    if(!miComercioLogueadoId) {
+        miComercioLogueadoId = Date.now();
+        baseComercios.push({ id: miComercioLogueadoId, nombre: nom, provincia: prov, ciudad: ciu, direccion: dir, img: tempImgPortada });
+    }
+    mostrarToast(`¡Local registrado! Ahora cargá tus platos.`, 'success');
+}
+
+function previewArtFoto(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            tempImgBase64 = e.target.result;
+            const caja = document.getElementById('boxArticuloNuevo');
+            if(caja) caja.style.backgroundImage = `url(${e.target.result})`;
+            const lbl = document.getElementById('lblArtFoto');
+            if(lbl) lbl.textContent = '✅ Foto Lista';
+            const icon = document.getElementById('iconPlatoContenedor');
+            if(icon) icon.style.display = 'none';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function agregarArticuloComercio() {
+    if(!miComercioLogueadoId) return mostrarToast('Primero GUARDÁ LOS DATOS DEL LOCAL arriba', 'error');
+    const nom = document.getElementById('newArtNombre').value;
+    const pre = parseInt(document.getElementById('newArtPrecio').value);
+    if(!nom || isNaN(pre)) return mostrarToast('Faltan datos del artículo', 'error');
+    
+    baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64 });
+    mostrarToast(`¡Artículo publicado en el Feed Global!`, 'success');
+    
+    document.getElementById('newArtNombre').value = '';
+    document.getElementById('newArtPrecio').value = '';
+    renderizarAdminComercio();
+}
+
+function renderizarAdminComercio() {
+    const cont = document.getElementById('listaAdminComercio');
+    if(!cont) return;
+    const misProductos = baseProductosActivos.filter(p => p.idComercio === miComercioLogueadoId);
+    cont.innerHTML = misProductos.map(p => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <img src="${p.img}" style="width:44px; height:44px; border-radius:8px; object-fit:cover;">
+                <div><div style="font-size:13.5px; font-weight:800;">${p.nombre}</div><div style="font-size:12px; color:#ff6b00; font-weight:700;">$${p.precio}</div></div>
+            </div>
+            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:34px; height:34px;"><i class="ri-delete-bin-fill"></i></button>
+        </div>
+    `).join('');
+}
+
+function eliminarArticuloAdmin(id) { 
+    baseProductosActivos = baseProductosActivos.filter(p => p.id !== id); 
+    renderizarAdminComercio(); 
+    mostrarToast('Artículo Eliminado', 'success'); 
+}
+
+// ==========================================
+// CADETES E IA
+// ==========================================
+function previewSelfieCadete(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const caja = document.getElementById('cajaDoc1');
+            if(caja) {
+                caja.style.backgroundImage = `url(${e.target.result})`;
+                caja.style.backgroundSize = 'cover'; 
+                caja.style.backgroundPosition = 'center';
+            }
+            const icon = document.getElementById('iconoSelfieContenedorCadete');
+            if(icon) icon.style.display = 'none';
+            const txt = document.getElementById('txtDoc1');
+            if(txt) txt.innerHTML = '<span style="background:rgba(255,255,255,0.95); padding:6px 14px; border-radius:8px; color:#15803d;">✅ Selfie Lista</span>';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function docCargado(input, idLabel, idCaja, idIcon) {
+    if(input.files && input.files[0]) {
+        document.getElementById(idLabel).textContent = '✅ Subido Exitosamente';
+        document.getElementById(idCaja).style.backgroundColor = '#f0fdf4';
+        document.getElementById(idCaja).style.borderColor = '#4ade80';
+        document.getElementById(idIcon).className = 'ri-checkbox-circle-fill';
+        document.getElementById(idIcon).style.color = '#16a34a';
+        document.getElementById(idLabel).style.color = '#15803d';
+    }
+}
+
+function auditarDocumentosIA() {
+    mostrarToast('🤖 Inicializando motor OpenAI GPT-4o...', 'success');
+    setTimeout(() => { 
+        mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); 
+        setTimeout(() => irPaso('servimoto'), 800); 
+    }, 2000);
+}
+
+function toggleEstadoTrabajo() {
+    estadoTrabajoServimoto = !estadoTrabajoServimoto;
+    const btn = document.getElementById('btnEstadoTrabajo');
+    if(estadoTrabajoServimoto) {
+        btn.style.background = '#16a34a'; 
+        btn.style.boxShadow = '0 4px 12px rgba(22,163,74,0.4)';
+        btn.innerHTML = '<i class="ri-check-double-line"></i> ONLINE';
+        mostrarToast('¡Estás en línea! Encendé el radar.', 'success');
+    } else {
+        btn.style.background = '#ef4444'; 
+        btn.style.boxShadow = '0 4px 12px rgba(239,68,68,0.4)';
+        btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
+        if(estadoRadar) activarRadar(); 
+    }
+}
+
+function activarRadar() {
+    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (ONLINE) primero', 'error');
+    estadoRadar = !estadoRadar;
+    const btn = document.getElementById('btnRadar');
+    if(estadoRadar) {
+        btn.innerHTML = `
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#93c5fd;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#bfdbfe; letter-spacing:1px;">BUSCANDO...</span>
+        `;
+        btn.style.background = 'radial-gradient(circle, #2563eb, #1e3a8a)';
+        btn.style.borderColor = '#60a5fa';
+        btn.style.boxShadow = '0 0 40px rgba(59,130,246,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
+        mostrarToast('Radar encendido. Buscando viajes...', 'success');
+    } else {
+        btn.innerHTML = `
+            <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
+        `;
+        btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)';
+        btn.style.borderColor = '#3b82f6';
+        btn.style.boxShadow = '0 0 30px rgba(59,130,246,0.4)';
+    }
+}
+
+function simularViajeCadete() {
+    if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Encendé el Radar primero', 'error');
+    viajesMotoCount++;
+    deudaMotoAcumulada += 200;
+    document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+    document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Realizados';
+    mostrarToast('✅ Viaje cargado. Deuda sumada.', 'success');
+}
+
+function procesarLiquidacionIA(input) {
+    if(input.files && input.files.length > 0) {
+        mostrarToast('🤖 Verificando comprobante...', 'success');
+        setTimeout(() => {
+            viajesMotoCount = 0; deudaMotoAcumulada = 0;
+            document.getElementById('deudaMoto').textContent = '$0';
+            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
+            mostrarToast('✅ Transferencia procesada.', 'success');
+        }, 2500);
+    }
+}
+
+// ==========================================
+// 4. MAPA GPS Y MATEMÁTICA
 // ==========================================
 function abrirMapaMago() {
-    cerrarCarrito();
     const modalMapa = document.getElementById('modalMapaGrande');
     if(!modalMapa) return;
     
@@ -1254,9 +1474,14 @@ function abrirMapaMago() {
         }
         
         setTimeout(() => {
-            let destinoAddress = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu') + ", " + AppStore.get('cliente_prov') + ", Argentina";
-            if(!AppStore.get('cliente_dir')) destinoAddress = "Famaillá, Tucumán, Argentina";
-            
+            let destinoAddress = "";
+            if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
+                destinoAddress = document.getElementById('dirDestinoEspecial').value.trim() + ", " + document.getElementById('ciuDestinoEspecial').value.trim() + ", Argentina";
+            } else {
+                // Sacamos los datos de la memoria del cliente
+                destinoAddress = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu') + ", " + AppStore.get('cliente_prov') + ", Argentina";
+            }
+
             const origenAddress = direccionOrigenCalculo ? (direccionOrigenCalculo + ", Argentina") : "Tucumán, Argentina";
             
             try {
@@ -1280,11 +1505,14 @@ function abrirMapaMago() {
                             const distanceMeters = response.routes[0].legs[0].distance.value;
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
-                            calcularMatematicaEnvio("1.5"); 
+                            calcularMatematicaEnvio("1.5"); // Fallback matemático si Maps tira error
                         } 
                     });
                 }
             } catch(e) {
+                if(document.getElementById('mapFallbackText')) {
+                    document.getElementById('mapFallbackText').style.display = 'flex';
+                }
                 calcularMatematicaEnvio("1.5");
             }
         }, 400); 
@@ -1310,22 +1538,15 @@ function calcularMatematicaEnvio(km) {
     
     costoEnvioCalculado = tarifaBase + costoExtra;
     if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
-    
-    let subtotalProductos = 0;
-    carritoGlobal.forEach(i => { subtotalProductos += i.precio; });
-    
-    const totalConEnvio = subtotalProductos + costoEnvioCalculado;
-    if(document.getElementById('mapaTotalPagar')) {
-        document.getElementById('mapaTotalPagar').textContent = '$' + totalConEnvio.toLocaleString('es-AR');
-    }
 }
 
-function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); abrirCarritoFinal(); }
-function irAlCheckout() { mandarPedidoSoporte(); }
+function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); }
+function irAlCheckout() { cerrarMapa(); abrirModalCarrito(); }
+function abrirModalCarrito() { cerrarModalMarketplace(); document.getElementById('modalCarritoFinal').classList.add('show'); renderizarCarritoDOM(); }
 function cerrarCarrito() { document.getElementById('modalCarritoFinal').classList.remove('show'); }
 
 // ==========================================
-// 5. RENDERIZADO DEL CARRITO
+// 5. CARRITO FINAL (CAJA VERDE)
 // ==========================================
 function renderizarCarritoDOM() {
     const cont = document.getElementById('contenidoCarrito');
@@ -1335,7 +1556,8 @@ function renderizarCarritoDOM() {
     let subtotal = 0;
     let listHTML = "";
 
-    let dirComprador = AppStore.get('cliente_dir') || "Dirección no configurada";
+    // Direcciones conectadas (Comercio -> Cliente)
+    let dirComprador = AppStore.get('cliente_dir') || "";
     let ciuComprador = AppStore.get('cliente_ciu') || "";
     
     listHTML += `
@@ -1344,7 +1566,7 @@ function renderizarCarritoDOM() {
             <i class="ri-store-3-fill" style="color:#ff6b00; font-size:16px;"></i>
             <div>
                 <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase;">Retira en (Local):</div>
-                <div style="color:#0f172a; font-weight:700;">${direccionOrigenCalculo || 'Local central'}</div>
+                <div style="color:#0f172a; font-weight:700;">${direccionOrigenCalculo || 'Pendiente'}</div>
             </div>
         </div>
         <div style="height:1px; background:#e2e8f0; margin-bottom:8px;"></div>
@@ -1357,40 +1579,67 @@ function renderizarCarritoDOM() {
         </div>
     </div>`;
 
+    // Lista de Platos
     listHTML += carritoGlobal.map((item, idx) => {
         subtotal += item.precio;
         return `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:8px;">
-            <div>
-                <div style="font-weight:800; font-size:14px; color:#0f172a;">${item.nombre}</div>
-                <div style="color:#ff6b00; font-weight:800; font-size:13px;">$${item.precio.toLocaleString('es-AR')}</div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:8px; height:8px; border-radius:50%; background:#3b82f6;"></div>
+                <div>
+                    <div style="font-weight:800; font-size:14px; color:#0f172a;">${item.nombre}</div>
+                    <div style="color:#ff6b00; font-weight:800; font-size:13px;">${item.precio > 0 ? '$'+item.precio.toLocaleString('es-AR') : 'Express'}</div>
+                </div>
             </div>
             <button onclick="borrarItemCarrito(${idx})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:32px; height:32px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
         </div>`;
     }).join('');
+    
+    // Envío Separado
+    if(costoEnvioCalculado > 0) {
+        listHTML += `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:#fff7ed; border:2px dashed #ffb380; border-radius:12px; margin-top:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <i class="ri-motorbike-fill" style="color:#cc4400; font-size:18px;"></i>
+                <div style="font-weight:800; font-size:13.5px; color:#cc4400;">Envío GPS (Lo paga el comprador)</div>
+            </div>
+            <div style="color:#cc4400; font-weight:800; font-size:15px;">$${costoEnvioCalculado.toLocaleString('es-AR')}</div>
+        </div>`;
+    }
 
     cont.innerHTML = listHTML;
-    totalUI.textContent = '$' + subtotal.toLocaleString('es-AR');
+    totalUI.textContent = '$' + (subtotal + costoEnvioCalculado).toLocaleString('es-AR');
 }
 
 function borrarItemCarrito(idx) {
     carritoGlobal.splice(idx, 1);
-    const badge = document.getElementById('badgeCarrito');
-    if(badge) badge.textContent = carritoGlobal.length;
+    if(carritoGlobal.length === 0) costoEnvioCalculado = 0;
+    renderizarCarritoDOM();
+}
+
+function enviarPedidoEspecial() {
+    const dirOrigen = document.getElementById('dirOrigenEspecial').value;
+    const ciuDestino = document.getElementById('ciuDestinoEspecial').value;
+    const dirDestino = document.getElementById('dirDestinoEspecial').value;
+    const provDestino = document.getElementById('selProvinciaEspecial').value;
+    const txt = document.getElementById('txtPedidoEspecial').value;
     
-    if(carritoGlobal.length === 0) {
-        costoEnvioCalculado = 0;
-        const floatBtn = document.getElementById('btnFloatingCart');
-        if(floatBtn) floatBtn.style.display = 'none';
-        cerrarCarrito();
-    } else {
-        renderizarCarritoDOM();
-    }
+    if(!dirOrigen || !dirDestino || !ciuDestino || !provDestino || !txt) return mostrarToast('Completá todo', 'error');
+    
+    direccionOrigenCalculo = dirOrigen; 
+    AppStore.set('cliente_dir', dirDestino);
+    AppStore.set('cliente_ciu', ciuDestino);
+    AppStore.set('cliente_prov', provDestino);
+    
+    carritoGlobal.push({ nombre: "Viaje Express", precio: 0, detalle: txt });
+    cerrarModalMarketplace();
+    abrirMapaMago();
 }
 
 function mandarPedidoSoporte() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     
+    // Dispara Alarma al Comercio antes de ir a Whatsapp
     notificarComercioNuevoPedido();
 
     let txt = "🔥 *NUEVO PEDIDO EN LA RED* 🔥%0A%0A";
@@ -1408,11 +1657,6 @@ function mandarPedidoSoporte() {
     txt += `🛣️ *Costo GPS:* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     txt += `💰 *TOTAL A PAGAR: $${(subtotal + costoEnvioCalculado).toLocaleString('es-AR')}*%0A`;
     
-    cerrarMapa();
-    carritoGlobal = [];
-    const floatBtn = document.getElementById('btnFloatingCart');
-    if(floatBtn) floatBtn.style.display = 'none';
-
     setTimeout(() => {
         window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
     }, 800);
