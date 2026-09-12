@@ -179,6 +179,10 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #fff7ed; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
+
+        /* CLASES PARA EL MODO PANTALLA COMPLETA DEL COMERCIANTE */
+        .expanded-container { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999999 !important; border-radius: 0 !important; border: none !important; margin: 0 !important; display: flex; flex-direction: column; }
+        .expanded-list-content { max-height: calc(100vh - 80px) !important; flex: 1; }
     </style>
 </head>
 <body>
@@ -213,6 +217,12 @@
         </div>
     </div>
 </nav>
+
+<!-- BOTÓN FLOTANTE DEL CARRITO (Se activa por JS cuando agregás algo) -->
+<button id="btnFloatingCart" onclick="abrirCarritoFinal()" style="display:none; position:fixed; bottom:24px; right:24px; width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:3px solid #bbf7d0; box-shadow:0 10px 30px rgba(22,163,74,0.6); z-index:9999999; font-size:26px; cursor:pointer; align-items:center; justify-content:center; transition:transform 0.2s;">
+    <i class="ri-shopping-cart-2-fill"></i>
+    <div id="badgeCarrito" style="position:absolute; top:-5px; right:-5px; background:white; color:#15803d; font-size:13px; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #16a34a; box-shadow:0 4px 10px rgba(0,0,0,0.3);">0</div>
+</button>
 
 <div style="height:90px;"></div>
 
@@ -569,7 +579,6 @@
             <div id="modal-step-1" class="sub-step active" style="padding:24px 16px;">
                 <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Qué necesitás hoy?</h4>
                 <div style="display:flex; flex-direction:column; gap:12px;">
-                    <!-- MODIFICACIÓN ACÁ: VA DIRECTO AL FEED GLOBAL DE MERCADO LIBRE -->
                     <button class="option-card" onclick="irPaso('feed-global')" style="border:2px solid #ff6b00; background:linear-gradient(to right, #fff, #fff7ed);">
                         <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(255,107,0,0.4);"><i class="ri-shopping-bag-3-fill"></i></div>
                         <div style="flex:1; text-align:left;">
@@ -599,48 +608,20 @@
                 </div>
             </div>
 
-            <!-- EL NUEVO FEED GLOBAL (ESTILO MERCADO LIBRE) CON FILTROS -->
+            <!-- FEED GLOBAL DE MERCADO LIBRE -->
             <div id="modal-step-feed-global" class="sub-step" style="padding:0;">
                 <div style="padding:16px; background:white; position:sticky; top:0; z-index:10; border-bottom:2px solid #ffe4cc; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
                     <button class="btn-volver" style="margin-bottom:12px;" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Inicio</button>
                     <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin-bottom:12px;">Catálogo Global</h3>
-                    <div style="display:flex; gap:8px;">
-                        <select class="select-provincia" id="filtroProvincia" style="margin:0; padding:10px; font-size:13px;" onchange="filtrarFeedGlobal()">
-                            <option value="">Todas las Provincias...</option>
-                            <option value="Tucumán" selected>Tucumán</option>
-                            <option value="Buenos Aires">Buenos Aires</option>
-                            <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
-                            <option value="Catamarca">Catamarca</option>
-                            <option value="Chaco">Chaco</option>
-                            <option value="Chubut">Chubut</option>
-                            <option value="Córdoba">Córdoba</option>
-                            <option value="Corrientes">Corrientes</option>
-                            <option value="Entre Ríos">Entre Ríos</option>
-                            <option value="Formosa">Formosa</option>
-                            <option value="Jujuy">Jujuy</option>
-                            <option value="La Pampa">La Pampa</option>
-                            <option value="La Rioja">La Rioja</option>
-                            <option value="Mendoza">Mendoza</option>
-                            <option value="Misiones">Misiones</option>
-                            <option value="Neuquén">Neuquén</option>
-                            <option value="Río Negro">Río Negro</option>
-                            <option value="Salta">Salta</option>
-                            <option value="San Juan">San Juan</option>
-                            <option value="San Luis">San Luis</option>
-                            <option value="Santa Cruz">Santa Cruz</option>
-                            <option value="Santa Fe">Santa Fe</option>
-                            <option value="Santiago del Estero">Santiago del Estero</option>
-                            <option value="Tierra del Fuego">Tierra del Fuego</option>
-                        </select>
-                        <input type="text" class="input-buscar" id="filtroCiudad" placeholder="Tu Ciudad (Ej: Famaillá)..." style="margin:0; padding:10px; font-size:13px;" onkeyup="filtrarFeedGlobal()">
+                    <div style="display:flex; gap:8px;" id="cajaFiltrosFeed">
+                        <!-- Selectores manejados por JS para no duplicar -->
                     </div>
                 </div>
                 <div style="display:grid; grid-template-columns:repeat(2, 1fr); align-items:start; gap:12px; padding:16px;" id="gridMercadoLibre">
-                    <!-- ACÁ SE INYECTAN TODOS LOS PRODUCTOS -->
                 </div>
             </div>
 
-            <!-- LOGIN ADAPTADO -->
+            <!-- LOGIN -->
             <div id="modal-step-login" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
                 <div class="step-indicator" id="lblTipoLogin">Acceso a Cuenta</div>
@@ -653,7 +634,7 @@
                 </div>
             </div>
 
-            <!-- COMPLETAR PERFIL DEL CLIENTE: SELFIE Y UBICACIÓN -->
+            <!-- COMPLETAR PERFIL DEL CLIENTE -->
             <div id="modal-step-cliente-ubicacion" class="sub-step" style="padding:24px 16px;">
                 <div class="step-indicator" style="background:#dcfce7; color:#166534; border-color:#86efac;"><i class="ri-map-pin-user-fill"></i> Completar Perfil</div>
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin-bottom:4px;">Selfie y Destino</h3>
@@ -703,6 +684,9 @@
             <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 16px;">Panel Comercial</h3>
+                
+                <div id="bandejaPedidosComercio" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;"></div>
+
                 <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
                     <label id="boxSelfieComercioModal" style="background:#f0fdf4; border:3px dashed #4ade80; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; position:relative; overflow:hidden;">
                         <div style="width:70px; height:70px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; border:2px solid #86efac;" id="iconSelfieComercioContenedor"><i class="ri-camera-lens-fill" style="font-size:36px; color:#16a34a;"></i></div>
@@ -716,11 +700,18 @@
                     </label>
                     <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
                     <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta (Ej: 9 de Julio 120)" style="margin:0;">
-                    <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:14px; font-size:14px;">
-                        <option value="">Rubro / Categoría...</option>
-                        <option value="pizza">🍕 Pizzería</option>
-                        <option value="kiosco">🛒 Kiosco / Almacén</option>
+                    
+                    <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6; background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%233b82f6\' stroke-width=\'2.5\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E');">
+                        <option value="">Rubro / Categoría de tu Local...</option>
+                        <option value="Comida Rápida">🍔 Comida Rápida / Sandwichería</option>
+                        <option value="Pizzería">🍕 Pizzería / Empanadas</option>
+                        <option value="Kiosco">🍫 Kiosco / Almacén / Minimarket</option>
+                        <option value="Farmacia">💊 Farmacia / Perfumería</option>
+                        <option value="Bebidas">🍷 Bebidas / Heladería</option>
+                        <option value="Ropa">👕 Tienda de Ropa / Accesorios</option>
+                        <option value="Varios">🛍️ Comercios Varios</option>
                     </select>
+
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
                         <div>
                             <label style="font-size:11px; font-weight:800; color:#64748b;">Abre:</label>
@@ -763,22 +754,39 @@
                     </div>
                     <button class="btn-primary" style="padding:16px; font-size:15px; margin-top:8px;" onclick="guardarComercio()">GUARDAR DATOS DEL LOCAL</button>
                 </div>
-                <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:1.5rem; padding:20px; margin-bottom:20px;">
-                    <h4 style="font-weight:800; font-size:16px; margin-bottom:14px; color:#0f172a;">Crear Artículo Nuevo</h4>
-                    <div style="display:flex; gap:12px; margin-bottom:14px;">
-                        <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre Plato" style="margin:0; flex:2; padding:14px;">
-                        <input type="number" class="input-buscar" id="newArtPrecio" placeholder="$ Precio" style="margin:0; flex:1; padding:14px;">
+                
+                <div style="background:#f8fafc; border:2px solid #cbd5e1; border-radius:1.5rem; padding:20px; margin-bottom:20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <h4 style="font-weight:800; font-size:18px; margin-bottom:16px; color:#0f172a;"><i class="ri-add-circle-fill" style="color:#3b82f6;"></i> Crear Artículo Nuevo</h4>
+                    
+                    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
+                        <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre del Artículo (Ej: Lomo Completo)" style="margin:0; padding:16px; font-size:16px;">
+                        <input type="number" class="input-buscar" id="newArtPrecio" placeholder="Precio Final ($)" style="margin:0; padding:16px; font-size:16px; font-weight:800; color:#16a34a;">
+                        <textarea class="textarea-buscar" id="newArtRef" placeholder="Descripción / Referencia (Opcional)" style="margin:0; padding:16px; font-size:14px; min-height:80px;"></textarea>
                     </div>
-                    <label id="boxArticuloNuevo" style="background:white; border:3px dashed #cbd5e1; padding:32px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:16px; background-size: cover; background-position: center; min-height: 160px; position: relative; overflow:hidden;">
-                        <div style="width:54px; height:54px; border-radius:14px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border:2px solid #e2e8f0; margin-bottom:8px;" id="iconPlatoContenedor"><i class="ri-camera-fill" style="font-size:28px; color:#64748b;"></i></div>
-                        <span style="font-size:14px; font-weight:800; color:#0f172a; position: relative; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblArtFoto">Subir Foto Real del Plato</span>
+                    
+                    <label id="boxArticuloNuevo" style="background:white; border:3px dashed #94a3b8; padding:32px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:16px; background-size: cover; background-position: center; min-height: 180px; position: relative; overflow:hidden; transition:all 0.3s;">
+                        <div style="width:60px; height:60px; border-radius:16px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border:2px solid #e2e8f0; margin-bottom:10px;" id="iconPlatoContenedor">
+                            <i class="ri-camera-3-fill" style="font-size:32px; color:#64748b;"></i>
+                        </div>
+                        <span style="font-size:15px; font-weight:800; color:#0f172a; position: relative; z-index: 2; background: rgba(255,255,255,0.95); padding: 8px 16px; border-radius: 10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);" id="lblArtFoto">Subir Foto Real (Obligatorio)</span>
                         <input type="file" accept="image/*" style="display:none;" onchange="previewArtFoto(this)">
                     </label>
-                    <button class="btn-secondary" style="width:100%; padding:14px; font-size:14px;" onclick="agregarArticuloComercio()">+ PUBLICAR EN LA GRILLA GLOBAL</button>
+                    
+                    <button class="btn-primary" style="width:100%; padding:16px; font-size:16px; background:linear-gradient(135deg, #3b82f6, #1d4ed8); border:none; box-shadow:0 10px 25px rgba(59,130,246,0.4);" onclick="agregarArticuloComercio()">
+                        <i class="ri-upload-cloud-2-fill"></i> PUBLICAR EN EL CATÁLOGO
+                    </button>
                 </div>
-                <div style="background:white; border-radius:1.5rem; padding:20px; border:2px solid #ffe4cc;">
-                    <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; margin-bottom:12px; color:#0f172a;">Tus Artículos Publicados</h4>
-                    <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:10px; max-height:220px; overflow-y:auto; padding-right:4px;"></div>
+                
+                <div id="contenedorListaArticulos" style="background:white; border-radius:1.5rem; padding:20px; border:2px solid #ffe4cc; transition: all 0.3s ease;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a; margin:0;"><i class="ri-list-check" style="color:#ff6b00;"></i> Tus Artículos</h4>
+                        <button onclick="togglePantallaCompletaArticulos()" style="background:#fff7ed; color:#cc4400; border:2px solid #ffd4b3; border-radius:8px; padding:6px 10px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                            <i class="ri-fullscreen-line" id="iconExpandir"></i> <span id="textExpandir">Expandir</span>
+                        </button>
+                    </div>
+                    <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:10px; max-height:250px; overflow-y:auto; padding-right:4px; transition: all 0.3s ease;">
+                        <!-- Inyectado dinámicamente por JS -->
+                    </div>
                 </div>
             </div>
 
@@ -831,7 +839,7 @@
                     <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino (Ej: Famaillá)">
                     <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿A dónde lo lleva? (Ej: Rivadavia 200)">
                     <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Buscar un paquete)"></textarea>
-                    <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">CALCULAR RUTA EN MAPA</button>
+                    <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">AGREGAR Y CALCULAR ENVÍO</button>
                 </div>
             </div>
 
@@ -840,7 +848,31 @@
 </div>
 
 <!-- ========================================== -->
-<!-- MAPA GPS ANIMADO (ANTI-ERROR) Y CAJA VERDE-->
+<!-- MODAL DEL CARRITO DE COMPRAS (BOTÓN VERDE DE LA CAJA)-->
+<!-- ========================================== -->
+<div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
+    <div class="modal-box" style="padding:24px; border:3.5px solid #ff6b00; max-width:440px; border-radius:1.5rem; height:auto;">
+        <button class="modal-close-btn" style="border-color:#ff6b00; color:#cc4400;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
+        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin:0 0 16px;"><i class="ri-shopping-cart-2-fill" style="color:#ff6b00;"></i> Tu Carrito</h3>
+        
+        <div id="contenidoCarrito" style="max-height:380px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;">
+            <!-- Contenido inyectado por JS -->
+        </div>
+
+        <div style="background:#fff7ed; padding:14px; border-radius:1rem; border:2px solid #ffd4b3; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <span style="font-size:13.5px; font-weight:800; color:#cc4400; text-transform:uppercase;">Subtotal (Sin envío)</span>
+            <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#ff6b00; line-height:1;">$0</span>
+        </div>
+        
+        <!-- BOTÓN QUE DISPARA EL MAPA -->
+        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="abrirMapaMago()">
+            <i class="ri-map-pin-line" style="font-size:22px;"></i> CALCULAR ENVÍO EN MAPA
+        </button>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MAPA GPS ANIMADO (PANTALLA CONFIRMACIÓN FINAL)-->
 <!-- ========================================== -->
 <div id="modalMapaGrande" class="modal-overlay" style="background:rgba(15,23,42,.98);">
     <div style="width:100%; max-width:850px; height:100vh; background:#0f172a; border-radius:0; border:none; position:relative; overflow:hidden; box-shadow:0 0 100px rgba(255,107,0,0.5); display:flex; flex-direction:column; transform:scale(0.95); transition:all .35s; opacity:0;" id="mapaBox">
@@ -867,29 +899,26 @@
                     <div id="mapaKm" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#0f172a; margin-top:2px;">...</div>
                 </div>
                 <div style="background:#fff7ed; padding:14px; border-radius:1rem; border:2px solid #ffd4b3; text-align:center;">
-                    <div style="font-size:11px; font-weight:800; color:#cc4400; text-transform:uppercase;" id="lblTarifaBase">Calculando...</div>
+                    <div style="font-size:11px; font-weight:800; color:#cc4400; text-transform:uppercase;" id="lblTarifaBase">Tarifa de Envío</div>
                     <div id="mapaCosto" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#ff6b00; margin-top:2px;">$--</div>
                 </div>
             </div>
-            <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="irAlCheckout()">CONFIRMAR RUTA Y AVANZAR <i class="ri-arrow-right-circle-fill"></i></button>
+            
+            <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <span style="font-size:14px; font-weight:800; color:#166534; text-transform:uppercase;">TOTAL + ENVÍO</span>
+                <span id="mapaTotalPagar" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
+            </div>
+
+            <!-- BOTÓN FINAL VERDE -->
+            <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()">
+                CONFIRMAR PEDIDO <i class="ri-whatsapp-fill" style="font-size:22px;"></i>
+            </button>
         </div>
     </div>
 </div>
 
-<div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
-    <div class="modal-box" style="padding:24px; border:3.5px solid #16a34a; max-width:440px; border-radius:1.5rem; height:auto;">
-        <button class="modal-close-btn" style="border-color:#16a34a; color:#15803d;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
-        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin:0 0 16px;"><i class="ri-shopping-bag-3-fill" style="color:#16a34a;"></i> Resumen del Pedido</h3>
-        <div id="contenidoCarrito" style="max-height:380px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
-        <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Total a Pagar</span>
-            <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
-        </div>
-        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()">
-            <i class="ri-whatsapp-fill" style="font-size:22px;"></i> CONFIRMAR POR WHATSAPP
-        </button>
-    </div>
-</div>
+</body>
+</html>
 <!-- Script de Google Maps con la API Key -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
 
@@ -898,9 +927,9 @@
 // 1. INICIALIZACIÓN DE VARIABLES GLOBALES
 // ==========================================
 let baseComercios = [
-    { id: 1, nombre: "Kiosco Mamoly", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Azcuénaga 474", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150" },
-    { id: 2, nombre: "Pizzería Roma", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Lavalle 200", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=150" },
-    { id: 3, nombre: "Burger Famaillá", provincia: "Tucumán", ciudad: "Famaillá", direccion: "San Martín 150", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150" }
+    { id: 1, nombre: "Kiosco Mamoly", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Azcuénaga 474", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150", abre: "09:00", cierra: "23:00" },
+    { id: 2, nombre: "Pizzería Roma", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Lavalle 200", img: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=150", abre: "20:00", cierra: "02:00" },
+    { id: 3, nombre: "Burger Famaillá", provincia: "Tucumán", ciudad: "Famaillá", direccion: "San Martín 150", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150", abre: "19:00", cierra: "01:00" }
 ];
 
 let baseProductosActivos = [
@@ -911,11 +940,12 @@ let baseProductosActivos = [
 ];
 
 let carritoGlobal = [];
+let pedidosComercio = []; // Bandeja de notificaciones del local
 let costoEnvioCalculado = 0;
 let direccionOrigenCalculo = ""; 
 let tipoLoginActual = "";
 
-let clienteLogueado = false;
+let clienteLogueado = false; // Arranca en false para forzar el login al comprar
 let productoPendienteAdd = null; 
 
 let viajesMotoCount = 0;
@@ -935,154 +965,103 @@ const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
-// 3. FUNCIÓN DEL MICRÓFONO (Voz Energy Software)
+// 3. MICRÓFONO (Asistente de Voz Reparado)
 // ==========================================
 function activarMicrofono() {
     const btn = document.getElementById('micIcon');
-    btn.classList.remove('ri-mic-fill');
-    btn.classList.add('ri-mic-2-fill', 'animate-pulse-glow');
+    if(btn) {
+        btn.classList.remove('ri-mic-fill');
+        btn.classList.add('ri-mic-2-fill', 'animate-pulse-glow');
+    }
 
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); 
-        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto, una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos los mejores cadetes certificados con buena conducta. Podés hacer tu pedido. Entrá al Marketplace para comenzar.";
+        window.speechSynthesis.cancel(); // Evita que se superpongan audios
+        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto. Una plataforma donde conectamos ServiMoto con kioscos, negocios y clientes. Contamos con cadetes calificados con certificado de buena conducta. Los comerciantes pueden publicar, vender y recibir toda la información al instante. ¡Y bueno, ahora vamos al Marketplace!";
         
         const speech = new SpeechSynthesisUtterance(mensaje);
         speech.lang = 'es-AR';
         speech.rate = 1.05;
         
         speech.onend = () => {
-            btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow');
-            btn.classList.add('ri-mic-fill');
+            if(btn) {
+                btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow');
+                btn.classList.add('ri-mic-fill');
+            }
         };
         
         mostrarToast("Asistente de voz activado 🎙️", "success");
         window.speechSynthesis.speak(speech);
     } else {
-        mostrarToast("Tu navegador no soporta el asistente de voz", "error");
-        btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow');
-        btn.classList.add('ri-mic-fill');
+        mostrarToast("Tu celular no soporta el asistente de voz", "error");
+        if(btn) {
+            btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow');
+            btn.classList.add('ri-mic-fill');
+        }
     }
 }
 
 // ==========================================
-// ALARMA Y NOTIFICACIÓN PARA EL COMERCIO
-// ==========================================
-function notificarComercioNuevoPedido() {
-    // 1. Vibración del dispositivo del comercio
-    if(navigator.vibrate) {
-        navigator.vibrate([500, 250, 500, 250, 1000]);
-    }
-    
-    // 2. Voz por el parlante
-    if('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance("¡Atención comercio! Ha ingresado un nuevo pedido. Revisar el panel comercial.");
-        msg.lang = 'es-AR';
-        msg.rate = 1.1;
-        window.speechSynthesis.speak(msg);
-    }
-
-    // 3. Alerta Visual Gigante en Pantalla
-    const alertBox = document.createElement('div');
-    alertBox.style.position = 'fixed';
-    alertBox.style.top = '20px';
-    alertBox.style.left = '50%';
-    alertBox.style.transform = 'translateX(-50%)';
-    alertBox.style.background = '#dc2626'; 
-    alertBox.style.color = 'white';
-    alertBox.style.padding = '16px 24px';
-    alertBox.style.borderRadius = '16px';
-    alertBox.style.boxShadow = '0 10px 35px rgba(220, 38, 38, 0.6)';
-    alertBox.style.zIndex = '99999999';
-    alertBox.style.display = 'flex';
-    alertBox.style.alignItems = 'center';
-    alertBox.style.gap = '16px';
-    alertBox.style.fontWeight = '800';
-    alertBox.style.animation = 'pulseGlow 1.5s infinite';
-    
-    alertBox.innerHTML = `
-        <i class="ri-notification-badge-fill" style="font-size:32px; animation: ringRotate 1s infinite;"></i>
-        <div style="text-align:left;">
-            <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">Alerta Comercial</div>
-            <div style="font-size:16px;">¡NUEVO PEDIDO RECIBIDO!</div>
-        </div>
-        <button onclick="this.parentElement.remove()" style="background:white; color:#dc2626; border:none; padding:8px 16px; border-radius:8px; font-weight:800; cursor:pointer; margin-left:10px;">ATENDER</button>
-    `;
-    document.body.appendChild(alertBox);
-    setTimeout(() => { if(alertBox.parentElement) alertBox.remove(); }, 15000); // Se borra a los 15s si no lo toca
-}
-
-// ==========================================
-// TOAST SYSTEM
+// TOAST SYSTEM (Notificaciones Verde / Naranja)
 // ==========================================
 function mostrarToast(msg, tipo) {
     const container = document.getElementById('toast-container');
+    if(!container) return;
     const t = document.createElement('div');
-    t.className = tipo === 'error' ? 'toast-premium toast-error' : 'toast-premium';
-    t.style.background = tipo === 'error' ? '#ef4444' : '#16a34a';
+    t.className = 'toast-premium';
+    // Éxito = Verde (#16a34a) | Error = Naranja (#f97316) --> NADA DE ROJO
+    t.style.background = tipo === 'error' ? '#f97316' : '#16a34a'; 
     t.style.color = 'white';
     t.style.padding = '12px 20px';
     t.style.borderRadius = '10px';
-    t.style.fontWeight = '700';
+    t.style.fontWeight = '800';
     t.style.fontSize = '14px';
-    t.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+    t.style.boxShadow = `0 10px 25px ${tipo === 'error' ? 'rgba(249,115,22,0.3)' : 'rgba(22,163,74,0.3)'}`;
+    t.style.marginTop = '8px';
     t.innerHTML = `<i class="${tipo==='error'?'ri-error-warning-fill':'ri-checkbox-circle-fill'}" style="font-size:20px; margin-right:8px; vertical-align:middle;"></i> <span style="vertical-align:middle;">${msg}</span>`;
     container.appendChild(t);
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
 // ==========================================
-// NAVEGACIÓN Y FLUJO MERCADO LIBRE
+// NAVEGACIÓN Y FEED GLOBAL (ESTILO MERCADO LIBRE)
 // ==========================================
 function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
-function abrirModalMarketplace() { document.getElementById('modalMarketplace').classList.add('show'); document.body.style.overflow = 'hidden'; irPaso(1); }
-function cerrarModalMarketplace() { document.getElementById('modalMarketplace').classList.remove('show'); document.body.style.overflow = ''; }
+
+function abrirModalMarketplace() { 
+    document.getElementById('modalMarketplace').classList.add('show'); 
+    document.body.style.overflow = 'hidden'; 
+    irPaso(1); 
+}
+
+function cerrarModalMarketplace() { 
+    document.getElementById('modalMarketplace').classList.remove('show'); 
+    document.body.style.overflow = ''; 
+}
 
 function irPaso(paso) { 
     document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active')); 
-    document.getElementById(`modal-step-${paso}`).classList.add('active'); 
+    const el = document.getElementById(`modal-step-${paso}`);
+    if(el) el.classList.add('active'); 
+    
     if(paso === 'feed-global') {
-        inyectarFiltrosMercadoLibre();
         renderizarFeedGlobal();
     }
 }
 
-// Inyecta dinámicamente los buscadores sin modificar el HTML base
-function inyectarFiltrosMercadoLibre() {
-    const headerFeed = document.querySelector('#modal-step-feed-global > div:first-child');
-    if(headerFeed && !document.getElementById('cajaFiltrosFeed')) {
-        const divFiltros = document.createElement('div');
-        divFiltros.id = 'cajaFiltrosFeed';
-        divFiltros.style.display = 'flex';
-        divFiltros.style.gap = '8px';
-        divFiltros.style.marginTop = '12px';
-        divFiltros.innerHTML = `
-            <select class="select-provincia" id="feedProvincia" style="margin:0; padding:10px; font-size:13px; flex:1;" onchange="renderizarFeedGlobal()">
-                <option value="">Todas las Provincias...</option>
-                <option value="Tucumán">Tucumán</option>
-                <option value="Buenos Aires">Buenos Aires</option>
-                <option value="CABA">CABA</option>
-                <option value="Catamarca">Catamarca</option>
-                <option value="Córdoba">Córdoba</option>
-                <option value="Salta">Salta</option>
-            </select>
-            <input type="text" class="input-buscar" id="feedCiudad" placeholder="Ciudad (Ej: Famaillá)..." style="margin:0; padding:10px; font-size:13px; flex:1;" onkeyup="renderizarFeedGlobal()">
-        `;
-        headerFeed.appendChild(divFiltros);
-    }
+function filtrarFeedGlobal() {
+    renderizarFeedGlobal();
 }
 
 function renderizarFeedGlobal() {
     const container = document.getElementById('gridMercadoLibre');
     if(!container) return; 
     
-    // Obtenemos los valores de los filtros si existen
-    const inputProv = document.getElementById('feedProvincia');
-    const inputCiu = document.getElementById('feedCiudad');
+    // Lee directamente de los inputs que tenés en el HTML
+    const inputProv = document.getElementById('filtroProvincia');
+    const inputCiu = document.getElementById('filtroCiudad');
     let provFiltro = inputProv ? quitarAcentos(inputProv.value.trim()) : "";
     let ciuFiltro = inputCiu ? quitarAcentos(inputCiu.value.trim()) : "";
 
-    // Filtramos los comercios que coinciden
     let comerciosValidos = baseComercios;
     if(provFiltro || ciuFiltro) {
         comerciosValidos = baseComercios.filter(c => {
@@ -1096,7 +1075,7 @@ function renderizarFeedGlobal() {
     const productosAFiltrar = baseProductosActivos.filter(p => idsValidos.includes(p.idComercio));
 
     if(productosAFiltrar.length === 0) {
-        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:700; color:#64748b;">No hay productos disponibles en esta zona por ahora.</div>`;
+        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay productos en esta zona. ¡Sé el primero en vender!</div>`;
         return;
     }
     
@@ -1127,16 +1106,20 @@ function renderizarFeedGlobal() {
     container.innerHTML = html;
 }
 
-// LOGICA DE SEGURIDAD PARA COMPRAR
+// ==========================================
+// FLUJO INTELIGENTE DE COMPRA (Freno Login -> Carrito)
+// ==========================================
 function intentarComprar(idProducto, direccionComercio) {
     productoPendienteAdd = { id: idProducto, direccion: direccionComercio };
     
+    // Si no está logueado, lo frena y lo manda a ingresar sus credenciales
     if(!clienteLogueado) {
-        mostrarToast('Debés loguearte primero para comprar', 'error');
+        mostrarToast('¡Debés iniciar sesión para comprar!', 'error');
         iniciarLogin('cliente');
         return;
     }
     
+    // Si está logueado pero no puso su dirección, lo manda al paso de Ubicación
     if(!AppStore.get('cliente_dir')) {
         mostrarToast('Falta configurar tu dirección de entrega', 'error');
         irPaso('cliente-ubicacion');
@@ -1153,15 +1136,24 @@ function procesarAgregadoCarrito() {
     if(prodEncontrado) {
         carritoGlobal.push({ nombre: prodEncontrado.nombre, precio: prodEncontrado.precio, cantidad: 1 });
         direccionOrigenCalculo = productoPendienteAdd.direccion; 
-        mostrarToast(`✅ ${prodEncontrado.nombre} en carrito`, 'success');
+        
+        mostrarToast(`✅ Agregado al carrito: ${prodEncontrado.nombre}`, 'success');
+        
+        const floatBtn = document.getElementById('btnFloatingCart');
+        const badge = document.getElementById('badgeCarrito');
+        if(floatBtn) floatBtn.style.display = 'flex';
+        if(badge) {
+            badge.textContent = carritoGlobal.length;
+            badge.style.transform = 'scale(1.3)';
+            setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200);
+        }
         
         productoPendienteAdd = null; 
-        abrirMapaMago(); 
     }
 }
 
 // ==========================================
-// INICIO DE SESIÓN UNIFICADO
+// INICIO DE SESIÓN UNIFICADO CON MEMORIA
 // ==========================================
 function iniciarLogin(tipo) {
     tipoLoginActual = tipo; 
@@ -1179,31 +1171,38 @@ function iniciarLogin(tipo) {
     
     document.getElementById('loginCelular').value = '';
     document.getElementById('loginClave').value = '';
-    
     miComercioLogueadoId = null;
     irPaso('login');
 }
 
 function validarLogin() {
     const cel = document.getElementById('loginCelular').value;
-    const pwd = document.getElementById('loginClave').value.toUpperCase();
+    const pwd = document.getElementById('loginClave').value.trim();
     
-    if(cel.length < 8) return mostrarToast('El celular debe tener al menos 8 números', 'error');
+    if(cel.length < 8) return mostrarToast('Ingresá un celular válido', 'error');
     if(pwd.length < 4) return mostrarToast('La clave debe tener al menos 4 caracteres', 'error');
     
-    mostrarToast('Ingreso exitoso.', 'success');
-    AppStore.set('cliente_celular', cel); 
+    mostrarToast('Ingreso exitoso', 'success');
     
     if(tipoLoginActual === 'comercio') {
         irPaso('comercio');
+        renderizarBandejaPedidos(); // Al loguearse el comercio, carga sus notificaciones
     } else if(tipoLoginActual === 'cadete') {
-        irPaso('servimoto-onboarding');
+        // Lógica de Memoria Cadete
+        if(AppStore.get('cadete_aprobado') === true) {
+            irPaso('servimoto'); // Si ya fue aprobado, entra directo al Radar
+        } else {
+            irPaso('servimoto-onboarding'); // Si es nuevo, va a subir documentos
+        }
     } else if(tipoLoginActual === 'cliente') {
         clienteLogueado = true;
+        AppStore.set('cliente_celular', cel); 
+        
         if(!AppStore.get('cliente_dir')) {
-            irPaso('cliente-ubicacion');
+            irPaso('cliente-ubicacion'); 
         } else {
-            procesarAgregadoCarrito();
+            if(productoPendienteAdd) procesarAgregadoCarrito();
+            irPaso('feed-global');
         }
     }
 }
@@ -1220,9 +1219,9 @@ function previewSelfieCliente(input) {
             const txt1 = document.getElementById('lblTextSelfieCliente');
             if(caja) caja.style.backgroundImage = `url(${e.target.result})`;
             if(icono) icono.style.display = 'none';
-            if(txt1) txt1.textContent = '✅ Selfie Capturada';
+            if(txt1) txt1.innerHTML = '<span style="color:#15803d;">✅ Selfie Capturada</span>';
             AppStore.set('selfie_cliente', e.target.result);
-            mostrarToast('Selfie guardada correctamente.', 'success');
+            mostrarToast('Selfie guardada con éxito.', 'success');
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -1240,13 +1239,60 @@ function guardarPerfilCliente() {
     AppStore.set('cliente_ciu', ciu);
     AppStore.set('cliente_dir', dir);
     
-    mostrarToast('✅ Perfil guardado. Procesando compra...', 'success');
+    mostrarToast('✅ Perfil guardado con éxito.', 'success');
     
+    // Si tenía un producto pendiente, lo agrega al carrito automáticamente
     if(productoPendienteAdd) {
         procesarAgregadoCarrito();
-    } else {
-        irPaso('feed-global');
     }
+    irPaso('feed-global');
+}
+
+// ==========================================
+// BANDEJA DE ENTRADA DEL COMERCIANTE (NUEVO)
+// ==========================================
+function agregarPedidoBandejaComercio(total, destino) {
+    pedidosComercio.unshift({ total: total, destino: destino });
+    
+    // Vibración y sonido al recibir pedido
+    if(navigator.vibrate) navigator.vibrate([500, 250, 500, 250, 1000]);
+    if('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        let msg = new SpeechSynthesisUtterance("Tin. Ingresó un nuevo pedido al panel del comercio.");
+        msg.lang = 'es-AR';
+        msg.rate = 1.1;
+        window.speechSynthesis.speak(msg);
+    }
+    
+    renderizarBandejaPedidos();
+}
+
+function renderizarBandejaPedidos() {
+    const bandeja = document.getElementById('bandejaPedidosComercio');
+    if(!bandeja) return;
+    
+    if(pedidosComercio.length === 0) {
+        bandeja.innerHTML = '<div style="color:#64748b; font-size:13px; text-align:center; padding:15px; border:2px dashed #cbd5e1; border-radius:12px; font-weight:700;">Tu bandeja de notificaciones está vacía.</div>';
+        return;
+    }
+    
+    bandeja.innerHTML = pedidosComercio.map((p, idx) => `
+        <div style="background:#f0fdf4; border:2px solid #4ade80; padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 6px 15px rgba(74,222,128,0.2);">
+            <div>
+                <div style="color:#15803d; font-weight:800; font-size:16px;">🛒 Pedido Recibido</div>
+                <div style="color:#0f172a; font-weight:800; font-size:14px; margin-top:4px;">Total: $${p.total.toLocaleString('es-AR')}</div>
+                <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
+            </div>
+            <!-- Tachito Naranja para archivar -->
+            <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:12px; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
+        </div>
+    `).join('');
+}
+
+function eliminarPedidoComercio(idx) {
+    pedidosComercio.splice(idx, 1);
+    mostrarToast('Notificación archivada', 'success');
+    renderizarBandejaPedidos();
 }
 
 // ==========================================
@@ -1261,9 +1307,9 @@ function previewSelfieComercioModal(input) {
             const texto1 = document.getElementById('lblTextSelfieComercio');
             if(caja) caja.style.backgroundImage = `url(${e.target.result})`;
             if(iconoContenedor) iconoContenedor.style.display = 'none';
-            if(texto1) texto1.textContent = '✅ Selfie Verificada';
+            if(texto1) texto1.innerHTML = '<span style="color:#15803d;">✅ Selfie Verificada</span>';
             AppStore.set('selfie_seguridad_comercio', e.target.result);
-            mostrarToast('Selfie de seguridad verificada', 'success');
+            mostrarToast('Selfie vinculada al comercio', 'success');
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -1290,15 +1336,17 @@ function guardarComercio() {
     const dir = document.getElementById('comercioDireccionExacta').value.trim();
     const prov = document.getElementById('comercioProvincia').value.trim();
     const ciu = document.getElementById('comercioCiudad').value.trim();
+    const hAbre = document.getElementById('comercioAbre') ? document.getElementById('comercioAbre').value : "";
+    const hCierra = document.getElementById('comercioCierra') ? document.getElementById('comercioCierra').value : "";
     
-    if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá todos los datos', 'error');
+    if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá los datos requeridos', 'error');
     if(!AppStore.get('selfie_seguridad_comercio')) return mostrarToast('La Selfie del dueño es obligatoria', 'error');
     
     if(!miComercioLogueadoId) {
         miComercioLogueadoId = Date.now();
-        baseComercios.push({ id: miComercioLogueadoId, nombre: nom, provincia: prov, ciudad: ciu, direccion: dir, img: tempImgPortada });
+        baseComercios.push({ id: miComercioLogueadoId, nombre: nom, provincia: prov, ciudad: ciu, direccion: dir, img: tempImgPortada, abre: hAbre, cierra: hCierra });
     }
-    mostrarToast(`¡Local registrado! Ahora cargá tus platos.`, 'success');
+    mostrarToast(`¡Local guardado exitosamente!`, 'success');
 }
 
 function previewArtFoto(input) {
@@ -1321,10 +1369,11 @@ function agregarArticuloComercio() {
     if(!miComercioLogueadoId) return mostrarToast('Primero GUARDÁ LOS DATOS DEL LOCAL arriba', 'error');
     const nom = document.getElementById('newArtNombre').value;
     const pre = parseInt(document.getElementById('newArtPrecio').value);
-    if(!nom || isNaN(pre)) return mostrarToast('Faltan datos del artículo', 'error');
+    
+    if(!nom || isNaN(pre)) return mostrarToast('Completá nombre y precio del artículo', 'error');
     
     baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64 });
-    mostrarToast(`¡Artículo publicado en el Feed Global!`, 'success');
+    mostrarToast(`¡Publicado en el Feed de Mercado Libre!`, 'success');
     
     document.getElementById('newArtNombre').value = '';
     document.getElementById('newArtPrecio').value = '';
@@ -1335,13 +1384,20 @@ function renderizarAdminComercio() {
     const cont = document.getElementById('listaAdminComercio');
     if(!cont) return;
     const misProductos = baseProductosActivos.filter(p => p.idComercio === miComercioLogueadoId);
+    
+    if(misProductos.length === 0) {
+        cont.innerHTML = '<div style="font-size:13px; color:#64748b; text-align:center;">Todavía no subiste ningún producto.</div>';
+        return;
+    }
+    
     cont.innerHTML = misProductos.map(p => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
             <div style="display:flex; align-items:center; gap:12px;">
                 <img src="${p.img}" style="width:44px; height:44px; border-radius:8px; object-fit:cover;">
-                <div><div style="font-size:13.5px; font-weight:800;">${p.nombre}</div><div style="font-size:12px; color:#ff6b00; font-weight:700;">$${p.precio}</div></div>
+                <div><div style="font-size:13.5px; font-weight:800; color:#0f172a;">${p.nombre}</div><div style="font-size:12px; color:#16a34a; font-weight:800;">$${p.precio}</div></div>
             </div>
-            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:34px; height:34px;"><i class="ri-delete-bin-fill"></i></button>
+            <!-- Tachito Naranja para Eliminar -->
+            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#f97316; color:white; border:none; border-radius:8px; width:34px; height:34px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
         </div>
     `).join('');
 }
@@ -1349,7 +1405,29 @@ function renderizarAdminComercio() {
 function eliminarArticuloAdmin(id) { 
     baseProductosActivos = baseProductosActivos.filter(p => p.id !== id); 
     renderizarAdminComercio(); 
-    mostrarToast('Artículo Eliminado', 'success'); 
+    mostrarToast('Artículo Eliminado del catálogo', 'success'); 
+}
+
+// Expansor a Pantalla Completa del Panel de Artículos
+function togglePantallaCompletaArticulos() {
+    const contenedor = document.getElementById('contenedorListaArticulos');
+    const lista = document.getElementById('listaAdminComercio');
+    const icon = document.getElementById('iconExpandir');
+    const texto = document.getElementById('textExpandir');
+    
+    if(contenedor.classList.contains('expanded-container')) {
+        contenedor.classList.remove('expanded-container');
+        lista.classList.remove('expanded-list-content');
+        icon.className = 'ri-fullscreen-line';
+        texto.textContent = 'Expandir';
+        document.body.style.overflow = '';
+    } else {
+        contenedor.classList.add('expanded-container');
+        lista.classList.add('expanded-list-content');
+        icon.className = 'ri-fullscreen-exit-line';
+        texto.textContent = 'Minimizar';
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 // ==========================================
@@ -1389,6 +1467,8 @@ function auditarDocumentosIA() {
     mostrarToast('🤖 Inicializando motor OpenAI GPT-4o...', 'success');
     setTimeout(() => { 
         mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); 
+        // Memoria: Cadete aprobado, ya no le pedirá documentos en el futuro
+        AppStore.set('cadete_aprobado', true);
         setTimeout(() => irPaso('servimoto'), 800); 
     }, 2000);
 }
@@ -1402,8 +1482,8 @@ function toggleEstadoTrabajo() {
         btn.innerHTML = '<i class="ri-check-double-line"></i> ONLINE';
         mostrarToast('¡Estás en línea! Encendé el radar.', 'success');
     } else {
-        btn.style.background = '#ef4444'; 
-        btn.style.boxShadow = '0 4px 12px rgba(239,68,68,0.4)';
+        btn.style.background = '#f97316'; // Naranja inactivo
+        btn.style.boxShadow = '0 4px 12px rgba(249,115,22,0.4)';
         btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
         if(estadoRadar) activarRadar(); 
     }
@@ -1414,18 +1494,20 @@ function activarRadar() {
     estadoRadar = !estadoRadar;
     const btn = document.getElementById('btnRadar');
     if(estadoRadar) {
+        // Radar Gigante Verde (Activo)
         btn.innerHTML = `
             <div class="radar-ring"></div>
             <div class="radar-ring"></div>
             <div class="radar-ring"></div>
-            <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#93c5fd;"></i>
-            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#bfdbfe; letter-spacing:1px;">BUSCANDO...</span>
+            <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#dcfce7;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#f0fdf4; letter-spacing:1px;">BUSCANDO...</span>
         `;
-        btn.style.background = 'radial-gradient(circle, #2563eb, #1e3a8a)';
-        btn.style.borderColor = '#60a5fa';
-        btn.style.boxShadow = '0 0 40px rgba(59,130,246,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
+        btn.style.background = 'radial-gradient(circle, #16a34a, #14532d)';
+        btn.style.borderColor = '#4ade80';
+        btn.style.boxShadow = '0 0 40px rgba(22,163,74,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
         mostrarToast('Radar encendido. Buscando viajes...', 'success');
     } else {
+        // Radar Inactivo
         btn.innerHTML = `
             <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
             <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
@@ -1442,7 +1524,7 @@ function simularViajeCadete() {
     deudaMotoAcumulada += 200;
     document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
     document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Realizados';
-    mostrarToast('✅ Viaje cargado. Deuda sumada.', 'success');
+    mostrarToast('✅ Viaje escaneado.', 'success');
 }
 
 function procesarLiquidacionIA(input) {
@@ -1452,20 +1534,32 @@ function procesarLiquidacionIA(input) {
             viajesMotoCount = 0; deudaMotoAcumulada = 0;
             document.getElementById('deudaMoto').textContent = '$0';
             document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
-            mostrarToast('✅ Transferencia procesada.', 'success');
+            mostrarToast('✅ Pago validado.', 'success');
         }, 2500);
     }
 }
 
 // ==========================================
-// 4. MAPA GPS Y MATEMÁTICA
+// 4. MAPA GPS Y MATEMÁTICA EXACTA (ANTI-GRIS)
 // ==========================================
+function abrirCarritoFinal() {
+    if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
+    cerrarModalMarketplace();
+    const modalCarrito = document.getElementById('modalCarritoFinal');
+    if(modalCarrito) {
+        modalCarrito.classList.add('show');
+        renderizarCarritoDOM();
+    }
+}
+
 function abrirMapaMago() {
+    cerrarCarrito();
     const modalMapa = document.getElementById('modalMapaGrande');
     if(!modalMapa) return;
     
     modalMapa.classList.add('show');
     
+    // Timer para asegurar que el div del mapa existe y es visible en pantalla antes de inyectar Google Maps
     setTimeout(() => {
         const box = document.getElementById('mapaBox');
         if(box) {
@@ -1474,14 +1568,9 @@ function abrirMapaMago() {
         }
         
         setTimeout(() => {
-            let destinoAddress = "";
-            if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
-                destinoAddress = document.getElementById('dirDestinoEspecial').value.trim() + ", " + document.getElementById('ciuDestinoEspecial').value.trim() + ", Argentina";
-            } else {
-                // Sacamos los datos de la memoria del cliente
-                destinoAddress = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu') + ", " + AppStore.get('cliente_prov') + ", Argentina";
-            }
-
+            let destinoAddress = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu') + ", " + AppStore.get('cliente_prov') + ", Argentina";
+            if(!AppStore.get('cliente_dir')) destinoAddress = "Famaillá, Tucumán, Argentina"; // Respaldo
+            
             const origenAddress = direccionOrigenCalculo ? (direccionOrigenCalculo + ", Argentina") : "Tucumán, Argentina";
             
             try {
@@ -1494,6 +1583,7 @@ function abrirMapaMago() {
                     window.directionsRenderer = new google.maps.DirectionsRenderer({ map: window.mapObj, suppressMarkers: false });
                 }
 
+                // Truco de oro para quitar el gris: trigger resize forzado
                 if(window.mapObj) google.maps.event.trigger(window.mapObj, 'resize');
 
                 if(window.directionsService) {
@@ -1505,14 +1595,12 @@ function abrirMapaMago() {
                             const distanceMeters = response.routes[0].legs[0].distance.value;
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
-                            calcularMatematicaEnvio("1.5"); // Fallback matemático si Maps tira error
+                            calcularMatematicaEnvio("1.5"); 
                         } 
                     });
                 }
             } catch(e) {
-                if(document.getElementById('mapFallbackText')) {
-                    document.getElementById('mapFallbackText').style.display = 'flex';
-                }
+                // Fallback de seguridad
                 calcularMatematicaEnvio("1.5");
             }
         }, 400); 
@@ -1524,12 +1612,14 @@ function calcularMatematicaEnvio(km) {
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
+    // 2200 de día, 3000 de noche (incluye 1er km)
     const tarifaBase = esNoche ? 3000 : 2200; 
     if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche ($3000)' : 'Base Día ($2200)';
     
     let costoExtra = 0;
     const kmFloat = parseFloat(km);
     
+    // Pasado 1 KM, cobra 100 la cuadra (0.1)
     if(kmFloat > 1.0) { 
         let excedenteKm = kmFloat - 1.0;
         let cuadrasExtra = Math.ceil(excedenteKm / 0.1); 
@@ -1538,15 +1628,22 @@ function calcularMatematicaEnvio(km) {
     
     costoEnvioCalculado = tarifaBase + costoExtra;
     if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
+    
+    let subtotalProductos = 0;
+    carritoGlobal.forEach(i => { subtotalProductos += i.precio; });
+    
+    const totalConEnvio = subtotalProductos + costoEnvioCalculado;
+    if(document.getElementById('mapaTotalPagar')) {
+        document.getElementById('mapaTotalPagar').textContent = '$' + totalConEnvio.toLocaleString('es-AR');
+    }
 }
 
-function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); }
-function irAlCheckout() { cerrarMapa(); abrirModalCarrito(); }
-function abrirModalCarrito() { cerrarModalMarketplace(); document.getElementById('modalCarritoFinal').classList.add('show'); renderizarCarritoDOM(); }
+function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); abrirCarritoFinal(); }
+function irAlCheckout() { mandarPedidoSoporte(); }
 function cerrarCarrito() { document.getElementById('modalCarritoFinal').classList.remove('show'); }
 
 // ==========================================
-// 5. CARRITO FINAL (CAJA VERDE)
+// 5. RENDERIZADO DEL CARRITO FINAL (CAJA VERDE)
 // ==========================================
 function renderizarCarritoDOM() {
     const cont = document.getElementById('contenidoCarrito');
@@ -1556,8 +1653,8 @@ function renderizarCarritoDOM() {
     let subtotal = 0;
     let listHTML = "";
 
-    // Direcciones conectadas (Comercio -> Cliente)
-    let dirComprador = AppStore.get('cliente_dir') || "";
+    // Direcciones
+    let dirComprador = AppStore.get('cliente_dir') || "Dirección no configurada";
     let ciuComprador = AppStore.get('cliente_ciu') || "";
     
     listHTML += `
@@ -1566,7 +1663,7 @@ function renderizarCarritoDOM() {
             <i class="ri-store-3-fill" style="color:#ff6b00; font-size:16px;"></i>
             <div>
                 <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase;">Retira en (Local):</div>
-                <div style="color:#0f172a; font-weight:700;">${direccionOrigenCalculo || 'Pendiente'}</div>
+                <div style="color:#0f172a; font-weight:700;">${direccionOrigenCalculo || 'Local central'}</div>
             </div>
         </div>
         <div style="height:1px; background:#e2e8f0; margin-bottom:8px;"></div>
@@ -1579,42 +1676,37 @@ function renderizarCarritoDOM() {
         </div>
     </div>`;
 
-    // Lista de Platos
+    // Productos Listados
     listHTML += carritoGlobal.map((item, idx) => {
         subtotal += item.precio;
         return `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:8px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width:8px; height:8px; border-radius:50%; background:#3b82f6;"></div>
-                <div>
-                    <div style="font-weight:800; font-size:14px; color:#0f172a;">${item.nombre}</div>
-                    <div style="color:#ff6b00; font-weight:800; font-size:13px;">${item.precio > 0 ? '$'+item.precio.toLocaleString('es-AR') : 'Express'}</div>
-                </div>
+            <div>
+                <div style="font-weight:800; font-size:14px; color:#0f172a;">${item.nombre}</div>
+                <div style="color:#16a34a; font-weight:800; font-size:13px;">$${item.precio.toLocaleString('es-AR')}</div>
             </div>
-            <button onclick="borrarItemCarrito(${idx})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:32px; height:32px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
+            <button onclick="borrarItemCarrito(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; width:32px; height:32px; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
         </div>`;
     }).join('');
-    
-    // Envío Separado
-    if(costoEnvioCalculado > 0) {
-        listHTML += `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:#fff7ed; border:2px dashed #ffb380; border-radius:12px; margin-top:8px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <i class="ri-motorbike-fill" style="color:#cc4400; font-size:18px;"></i>
-                <div style="font-weight:800; font-size:13.5px; color:#cc4400;">Envío GPS (Lo paga el comprador)</div>
-            </div>
-            <div style="color:#cc4400; font-weight:800; font-size:15px;">$${costoEnvioCalculado.toLocaleString('es-AR')}</div>
-        </div>`;
-    }
 
     cont.innerHTML = listHTML;
-    totalUI.textContent = '$' + (subtotal + costoEnvioCalculado).toLocaleString('es-AR');
+    // El Subtotal es SOLO la comida
+    totalUI.textContent = '$' + subtotal.toLocaleString('es-AR');
 }
 
 function borrarItemCarrito(idx) {
     carritoGlobal.splice(idx, 1);
-    if(carritoGlobal.length === 0) costoEnvioCalculado = 0;
-    renderizarCarritoDOM();
+    const badge = document.getElementById('badgeCarrito');
+    if(badge) badge.textContent = carritoGlobal.length;
+    
+    if(carritoGlobal.length === 0) {
+        costoEnvioCalculado = 0;
+        const floatBtn = document.getElementById('btnFloatingCart');
+        if(floatBtn) floatBtn.style.display = 'none';
+        cerrarCarrito();
+    } else {
+        renderizarCarritoDOM();
+    }
 }
 
 function enviarPedidoEspecial() {
@@ -1624,7 +1716,7 @@ function enviarPedidoEspecial() {
     const provDestino = document.getElementById('selProvinciaEspecial').value;
     const txt = document.getElementById('txtPedidoEspecial').value;
     
-    if(!dirOrigen || !dirDestino || !ciuDestino || !provDestino || !txt) return mostrarToast('Completá todo', 'error');
+    if(!dirOrigen || !dirDestino || !ciuDestino || !provDestino || !txt) return mostrarToast('Completá todos los datos', 'error');
     
     direccionOrigenCalculo = dirOrigen; 
     AppStore.set('cliente_dir', dirDestino);
@@ -1639,26 +1731,35 @@ function enviarPedidoEspecial() {
 function mandarPedidoSoporte() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     
-    // Dispara Alarma al Comercio antes de ir a Whatsapp
-    notificarComercioNuevoPedido();
+    // Inyecta el pedido en el Panel del Comercio
+    let subtotalProductos = 0;
+    carritoGlobal.forEach(i => subtotalProductos += i.precio);
+    let totalCajaVerde = subtotalProductos + costoEnvioCalculado;
+    
+    let destClient = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu');
+    agregarPedidoBandejaComercio(totalCajaVerde, destClient);
 
+    // Manda el WhatsApp
     let txt = "🔥 *NUEVO PEDIDO EN LA RED* 🔥%0A%0A";
-    let subtotal = 0;
     carritoGlobal.forEach(i => {
         txt += `▪️ ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`;
-        subtotal += i.precio;
     });
     
     let telComprador = AppStore.get('cliente_celular') || "No registrado";
 
     txt += `%0A📍 *Origen (Comercio):* ${direccionOrigenCalculo}%0A`; 
-    txt += `📍 *Destino (Cliente):* ${AppStore.get('cliente_dir')}, ${AppStore.get('cliente_ciu')}%0A`;
+    txt += `📍 *Destino (Cliente):* ${destClient}%0A`;
     txt += `📱 *Celular del Cliente:* ${telComprador}%0A`;
     txt += `🛣️ *Costo GPS:* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
-    txt += `💰 *TOTAL A PAGAR: $${(subtotal + costoEnvioCalculado).toLocaleString('es-AR')}*%0A`;
+    txt += `💰 *TOTAL A PAGAR: $${totalCajaVerde.toLocaleString('es-AR')}*%0A`;
     
+    cerrarMapa();
+    carritoGlobal = [];
+    const floatBtn = document.getElementById('btnFloatingCart');
+    if(floatBtn) floatBtn.style.display = 'none';
+
     setTimeout(() => {
         window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
-    }, 800);
+    }, 1200); 
 }
 </script>
