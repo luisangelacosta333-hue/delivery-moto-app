@@ -933,19 +933,19 @@ let baseComercios = [
 ];
 
 let baseProductosActivos = [
-    { id: 101, idComercio: 1, nombre: "Gaseosa Pepsi 2L", precio: 2500, img: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=150" },
-    { id: 102, idComercio: 2, nombre: "Pizza Especial Calabresa", precio: 8500, img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=150" },
-    { id: 103, idComercio: 1, nombre: "Papas Fritas Lays Clásicas", precio: 1500, img: "https://images.unsplash.com/photo-1563013734-5234125f1ea5?auto=format&fit=crop&w=150" },
-    { id: 104, idComercio: 3, nombre: "Doble Burger con Cheddar", precio: 6500, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=150" }
+    { id: 101, idComercio: 1, nombre: "Gaseosa Pepsi 2L", precio: 2500, img: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=150", pausado: false },
+    { id: 102, idComercio: 2, nombre: "Pizza Especial Calabresa", precio: 8500, img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=150", pausado: false },
+    { id: 103, idComercio: 1, nombre: "Papas Fritas Lays Clásicas", precio: 1500, img: "https://images.unsplash.com/photo-1563013734-5234125f1ea5?auto=format&fit=crop&w=150", pausado: false },
+    { id: 104, idComercio: 3, nombre: "Doble Burger con Cheddar", precio: 6500, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=150", pausado: false }
 ];
 
 let carritoGlobal = [];
-let pedidosComercio = []; // Bandeja de notificaciones del local
+let pedidosComercio = []; 
 let costoEnvioCalculado = 0;
 let direccionOrigenCalculo = ""; 
 let tipoLoginActual = "";
 
-let clienteLogueado = false; // Arranca en false para forzar el login al comprar
+let clienteLogueado = false; 
 let productoPendienteAdd = null; 
 
 let viajesMotoCount = 0;
@@ -958,14 +958,14 @@ let tempImgPortada = "https://images.unsplash.com/photo-1550547660-d9450f859349?
 let tempImgBase64 = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400";
 
 // ==========================================
-// 2. INICIALIZACIÓN DE SUPABASE
+// 2. SUPABASE E IA RLS (Básico)
 // ==========================================
 const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co';
 const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
-// 3. MICRÓFONO (Asistente de Voz Reparado)
+// 3. MICRÓFONO REPARADO (Voz Energy Software)
 // ==========================================
 function activarMicrofono() {
     const btn = document.getElementById('micIcon');
@@ -975,12 +975,12 @@ function activarMicrofono() {
     }
 
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Evita que se superpongan audios
-        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto. Una plataforma donde conectamos ServiMoto con kioscos, negocios y clientes. Contamos con cadetes calificados con certificado de buena conducta. Los comerciantes pueden publicar, vender y recibir toda la información al instante. ¡Y bueno, ahora vamos al Marketplace!";
+        window.speechSynthesis.cancel(); 
+        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto, una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos a los ServiMoto calificados con certificado de buena conducta para prestar un buen servicio. Los comerciantes pueden publicar y hacer sus ventas y llega rápido toda la información. ¡Y ahora vamos al marketplace!";
         
         const speech = new SpeechSynthesisUtterance(mensaje);
         speech.lang = 'es-AR';
-        speech.rate = 1.05;
+        speech.rate = 1.0;
         
         speech.onend = () => {
             if(btn) {
@@ -989,26 +989,21 @@ function activarMicrofono() {
             }
         };
         
-        mostrarToast("Asistente de voz activado 🎙️", "success");
         window.speechSynthesis.speak(speech);
+        mostrarToast("Asistente de voz activado 🎙️", "success");
     } else {
-        mostrarToast("Tu celular no soporta el asistente de voz", "error");
-        if(btn) {
-            btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow');
-            btn.classList.add('ri-mic-fill');
-        }
+        mostrarToast("Audio no compatible", "error");
     }
 }
 
 // ==========================================
-// TOAST SYSTEM (Notificaciones Verde / Naranja)
+// TOAST Y NOTIFICACIONES
 // ==========================================
 function mostrarToast(msg, tipo) {
     const container = document.getElementById('toast-container');
     if(!container) return;
     const t = document.createElement('div');
     t.className = 'toast-premium';
-    // Éxito = Verde (#16a34a) | Error = Naranja (#f97316) --> NADA DE ROJO
     t.style.background = tipo === 'error' ? '#f97316' : '#16a34a'; 
     t.style.color = 'white';
     t.style.padding = '12px 20px';
@@ -1023,7 +1018,7 @@ function mostrarToast(msg, tipo) {
 }
 
 // ==========================================
-// NAVEGACIÓN Y FEED GLOBAL (ESTILO MERCADO LIBRE)
+// NAVEGACIÓN Y FEED GLOBAL LIMPIO (SIN DUPLICADOS)
 // ==========================================
 function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
 
@@ -1052,11 +1047,11 @@ function filtrarFeedGlobal() {
     renderizarFeedGlobal();
 }
 
+// Renderizado directo usando los inputs del HTML
 function renderizarFeedGlobal() {
     const container = document.getElementById('gridMercadoLibre');
     if(!container) return; 
     
-    // Lee directamente de los inputs que tenés en el HTML
     const inputProv = document.getElementById('filtroProvincia');
     const inputCiu = document.getElementById('filtroCiudad');
     let provFiltro = inputProv ? quitarAcentos(inputProv.value.trim()) : "";
@@ -1072,10 +1067,11 @@ function renderizarFeedGlobal() {
     }
 
     const idsValidos = comerciosValidos.map(c => c.id);
-    const productosAFiltrar = baseProductosActivos.filter(p => idsValidos.includes(p.idComercio));
+    // Solo muestra los productos que NO están pausados
+    const productosAFiltrar = baseProductosActivos.filter(p => idsValidos.includes(p.idComercio) && !p.pausado);
 
     if(productosAFiltrar.length === 0) {
-        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay productos en esta zona. ¡Sé el primero en vender!</div>`;
+        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay productos en esta zona. ¡Sé el primero en vender acá!</div>`;
         return;
     }
     
@@ -1096,7 +1092,7 @@ function renderizarFeedGlobal() {
             </div>
             <div style="padding:14px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
                 <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14.5px; line-height:1.25; color:#0f172a; margin-bottom:8px; min-height:36px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
-                <div style="color:#ff6b00; font-weight:800; font-size:17px; margin-bottom:14px;">$${p.precio.toLocaleString('es-AR')}</div>
+                <div style="color:#16a34a; font-weight:800; font-size:17px; margin-bottom:14px;">$${p.precio.toLocaleString('es-AR')}</div>
                 <button class="btn-primary" style="width:100%; padding:12px 8px; font-size:13px; border-radius:0.8rem; box-shadow:0 4px 15px rgba(255,107,0,0.3);" onclick="intentarComprar(${p.id}, '${dirComercio}')">
                     AGREGAR <i class="ri-shopping-cart-2-fill" style="font-size:18px;"></i>
                 </button>
@@ -1106,20 +1102,16 @@ function renderizarFeedGlobal() {
     container.innerHTML = html;
 }
 
-// ==========================================
-// FLUJO INTELIGENTE DE COMPRA (Freno Login -> Carrito)
-// ==========================================
+// LOGICA CLAVE: Freno de seguridad para comprar
 function intentarComprar(idProducto, direccionComercio) {
     productoPendienteAdd = { id: idProducto, direccion: direccionComercio };
     
-    // Si no está logueado, lo frena y lo manda a ingresar sus credenciales
     if(!clienteLogueado) {
-        mostrarToast('¡Debés iniciar sesión para comprar!', 'error');
+        mostrarToast('Debés loguearte primero para comprar', 'error');
         iniciarLogin('cliente');
         return;
     }
     
-    // Si está logueado pero no puso su dirección, lo manda al paso de Ubicación
     if(!AppStore.get('cliente_dir')) {
         mostrarToast('Falta configurar tu dirección de entrega', 'error');
         irPaso('cliente-ubicacion');
@@ -1144,7 +1136,7 @@ function procesarAgregadoCarrito() {
         if(floatBtn) floatBtn.style.display = 'flex';
         if(badge) {
             badge.textContent = carritoGlobal.length;
-            badge.style.transform = 'scale(1.3)';
+            badge.style.transform = 'scale(1.2)';
             setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200);
         }
         
@@ -1171,6 +1163,7 @@ function iniciarLogin(tipo) {
     
     document.getElementById('loginCelular').value = '';
     document.getElementById('loginClave').value = '';
+    
     miComercioLogueadoId = null;
     irPaso('login');
 }
@@ -1182,24 +1175,23 @@ function validarLogin() {
     if(cel.length < 8) return mostrarToast('Ingresá un celular válido', 'error');
     if(pwd.length < 4) return mostrarToast('La clave debe tener al menos 4 caracteres', 'error');
     
-    mostrarToast('Ingreso exitoso', 'success');
+    mostrarToast('Ingreso exitoso.', 'success');
+    AppStore.set('cliente_celular', cel); 
     
     if(tipoLoginActual === 'comercio') {
         irPaso('comercio');
-        renderizarBandejaPedidos(); // Al loguearse el comercio, carga sus notificaciones
+        renderizarBandejaPedidos();
     } else if(tipoLoginActual === 'cadete') {
-        // Lógica de Memoria Cadete
         if(AppStore.get('cadete_aprobado') === true) {
-            irPaso('servimoto'); // Si ya fue aprobado, entra directo al Radar
+            irPaso('servimoto');
         } else {
-            irPaso('servimoto-onboarding'); // Si es nuevo, va a subir documentos
+            irPaso('servimoto-onboarding');
         }
     } else if(tipoLoginActual === 'cliente') {
         clienteLogueado = true;
-        AppStore.set('cliente_celular', cel); 
         
         if(!AppStore.get('cliente_dir')) {
-            irPaso('cliente-ubicacion'); 
+            irPaso('cliente-ubicacion');
         } else {
             if(productoPendienteAdd) procesarAgregadoCarrito();
             irPaso('feed-global');
@@ -1221,7 +1213,7 @@ function previewSelfieCliente(input) {
             if(icono) icono.style.display = 'none';
             if(txt1) txt1.innerHTML = '<span style="color:#15803d;">✅ Selfie Capturada</span>';
             AppStore.set('selfie_cliente', e.target.result);
-            mostrarToast('Selfie guardada con éxito.', 'success');
+            mostrarToast('Selfie guardada correctamente.', 'success');
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -1233,66 +1225,18 @@ function guardarPerfilCliente() {
     const dir = document.getElementById('inputDireccionCliente').value;
     
     if(!prov || !ciu || !dir) return mostrarToast('Completá Provincia, Ciudad y Dirección', 'error');
-    if(!AppStore.get('selfie_cliente')) return mostrarToast('La foto Selfie de seguridad es obligatoria', 'error');
+    if(!AppStore.get('selfie_cliente')) return mostrarToast('La foto Selfie es obligatoria', 'error');
     
     AppStore.set('cliente_prov', prov);
     AppStore.set('cliente_ciu', ciu);
     AppStore.set('cliente_dir', dir);
     
-    mostrarToast('✅ Perfil guardado con éxito.', 'success');
+    mostrarToast('✅ Perfil guardado. Procesando compra...', 'success');
     
-    // Si tenía un producto pendiente, lo agrega al carrito automáticamente
     if(productoPendienteAdd) {
         procesarAgregadoCarrito();
     }
     irPaso('feed-global');
-}
-
-// ==========================================
-// BANDEJA DE ENTRADA DEL COMERCIANTE (NUEVO)
-// ==========================================
-function agregarPedidoBandejaComercio(total, destino) {
-    pedidosComercio.unshift({ total: total, destino: destino });
-    
-    // Vibración y sonido al recibir pedido
-    if(navigator.vibrate) navigator.vibrate([500, 250, 500, 250, 1000]);
-    if('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        let msg = new SpeechSynthesisUtterance("Tin. Ingresó un nuevo pedido al panel del comercio.");
-        msg.lang = 'es-AR';
-        msg.rate = 1.1;
-        window.speechSynthesis.speak(msg);
-    }
-    
-    renderizarBandejaPedidos();
-}
-
-function renderizarBandejaPedidos() {
-    const bandeja = document.getElementById('bandejaPedidosComercio');
-    if(!bandeja) return;
-    
-    if(pedidosComercio.length === 0) {
-        bandeja.innerHTML = '<div style="color:#64748b; font-size:13px; text-align:center; padding:15px; border:2px dashed #cbd5e1; border-radius:12px; font-weight:700;">Tu bandeja de notificaciones está vacía.</div>';
-        return;
-    }
-    
-    bandeja.innerHTML = pedidosComercio.map((p, idx) => `
-        <div style="background:#f0fdf4; border:2px solid #4ade80; padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 6px 15px rgba(74,222,128,0.2);">
-            <div>
-                <div style="color:#15803d; font-weight:800; font-size:16px;">🛒 Pedido Recibido</div>
-                <div style="color:#0f172a; font-weight:800; font-size:14px; margin-top:4px;">Total: $${p.total.toLocaleString('es-AR')}</div>
-                <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
-            </div>
-            <!-- Tachito Naranja para archivar -->
-            <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:12px; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
-        </div>
-    `).join('');
-}
-
-function eliminarPedidoComercio(idx) {
-    pedidosComercio.splice(idx, 1);
-    mostrarToast('Notificación archivada', 'success');
-    renderizarBandejaPedidos();
 }
 
 // ==========================================
@@ -1309,7 +1253,7 @@ function previewSelfieComercioModal(input) {
             if(iconoContenedor) iconoContenedor.style.display = 'none';
             if(texto1) texto1.innerHTML = '<span style="color:#15803d;">✅ Selfie Verificada</span>';
             AppStore.set('selfie_seguridad_comercio', e.target.result);
-            mostrarToast('Selfie vinculada al comercio', 'success');
+            mostrarToast('Selfie de seguridad verificada', 'success');
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -1339,14 +1283,14 @@ function guardarComercio() {
     const hAbre = document.getElementById('comercioAbre') ? document.getElementById('comercioAbre').value : "";
     const hCierra = document.getElementById('comercioCierra') ? document.getElementById('comercioCierra').value : "";
     
-    if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá los datos requeridos', 'error');
+    if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá todos los datos', 'error');
     if(!AppStore.get('selfie_seguridad_comercio')) return mostrarToast('La Selfie del dueño es obligatoria', 'error');
     
     if(!miComercioLogueadoId) {
         miComercioLogueadoId = Date.now();
         baseComercios.push({ id: miComercioLogueadoId, nombre: nom, provincia: prov, ciudad: ciu, direccion: dir, img: tempImgPortada, abre: hAbre, cierra: hCierra });
     }
-    mostrarToast(`¡Local guardado exitosamente!`, 'success');
+    mostrarToast(`¡Local registrado! Ahora cargá tus platos.`, 'success');
 }
 
 function previewArtFoto(input) {
@@ -1369,11 +1313,10 @@ function agregarArticuloComercio() {
     if(!miComercioLogueadoId) return mostrarToast('Primero GUARDÁ LOS DATOS DEL LOCAL arriba', 'error');
     const nom = document.getElementById('newArtNombre').value;
     const pre = parseInt(document.getElementById('newArtPrecio').value);
+    if(!nom || isNaN(pre)) return mostrarToast('Faltan datos del artículo', 'error');
     
-    if(!nom || isNaN(pre)) return mostrarToast('Completá nombre y precio del artículo', 'error');
-    
-    baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64 });
-    mostrarToast(`¡Publicado en el Feed de Mercado Libre!`, 'success');
+    baseProductosActivos.unshift({ id: Date.now(), idComercio: miComercioLogueadoId, nombre: nom, precio: pre, img: tempImgBase64, pausado: false });
+    mostrarToast(`¡Artículo publicado en el Feed Global!`, 'success');
     
     document.getElementById('newArtNombre').value = '';
     document.getElementById('newArtPrecio').value = '';
@@ -1391,13 +1334,17 @@ function renderizarAdminComercio() {
     }
     
     cont.innerHTML = misProductos.map(p => `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-            <div style="display:flex; align-items:center; gap:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:${p.pausado ? '#fff1f2' : '#f8fafc'}; border:1px solid ${p.pausado ? '#fecdd3' : '#e2e8f0'}; border-radius:1rem; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+            <div style="display:flex; align-items:center; gap:12px; opacity:${p.pausado ? '0.5' : '1'};">
                 <img src="${p.img}" style="width:44px; height:44px; border-radius:8px; object-fit:cover;">
                 <div><div style="font-size:13.5px; font-weight:800; color:#0f172a;">${p.nombre}</div><div style="font-size:12px; color:#16a34a; font-weight:800;">$${p.precio}</div></div>
             </div>
-            <!-- Tachito Naranja para Eliminar -->
-            <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#f97316; color:white; border:none; border-radius:8px; width:34px; height:34px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
+            <div style="display:flex; gap:6px;">
+                <!-- Botón Pausar -->
+                <button onclick="pausarArticuloAdmin(${p.id})" style="background:${p.pausado ? '#10b981' : '#f59e0b'}; color:white; border:none; border-radius:8px; width:34px; height:34px; cursor:pointer;" title="${p.pausado ? 'Activar' : 'Pausar'}"><i class="ri-${p.pausado ? 'play-fill' : 'pause-fill'}"></i></button>
+                <!-- Botón Eliminar -->
+                <button onclick="eliminarArticuloAdmin(${p.id})" style="background:#f97316; color:white; border:none; border-radius:8px; width:34px; height:34px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
+            </div>
         </div>
     `).join('');
 }
@@ -1405,7 +1352,16 @@ function renderizarAdminComercio() {
 function eliminarArticuloAdmin(id) { 
     baseProductosActivos = baseProductosActivos.filter(p => p.id !== id); 
     renderizarAdminComercio(); 
-    mostrarToast('Artículo Eliminado del catálogo', 'success'); 
+    mostrarToast('Artículo Eliminado', 'success'); 
+}
+
+function pausarArticuloAdmin(id) {
+    let prod = baseProductosActivos.find(p => p.id === id);
+    if(prod) {
+        prod.pausado = !prod.pausado;
+        renderizarAdminComercio();
+        mostrarToast(prod.pausado ? 'Artículo pausado' : 'Artículo activo', 'success');
+    }
 }
 
 // Expansor a Pantalla Completa del Panel de Artículos
@@ -1428,6 +1384,51 @@ function togglePantallaCompletaArticulos() {
         texto.textContent = 'Minimizar';
         document.body.style.overflow = 'hidden';
     }
+}
+
+// ==========================================
+// BANDEJA DE ENTRADA DEL COMERCIANTE 
+// ==========================================
+function agregarPedidoBandejaComercio(total, destino) {
+    pedidosComercio.unshift({ total: total, destino: destino });
+    
+    // Suena la voz y vibra
+    if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
+    if('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        let msg = new SpeechSynthesisUtterance("Tin. Ingresaste un nuevo pedido al panel del comercio.");
+        msg.lang = 'es-AR';
+        msg.rate = 1.1;
+        window.speechSynthesis.speak(msg);
+    }
+    
+    renderizarBandejaPedidos();
+}
+
+function renderizarBandejaPedidos() {
+    const bandeja = document.getElementById('bandejaPedidosComercio');
+    if(!bandeja) return;
+    
+    if(pedidosComercio.length === 0) {
+        bandeja.innerHTML = '<div style="color:#64748b; font-size:13px; text-align:center; padding:10px; border:1px dashed #cbd5e1; border-radius:10px;">Tu bandeja de pedidos está vacía.</div>';
+        return;
+    }
+    
+    bandeja.innerHTML = pedidosComercio.map((p, idx) => `
+        <div style="background:#f0fdf4; border:2px solid #4ade80; padding:14px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 10px rgba(74,222,128,0.2);">
+            <div>
+                <div style="color:#15803d; font-weight:800; font-size:15px;">💰 Cobro: $${p.total.toLocaleString('es-AR')}</div>
+                <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;">📍 ${p.destino}</div>
+            </div>
+            <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:10px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
+        </div>
+    `).join('');
+}
+
+function eliminarPedidoComercio(idx) {
+    pedidosComercio.splice(idx, 1);
+    mostrarToast('Pedido archivado', 'success');
+    renderizarBandejaPedidos();
 }
 
 // ==========================================
@@ -1467,7 +1468,6 @@ function auditarDocumentosIA() {
     mostrarToast('🤖 Inicializando motor OpenAI GPT-4o...', 'success');
     setTimeout(() => { 
         mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); 
-        // Memoria: Cadete aprobado, ya no le pedirá documentos en el futuro
         AppStore.set('cadete_aprobado', true);
         setTimeout(() => irPaso('servimoto'), 800); 
     }, 2000);
@@ -1482,7 +1482,7 @@ function toggleEstadoTrabajo() {
         btn.innerHTML = '<i class="ri-check-double-line"></i> ONLINE';
         mostrarToast('¡Estás en línea! Encendé el radar.', 'success');
     } else {
-        btn.style.background = '#f97316'; // Naranja inactivo
+        btn.style.background = '#f97316'; 
         btn.style.boxShadow = '0 4px 12px rgba(249,115,22,0.4)';
         btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
         if(estadoRadar) activarRadar(); 
@@ -1494,7 +1494,6 @@ function activarRadar() {
     estadoRadar = !estadoRadar;
     const btn = document.getElementById('btnRadar');
     if(estadoRadar) {
-        // Radar Gigante Verde (Activo)
         btn.innerHTML = `
             <div class="radar-ring"></div>
             <div class="radar-ring"></div>
@@ -1507,7 +1506,6 @@ function activarRadar() {
         btn.style.boxShadow = '0 0 40px rgba(22,163,74,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
         mostrarToast('Radar encendido. Buscando viajes...', 'success');
     } else {
-        // Radar Inactivo
         btn.innerHTML = `
             <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
             <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
@@ -1559,7 +1557,6 @@ function abrirMapaMago() {
     
     modalMapa.classList.add('show');
     
-    // Timer para asegurar que el div del mapa existe y es visible en pantalla antes de inyectar Google Maps
     setTimeout(() => {
         const box = document.getElementById('mapaBox');
         if(box) {
@@ -1583,7 +1580,6 @@ function abrirMapaMago() {
                     window.directionsRenderer = new google.maps.DirectionsRenderer({ map: window.mapObj, suppressMarkers: false });
                 }
 
-                // Truco de oro para quitar el gris: trigger resize forzado
                 if(window.mapObj) google.maps.event.trigger(window.mapObj, 'resize');
 
                 if(window.directionsService) {
@@ -1600,7 +1596,6 @@ function abrirMapaMago() {
                     });
                 }
             } catch(e) {
-                // Fallback de seguridad
                 calcularMatematicaEnvio("1.5");
             }
         }, 400); 
@@ -1612,14 +1607,12 @@ function calcularMatematicaEnvio(km) {
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
-    // 2200 de día, 3000 de noche (incluye 1er km)
     const tarifaBase = esNoche ? 3000 : 2200; 
     if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Base Noche ($3000)' : 'Base Día ($2200)';
     
     let costoExtra = 0;
     const kmFloat = parseFloat(km);
     
-    // Pasado 1 KM, cobra 100 la cuadra (0.1)
     if(kmFloat > 1.0) { 
         let excedenteKm = kmFloat - 1.0;
         let cuadrasExtra = Math.ceil(excedenteKm / 0.1); 
@@ -1653,7 +1646,6 @@ function renderizarCarritoDOM() {
     let subtotal = 0;
     let listHTML = "";
 
-    // Direcciones
     let dirComprador = AppStore.get('cliente_dir') || "Dirección no configurada";
     let ciuComprador = AppStore.get('cliente_ciu') || "";
     
@@ -1676,7 +1668,6 @@ function renderizarCarritoDOM() {
         </div>
     </div>`;
 
-    // Productos Listados
     listHTML += carritoGlobal.map((item, idx) => {
         subtotal += item.precio;
         return `
@@ -1685,12 +1676,12 @@ function renderizarCarritoDOM() {
                 <div style="font-weight:800; font-size:14px; color:#0f172a;">${item.nombre}</div>
                 <div style="color:#16a34a; font-weight:800; font-size:13px;">$${item.precio.toLocaleString('es-AR')}</div>
             </div>
+            <!-- Botón Naranja para eliminar -->
             <button onclick="borrarItemCarrito(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; width:32px; height:32px; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
         </div>`;
     }).join('');
 
     cont.innerHTML = listHTML;
-    // El Subtotal es SOLO la comida
     totalUI.textContent = '$' + subtotal.toLocaleString('es-AR');
 }
 
@@ -1709,37 +1700,18 @@ function borrarItemCarrito(idx) {
     }
 }
 
-function enviarPedidoEspecial() {
-    const dirOrigen = document.getElementById('dirOrigenEspecial').value;
-    const ciuDestino = document.getElementById('ciuDestinoEspecial').value;
-    const dirDestino = document.getElementById('dirDestinoEspecial').value;
-    const provDestino = document.getElementById('selProvinciaEspecial').value;
-    const txt = document.getElementById('txtPedidoEspecial').value;
-    
-    if(!dirOrigen || !dirDestino || !ciuDestino || !provDestino || !txt) return mostrarToast('Completá todos los datos', 'error');
-    
-    direccionOrigenCalculo = dirOrigen; 
-    AppStore.set('cliente_dir', dirDestino);
-    AppStore.set('cliente_ciu', ciuDestino);
-    AppStore.set('cliente_prov', provDestino);
-    
-    carritoGlobal.push({ nombre: "Viaje Express", precio: 0, detalle: txt });
-    cerrarModalMarketplace();
-    abrirMapaMago();
-}
-
 function mandarPedidoSoporte() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     
-    // Inyecta el pedido en el Panel del Comercio
     let subtotalProductos = 0;
     carritoGlobal.forEach(i => subtotalProductos += i.precio);
     let totalCajaVerde = subtotalProductos + costoEnvioCalculado;
     
     let destClient = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu');
+    
+    // Inyecta notificación visual en el panel del comercio
     agregarPedidoBandejaComercio(totalCajaVerde, destClient);
 
-    // Manda el WhatsApp
     let txt = "🔥 *NUEVO PEDIDO EN LA RED* 🔥%0A%0A";
     carritoGlobal.forEach(i => {
         txt += `▪️ ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`;
