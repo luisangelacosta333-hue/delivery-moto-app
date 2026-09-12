@@ -214,6 +214,12 @@
     </div>
 </nav>
 
+<!-- BOTÓN FLOTANTE DEL CARRITO (Se activa por JS cuando agregás algo) -->
+<button id="btnFloatingCart" onclick="abrirCarritoFinal()" style="display:none; position:fixed; bottom:24px; right:24px; width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; border:3px solid #ffd700; box-shadow:0 10px 30px rgba(255,107,0,0.6); z-index:99999; font-size:26px; cursor:pointer; align-items:center; justify-content:center; transition:transform 0.2s;">
+    <i class="ri-shopping-cart-2-fill"></i>
+    <div id="badgeCarrito" style="position:absolute; top:-5px; right:-5px; background:white; color:#cc4400; font-size:13px; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #cc4400; box-shadow:0 4px 10px rgba(0,0,0,0.3);">0</div>
+</button>
+
 <div style="height:90px;"></div>
 
 <div style="background:linear-gradient(90deg,#cc4400,#ff6b00,#ff8c00,#ff6b00,#cc4400);padding:8px 0;overflow:hidden;border-bottom:2px solid rgba(0,0,0,.2);">
@@ -547,8 +553,6 @@
     </div>
 </footer>
 
-<div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9999999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
-
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
     <div class="modal-box" style="background:#fff7ed;">
         <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar"><i class="ri-close-line"></i></button>
@@ -703,6 +707,12 @@
             <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 16px;">Panel Comercial</h3>
+                
+                <!-- BANDEJA DE ENTRADA DE PEDIDOS (NUEVO) -->
+                <div id="bandejaPedidosComercio" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+                    <!-- Los pedidos nuevos entran acá en verde/naranja por JS -->
+                </div>
+
                 <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
                     <label id="boxSelfieComercioModal" style="background:#f0fdf4; border:3px dashed #4ade80; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; position:relative; overflow:hidden;">
                         <div style="width:70px; height:70px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; border:2px solid #86efac;" id="iconSelfieComercioContenedor"><i class="ri-camera-lens-fill" style="font-size:36px; color:#16a34a;"></i></div>
@@ -831,7 +841,7 @@
                     <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino (Ej: Famaillá)">
                     <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿A dónde lo lleva? (Ej: Rivadavia 200)">
                     <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Buscar un paquete)"></textarea>
-                    <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">CALCULAR RUTA EN MAPA</button>
+                    <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">AGREGAR Y CALCULAR ENVÍO</button>
                 </div>
             </div>
 
@@ -840,7 +850,31 @@
 </div>
 
 <!-- ========================================== -->
-<!-- MAPA GPS ANIMADO (ANTI-ERROR) Y CAJA VERDE-->
+<!-- MODAL DEL CARRITO DE COMPRAS (BOTÓN VERDE DE LA CAJA)-->
+<!-- ========================================== -->
+<div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
+    <div class="modal-box" style="padding:24px; border:3.5px solid #ff6b00; max-width:440px; border-radius:1.5rem; height:auto;">
+        <button class="modal-close-btn" style="border-color:#ff6b00; color:#cc4400;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
+        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin:0 0 16px;"><i class="ri-shopping-cart-2-fill" style="color:#ff6b00;"></i> Tu Carrito</h3>
+        
+        <div id="contenidoCarrito" style="max-height:380px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;">
+            <!-- Contenido inyectado por JS -->
+        </div>
+
+        <div style="background:#fff7ed; padding:14px; border-radius:1rem; border:2px solid #ffd4b3; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <span style="font-size:13.5px; font-weight:800; color:#cc4400; text-transform:uppercase;">Subtotal (Sin envío)</span>
+            <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#ff6b00; line-height:1;">$0</span>
+        </div>
+        
+        <!-- BOTÓN QUE DISPARA EL MAPA -->
+        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="abrirMapaMago()">
+            <i class="ri-map-pin-line" style="font-size:22px;"></i> CALCULAR ENVÍO EN MAPA
+        </button>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MAPA GPS ANIMADO (PANTALLA CONFIRMACIÓN FINAL)-->
 <!-- ========================================== -->
 <div id="modalMapaGrande" class="modal-overlay" style="background:rgba(15,23,42,.98);">
     <div style="width:100%; max-width:850px; height:100vh; background:#0f172a; border-radius:0; border:none; position:relative; overflow:hidden; box-shadow:0 0 100px rgba(255,107,0,0.5); display:flex; flex-direction:column; transform:scale(0.95); transition:all .35s; opacity:0;" id="mapaBox">
@@ -867,35 +901,32 @@
                     <div id="mapaKm" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#0f172a; margin-top:2px;">...</div>
                 </div>
                 <div style="background:#fff7ed; padding:14px; border-radius:1rem; border:2px solid #ffd4b3; text-align:center;">
-                    <div style="font-size:11px; font-weight:800; color:#cc4400; text-transform:uppercase;" id="lblTarifaBase">Calculando...</div>
+                    <div style="font-size:11px; font-weight:800; color:#cc4400; text-transform:uppercase;" id="lblTarifaBase">Tarifa de Envío</div>
                     <div id="mapaCosto" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#ff6b00; margin-top:2px;">$--</div>
                 </div>
             </div>
-            <button class="btn-primary" style="width:100%; padding:15px; font-size:15px;" onclick="irAlCheckout()">CONFIRMAR RUTA Y AVANZAR <i class="ri-arrow-right-circle-fill"></i></button>
+            
+            <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <span style="font-size:14px; font-weight:800; color:#166534; text-transform:uppercase;">TOTAL + ENVÍO</span>
+                <span id="mapaTotalPagar" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
+            </div>
+
+            <!-- BOTÓN FINAL VERDE -->
+            <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()">
+                CONFIRMAR PEDIDO <i class="ri-whatsapp-fill" style="font-size:22px;"></i>
+            </button>
         </div>
     </div>
 </div>
 
-<div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
-    <div class="modal-box" style="padding:24px; border:3.5px solid #16a34a; max-width:440px; border-radius:1.5rem; height:auto;">
-        <button class="modal-close-btn" style="border-color:#16a34a; color:#15803d;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
-        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin:0 0 16px;"><i class="ri-shopping-bag-3-fill" style="color:#16a34a;"></i> Resumen del Pedido</h3>
-        <div id="contenidoCarrito" style="max-height:380px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
-        <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Total a Pagar</span>
-            <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
-        </div>
-        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()">
-            <i class="ri-whatsapp-fill" style="font-size:22px;"></i> CONFIRMAR POR WHATSAPP
-        </button>
-    </div>
-</div>
-<!-- Script de Google Maps con la API Key -->
+</body>
+</html>
+<!-- Script de Google Maps con la API Key (Con CallBack asíncrono para evitar mapa gris) -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
 
 <script>
 // ==========================================
-// 1. INICIALIZACIÓN DE VARIABLES GLOBALES
+// 1. INICIALIZACIÓN DE VARIABLES GLOBALES Y DATOS
 // ==========================================
 let baseComercios = [
     { id: 1, nombre: "Kiosco Mamoly", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Azcuénaga 474", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150" },
@@ -944,7 +975,7 @@ function activarMicrofono() {
 
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel(); 
-        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto, una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos los mejores cadetes certificados con buena conducta. Podés hacer tu pedido. Entrá al Marketplace para comenzar.";
+        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto, una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos a los ServiMoto calificados con certificado de buena conducta para prestar un buen servicio. Los comerciantes pueden publicar y hacer sus ventas y llega rápido toda la información. Y bueno, ¡ahora vamos al marketplace!";
         
         const speech = new SpeechSynthesisUtterance(mensaje);
         speech.lang = 'es-AR';
@@ -965,34 +996,32 @@ function activarMicrofono() {
 }
 
 // ==========================================
-// ALARMA Y NOTIFICACIÓN PARA EL COMERCIO
+// ALARMA Y NOTIFICACIÓN PARA EL COMERCIO (VERDE Y EXITOSA)
 // ==========================================
 function notificarComercioNuevoPedido() {
-    // 1. Vibración del dispositivo del comercio
-    if(navigator.vibrate) {
-        navigator.vibrate([500, 250, 500, 250, 1000]);
-    }
+    // Vibración del dispositivo del comercio
+    if(navigator.vibrate) navigator.vibrate([500, 250, 500, 250, 1000]);
     
-    // 2. Voz por el parlante
+    // Voz por el parlante
     if('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance("¡Atención comercio! Ha ingresado un nuevo pedido. Revisar el panel comercial.");
+        const msg = new SpeechSynthesisUtterance("¡Atención! Ingresó un nuevo pedido al panel del comercio.");
         msg.lang = 'es-AR';
         msg.rate = 1.1;
         window.speechSynthesis.speak(msg);
     }
 
-    // 3. Alerta Visual Gigante en Pantalla
+    // Alerta Visual Gigante en Pantalla (AHORA EN VERDE ÉXITO)
     const alertBox = document.createElement('div');
     alertBox.style.position = 'fixed';
     alertBox.style.top = '20px';
     alertBox.style.left = '50%';
     alertBox.style.transform = 'translateX(-50%)';
-    alertBox.style.background = '#dc2626'; 
+    alertBox.style.background = 'linear-gradient(135deg, #16a34a, #15803d)'; 
     alertBox.style.color = 'white';
     alertBox.style.padding = '16px 24px';
     alertBox.style.borderRadius = '16px';
-    alertBox.style.boxShadow = '0 10px 35px rgba(220, 38, 38, 0.6)';
+    alertBox.style.boxShadow = '0 10px 35px rgba(22, 163, 74, 0.6)';
     alertBox.style.zIndex = '99999999';
     alertBox.style.display = 'flex';
     alertBox.style.alignItems = 'center';
@@ -1001,19 +1030,32 @@ function notificarComercioNuevoPedido() {
     alertBox.style.animation = 'pulseGlow 1.5s infinite';
     
     alertBox.innerHTML = `
-        <i class="ri-notification-badge-fill" style="font-size:32px; animation: ringRotate 1s infinite;"></i>
+        <i class="ri-money-dollar-circle-fill" style="font-size:32px; animation: ringRotate 2s infinite;"></i>
         <div style="text-align:left;">
-            <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">Alerta Comercial</div>
-            <div style="font-size:16px;">¡NUEVO PEDIDO RECIBIDO!</div>
+            <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">¡Excelente noticia!</div>
+            <div style="font-size:15px;">INGRESÓ UN NUEVO PEDIDO</div>
         </div>
-        <button onclick="this.parentElement.remove()" style="background:white; color:#dc2626; border:none; padding:8px 16px; border-radius:8px; font-weight:800; cursor:pointer; margin-left:10px;">ATENDER</button>
+        <button onclick="this.parentElement.remove()" style="background:white; color:#15803d; border:none; padding:8px 16px; border-radius:8px; font-weight:800; cursor:pointer; margin-left:10px;">ATENDER</button>
     `;
     document.body.appendChild(alertBox);
-    setTimeout(() => { if(alertBox.parentElement) alertBox.remove(); }, 15000); // Se borra a los 15s si no lo toca
+    setTimeout(() => { if(alertBox.parentElement) alertBox.remove(); }, 12000);
+
+    // Lo agregamos físicamente al Panel del Comercio en la "bandeja"
+    const bandeja = document.getElementById('bandejaPedidosComercio');
+    if(bandeja) {
+        bandeja.innerHTML += `
+        <div style="background:#f0fdf4; border:2px solid #4ade80; padding:12px 16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; animation: slideUp 0.3s ease;">
+            <div>
+                <div style="color:#15803d; font-weight:800; font-size:14px;"><i class="ri-whatsapp-fill"></i> Nuevo pedido recibido</div>
+                <div style="color:#166534; font-size:11px; font-weight:600;">Revisá tu WhatsApp para los detalles del cliente.</div>
+            </div>
+            <div style="background:#16a34a; color:white; font-size:12px; padding:4px 8px; border-radius:6px; font-weight:800;">HOY</div>
+        </div>`;
+    }
 }
 
 // ==========================================
-// TOAST SYSTEM
+// TOAST SYSTEM (Notificaciones Visuales)
 // ==========================================
 function mostrarToast(msg, tipo) {
     const container = document.getElementById('toast-container');
@@ -1047,7 +1089,6 @@ function irPaso(paso) {
     }
 }
 
-// Inyecta dinámicamente los buscadores sin modificar el HTML base
 function inyectarFiltrosMercadoLibre() {
     const headerFeed = document.querySelector('#modal-step-feed-global > div:first-child');
     if(headerFeed && !document.getElementById('cajaFiltrosFeed')) {
@@ -1066,7 +1107,7 @@ function inyectarFiltrosMercadoLibre() {
                 <option value="Córdoba">Córdoba</option>
                 <option value="Salta">Salta</option>
             </select>
-            <input type="text" class="input-buscar" id="feedCiudad" placeholder="Ciudad (Ej: Famaillá)..." style="margin:0; padding:10px; font-size:13px; flex:1;" onkeyup="renderizarFeedGlobal()">
+            <input type="text" class="input-buscar" id="feedCiudad" placeholder="Tu Ciudad (Ej: Famaillá)..." style="margin:0; padding:10px; font-size:13px; flex:1;" onkeyup="renderizarFeedGlobal()">
         `;
         headerFeed.appendChild(divFiltros);
     }
@@ -1076,13 +1117,11 @@ function renderizarFeedGlobal() {
     const container = document.getElementById('gridMercadoLibre');
     if(!container) return; 
     
-    // Obtenemos los valores de los filtros si existen
     const inputProv = document.getElementById('feedProvincia');
     const inputCiu = document.getElementById('feedCiudad');
     let provFiltro = inputProv ? quitarAcentos(inputProv.value.trim()) : "";
     let ciuFiltro = inputCiu ? quitarAcentos(inputCiu.value.trim()) : "";
 
-    // Filtramos los comercios que coinciden
     let comerciosValidos = baseComercios;
     if(provFiltro || ciuFiltro) {
         comerciosValidos = baseComercios.filter(c => {
@@ -1127,7 +1166,7 @@ function renderizarFeedGlobal() {
     container.innerHTML = html;
 }
 
-// LOGICA DE SEGURIDAD PARA COMPRAR
+// LOGICA CLAVE: Agrega al carrito y muestra el botón flotante (No va al mapa directo)
 function intentarComprar(idProducto, direccionComercio) {
     productoPendienteAdd = { id: idProducto, direccion: direccionComercio };
     
@@ -1151,17 +1190,38 @@ function procesarAgregadoCarrito() {
     
     let prodEncontrado = baseProductosActivos.find(p => p.id === productoPendienteAdd.id);
     if(prodEncontrado) {
+        // Agregamos al array del carrito
         carritoGlobal.push({ nombre: prodEncontrado.nombre, precio: prodEncontrado.precio, cantidad: 1 });
         direccionOrigenCalculo = productoPendienteAdd.direccion; 
-        mostrarToast(`✅ ${prodEncontrado.nombre} en carrito`, 'success');
+        
+        mostrarToast(`✅ Agregaste: ${prodEncontrado.nombre}`, 'success');
+        
+        // Hacemos aparecer y sumamos el número en el botón flotante del Carrito
+        const floatBtn = document.getElementById('btnFloatingCart');
+        const badge = document.getElementById('badgeCarrito');
+        if(floatBtn) floatBtn.style.display = 'flex';
+        if(badge) {
+            badge.textContent = carritoGlobal.length;
+            badge.style.transform = 'scale(1.2)';
+            setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200);
+        }
         
         productoPendienteAdd = null; 
-        abrirMapaMago(); 
+    }
+}
+
+// Abre el carrito flotante
+function abrirCarritoFinal() {
+    cerrarModalMarketplace();
+    const modalCarrito = document.getElementById('modalCarritoFinal');
+    if(modalCarrito) {
+        modalCarrito.classList.add('show');
+        renderizarCarritoDOM();
     }
 }
 
 // ==========================================
-// INICIO DE SESIÓN UNIFICADO
+// INICIO DE SESIÓN UNIFICADO CON MEMORIA
 // ==========================================
 function iniciarLogin(tipo) {
     tipoLoginActual = tipo; 
@@ -1192,18 +1252,31 @@ function validarLogin() {
     if(pwd.length < 4) return mostrarToast('La clave debe tener al menos 4 caracteres', 'error');
     
     mostrarToast('Ingreso exitoso.', 'success');
-    AppStore.set('cliente_celular', cel); 
     
     if(tipoLoginActual === 'comercio') {
         irPaso('comercio');
     } else if(tipoLoginActual === 'cadete') {
-        irPaso('servimoto-onboarding');
+        // Lógica de Memoria para el Cadete
+        if(AppStore.get('cadete_docs_aprobados') === true) {
+            // Si ya fue aprobado antes por la IA, va directo a su panel
+            irPaso('servimoto');
+        } else {
+            // Si es la primera vez, va a subir los documentos
+            irPaso('servimoto-onboarding');
+        }
     } else if(tipoLoginActual === 'cliente') {
         clienteLogueado = true;
+        AppStore.set('cliente_celular', cel); 
+        
         if(!AppStore.get('cliente_dir')) {
             irPaso('cliente-ubicacion');
         } else {
-            procesarAgregadoCarrito();
+            if(productoPendienteAdd) {
+                procesarAgregadoCarrito();
+                irPaso('feed-global');
+            } else {
+                irPaso('feed-global');
+            }
         }
     }
 }
@@ -1240,13 +1313,12 @@ function guardarPerfilCliente() {
     AppStore.set('cliente_ciu', ciu);
     AppStore.set('cliente_dir', dir);
     
-    mostrarToast('✅ Perfil guardado. Procesando compra...', 'success');
+    mostrarToast('✅ Perfil guardado.', 'success');
     
     if(productoPendienteAdd) {
         procesarAgregadoCarrito();
-    } else {
-        irPaso('feed-global');
     }
+    irPaso('feed-global');
 }
 
 // ==========================================
@@ -1290,15 +1362,17 @@ function guardarComercio() {
     const dir = document.getElementById('comercioDireccionExacta').value.trim();
     const prov = document.getElementById('comercioProvincia').value.trim();
     const ciu = document.getElementById('comercioCiudad').value.trim();
+    const hAbre = document.getElementById('comercioAbre').value;
+    const hCierra = document.getElementById('comercioCierra').value;
     
-    if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá todos los datos', 'error');
+    if(!nom || !dir || !prov || !ciu || !hAbre || !hCierra) return mostrarToast('Completá todos los datos, incluyendo horarios', 'error');
     if(!AppStore.get('selfie_seguridad_comercio')) return mostrarToast('La Selfie del dueño es obligatoria', 'error');
     
     if(!miComercioLogueadoId) {
         miComercioLogueadoId = Date.now();
-        baseComercios.push({ id: miComercioLogueadoId, nombre: nom, provincia: prov, ciudad: ciu, direccion: dir, img: tempImgPortada });
+        baseComercios.push({ id: miComercioLogueadoId, nombre: nom, provincia: prov, ciudad: ciu, direccion: dir, img: tempImgPortada, abre: hAbre, cierra: hCierra });
     }
-    mostrarToast(`¡Local registrado! Ahora cargá tus platos.`, 'success');
+    mostrarToast(`¡Local registrado de ${hAbre} a ${hCierra}!`, 'success');
 }
 
 function previewArtFoto(input) {
@@ -1389,6 +1463,8 @@ function auditarDocumentosIA() {
     mostrarToast('🤖 Inicializando motor OpenAI GPT-4o...', 'success');
     setTimeout(() => { 
         mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); 
+        // Guardamos en memoria que este cadete ya está aprobado
+        AppStore.set('cadete_docs_aprobados', true);
         setTimeout(() => irPaso('servimoto'), 800); 
     }, 2000);
 }
@@ -1414,18 +1490,20 @@ function activarRadar() {
     estadoRadar = !estadoRadar;
     const btn = document.getElementById('btnRadar');
     if(estadoRadar) {
+        // Botón GIGANTE VERDE para el radar
         btn.innerHTML = `
             <div class="radar-ring"></div>
             <div class="radar-ring"></div>
             <div class="radar-ring"></div>
-            <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#93c5fd;"></i>
-            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#bfdbfe; letter-spacing:1px;">BUSCANDO...</span>
+            <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#dcfce7;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#f0fdf4; letter-spacing:1px;">BUSCANDO...</span>
         `;
-        btn.style.background = 'radial-gradient(circle, #2563eb, #1e3a8a)';
-        btn.style.borderColor = '#60a5fa';
-        btn.style.boxShadow = '0 0 40px rgba(59,130,246,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
+        btn.style.background = 'radial-gradient(circle, #16a34a, #14532d)';
+        btn.style.borderColor = '#4ade80';
+        btn.style.boxShadow = '0 0 40px rgba(22,163,74,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
         mostrarToast('Radar encendido. Buscando viajes...', 'success');
     } else {
+        // Vuelve al estado inactivo original (azul oscuro / grisáceo)
         btn.innerHTML = `
             <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
             <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
@@ -1461,6 +1539,9 @@ function procesarLiquidacionIA(input) {
 // 4. MAPA GPS Y MATEMÁTICA
 // ==========================================
 function abrirMapaMago() {
+    // Cerramos el carrito antes de abrir el mapa
+    cerrarCarrito();
+    
     const modalMapa = document.getElementById('modalMapaGrande');
     if(!modalMapa) return;
     
@@ -1478,7 +1559,7 @@ function abrirMapaMago() {
             if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
                 destinoAddress = document.getElementById('dirDestinoEspecial').value.trim() + ", " + document.getElementById('ciuDestinoEspecial').value.trim() + ", Argentina";
             } else {
-                // Sacamos los datos de la memoria del cliente
+                // Sacamos los datos de la memoria del cliente que se armó en el carrito
                 destinoAddress = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu') + ", " + AppStore.get('cliente_prov') + ", Argentina";
             }
 
@@ -1538,16 +1619,34 @@ function calcularMatematicaEnvio(km) {
     
     costoEnvioCalculado = tarifaBase + costoExtra;
     if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
+    
+    // Sumamos el envío al total de los productos y actualizamos la interfaz del mapa
+    let subtotalProductos = 0;
+    carritoGlobal.forEach(i => { subtotalProductos += i.precio; });
+    
+    const totalConEnvio = subtotalProductos + costoEnvioCalculado;
+    if(document.getElementById('mapaTotalPagar')) {
+        document.getElementById('mapaTotalPagar').textContent = '$' + totalConEnvio.toLocaleString('es-AR');
+    }
 }
 
-function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); }
-function irAlCheckout() { cerrarMapa(); abrirModalCarrito(); }
-function abrirModalCarrito() { cerrarModalMarketplace(); document.getElementById('modalCarritoFinal').classList.add('show'); renderizarCarritoDOM(); }
-function cerrarCarrito() { document.getElementById('modalCarritoFinal').classList.remove('show'); }
+// ==========================================
+// 5. CAJA VERDE (CARRITO) y CHECKOUT
+// ==========================================
+function cerrarMapa() { 
+    document.getElementById('modalMapaGrande').classList.remove('show'); 
+    abrirCarritoFinal(); // Si cierra el mapa, vuelve al carrito
+}
 
-// ==========================================
-// 5. CARRITO FINAL (CAJA VERDE)
-// ==========================================
+// Ahora irAlCheckout() que se dispara desde el MAPA manda el WhatsApp directamente
+function irAlCheckout() { 
+    mandarPedidoSoporte(); 
+}
+
+function cerrarCarrito() { 
+    document.getElementById('modalCarritoFinal').classList.remove('show'); 
+}
+
 function renderizarCarritoDOM() {
     const cont = document.getElementById('contenidoCarrito');
     const totalUI = document.getElementById('totalFinalCarrito');
@@ -1556,10 +1655,10 @@ function renderizarCarritoDOM() {
     let subtotal = 0;
     let listHTML = "";
 
-    // Direcciones conectadas (Comercio -> Cliente)
     let dirComprador = AppStore.get('cliente_dir') || "";
     let ciuComprador = AppStore.get('cliente_ciu') || "";
     
+    // Caja Superior de Direcciones
     listHTML += `
     <div style="background:white; padding:14px; border-radius:12px; margin-bottom:14px; border:2px solid #e2e8f0; font-size:13px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
         <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:8px;">
@@ -1579,7 +1678,7 @@ function renderizarCarritoDOM() {
         </div>
     </div>`;
 
-    // Lista de Platos
+    // Lista de Platos en el Carrito
     listHTML += carritoGlobal.map((item, idx) => {
         subtotal += item.precio;
         return `
@@ -1594,27 +1693,27 @@ function renderizarCarritoDOM() {
             <button onclick="borrarItemCarrito(${idx})" style="background:#ef4444; color:white; border:none; border-radius:8px; width:32px; height:32px; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
         </div>`;
     }).join('');
-    
-    // Envío Separado
-    if(costoEnvioCalculado > 0) {
-        listHTML += `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:#fff7ed; border:2px dashed #ffb380; border-radius:12px; margin-top:8px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <i class="ri-motorbike-fill" style="color:#cc4400; font-size:18px;"></i>
-                <div style="font-weight:800; font-size:13.5px; color:#cc4400;">Envío GPS (Lo paga el comprador)</div>
-            </div>
-            <div style="color:#cc4400; font-weight:800; font-size:15px;">$${costoEnvioCalculado.toLocaleString('es-AR')}</div>
-        </div>`;
-    }
 
     cont.innerHTML = listHTML;
-    totalUI.textContent = '$' + (subtotal + costoEnvioCalculado).toLocaleString('es-AR');
+    // Solo muestra el subtotal de la comida. El envío se calcula después en el mapa.
+    totalUI.textContent = '$' + subtotal.toLocaleString('es-AR');
 }
 
 function borrarItemCarrito(idx) {
     carritoGlobal.splice(idx, 1);
-    if(carritoGlobal.length === 0) costoEnvioCalculado = 0;
-    renderizarCarritoDOM();
+    
+    // Actualizamos el botón flotante
+    const badge = document.getElementById('badgeCarrito');
+    if(badge) badge.textContent = carritoGlobal.length;
+    
+    if(carritoGlobal.length === 0) {
+        costoEnvioCalculado = 0;
+        const floatBtn = document.getElementById('btnFloatingCart');
+        if(floatBtn) floatBtn.style.display = 'none';
+        cerrarCarrito();
+    } else {
+        renderizarCarritoDOM();
+    }
 }
 
 function enviarPedidoEspecial() {
@@ -1639,9 +1738,10 @@ function enviarPedidoEspecial() {
 function mandarPedidoSoporte() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     
-    // Dispara Alarma al Comercio antes de ir a Whatsapp
+    // 1. Dispara Alarma Visual y Sonora al Comercio (Notificación Verde)
     notificarComercioNuevoPedido();
 
+    // 2. Prepara el Mensaje a WhatsApp
     let txt = "🔥 *NUEVO PEDIDO EN LA RED* 🔥%0A%0A";
     let subtotal = 0;
     carritoGlobal.forEach(i => {
@@ -1657,6 +1757,12 @@ function mandarPedidoSoporte() {
     txt += `🛣️ *Costo GPS:* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     txt += `💰 *TOTAL A PAGAR: $${(subtotal + costoEnvioCalculado).toLocaleString('es-AR')}*%0A`;
     
+    // Cierra todo y limpia carrito
+    cerrarMapa();
+    carritoGlobal = [];
+    const floatBtn = document.getElementById('btnFloatingCart');
+    if(floatBtn) floatBtn.style.display = 'none';
+
     setTimeout(() => {
         window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
     }, 800);
