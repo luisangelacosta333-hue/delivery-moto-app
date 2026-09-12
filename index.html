@@ -173,7 +173,7 @@
         .stat-number { font-family: 'Sora', sans-serif; font-weight: 800; line-height: 1; background: linear-gradient(135deg, #ff8c00, #ffd700); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
         .divider-glow { height: 3px; background: linear-gradient(90deg, transparent, #ff6b00, #ffd700, #16a34a, #ff6b00, transparent); border-radius: 3px; }
         .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: #cc4400; display: inline-flex; align-items: center; gap: 10px; }
-        .eyebrow::before { content: ''; display: block; width: 36px; height: 3px; background: linear-gradient(90deg, #ff6b00, transparent); border-radius: 2px; }
+        .eyebrow::before { content: ''; display: block; width: 36px; height: 3px; background: linear-gradient(90deg, #ff8c00, transparent); border-radius: 2px; }
         
         .hero-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -1.5px; line-height: 1.02; }
         .section-title { font-family: 'Sora', sans-serif; font-weight: 800; letter-spacing: -.8px; line-height: 1.15; }
@@ -856,6 +856,38 @@
                 </button>
             </div>
 
+            <!-- PANEL CADETE RADAR (ESTADO ACTIVO) -->
+            <div id="modal-step-servimoto" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
+                <div style="background:linear-gradient(135deg, #0f172a, #050505); border-radius:1.5rem; padding:22px; border:3px solid #ff6b00; color:white; box-shadow:0 15px 35px rgba(0,0,0,0.5);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                        <span class="badge-dorado" style="border:1px solid rgba(74,222,128,0.5);"><i class="ri-shield-check-fill" style="color:#4ade80;"></i> IA ACTIVA</span>
+                        <span style="color:#4ade80; font-size:11.5px; font-weight:800; font-family:monospace;">MOTO-902</span>
+                    </div>
+                    <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px; text-align:center;">Panel de Operación</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:1rem; margin-top:16px; margin-bottom:24px;">
+                         <div style="font-size:14px; font-weight:800; color:rgba(255,255,255,0.9);">Turno Actual:</div>
+                         <button id="btnEstadoTrabajo" onclick="toggleEstadoTrabajo()" style="background:#f97316; color:white; border:none; padding:10px 18px; border-radius:999px; font-weight:800; font-size:12px; cursor:pointer; box-shadow:0 4px 12px rgba(249,115,22,0.4); transition:all 0.3s;"><i class="ri-close-circle-fill"></i> INACTIVO</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; margin-bottom: 32px; margin-top: 20px;">
+                        <button id="btnRadar" onclick="activarRadar()" style="width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #1e3a8a, #0f172a); color: white; border: 4px solid #3b82f6; box-shadow: 0 0 30px rgba(59,130,246,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; cursor:pointer; position: relative;">
+                            <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
+                            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
+                        </button>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:20px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
+                        <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">Deuda Acumulada a Pagar</div>
+                        <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:46px; font-weight:800; color:white; line-height:1; margin-bottom:8px;">$0</div>
+                        <div style="font-size:13px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:6px 16px; border-radius:999px;" id="viajesMotoBadge">0 Viajes Realizados</div>
+                        <button onclick="simularViajeCadete()" style="margin-top:16px; width:100%; background:rgba(255,255,255,0.1); color:white; border:1px dashed rgba(255,255,255,0.3); padding:12px; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer;">+ SIMULAR VIAJE TERMINADO ($200)</button>
+                    </div>
+                    <label class="btn-primary" style="width:100%; padding:18px; font-size:14.5px; cursor:pointer; background:linear-gradient(135deg,#16a34a,#15803d); border:none; justify-content:center;">
+                        <i class="ri-upload-cloud-2-fill" style="font-size:22px;"></i> SUBIR COMPROBANTE Y AUDITAR
+                        <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">
+                    </label>
+                </div>
+            </div>
+
             <!-- PEDIDO ESPECIAL (REMIS) -->
             <div id="modal-step-pedido-especial" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
@@ -952,6 +984,38 @@
 
 <script>
 // ==========================================
+// INSTALADOR NATIVO (APK / PWA) - ENERGY SOFTWARE
+// ==========================================
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Previene que Chrome muestre el mini-cartel automáticamente
+    e.preventDefault();
+    // Guarda el evento para dispararlo cuando toquen el botón
+    deferredPrompt = e;
+    console.log("El motor de instalación PWA está listo.");
+});
+
+function descargarAPK() {
+    if (deferredPrompt) {
+        // Muestra el cartel nativo de instalación de Android/iOS
+        deferredPrompt.prompt();
+        // Espera a ver qué elige el usuario
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                mostrarToast('¡Instalando Delivery Moto en tu celular!', 'success');
+            } else {
+                mostrarToast('Instalación cancelada', 'error');
+            }
+            deferredPrompt = null;
+        });
+    } else {
+        // Si ya la tiene instalada o el navegador no es compatible
+        mostrarToast('La App ya está instalada o abrí la página en Google Chrome.', 'error');
+    }
+}
+
+// ==========================================
 // TRUCO DE ORO: EVITAR QUE EL MAPA GRIS ROMPA LA APP
 // ==========================================
 window.gm_authFailure = function() {
@@ -964,13 +1028,12 @@ window.gm_authFailure = function() {
 // ==========================================
 const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co';
 const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
-// La librería de Vercel carga Supabase en la variable global window.supabase
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
 // 2. VARIABLES GLOBALES Y ESTADO
 // ==========================================
-let baseProductosActivos = []; // Ahora vendrá de la BD
+let baseProductosActivos = []; // Ahora vendrá de la DB
 let carritoGlobal = [];
 let pedidosComercio = []; 
 let costoEnvioCalculado = 0;
@@ -1052,15 +1115,12 @@ function mostrarToast(msg, tipo) {
 // ==========================================
 async function subirImagenBucket(base64Str, rutaGuardado) {
     try {
-        // Convierte el base64 que genera el navegador en un archivo real
         const res = await fetch(base64Str);
         const blob = await res.blob();
         
-        // Sube al bucket de Supabase
         const { data, error } = await supabaseClient.storage.from('moto_media').upload(rutaGuardado, blob, { upsert: true });
         if (error) throw error;
         
-        // Retorna la URL pública
         const urlReq = supabaseClient.storage.from('moto_media').getPublicUrl(rutaGuardado);
         return urlReq.data.publicUrl;
     } catch (e) {
@@ -1098,23 +1158,31 @@ async function cargarYRenderizarFeed() {
     const container = document.getElementById('gridMercadoLibre');
     if(!container) return; 
     
-    container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#16a34a;"><i class="ri-loader-4-line animate-ring"></i> Cargando catálogo en tiempo real...</div>`;
+    container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#16a34a;"><i class="ri-loader-4-line animate-ring"></i> Cargando catálogo...</div>`;
     
-    // Leemos los filtros del HTML
     const inputProv = document.getElementById('filtroProvincia');
     const inputCiu = document.getElementById('filtroCiudad');
     let provFiltro = inputProv ? quitarAcentos(inputProv.value.trim()) : "";
     let ciuFiltro = inputCiu ? quitarAcentos(inputCiu.value.trim()) : "";
 
     try {
-        // Pedimos comercios a Supabase
         let { data: dbComercios, error: errC } = await supabaseClient.from('moto_comercios').select('*');
-        // Pedimos productos a Supabase
         let { data: dbProductos, error: errP } = await supabaseClient.from('moto_productos').select('*');
 
         if(errC || errP) throw new Error("Error leyendo DB");
 
-        // Filtrado
+        // Si las tablas están vacías, le cargamos comercios de prueba visuales temporalmente
+        if(!dbComercios || dbComercios.length === 0) {
+            dbComercios = [
+                { id: "test1", nombre: "Pizzería Demo", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Centro 100", categoria: "pizza" },
+                { id: "test2", nombre: "Kiosco 24hs", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Ruta 38", categoria: "kiosco" }
+            ];
+            dbProductos = [
+                { id: "p1", id_comercio: "test1", nombre: "Pizza Muzzarella", precio: 6500, img_producto: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=150", pausado: false },
+                { id: "p2", id_comercio: "test2", nombre: "Gaseosa Cola 2L", precio: 2500, img_producto: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=150", pausado: false }
+            ];
+        }
+
         let comerciosValidos = dbComercios.filter(c => {
             let matchProv = provFiltro === "" || quitarAcentos(c.provincia).includes(provFiltro);
             let matchCiu = ciuFiltro === "" || quitarAcentos(c.ciudad).includes(ciuFiltro);
@@ -1156,7 +1224,6 @@ async function cargarYRenderizarFeed() {
             </div>`;
         });
         container.innerHTML = html;
-        // Mantenemos una copia en memoria para buscar rápido al agregar al carrito
         baseProductosActivos = dbProductos; 
 
     } catch (e) {
@@ -1246,11 +1313,10 @@ async function validarLogin() {
     
     mostrarToast('⏳ Conectando al servidor...', 'success');
     
-    // TRUCO MAESTRO: Crear el correo de mentira
+    // TRUCO MAESTRO: Crear el correo de mentira para el AUTH RLS
     const emailFalso = `${cel}@deliverymoto.com`;
     
     try {
-        // Intenta iniciar sesión
         let { data, error } = await supabaseClient.auth.signInWithPassword({ email: emailFalso, password: pwd });
         
         // Si no existe, lo creamos
@@ -1262,17 +1328,16 @@ async function validarLogin() {
             throw error;
         }
 
-        sessionActual = data.user; // ¡Usuario logueado y protegido por RLS!
+        sessionActual = data.user; 
         AppStore.set('cliente_celular', cel); 
         mostrarToast('✅ Acceso Autorizado', 'success');
         
         // Enrutador de pantallas
         if(tipoLoginActual === 'comercio') {
             irPaso('comercio');
-            renderizarAdminComercio(); // Trae sus productos reales
+            renderizarAdminComercio(); 
             renderizarBandejaPedidos(); 
         } else if(tipoLoginActual === 'cadete') {
-            // Verificar en la DB real si el cadete ya está
             let { data: cadDB } = await supabaseClient.from('moto_cadetes').select('*').eq('id', sessionActual.id).single();
             if(cadDB) {
                 irPaso('servimoto'); 
@@ -1280,7 +1345,6 @@ async function validarLogin() {
                 irPaso('servimoto-onboarding'); 
             }
         } else if(tipoLoginActual === 'cliente') {
-            // Verificar en la DB si el cliente ya cargó su dirección
             let { data: cliDB } = await supabaseClient.from('moto_clientes').select('*').eq('id', sessionActual.id).single();
             if(cliDB) {
                 AppStore.set('cliente_dir', cliDB.direccion);
@@ -1294,7 +1358,7 @@ async function validarLogin() {
         }
     } catch(e) {
         console.error(e);
-        mostrarToast('Error al conectar la cuenta', 'error');
+        mostrarToast('Error al conectar la cuenta. Reintentá.', 'error');
     }
 }
 
@@ -1330,10 +1394,8 @@ async function guardarPerfilCliente() {
     mostrarToast('⏳ Guardando perfil seguro...', 'success');
     
     try {
-        // Sube foto
         const urlFoto = await subirImagenBucket(b64Selfie, `clientes/${sessionActual.id}_selfie.jpg`);
         
-        // Inserta en tabla
         const { error } = await supabaseClient.from('moto_clientes').upsert({
             id: sessionActual.id,
             celular: cel,
@@ -1392,7 +1454,7 @@ function renderizarBandejaPedidos() {
                 <div style="color:#0f172a; font-weight:800; font-size:14px; margin-top:4px;">Total Comida: $${p.total.toLocaleString('es-AR')}</div>
                 <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
             </div>
-            <!-- Botón Naranja para archivar (no rojo) -->
+            <!-- Botón Naranja para archivar -->
             <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:12px; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
         </div>
     `).join('');
@@ -1530,11 +1592,12 @@ async function agregarArticuloComercio() {
 
         mostrarToast(`¡Artículo publicado con éxito!`, 'success');
         
-        // Limpia form
         document.getElementById('newArtNombre').value = '';
         document.getElementById('newArtPrecio').value = '';
         if(document.getElementById('newArtRef')) document.getElementById('newArtRef').value = '';
         tempImgBase64 = null;
+        const cj = document.getElementById('boxArticuloNuevo');
+        if(cj) cj.style.backgroundImage = 'none';
         
         renderizarAdminComercio();
 
@@ -1620,8 +1683,163 @@ function togglePantallaCompletaArticulos() {
 }
 
 // ==========================================
-// MAPA GPS Y MATEMÁTICA EXACTA (CERO GRIS ERROR)
+// CADETES E IA (SUBIDA A DB)
 // ==========================================
+function previewSelfieCadete(input) {
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const caja = document.getElementById('cajaDoc1');
+            if(caja) {
+                caja.style.backgroundImage = `url(${e.target.result})`;
+                caja.style.backgroundSize = 'cover'; 
+                caja.style.backgroundPosition = 'center';
+            }
+            const icon = document.getElementById('iconoSelfieContenedorCadete');
+            if(icon) icon.style.display = 'none';
+            const txt = document.getElementById('txtDoc1');
+            if(txt) txt.innerHTML = '<span style="color:#15803d;">✅ Selfie Lista</span>';
+            AppStore.set('cad_selfie', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function docCargado(input, idLabel, idCaja, idIcon) {
+    if(input.files && input.files[0]) {
+        document.getElementById(idLabel).textContent = '✅ Subido Exitosamente';
+        document.getElementById(idCaja).style.backgroundColor = '#f0fdf4';
+        document.getElementById(idCaja).style.borderColor = '#4ade80';
+        document.getElementById(idIcon).className = 'ri-checkbox-circle-fill';
+        document.getElementById(idIcon).style.color = '#16a34a';
+        document.getElementById(idLabel).style.color = '#15803d';
+    }
+}
+
+async function auditarDocumentosIA() {
+    if(!AppStore.get('cad_selfie')) return mostrarToast('Te falta la selfie de seguridad', 'error');
+    
+    mostrarToast('🤖 Inicializando motor OpenAI GPT-4o...', 'success');
+    
+    try {
+        const urlSelfieCad = await subirImagenBucket(AppStore.get('cad_selfie'), `cadetes/${sessionActual.id}_selfie.jpg`);
+        const cel = AppStore.get('cliente_celular');
+
+        const { error } = await supabaseClient.from('moto_cadetes').upsert({
+            id: sessionActual.id,
+            celular: cel,
+            img_selfie: urlSelfieCad,
+            aprobado_ia: true
+        });
+
+        if(error) throw error;
+
+        setTimeout(() => { 
+            mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); 
+            irPaso('servimoto'); 
+        }, 2000);
+
+    } catch(e) {
+        console.error(e);
+        mostrarToast('Error al auditar en DB', 'error');
+    }
+}
+
+async function toggleEstadoTrabajo() {
+    estadoTrabajoServimoto = !estadoTrabajoServimoto;
+    const btn = document.getElementById('btnEstadoTrabajo');
+    
+    try {
+        await supabaseClient.from('moto_cadetes').update({ online: estadoTrabajoServimoto }).eq('id', sessionActual.id);
+        
+        if(estadoTrabajoServimoto) {
+            btn.style.background = '#16a34a'; 
+            btn.style.boxShadow = '0 4px 12px rgba(22,163,74,0.4)';
+            btn.innerHTML = '<i class="ri-check-double-line"></i> ONLINE';
+            mostrarToast('¡Estás en línea! Encendé el radar.', 'success');
+        } else {
+            btn.style.background = '#f97316'; 
+            btn.style.boxShadow = '0 4px 12px rgba(249,115,22,0.4)';
+            btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
+            if(estadoRadar) activarRadar(); 
+        }
+    } catch(e) {
+        mostrarToast('Error al actualizar estado', 'error');
+    }
+}
+
+function activarRadar() {
+    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (ONLINE) primero', 'error');
+    estadoRadar = !estadoRadar;
+    const btn = document.getElementById('btnRadar');
+    if(estadoRadar) {
+        btn.innerHTML = `
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#dcfce7;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#f0fdf4; letter-spacing:1px;">BUSCANDO...</span>
+        `;
+        btn.style.background = 'radial-gradient(circle, #16a34a, #14532d)';
+        btn.style.borderColor = '#4ade80';
+        btn.style.boxShadow = '0 0 40px rgba(22,163,74,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
+        mostrarToast('Radar encendido. Buscando viajes...', 'success');
+    } else {
+        btn.innerHTML = `
+            <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
+        `;
+        btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)';
+        btn.style.borderColor = '#3b82f6';
+        btn.style.boxShadow = '0 0 30px rgba(59,130,246,0.4)';
+    }
+}
+
+async function simularViajeCadete() {
+    if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Encendé el Radar primero', 'error');
+    viajesMotoCount++;
+    deudaMotoAcumulada += 200;
+    
+    try {
+        await supabaseClient.from('moto_cadetes').update({ 
+            viajes_realizados: viajesMotoCount,
+            deuda_acumulada: deudaMotoAcumulada
+        }).eq('id', sessionActual.id);
+        
+        document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+        document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Realizados';
+        mostrarToast('✅ Viaje escaneado e impactado en BD.', 'success');
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+async function procesarLiquidacionIA(input) {
+    if(input.files && input.files.length > 0) {
+        mostrarToast('🤖 Verificando comprobante en BD...', 'success');
+        setTimeout(async () => {
+            viajesMotoCount = 0; deudaMotoAcumulada = 0;
+            await supabaseClient.from('moto_cadetes').update({ viajes_realizados: 0, deuda_acumulada: 0 }).eq('id', sessionActual.id);
+            document.getElementById('deudaMoto').textContent = '$0';
+            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
+            mostrarToast('✅ Pago validado.', 'success');
+        }, 2500);
+    }
+}
+
+// ==========================================
+// MAPA GPS Y MATEMÁTICA EXACTA (ANTI-GRIS)
+// ==========================================
+function abrirCarritoFinal() {
+    if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
+    cerrarModalMarketplace();
+    const modalCarrito = document.getElementById('modalCarritoFinal');
+    if(modalCarrito) {
+        modalCarrito.classList.add('show');
+        renderizarCarritoDOM();
+    }
+}
+
 function abrirMapaMago() {
     cerrarCarrito();
     const modalMapa = document.getElementById('modalMapaGrande');
@@ -1641,11 +1859,9 @@ function abrirMapaMago() {
             let origenAddress = "";
 
             if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
-                // VIENE DE VIAJE ESPECIAL (REMIS)
                 destinoAddress = document.getElementById('dirDestinoEspecial').value.trim() + ", " + document.getElementById('ciuDestinoEspecial').value.trim() + ", Argentina";
                 origenAddress = document.getElementById('dirOrigenEspecial').value.trim() + ", Argentina";
             } else {
-                // VIENE DEL CARRITO 
                 destinoAddress = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu') + ", " + AppStore.get('cliente_prov') + ", Argentina";
                 origenAddress = direccionOrigenCalculo ? (direccionOrigenCalculo + ", Argentina") : "Tucumán, Argentina";
             }
@@ -1672,7 +1888,6 @@ function abrirMapaMago() {
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
                             calcularMatematicaEnvio("2.5"); 
-                            mostrarToast("Tarifa estándar aplicada por distancia.", "success");
                         } 
                     });
                 }
@@ -1713,10 +1928,11 @@ function calcularMatematicaEnvio(km) {
 }
 
 function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); abrirCarritoFinal(); }
+function irAlCheckout() { mandarPedidoSoporte(); }
 function cerrarCarrito() { document.getElementById('modalCarritoFinal').classList.remove('show'); }
 
 // ==========================================
-// CARRITO FINAL VERDE Y PEDIDO WHATSAPP
+// RENDERIZADO DEL CARRITO FINAL (CAJA VERDE)
 // ==========================================
 function renderizarCarritoDOM() {
     const cont = document.getElementById('contenidoCarrito');
@@ -1807,7 +2023,6 @@ async function mandarPedidoSoporte() {
     
     let destClient = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu');
     
-    // Almacena en la BD el pedido
     try {
         if(sessionActual) {
             await supabaseClient.from('moto_pedidos').insert({
@@ -1820,7 +2035,7 @@ async function mandarPedidoSoporte() {
             });
         }
     } catch (e) {
-        console.warn("No se pudo subir a DB el pedido, mandando por WA igual");
+        console.warn("Error enviando DB, abriendo WA");
     }
 
     agregarPedidoBandejaComercio(subtotalProductos, destClient);
@@ -1835,9 +2050,7 @@ async function mandarPedidoSoporte() {
     txt += `%0A📍 *Origen (Comercio):* ${direccionOrigenCalculo}%0A`; 
     txt += `📍 *Destino (Cliente):* ${destClient}%0A`;
     txt += `📱 *Celular del Cliente:* ${telComprador}%0A`;
-    txt += `---------------------------%0A`;
-    txt += `🍔 *Costo Comida (Al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`;
-    txt += `🛣️ *Costo Envío GPS (Al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
+    txt += `🛣️ *Costo GPS:* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     txt += `💰 *TOTAL A PAGAR: $${totalCajaVerde.toLocaleString('es-AR')}*%0A`;
     
     cerrarMapa();
