@@ -215,9 +215,9 @@
 </nav>
 
 <!-- BOTÓN FLOTANTE DEL CARRITO (Se activa por JS cuando agregás algo) -->
-<button id="btnFloatingCart" onclick="abrirCarritoFinal()" style="display:none; position:fixed; bottom:24px; right:24px; width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; border:3px solid #ffd700; box-shadow:0 10px 30px rgba(255,107,0,0.6); z-index:99999; font-size:26px; cursor:pointer; align-items:center; justify-content:center; transition:transform 0.2s;">
+<button id="btnFloatingCart" onclick="abrirCarritoFinal()" style="display:none; position:fixed; bottom:24px; right:24px; width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:3px solid #bbf7d0; box-shadow:0 10px 30px rgba(22,163,74,0.6); z-index:9999999; font-size:26px; cursor:pointer; align-items:center; justify-content:center; transition:transform 0.2s;">
     <i class="ri-shopping-cart-2-fill"></i>
-    <div id="badgeCarrito" style="position:absolute; top:-5px; right:-5px; background:white; color:#cc4400; font-size:13px; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #cc4400; box-shadow:0 4px 10px rgba(0,0,0,0.3);">0</div>
+    <div id="badgeCarrito" style="position:absolute; top:-5px; right:-5px; background:white; color:#15803d; font-size:13px; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #16a34a; box-shadow:0 4px 10px rgba(0,0,0,0.3);">0</div>
 </button>
 
 <div style="height:90px;"></div>
@@ -826,7 +826,6 @@
                 </button>
             </div>
 
-            <!-- PEDIDO ESPECIAL -->
             <div id="modal-step-pedido-especial" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
                 <div class="step-indicator" style="color:#1d4ed8; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
@@ -921,12 +920,12 @@
 
 </body>
 </html>
-<!-- Script de Google Maps con la API Key (Con CallBack asíncrono para evitar mapa gris) -->
+<!-- Script de Google Maps con la API Key -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
 
 <script>
 // ==========================================
-// 1. INICIALIZACIÓN DE VARIABLES GLOBALES Y DATOS
+// 1. INICIALIZACIÓN DE VARIABLES GLOBALES
 // ==========================================
 let baseComercios = [
     { id: 1, nombre: "Kiosco Mamoly", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Azcuénaga 474", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150" },
@@ -975,7 +974,7 @@ function activarMicrofono() {
 
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel(); 
-        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto, una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos a los ServiMoto calificados con certificado de buena conducta para prestar un buen servicio. Los comerciantes pueden publicar y hacer sus ventas y llega rápido toda la información. Y bueno, ¡ahora vamos al marketplace!";
+        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto, una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos los mejores cadetes certificados con buena conducta. Podés hacer tu pedido. Entrá al Marketplace para comenzar.";
         
         const speech = new SpeechSynthesisUtterance(mensaje);
         speech.lang = 'es-AR';
@@ -996,22 +995,24 @@ function activarMicrofono() {
 }
 
 // ==========================================
-// ALARMA Y NOTIFICACIÓN PARA EL COMERCIO (VERDE Y EXITOSA)
+// ALARMA Y NOTIFICACIÓN PARA EL COMERCIO
 // ==========================================
 function notificarComercioNuevoPedido() {
-    // Vibración del dispositivo del comercio
-    if(navigator.vibrate) navigator.vibrate([500, 250, 500, 250, 1000]);
+    // 1. Vibración del dispositivo del comercio
+    if(navigator.vibrate) {
+        navigator.vibrate([500, 250, 500, 250, 1000]);
+    }
     
-    // Voz por el parlante
+    // 2. Voz por el parlante
     if('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance("¡Atención! Ingresó un nuevo pedido al panel del comercio.");
+        const msg = new SpeechSynthesisUtterance("¡Atención comercio! Ha ingresado un nuevo pedido. Revisar el panel comercial.");
         msg.lang = 'es-AR';
         msg.rate = 1.1;
         window.speechSynthesis.speak(msg);
     }
 
-    // Alerta Visual Gigante en Pantalla (AHORA EN VERDE ÉXITO)
+    // 3. Alerta Visual Gigante en Pantalla
     const alertBox = document.createElement('div');
     alertBox.style.position = 'fixed';
     alertBox.style.top = '20px';
@@ -1030,15 +1031,15 @@ function notificarComercioNuevoPedido() {
     alertBox.style.animation = 'pulseGlow 1.5s infinite';
     
     alertBox.innerHTML = `
-        <i class="ri-money-dollar-circle-fill" style="font-size:32px; animation: ringRotate 2s infinite;"></i>
+        <i class="ri-notification-badge-fill" style="font-size:32px; animation: ringRotate 1s infinite;"></i>
         <div style="text-align:left;">
-            <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">¡Excelente noticia!</div>
-            <div style="font-size:15px;">INGRESÓ UN NUEVO PEDIDO</div>
+            <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; opacity:0.9;">Alerta Comercial</div>
+            <div style="font-size:16px;">¡NUEVO PEDIDO RECIBIDO!</div>
         </div>
         <button onclick="this.parentElement.remove()" style="background:white; color:#15803d; border:none; padding:8px 16px; border-radius:8px; font-weight:800; cursor:pointer; margin-left:10px;">ATENDER</button>
     `;
     document.body.appendChild(alertBox);
-    setTimeout(() => { if(alertBox.parentElement) alertBox.remove(); }, 12000);
+    setTimeout(() => { if(alertBox.parentElement) alertBox.remove(); }, 15000); // Se borra a los 15s si no lo toca
 
     // Lo agregamos físicamente al Panel del Comercio en la "bandeja"
     const bandeja = document.getElementById('bandejaPedidosComercio');
@@ -1055,7 +1056,7 @@ function notificarComercioNuevoPedido() {
 }
 
 // ==========================================
-// TOAST SYSTEM (Notificaciones Visuales)
+// TOAST SYSTEM 
 // ==========================================
 function mostrarToast(msg, tipo) {
     const container = document.getElementById('toast-container');
@@ -1089,6 +1090,7 @@ function irPaso(paso) {
     }
 }
 
+// Inyecta dinámicamente los buscadores sin modificar el HTML base
 function inyectarFiltrosMercadoLibre() {
     const headerFeed = document.querySelector('#modal-step-feed-global > div:first-child');
     if(headerFeed && !document.getElementById('cajaFiltrosFeed')) {
@@ -1107,7 +1109,7 @@ function inyectarFiltrosMercadoLibre() {
                 <option value="Córdoba">Córdoba</option>
                 <option value="Salta">Salta</option>
             </select>
-            <input type="text" class="input-buscar" id="feedCiudad" placeholder="Tu Ciudad (Ej: Famaillá)..." style="margin:0; padding:10px; font-size:13px; flex:1;" onkeyup="renderizarFeedGlobal()">
+            <input type="text" class="input-buscar" id="feedCiudad" placeholder="Ciudad (Ej: Famaillá)..." style="margin:0; padding:10px; font-size:13px; flex:1;" onkeyup="renderizarFeedGlobal()">
         `;
         headerFeed.appendChild(divFiltros);
     }
@@ -1117,11 +1119,13 @@ function renderizarFeedGlobal() {
     const container = document.getElementById('gridMercadoLibre');
     if(!container) return; 
     
+    // Obtenemos los valores de los filtros si existen
     const inputProv = document.getElementById('feedProvincia');
     const inputCiu = document.getElementById('feedCiudad');
     let provFiltro = inputProv ? quitarAcentos(inputProv.value.trim()) : "";
     let ciuFiltro = inputCiu ? quitarAcentos(inputCiu.value.trim()) : "";
 
+    // Filtramos los comercios que coinciden
     let comerciosValidos = baseComercios;
     if(provFiltro || ciuFiltro) {
         comerciosValidos = baseComercios.filter(c => {
@@ -1166,7 +1170,7 @@ function renderizarFeedGlobal() {
     container.innerHTML = html;
 }
 
-// LOGICA CLAVE: Agrega al carrito y muestra el botón flotante (No va al mapa directo)
+// LOGICA CLAVE: Freno de seguridad para comprar
 function intentarComprar(idProducto, direccionComercio) {
     productoPendienteAdd = { id: idProducto, direccion: direccionComercio };
     
@@ -1630,23 +1634,14 @@ function calcularMatematicaEnvio(km) {
     }
 }
 
+function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); }
+function irAlCheckout() { cerrarMapa(); abrirModalCarrito(); }
+function abrirModalCarrito() { cerrarModalMarketplace(); document.getElementById('modalCarritoFinal').classList.add('show'); renderizarCarritoDOM(); }
+function cerrarCarrito() { document.getElementById('modalCarritoFinal').classList.remove('show'); }
+
 // ==========================================
-// 5. CAJA VERDE (CARRITO) y CHECKOUT
+// 5. CARRITO FINAL (CAJA VERDE)
 // ==========================================
-function cerrarMapa() { 
-    document.getElementById('modalMapaGrande').classList.remove('show'); 
-    abrirCarritoFinal(); // Si cierra el mapa, vuelve al carrito
-}
-
-// Ahora irAlCheckout() que se dispara desde el MAPA manda el WhatsApp directamente
-function irAlCheckout() { 
-    mandarPedidoSoporte(); 
-}
-
-function cerrarCarrito() { 
-    document.getElementById('modalCarritoFinal').classList.remove('show'); 
-}
-
 function renderizarCarritoDOM() {
     const cont = document.getElementById('contenidoCarrito');
     const totalUI = document.getElementById('totalFinalCarrito');
@@ -1655,6 +1650,7 @@ function renderizarCarritoDOM() {
     let subtotal = 0;
     let listHTML = "";
 
+    // Direcciones conectadas (Comercio -> Cliente)
     let dirComprador = AppStore.get('cliente_dir') || "";
     let ciuComprador = AppStore.get('cliente_ciu') || "";
     
