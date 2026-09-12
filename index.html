@@ -18,7 +18,7 @@
             if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) return false; 
         };
 
-        const AppStore = (function() {
+        window.AppStore = (function() {
             const memory = new Map();
             const MAX_SIZE = 500; 
             return {
@@ -32,7 +32,7 @@
             };
         })();
 
-        AppStore.set('config', {
+        window.AppStore.set('config', {
             aliasCobro: 'noir.elite.ceo',
             cbuCobro: '0110257630025717844115',
             costoDia: 2200,
@@ -173,7 +173,7 @@
         </div>
 
         <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
-            <!-- AQUÍ ESTÁ EL BOTÓN PLAY PARA LA LECTURA EN VOZ ALTA -->
+            <!-- BOTÓN PLAY: Reproduce la locución -->
             <button class="mic-btn animate-mic" id="micBtn" title="Escuchar Funciones de la App" onclick="reproducirFunciones()">
                 <i class="ri-play-fill" id="micIcon" style="font-size: 24px;"></i>
             </button>
@@ -403,6 +403,7 @@
         <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar"><i class="ri-close-line"></i></button>
 
         <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:35px 24px 25px; position:relative; overflow:hidden; flex-shrink:0;">
+            <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
             <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
                 <div style="width:50px; height:50px; border-radius:1rem; overflow:hidden; flex-shrink:0; border:2px solid #ffd700; box-shadow:0 8px 25px rgba(255,107,0,0.6);">
                     <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo Delivery">
@@ -651,12 +652,12 @@
             <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Total a Pagar</span>
             <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:#15803d; line-height:1;">$0</span>
         </div>
-        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()"><i class="ri-whatsapp-fill" style="font-size:22px;"></i> CONFIRMAR POR WHATSAPP</button>
+        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="mandarPedidoSoporte()">
+            <i class="ri-whatsapp-fill" style="font-size:22px;"></i> CONFIRMAR POR WHATSAPP
+        </button>
     </div>
 </div>
-<!-- ======================================================= -->
-<!-- SCRIPT OFICIAL DE GOOGLE MAPS (CON TU API KEY REAL)     -->
-<!-- ======================================================= -->
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhIX8&libraries=places"></script>
 
 <script>
@@ -675,7 +676,7 @@ try {
 }
 
 // ==========================================
-// VARIABLES GLOBALES DECLARADAS
+// VARIABLES GLOBALES
 // ==========================================
 let baseComercios = [];
 let baseProductosActivos = [];
@@ -689,11 +690,6 @@ let deudaMotoAcumulada = 0;
 let tipoLoginActual = "";
 const NUMERO_SOPORTE = "5493815110171";
 
-const AppStore = {
-    set: function(key, value) { localStorage.setItem(key, value); },
-    get: function(key) { return localStorage.getItem(key); }
-};
-
 // ==========================================
 // NUEVA FUNCIÓN: BOTÓN PLAY (TEXT-TO-SPEECH)
 // ==========================================
@@ -706,7 +702,6 @@ function reproducirFunciones() {
     const btn = document.getElementById('micBtn');
     const icon = document.getElementById('micIcon');
 
-    // Si ya está hablando, lo detenemos
     if (window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
         icon.className = 'ri-play-fill';
@@ -715,22 +710,21 @@ function reproducirFunciones() {
         return;
     }
 
-    // El texto oficial que detalla la app y el certificado de conducta
-    const textoLocucion = "Bienvenido a Delivery Moto. El Marketplace Premium donde los comercios publican y venden gratis. Los clientes compran de forma segura con cálculo exacto de envío por G P S. Para tu total tranquilidad, todo nuestro personal está registrado y cuenta con certificado de buena conducta, siendo auditados por inteligencia artificial. Entrá al Marketplace tocando el botón naranja para conocer y usar todas nuestras funciones.";
+    const textoLocucion = "Bienvenido a Delivery Moto. El Marketplace Premium donde los comercios publican y venden gratis. Los clientes compran de forma segura con cálculo exacto de envío por mapa. Para tu total tranquilidad, todo nuestro personal está registrado y cuenta con certificado de buena conducta, siendo auditados por inteligencia artificial. Entrá al Marketplace tocando el botón naranja para conocer y usar todas nuestras funciones.";
 
     const utterance = new SpeechSynthesisUtterance(textoLocucion);
-    utterance.lang = 'es-AR'; // Voz en Español
-    utterance.rate = 1.0;     // Velocidad normal
+    utterance.lang = 'es-AR'; 
+    utterance.rate = 1.0;     
 
     utterance.onstart = function() {
         btn.style.boxShadow = '0 0 0 18px rgba(22,163,74,0.3)';
-        icon.className = 'ri-stop-fill'; // Cambia el ícono a "Stop"
-        mostrarToast('🔊 Explicando funciones de la app...', 'success');
+        icon.className = 'ri-stop-fill'; 
+        mostrarToast('🔊 Reproduciendo funciones en voz alta...', 'success');
     };
 
     utterance.onend = function() {
         btn.style.boxShadow = '0 4px 15px rgba(22,163,74,.4)';
-        icon.className = 'ri-play-fill'; // Vuelve al ícono de Play
+        icon.className = 'ri-play-fill'; 
     };
 
     utterance.onerror = function() {
@@ -756,9 +750,6 @@ function auditarDocumentosIA() {
     }, 2500);
 }
 
-// ==========================================
-// TOAST SYSTEM Y LOGICA GENERAL ORIGINAL
-// ==========================================
 let miComercioLogueadoId = null; 
 
 function mostrarToast(msg, tipo) {
@@ -786,9 +777,6 @@ function mostrarToast(msg, tipo) {
     setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
-// ==========================================
-// NAVEGACIÓN Y MARKETPLACE
-// ==========================================
 function abrirModalMarketplace() { 
     const modal = document.getElementById('modalMarketplace');
     if(modal) {
@@ -830,9 +818,6 @@ function validarLogin() {
     if(tipoLoginActual === 'comercio') irPaso('comercio'); else irPaso('servimoto-onboarding');
 }
 
-// ==========================================
-// CLIENTES: FOTOS, MAPA Y CATÁLOGO
-// ==========================================
 function previewSelfieCliente(input) {
     if(input.files && input.files[0]) {
         const reader = new FileReader();
@@ -845,7 +830,7 @@ function previewSelfieCliente(input) {
             icono.style.display = 'none';
             txt1.textContent = '✅ Selfie Capturada';
             txt2.style.display = 'none';
-            AppStore.set('selfie_cliente', e.target.result);
+            window.AppStore.set('selfie_cliente', e.target.result);
             mostrarToast('Selfie guardada. El cadete te reconocerá.', 'success');
         }
         reader.readAsDataURL(input.files[0]);
@@ -860,7 +845,7 @@ function validarUbicacionCliente() {
     const dir = document.getElementById('inputDireccionCliente').value;
     const cel = document.getElementById('inputCelularCliente').value;
     if(!prov || !ciu || !dir || !cel) return mostrarToast('Completá Provincia, Ciudad, Dirección y Celular', 'error');
-    if(!AppStore.get('selfie_cliente')) return mostrarToast('La foto Selfie de seguridad es obligatoria', 'error');
+    if(!window.AppStore.get('selfie_cliente')) return mostrarToast('La foto Selfie de seguridad es obligatoria', 'error');
     filtrarComerciosPorCiudad();
     irPaso('lista-comercios');
 }
@@ -920,9 +905,6 @@ function verCatalogoComercio(idComercio, nombreComercio, direccionLocal) {
     irPaso('catalogo');
 }
 
-// ==========================================
-// COMERCIOS: PANEL DE ADMIN
-// ==========================================
 let tempImgPortada = "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150";
 function previewPortada(input) {
     if(input.files && input.files[0]) {
@@ -949,7 +931,7 @@ function previewSelfieComercioModal(input) {
             caja.style.backgroundImage = `url(${e.target.result})`;
             iconoContenedor.style.display = 'none';
             texto1.textContent = '✅ Selfie Verificada';
-            AppStore.set('selfie_seguridad_comercio', e.target.result);
+            window.AppStore.set('selfie_seguridad_comercio', e.target.result);
             mostrarToast('Selfie de seguridad vinculada a tu local', 'success');
         }
         reader.readAsDataURL(input.files[0]);
@@ -963,7 +945,7 @@ function guardarComercio() {
     const ciu = document.getElementById('comercioCiudad').value.trim();
     
     if(!nom || !dir || !prov || !ciu) return mostrarToast('Completá nombre, dirección, provincia y ciudad', 'error');
-    if(!AppStore.get('selfie_seguridad_comercio')) return mostrarToast('La foto Selfie de seguridad es obligatoria', 'error');
+    if(!window.AppStore.get('selfie_seguridad_comercio')) return mostrarToast('La foto Selfie de seguridad es obligatoria', 'error');
     
     if(!miComercioLogueadoId) {
         miComercioLogueadoId = Date.now();
@@ -1042,9 +1024,6 @@ function eliminarArticuloAdmin(id) {
     mostrarToast('Artículo eliminado', 'success');
 }
 
-// ==========================================
-// CADETES: RADAR Y TURNOS
-// ==========================================
 function toggleEstadoTrabajo() {
     estadoTrabajoServimoto = !estadoTrabajoServimoto;
     const btn = document.getElementById('btnEstadoTrabajo');
@@ -1084,9 +1063,6 @@ function simularViajeCadete() {
     mostrarToast('✅ Viaje cargado. Deuda sumada.', 'success');
 }
 
-// ==========================================
-// CARRITO, VIAJE EXPRESS Y MAPA GPS
-// ==========================================
 function enviarPedidoEspecial() {
     const dirOrigen = document.getElementById('dirOrigenEspecial').value;
     const ciuDestino = document.getElementById('ciuDestinoEspecial').value;
