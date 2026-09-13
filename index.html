@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -873,7 +874,7 @@
                 </button>
             </div>
 
-            <!-- PANEL CADETE RADAR -->
+            <!-- PANEL CADETE RADAR (MODIFICADO PARA PRODUCCIÓN) -->
             <div id="modal-step-servimoto" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 <div style="background:linear-gradient(135deg, #0f172a, #050505); border-radius:1.5rem; padding:22px; border:3px solid #ff6b00; color:white; box-shadow:0 15px 35px rgba(0,0,0,0.5);">
@@ -883,7 +884,6 @@
                     </div>
                     <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px; text-align:center;">Panel de Operación</h3>
                     
-                    <!-- AVISO OBLIGATORIO DEL APK -->
                     <div style="background:rgba(22,163,74,0.15); border:1px solid #4ade80; padding:10px; border-radius:8px; margin:10px 0; font-size:11.5px; text-align:center; color:#bbf7d0; font-weight:700;">
                         ⚠️ Recordá descargar el APK/PWA desde la página principal y reiniciar la app para que el radar tome la señal GPS en segundo plano.
                     </div>
@@ -898,16 +898,35 @@
                             <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
                         </button>
                     </div>
+
+                    <!-- NUEVA SECCIÓN DE PAGOS Y SOPORTE PARA PRODUCCIÓN -->
                     <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:20px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
                         <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">Deuda Acumulada a Pagar</div>
                         <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:46px; font-weight:800; color:white; line-height:1; margin-bottom:8px;">$0</div>
-                        <div style="font-size:13px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:6px 16px; border-radius:999px;" id="viajesMotoBadge">0 Viajes Realizados</div>
-                        <button onclick="simularViajeCadete()" style="margin-top:16px; width:100%; background:rgba(255,255,255,0.1); color:white; border:1px dashed rgba(255,255,255,0.3); padding:12px; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer;">+ SIMULAR VIAJE TERMINADO ($200)</button>
+                        <div style="font-size:13px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:6px 16px; border-radius:999px; margin-bottom: 12px;" id="viajesMotoBadge">0 Viajes Confirmados</div>
+                        
+                        <!-- Panel de Datos Bancarios Oficiales -->
+                        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:16px; border-radius:1.2rem; text-align:left; margin-bottom:16px;">
+                            <div style="font-size:12px; font-weight:800; color:#4ade80; margin-bottom:8px;"><i class="ri-bank-card-fill"></i> DATOS PARA LIQUIDAR DEUDA</div>
+                            <div style="font-size:14px; color:white; font-weight:700; margin-bottom:4px;">Alias: <span style="color:#ffd700; user-select:all;">noir.elite.ceo</span></div>
+                            <div style="font-size:14px; color:white; font-weight:700;">CBU: <span style="color:#ffd700; user-select:all;">0110257630025717844115</span></div>
+                        </div>
+
+                        <!-- Lista de viajes confirmados -->
+                        <div id="listaViajesCadete" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px; max-height:150px; overflow-y:auto; text-align:left;">
+                            <!-- Inyectado por JS -->
+                        </div>
+
+                        <label class="btn-primary" style="width:100%; padding:14px; font-size:14px; cursor:pointer; background:linear-gradient(135deg,#16a34a,#15803d); border:none; justify-content:center;">
+                            <i class="ri-upload-cloud-2-fill" style="font-size:20px;"></i> ENVIAR COMPROBANTE
+                            <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">
+                        </label>
+
+                        <!-- Botón de Soporte Técnico -->
+                        <button onclick="window.open('https://wa.me/5493816092676', '_blank')" style="margin-top:12px; width:100%; background:#2563eb; color:white; border:none; padding:12px; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.4);">
+                            <i class="ri-whatsapp-fill" style="font-size:18px; vertical-align:middle;"></i> <span style="vertical-align:middle;">SOPORTE TÉCNICO</span>
+                        </button>
                     </div>
-                    <label class="btn-primary" style="width:100%; padding:18px; font-size:14.5px; cursor:pointer; background:linear-gradient(135deg,#16a34a,#15803d); border:none; justify-content:center;">
-                        <i class="ri-upload-cloud-2-fill" style="font-size:22px;"></i> SUBIR COMPROBANTE Y AUDITAR
-                        <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">
-                    </label>
                 </div>
             </div>
 
@@ -916,12 +935,33 @@
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
                 <div class="step-indicator" style="color:#1d4ed8; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
                 <div style="display:flex; flex-direction:column; gap:12px;">
-                    <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira el Cadete? (Ej: Calle Origen Nro)">
+                    <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira el Cadete? (Ej: San Martín 100)">
                     <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;">
                         <option value="">Provincia Destino...</option>
-                        <option value="Tucumán" selected>Tucumán</option>
                         <option value="Buenos Aires">Buenos Aires</option>
-                        <option value="CABA">CABA</option>
+                        <option value="Catamarca">Catamarca</option>
+                        <option value="Chaco">Chaco</option>
+                        <option value="Chubut">Chubut</option>
+                        <option value="Córdoba">Córdoba</option>
+                        <option value="Corrientes">Corrientes</option>
+                        <option value="Entre Ríos">Entre Ríos</option>
+                        <option value="Formosa">Formosa</option>
+                        <option value="Jujuy">Jujuy</option>
+                        <option value="La Pampa">La Pampa</option>
+                        <option value="La Rioja">La Rioja</option>
+                        <option value="Mendoza">Mendoza</option>
+                        <option value="Misiones">Misiones</option>
+                        <option value="Neuquén">Neuquén</option>
+                        <option value="Río Negro">Río Negro</option>
+                        <option value="Salta">Salta</option>
+                        <option value="San Juan">San Juan</option>
+                        <option value="San Luis">San Luis</option>
+                        <option value="Santa Cruz">Santa Cruz</option>
+                        <option value="Santa Fe">Santa Fe</option>
+                        <option value="Santiago del Estero">Santiago del Estero</option>
+                        <option value="Tierra del Fuego">Tierra del Fuego</option>
+                        <option value="Tucumán" selected>Tucumán</option>
+                        <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
                     </select>
                     <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino...">
                     <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿De qué calle a qué calle? (Ej: San Martín 100 al 500)">
@@ -1003,10 +1043,25 @@
 
 </body>
 </html>
+
 <!-- Script de Google Maps con tu NUEVA API Key -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCW8skTMQsmY9yLESWqJ0OvcjAY43sMFnk&libraries=places"></script>
 
 <script>
+// ==========================================
+// TRUCO DE ORO: EVITAR QUE EL MAPA GRIS ROMPA LA APP
+// ==========================================
+window.gm_authFailure = function() {
+    console.warn("Google Maps bloqueado por facturación. Activando cálculo matemático de respaldo automático.");
+    const canvas = document.getElementById('googleMapCanvas');
+    const fallbackText = document.getElementById('mapFallbackText');
+    if(canvas) canvas.style.display = 'none';
+    if(fallbackText) fallbackText.style.display = 'flex';
+    
+    // Le bajamos el cobro de contingencia a 1.5km para que no sea carísimo si Google falla
+    calcularMatematicaEnvio("1.5");
+};
+
 // ==========================================
 // INSTALADOR NATIVO (APK / PWA) - ENERGY SOFTWARE
 // ==========================================
@@ -1804,6 +1859,7 @@ function activarRadar() {
     }
 }
 
+// LÓGICA DE PRODUCCIÓN: Confirmar viaje suma $200 de deuda automáticamente
 async function simularViajeCadete() {
     if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Activá tu turno y el radar primero', 'error');
     
@@ -1853,7 +1909,7 @@ async function procesarLiquidacionIA(input) {
 }
 
 // ==========================================
-// MAPA GPS DE GOOGLE - DIBUJO REAL EN PANTALLA
+// MAPA GPS DE GOOGLE - TRAZADO EXACTO Y DEBUG
 // ==========================================
 function abrirCarritoFinal() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
@@ -1892,46 +1948,63 @@ function abrirMapaMago() {
             if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
                 // VIENE DE VIAJE ESPECIAL / REMIS (De calle a calle)
                 let dirOrig = document.getElementById('dirOrigenEspecial').value.trim();
-                origenAddress = `${dirOrig}, Tucumán, Argentina`; 
+                let provDest = document.getElementById('selProvinciaEspecial').value.trim();
+                
+                // Forzamos un formato robusto para que Google siempre encuentre la calle
+                origenAddress = `${dirOrig}, ${provDest}, Argentina`; 
                 
                 let calleHastaCalle = document.getElementById('dirDestinoEspecial').value.trim();
                 let ciudadDest = document.getElementById('ciuDestinoEspecial').value.trim();
-                let provDest = document.getElementById('selProvinciaEspecial').value.trim();
                 destinoAddress = `${calleHastaCalle}, ${ciudadDest}, ${provDest}, Argentina`;
             } else {
                 // VIENE DEL CARRITO (Comida / Local)
-                destinoAddress = `${AppStore.get('cliente_dir')}, ${AppStore.get('cliente_ciu')}, ${AppStore.get('cliente_prov')}, Argentina`;
-                origenAddress = direccionOrigenCalculo ? `${direccionOrigenCalculo}, Tucumán, Argentina` : "San Miguel de Tucumán, Argentina";
+                let provCliente = AppStore.get('cliente_prov') || 'Tucumán';
+                destinoAddress = `${AppStore.get('cliente_dir')}, ${AppStore.get('cliente_ciu')}, ${provCliente}, Argentina`;
+                
+                // Fallback automático a Famaillá si no hay dirección calculada del local
+                origenAddress = direccionOrigenCalculo ? `${direccionOrigenCalculo}, Tucumán, Argentina` : "Famaillá, Tucumán, Argentina";
             }
             
             try {
                 if(!window.mapObj && canvas) {
                     window.mapObj = new google.maps.Map(canvas, { zoom: 14, center: {lat: -27.0544, lng: -65.4111}, disableDefaultUI: false });
                     window.directionsService = new google.maps.DirectionsService();
-                    window.directionsRenderer = new google.maps.DirectionsRenderer({ map: window.mapObj, suppressMarkers: false });
+                    
+                    // Renderer oficial de Google para dibujar la línea y los pines
+                    window.directionsRenderer = new google.maps.DirectionsRenderer({ 
+                        map: window.mapObj, 
+                        suppressMarkers: false // Muestra los pines A y B en el mapa
+                    });
                 }
 
                 if(window.mapObj) google.maps.event.trigger(window.mapObj, 'resize');
 
                 if(window.directionsService) {
                     window.directionsService.route({
-                        origin: origenAddress, destination: destinoAddress, travelMode: 'DRIVING'
+                        origin: origenAddress, 
+                        destination: destinoAddress, 
+                        travelMode: 'DRIVING' // Traza la ruta asumiendo que vamos en vehículo/moto
                     }, function(response, status) {
                         if (status === 'OK') {
+                            // Dibuja la ruta en el mapa
                             window.directionsRenderer.setDirections(response);
+                            
+                            // Calcula distancia exacta en kilómetros y le dice a la matemática
                             const distanceMeters = response.routes[0].legs[0].distance.value;
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
-                            // OJO: Si falla la ruta, NO ocultamos el mapa. Solo tiramos la alerta.
-                            console.error("Directions falló: " + status);
-                            mostrarToast("Error trazando la ruta exacta. Calculando estimado.", "error");
-                            calcularMatematicaEnvio("2.5"); 
+                            // Si falla la ruta, muestra el error de Google en la consola para auditar
+                            console.error("Fallo el Directions API. Motivo de Google:", status);
+                            mostrarToast("Dirección no encontrada por GPS. Calculando aproximado.", "error");
+                            
+                            // Aplica tarifa base de contingencia pero NO esconde el mapa
+                            calcularMatematicaEnvio("1.5"); 
                         } 
                     });
                 }
             } catch(e) {
-                console.error("Error cargando Google Maps", e);
-                calcularMatematicaEnvio("2.5");
+                console.error("Error crítico cargando Google Maps:", e);
+                calcularMatematicaEnvio("1.5");
             }
         }, 400); 
     }, 100); 
@@ -1942,6 +2015,7 @@ function calcularMatematicaEnvio(km) {
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
+    // MATEMÁTICA EXACTA DEL ENVÍO
     const tarifaBase = esNoche ? 3000 : 2200; 
     if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Costo Envío Noche' : 'Costo Envío Día';
     
@@ -2017,6 +2091,7 @@ function renderizarCarritoDOM() {
     }).join('');
 
     cont.innerHTML = listHTML;
+    // Solo muestra la comida en el subtotal del carrito
     totalUI.textContent = '$' + subtotal.toLocaleString('es-AR');
 }
 
@@ -2050,6 +2125,7 @@ function enviarPedidoEspecial() {
     AppStore.set('cliente_ciu', ciuDestino);
     AppStore.set('cliente_prov', provDestino);
     
+    // El precio de la comida es CERO porque es solo un servicio de traslado
     carritoGlobal.push({ nombre: "📦 Viaje Especial (De calle a calle)", precio: 0, detalle: txt });
     cerrarModalMarketplace();
     abrirMapaMago();
