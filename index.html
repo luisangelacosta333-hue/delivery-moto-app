@@ -1043,22 +1043,11 @@
 
 </body>
 </html>
+
 <!-- Script de Google Maps con tu NUEVA API Key -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCW8skTMQsmY9yLESWqJ0OvcjAY43sMFnk&libraries=places"></script>
 
 <script>
-// ==========================================
-// TRUCO DE ORO: EVITAR QUE EL MAPA GRIS ROMPA LA APP
-// ==========================================
-window.gm_authFailure = function() {
-    console.warn("Google Maps bloqueado por facturación. Activando cálculo de contingencia.");
-    const canvas = document.getElementById('googleMapCanvas');
-    const fallbackText = document.getElementById('mapFallbackText');
-    if(canvas) canvas.style.display = 'none';
-    if(fallbackText) fallbackText.style.display = 'flex';
-    calcularMatematicaEnvio("1.5");
-};
-
 // ==========================================
 // INSTALADOR NATIVO (APK / PWA) - ENERGY SOFTWARE
 // ==========================================
@@ -1905,7 +1894,7 @@ async function procesarLiquidacionIA(input) {
 }
 
 // ==========================================
-// MAPA GPS DE GOOGLE - TRAZADO INTELIGENTE (SIN CARTELES MOLESTOS)
+// MAPA GPS DE GOOGLE - LIMPIO Y DIRECTO
 // ==========================================
 
 function abrirMapaMago() {
@@ -1915,19 +1904,13 @@ function abrirMapaMago() {
     
     modalMapa.classList.add('show');
     
-    const fallbackText = document.getElementById('mapFallbackText');
+    // MOSTRAR MAPA INMEDIATAMENTE - CHAU PANTALLA NEGRA
     const canvas = document.getElementById("googleMapCanvas");
+    if(canvas) canvas.style.display = 'block';
 
-    // Mostramos la motito animada SIEMPRE al abrir
-    if(canvas) canvas.style.display = 'none';
-    if(fallbackText) {
-        fallbackText.style.display = 'flex';
-        fallbackText.innerHTML = `
-            <div class="animate-moto" style="font-size:64px; color:#ff6b00;"><i class="ri-motorbike-fill"></i></div>
-            <div style="font-family:'Sora',sans-serif; font-weight:800; color:white; font-size:18px; margin-top:16px;">Calculando ruta satelital...</div>
-            <div style="font-size:12px; font-weight:600; color:#cbd5e1; max-width:250px;">Conectando origen y destino...</div>
-        `;
-    }
+    // BORRAR CUALQUIER CARTEL DE FALLBACK QUE HAYA QUEDADO EN EL HTML
+    const fallbackText = document.getElementById('mapFallbackText');
+    if(fallbackText) fallbackText.style.display = 'none';
 
     setTimeout(() => {
         const box = document.getElementById('mapaBox');
@@ -1937,6 +1920,7 @@ function abrirMapaMago() {
             let destinoAddress = "";
             let origenAddress = "";
 
+            // TOMAR DIRECCIONES CRUDAS COMO LAS PUSO EL USUARIO (SIN FILTROS QUE ROMPEN)
             if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
                 let dirOrig = document.getElementById('dirOrigenEspecial').value.trim();
                 let provDest = document.getElementById('selProvinciaEspecial').value.trim() || "Tucumán";
@@ -1951,58 +1935,39 @@ function abrirMapaMago() {
                 let dirCli = AppStore.get('cliente_dir');
                 
                 destinoAddress = `${dirCli}, ${ciuCliente}, ${provCliente}, Argentina`;
-                let dirLoc = direccionOrigenCalculo ? direccionOrigenCalculo : "Plaza Principal";
+                let dirLoc = direccionOrigenCalculo ? direccionOrigenCalculo : "Famaillá";
                 origenAddress = `${dirLoc}, ${ciuCliente}, ${provCliente}, Argentina`;
             }
             
             try {
                 if(!window.mapObj && canvas) {
-                    window.mapObj = new google.maps.Map(canvas, { zoom: 14, center: {lat: -27.0544, lng: -65.4111}, disableDefaultUI: false });
+                    window.mapObj = new google.maps.Map(canvas, { zoom: 15, center: {lat: -27.0544, lng: -65.4111}, disableDefaultUI: false });
                     window.directionsService = new google.maps.DirectionsService();
                     window.directionsRenderer = new google.maps.DirectionsRenderer({ map: window.mapObj, suppressMarkers: false });
                 }
 
                 if(window.mapObj) google.maps.event.trigger(window.mapObj, 'resize');
 
-                // LÓGICA DE REINTENTO (LA MAGIA PARA EL INTERIOR)
-                function intentarTrazado(orig, dest, esReintento) {
+                if(window.directionsService) {
                     window.directionsService.route({
-                        origin: orig, 
-                        destination: dest, 
+                        origin: origenAddress, 
+                        destination: destinoAddress, 
                         travelMode: 'DRIVING'
                     }, function(response, status) {
                         if (status === 'OK') {
-                            // ÉXITO: Ocultar la motito y mostrar el mapa con la línea azul
-                            if(fallbackText) fallbackText.style.display = 'none';
-                            if(canvas) canvas.style.display = 'block';
-
+                            // Dibuja la línea azul y calcula la distancia real
                             window.directionsRenderer.setDirections(response);
                             const distanceMeters = response.routes[0].legs[0].distance.value;
-                            calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1)); // Pasa la distancia real (ej: 1.2, 2.5)
+                            calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
-                            if (!esReintento) {
-                                // REINTENTO: Si google no encuentra el número de la casa, lo borramos y buscamos solo la calle.
-                                console.warn("Google no encontró la casa exacta. Buscando la calle...");
-                                let origSinNum = orig.replace(/\d+/g, '').trim();
-                                let destSinNum = dest.replace(/\d+/g, '').trim();
-                                intentarTrazado(origSinNum, destSinNum, true);
-                            } else {
-                                // FALLO SILENCIOSO: Mostramos el mapa igual y no ponemos ningún cartel rojo ni naranja.
-                                console.error("Fallo definitivo de ruta:", status);
-                                if(fallbackText) fallbackText.style.display = 'none';
-                                if(canvas) canvas.style.display = 'block';
-                                mostrarToast("Calle compleja. Trazando radio aproximado.", "error");
-                                calcularMatematicaEnvio("1.0"); 
-                            }
+                            // SI FALLA, CALLADO LA BOCA. NO HAY CARTELES.
+                            console.error("Error al trazar ruta:", status);
+                            calcularMatematicaEnvio("1.0"); // Si se cae Google, cobra la base para no romper la app.
                         } 
                     });
                 }
-
-                if(window.directionsService) {
-                    intentarTrazado(origenAddress, destinoAddress, false);
-                }
             } catch(e) {
-                console.error("Error crítico en Google Maps:", e);
+                console.error("Error en motor de mapa:", e);
                 calcularMatematicaEnvio("1.0");
             }
         }, 400); 
@@ -2014,7 +1979,7 @@ function calcularMatematicaEnvio(km) {
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
-    // MATEMÁTICA EXACTA: Base $2200 o $3000 hasta 10 cuadras. Luego +$100 x cuadra.
+    // MATEMÁTICA EXACTA: Base $2200 o $3000 hasta 10 cuadras. Luego +$100 x cuadra extra.
     const tarifaBase = esNoche ? 3000 : 2200; 
     if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Costo Envío Noche' : 'Costo Envío Día';
     
@@ -2181,4 +2146,3 @@ async function mandarPedidoSoporte() {
     }, 1200); 
 }
 </script>
-
