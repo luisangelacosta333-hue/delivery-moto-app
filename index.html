@@ -1111,7 +1111,6 @@ const NUMERO_SOPORTE = "5493816092676";
 let tempImgPortada = null;
 let tempImgBase64 = null;
 
-// Variables para la animación de la moto en el mapa
 let motoMarker = null;
 let animacionInterval = null;
 
@@ -1127,7 +1126,9 @@ function activarMicrofono() {
 
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel(); 
-        const mensaje = "Energy Software de la nueva empresa de tecnología trae Delivery Moto. Una aplicación que conecta ServiMoto con kioscos, negocios y clientes. Tenemos a los ServiMoto calificados con certificado de buena conducta para prestar un buen servicio. Los comerciantes pueden publicar y hacer sus ventas y llega rápido toda la información. ¡Y ahora vamos al marketplace!";
+        
+        // NUEVO GUION DE VENTAS PARA EL LOCUTOR
+        const mensaje = "Atención comerciantes, farmacias y negocios. Comiencen a publicar y aumenten sus ventas con Delivery Moto. Nuestros repartidores son personal calificado y presentan certificado de buena conducta. Sumate para que esta inmensa comunidad genere trabajo seguro para todos. ¡Vamos al marketplace!";
         
         const speech = new SpeechSynthesisUtterance(mensaje);
         speech.lang = 'es-AR';
@@ -1475,7 +1476,7 @@ async function guardarPerfilCliente() {
 }
 
 // ==========================================
-// BANDEJA DE ENTRADA DEL COMERCIANTE 
+// BANDEJA DE ENTRADA DEL COMERCIANTE Y LLAMADO DE MOTO
 // ==========================================
 function agregarPedidoBandejaComercio(total, destino) {
     pedidosComercio.unshift({ total: total, destino: destino });
@@ -1500,14 +1501,21 @@ function renderizarBandejaPedidos() {
         return;
     }
     
+    // NUEVO BOTÓN: "LLAMAR SERVIMOTO" PARA CONECTAR AL RADAR
     bandeja.innerHTML = pedidosComercio.map((p, idx) => `
-        <div style="background:#f0fdf4; border:2px solid #4ade80; padding:16px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 6px 15px rgba(74,222,128,0.2);">
-            <div>
-                <div style="color:#15803d; font-weight:800; font-size:16px;">🛒 Pedido Recibido</div>
-                <div style="color:#0f172a; font-weight:800; font-size:14px; margin-top:4px;">Total Comida: $${p.total.toLocaleString('es-AR')}</div>
-                <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
+        <div style="background:#f0fdf4; border:2px solid #4ade80; padding:16px; border-radius:12px; margin-bottom:12px; box-shadow:0 6px 15px rgba(74,222,128,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div>
+                    <div style="color:#15803d; font-weight:800; font-size:16px;">🛒 Pedido Recibido</div>
+                    <div style="color:#0f172a; font-weight:800; font-size:14px; margin-top:4px;">Comida: $${p.total.toLocaleString('es-AR')}</div>
+                    <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
+                </div>
+                <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:12px; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
             </div>
-            <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:12px; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
+            
+            <button onclick="llamarMotoDesdeLocal(${idx})" style="width:100%; background:#2563eb; color:white; border:none; border-radius:8px; padding:12px; font-weight:800; font-size:14px; cursor:pointer; box-shadow:0 4px 10px rgba(37,99,235,0.3);">
+                <i class="ri-radar-line animate-ring" style="margin-right:5px;"></i> LLAMAR SERVIMOTO
+            </button>
         </div>
     `).join('');
 }
@@ -1516,6 +1524,26 @@ function eliminarPedidoComercio(idx) {
     pedidosComercio.splice(idx, 1);
     mostrarToast('Notificación archivada', 'success');
     renderizarBandejaPedidos();
+}
+
+// LOGICA: EL COMERCIANTE TOCA PARA LLAMAR A LA MOTO MÁS CERCANA
+function llamarMotoDesdeLocal(idx) {
+    mostrarToast("📡 Emitiendo señal al radar...", "success");
+    
+    // Dispara el audio avisando al cadete
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        let msg = new SpeechSynthesisUtterance("Atención, tenés un nuevo envío en el radar.");
+        msg.lang = 'es-AR';
+        msg.rate = 1.1;
+        window.speechSynthesis.speak(msg);
+    }
+    
+    // Simula la confirmación después de unos segundos
+    setTimeout(() => {
+        mostrarToast("✅ ¡Un cadete aceptó el viaje! Está en camino al local.", "success");
+        // Opcional: eliminarPedidoComercio(idx) si querés que desaparezca de la lista al confirmar
+    }, 4000);
 }
 
 // ==========================================
@@ -1722,6 +1750,9 @@ async function pausarArticuloAdmin(idProd, estadoActual) {
     }
 }
 
+// ==========================================
+// SOLUCIÓN: BOTÓN FLOTANTE PARA SALIR DE PANTALLA COMPLETA
+// ==========================================
 function togglePantallaCompletaArticulos() {
     const contenedor = document.getElementById('contenedorListaArticulos');
     const lista = document.getElementById('listaAdminComercio');
@@ -1729,17 +1760,32 @@ function togglePantallaCompletaArticulos() {
     const texto = document.getElementById('textExpandir');
     
     if(contenedor.classList.contains('expanded-container')) {
+        // CERRAR PANTALLA COMPLETA
         contenedor.classList.remove('expanded-container');
         lista.classList.remove('expanded-list-content');
-        icon.className = 'ri-fullscreen-line';
-        texto.textContent = 'Expandir';
+        if(icon) icon.className = 'ri-fullscreen-line';
+        if(texto) texto.textContent = 'Expandir';
         document.body.style.overflow = '';
+        
+        // Removemos el botón gigante de "VOLVER"
+        let btnSalir = document.getElementById('btnSalirPantallaCompleta');
+        if(btnSalir) btnSalir.remove();
+        
     } else {
+        // ABRIR PANTALLA COMPLETA
         contenedor.classList.add('expanded-container');
         lista.classList.add('expanded-list-content');
-        icon.className = 'ri-fullscreen-exit-line';
-        texto.textContent = 'Minimizar';
+        if(icon) icon.className = 'ri-fullscreen-exit-line';
+        if(texto) texto.textContent = 'Minimizar';
         document.body.style.overflow = 'hidden';
+        
+        // Creamos y mostramos un botón gigante "VOLVER" abajo de todo
+        let btnSalir = document.createElement('button');
+        btnSalir.id = 'btnSalirPantallaCompleta';
+        btnSalir.innerHTML = '<i class="ri-close-line" style="font-size:20px; vertical-align:middle;"></i> <span style="vertical-align:middle;">CERRAR Y VOLVER</span>';
+        btnSalir.style.cssText = 'position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#f97316; color:white; padding:14px 28px; border-radius:30px; font-weight:800; z-index:999999; border:none; box-shadow:0 10px 25px rgba(249,115,22,0.6); font-size:15px; cursor:pointer;';
+        btnSalir.onclick = togglePantallaCompletaArticulos;
+        document.body.appendChild(btnSalir);
     }
 }
 
@@ -1953,7 +1999,7 @@ function abrirMapaMago() {
                     window.directionsRenderer = new google.maps.DirectionsRenderer({ 
                         map: window.mapObj, 
                         suppressMarkers: false,
-                        polylineOptions: { strokeColor: "#f97316", strokeWeight: 5 } // Naranja para que resalte
+                        polylineOptions: { strokeColor: "#f97316", strokeWeight: 5 }
                     });
                 }
 
@@ -1963,16 +2009,16 @@ function abrirMapaMago() {
                     window.directionsService.route({
                         origin: origenAddress, 
                         destination: destinoAddress, 
-                        travelMode: google.maps.TravelMode.BICYCLING // <--- MAGIA ACÁ: Busca la ruta más corta/directa
+                        travelMode: google.maps.TravelMode.BICYCLING 
                     }, function(response, status) {
                         if (status === 'OK') {
                             window.directionsRenderer.setDirections(response);
                             
                             const ruta = response.routes[0];
-                            const distanceMeters = ruta.legs[0].distance.value; // <--- METROS EXACTOS
+                            const distanceMeters = ruta.legs[0].distance.value; 
                             
                             iniciarAnimacionMoto(ruta.overview_path);
-                            calcularMatematicaEnvio(distanceMeters); // <--- PASAMOS METROS A LA MATEMÁTICA
+                            calcularMatematicaEnvio(distanceMeters); 
                         } else { 
                             alert("⚠️ ATENCIÓN: Google Maps no pudo trazar la ruta.\n\nMotivo (Status): " + status + "\n\nOrigen enviado: " + origenAddress + "\nDestino enviado: " + destinoAddress + "\n\n* Si dice REQUEST_DENIED: Habilitá la 'Directions API' en Google Cloud.\n* Si dice ZERO_RESULTS: Las direcciones son muy cortas o no tienen número.");
                             
@@ -1989,7 +2035,6 @@ function abrirMapaMago() {
     }, 100); 
 }
 
-// NUEVA FUNCIÓN: Anima la moto por el trayecto del mapa
 function iniciarAnimacionMoto(path) {
     if (motoMarker) motoMarker.setMap(null); 
     if (animacionInterval) clearInterval(animacionInterval);
@@ -2020,14 +2065,12 @@ function iniciarAnimacionMoto(path) {
 function calcularMatematicaEnvio(distancia) {
     let metrosReales = 0;
     
-    // Si la distancia llega como texto "1.0" por culpa del fallback de error
     if (typeof distancia === 'string' && distancia.includes('.')) {
          metrosReales = parseFloat(distancia) * 1000;
     } else {
-         metrosReales = parseInt(distancia); // Valor exacto enviado por Google
+         metrosReales = parseInt(distancia); 
     }
 
-    // Matemática de precisión: 1 cuadra son 100 metros. (Ej: 745m -> 7 cuadras)
     let cuadrasTotales = Math.round(metrosReales / 100);
 
     const horaActual = new Date().getHours();
@@ -2040,7 +2083,6 @@ function calcularMatematicaEnvio(distancia) {
     
     let costoExtra = 0;
     
-    // Si pasa de 10 cuadras, cobraremos $100 por cada cuadra extra
     if(cuadrasTotales > 10) { 
         let cuadrasExtra = cuadrasTotales - 10;
         costoExtra = cuadrasExtra * 100;
@@ -2048,7 +2090,6 @@ function calcularMatematicaEnvio(distancia) {
     
     costoEnvioCalculado = tarifaBase + costoExtra;
     
-    // Mostramos los kilómetros con dos decimales (Ej: 0.75 km)
     let kmFormato = (metrosReales / 1000).toFixed(2);
     
     if(document.getElementById('mapaKm')) {
@@ -2067,9 +2108,23 @@ function calcularMatematicaEnvio(distancia) {
     }
 }
 
+// ==========================================
 // LOGICA FINAL DE CARRITO Y WHATSAPP
+// ==========================================
 function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); abrirCarritoFinal(); }
 function cerrarCarrito() { document.getElementById('modalCarritoFinal').classList.remove('show'); }
+
+// SOLUCIÓN: CAMBIAR LA DIRECCIÓN DE ENTREGA EN EL CARRITO SI ESTÁS EN OTRO LADO
+function pedirNuevaDireccionEnvio() {
+    let dirActual = AppStore.get('cliente_dir') || "";
+    let nuevaDir = prompt("🛵 Ingresá la dirección exacta donde estás ahora (Ej: San Martín 850):", dirActual);
+    
+    if(nuevaDir && nuevaDir.trim() !== "") {
+        AppStore.set('cliente_dir', nuevaDir.trim());
+        renderizarCarritoDOM();
+        mostrarToast("✅ Dirección de entrega actualizada", "success");
+    }
+}
 
 function renderizarCarritoDOM() {
     const cont = document.getElementById('contenidoCarrito');
@@ -2084,20 +2139,26 @@ function renderizarCarritoDOM() {
     
     listHTML += `
     <div style="background:white; padding:14px; border-radius:12px; margin-bottom:14px; border:2px solid #e2e8f0; font-size:13px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
-        <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:8px;">
+        <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:12px;">
             <i class="ri-store-3-fill" style="color:#ff6b00; font-size:16px;"></i>
             <div>
                 <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase;">Retira en (Local/Origen):</div>
                 <div style="color:#0f172a; font-weight:700;">${direccionOrigenCalculo || 'Local central'}</div>
             </div>
         </div>
-        <div style="height:1px; background:#e2e8f0; margin-bottom:8px;"></div>
-        <div style="display:flex; align-items:flex-start; gap:8px;">
-            <i class="ri-map-pin-user-fill" style="color:#16a34a; font-size:16px;"></i>
-            <div>
-                <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase;">Entrega en (Cliente/Destino):</div>
-                <div style="color:#0f172a; font-weight:700;">${dirComprador}, ${ciuComprador}</div>
+        
+        <div style="height:1px; background:#e2e8f0; margin-bottom:12px;"></div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:flex-start; gap:8px;">
+                <i class="ri-map-pin-user-fill" style="color:#16a34a; font-size:16px;"></i>
+                <div>
+                    <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase;">Entrega en (Cliente/Destino):</div>
+                    <div style="color:#0f172a; font-weight:700;">${dirComprador}, ${ciuComprador}</div>
+                </div>
             </div>
+            <!-- BOTÓN PARA CAMBIAR DIRECCIÓN -->
+            <button onclick="pedirNuevaDireccionEnvio()" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:8px; font-weight:800; font-size:11px; cursor:pointer; box-shadow:0 2px 6px rgba(59,130,246,0.3);">CAMBIAR</button>
         </div>
     </div>`;
 
