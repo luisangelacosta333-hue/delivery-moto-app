@@ -1042,7 +1042,7 @@
 
 </body>
 </html>
-<!-- Script de Google Maps con la API Key (Con CallBack asíncrono y Anti-Bloqueos) -->
+<!-- Script de Google Maps con la API Key -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
 
 <script>
@@ -1051,8 +1051,14 @@
 // ==========================================
 window.gm_authFailure = function() {
     console.warn("Google Maps bloqueado por facturación. Activando cálculo matemático de respaldo automático.");
-    // Esto se ejecuta en milisegundos si Google falla, salvando la venta.
-    calcularMatematicaEnvio("2.5");
+    // Si Google tira el error gris, ocultamos el mapa para que no se vea feo
+    const canvas = document.getElementById('googleMapCanvas');
+    const fallbackText = document.getElementById('mapFallbackText');
+    if(canvas) canvas.style.display = 'none';
+    if(fallbackText) fallbackText.style.display = 'flex';
+    
+    // Le bajamos el cobro de contingencia a 1.5km para que no sea carísimo si Google falla
+    calcularMatematicaEnvio("1.5");
 };
 
 // ==========================================
@@ -1077,7 +1083,8 @@ function descargarAPK() {
             deferredPrompt = null;
         });
     } else {
-        mostrarToast('La App ya está instalada o abrila desde Google Chrome.', 'error');
+        // Alerta instructiva obligatoria si el botón automático falla en algunos celulares
+        alert('📲 PARA INSTALAR LA APP:\n\n1. Toca los 3 puntitos (⋮) en la esquina superior derecha de tu navegador Chrome.\n2. Selecciona "Agregar a la pantalla principal" o "Instalar aplicación".\n\n⚠️ IMPORTANTE: Los cadetes DEBEN instalar la App para que el radar GPS no se corte al apagar la pantalla.');
     }
 }
 
@@ -1188,7 +1195,7 @@ async function subirImagenBucket(base64Str, rutaGuardado) {
 }
 
 // ==========================================
-// NAVEGACIÓN
+// NAVEGACIÓN Y FEED
 // ==========================================
 function quitarAcentos(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; }
 function abrirModalMarketplace() { document.getElementById('modalMarketplace').classList.add('show'); document.body.style.overflow = 'hidden'; irPaso(1); }
@@ -1204,9 +1211,6 @@ function irPaso(paso) {
     }
 }
 
-// ==========================================
-// LÓGICA DE FEED (CONECTADA A SUPABASE)
-// ==========================================
 function filtrarFeedGlobal(categoriaCat) {
     if (categoriaCat !== undefined) categoriaActiva = quitarAcentos(categoriaCat);
     cargarYRenderizarFeed();
@@ -1229,16 +1233,9 @@ async function cargarYRenderizarFeed() {
 
         if(errC || errP) throw new Error("Error leyendo DB");
 
-        // Datos de Demo si la base de datos está vacía para probar UX
         if(!dbComercios || dbComercios.length === 0) {
-            dbComercios = [
-                { id: "test1", nombre: "Pizzería Roma", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Lavalle 200", categoria: "pizza" },
-                { id: "test2", nombre: "Kiosco Mamoly", provincia: "Tucumán", ciudad: "Famaillá", direccion: "Azcuénaga 474", categoria: "kiosco" }
-            ];
-            dbProductos = [
-                { id: "p1", id_comercio: "test1", nombre: "Pizza Especial Calabresa", precio: 8500, img_producto: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=150", pausado: false },
-                { id: "p2", id_comercio: "test2", nombre: "Gaseosa Pepsi 1 Litro", precio: 2800, img_producto: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?auto=format&fit=crop&w=150", pausado: false }
-            ];
+            dbComercios = [];
+            dbProductos = [];
         }
 
         let comerciosValidos = dbComercios.filter(c => {
@@ -1290,7 +1287,6 @@ async function cargarYRenderizarFeed() {
     }
 }
 
-// LOGICA CLAVE: Freno de seguridad para comprar
 function intentarComprar(idProducto, nombre, precio, direccionComercio) {
     productoPendienteAdd = { id: idProducto, nombre: nombre, precio: parseFloat(precio), direccion: direccionComercio };
     
@@ -1327,6 +1323,16 @@ function procesarAgregadoCarrito() {
     }
     
     productoPendienteAdd = null; 
+}
+
+function abrirCarritoFinal() {
+    if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
+    cerrarModalMarketplace();
+    const modalCarrito = document.getElementById('modalCarritoFinal');
+    if(modalCarrito) {
+        modalCarrito.classList.add('show');
+        renderizarCarritoDOM();
+    }
 }
 
 // ==========================================
@@ -1383,7 +1389,6 @@ async function validarLogin() {
             renderizarAdminComercio(); 
             renderizarBandejaPedidos(); 
         } else if(tipoLoginActual === 'cadete') {
-            // Verifica si el cadete ya está en la Base de Datos para restaurar deudas
             let { data: cadDB } = await supabaseClient.from('moto_cadetes').select('*').eq('id', sessionActual.id).single();
             if(cadDB) {
                 viajesMotoCount = cadDB.viajes_realizados || 0;
@@ -1870,7 +1875,6 @@ async function simularViajeCadete() {
         document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
         document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
         
-        // Agregar al panel de historial visual
         const lista = document.getElementById('listaViajesCadete');
         if(lista) {
             const div = document.createElement('div');
@@ -1897,7 +1901,7 @@ async function procesarLiquidacionIA(input) {
             document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
             
             const lista = document.getElementById('listaViajesCadete');
-            if(lista) lista.innerHTML = ''; // Limpia el historial tras pagar
+            if(lista) lista.innerHTML = ''; 
             
             mostrarToast('✅ Pago validado. Deuda en cero.', 'success');
         }, 2500);
@@ -1924,6 +1928,12 @@ function abrirMapaMago() {
     
     modalMapa.classList.add('show');
     
+    // Ocultar el texto de fallback por defecto al abrir
+    const fallbackText = document.getElementById('mapFallbackText');
+    if(fallbackText) fallbackText.style.display = 'none';
+    const canvas = document.getElementById("googleMapCanvas");
+    if(canvas) canvas.style.display = 'block';
+
     setTimeout(() => {
         const box = document.getElementById('mapaBox');
         if(box) {
@@ -1937,21 +1947,20 @@ function abrirMapaMago() {
 
             if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
                 // VIENE DE VIAJE ESPECIAL / REMIS (De calle a calle)
-                origenAddress = document.getElementById('dirOrigenEspecial').value.trim() + ", Argentina";
+                let dirOrig = document.getElementById('dirOrigenEspecial').value.trim();
+                origenAddress = `${dirOrig}, Tucumán, Argentina`; // Contexto robusto para Google Maps
+                
                 let calleHastaCalle = document.getElementById('dirDestinoEspecial').value.trim();
                 let ciudadDest = document.getElementById('ciuDestinoEspecial').value.trim();
                 let provDest = document.getElementById('selProvinciaEspecial').value.trim();
                 destinoAddress = `${calleHastaCalle}, ${ciudadDest}, ${provDest}, Argentina`;
             } else {
                 // VIENE DEL CARRITO (Comida / Local)
-                destinoAddress = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu') + ", " + AppStore.get('cliente_prov') + ", Argentina";
-                origenAddress = direccionOrigenCalculo ? (direccionOrigenCalculo + ", Argentina") : "Tucumán, Argentina";
+                destinoAddress = `${AppStore.get('cliente_dir')}, ${AppStore.get('cliente_ciu')}, ${AppStore.get('cliente_prov')}, Argentina`;
+                origenAddress = direccionOrigenCalculo ? `${direccionOrigenCalculo}, Tucumán, Argentina` : "San Miguel de Tucumán, Argentina";
             }
             
             try {
-                const canvas = document.getElementById("googleMapCanvas");
-                if(document.getElementById('mapFallbackText')) document.getElementById('mapFallbackText').style.display = 'none';
-
                 if(!window.mapObj && canvas) {
                     window.mapObj = new google.maps.Map(canvas, { zoom: 14, center: {lat: -27.0544, lng: -65.4111}, disableDefaultUI: false });
                     window.directionsService = new google.maps.DirectionsService();
@@ -1969,14 +1978,20 @@ function abrirMapaMago() {
                             const distanceMeters = response.routes[0].legs[0].distance.value;
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
-                            if(document.getElementById('mapFallbackText')) document.getElementById('mapFallbackText').style.display = 'flex';
-                            calcularMatematicaEnvio("2.5"); 
+                            // Si google tira error por dirección no encontrada u otra cosa
+                            if(canvas) canvas.style.display = 'none';
+                            if(fallbackText) {
+                                fallbackText.style.display = 'flex';
+                                fallbackText.innerHTML = '<div style="font-size:40px; color:#ff6b00;"><i class="ri-alert-fill"></i></div><div style="color:white; font-weight:800; font-size:16px; margin-top:10px;">Calculando tarifa base de contingencia...</div>';
+                            }
+                            calcularMatematicaEnvio("1.5"); 
                         } 
                     });
                 }
             } catch(e) {
-                if(document.getElementById('mapFallbackText')) document.getElementById('mapFallbackText').style.display = 'flex';
-                calcularMatematicaEnvio("2.5");
+                if(canvas) canvas.style.display = 'none';
+                if(fallbackText) fallbackText.style.display = 'flex';
+                calcularMatematicaEnvio("1.5");
             }
         }, 400); 
     }, 100); 
