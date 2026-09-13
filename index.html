@@ -1052,8 +1052,6 @@
 // ELIMINAMOS LA PANTALLA NEGRA DE GOOGLE MAPS
 // ==========================================
 window.gm_authFailure = function() {
-    // Si Google falla por facturación, YA NO ocultamos el mapa.
-    // Solo forzamos la matemática base por seguridad para no romper la app.
     calcularMatematicaEnvio("1.0"); 
 };
 
@@ -1973,12 +1971,12 @@ function abrirMapaMago() {
                             const ruta = response.routes[0];
                             const distanceMeters = ruta.legs[0].distance.value;
                             
-                            // Llamamos a la animación de la motito
                             iniciarAnimacionMoto(ruta.overview_path);
-
-                            // Calculamos precios y cuadras
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
+                            // 🚨 ALERTA DE DIAGNÓSTICO PARA VER QUÉ FALLA EN EL CELULAR 🚨
+                            alert("⚠️ ATENCIÓN: Google Maps no pudo trazar la ruta.\n\nMotivo (Status): " + status + "\n\nOrigen enviado: " + origenAddress + "\nDestino enviado: " + destinoAddress + "\n\n* Si dice REQUEST_DENIED: Habilitá la 'Directions API' en Google Cloud.\n* Si dice ZERO_RESULTS: Las direcciones son muy cortas o no tienen número.");
+                            
                             console.error("Google no dibujó la línea. Motivo:", status);
                             calcularMatematicaEnvio("1.0"); 
                         } 
@@ -1994,10 +1992,9 @@ function abrirMapaMago() {
 
 // NUEVA FUNCIÓN: Anima la moto por el trayecto del mapa
 function iniciarAnimacionMoto(path) {
-    if (motoMarker) motoMarker.setMap(null); // Borra la anterior si existe
+    if (motoMarker) motoMarker.setMap(null); 
     if (animacionInterval) clearInterval(animacionInterval);
 
-    // Ícono de la motito (puedes cambiar la URL por una propia de tu logo/diseño si querés)
     const iconoMoto = {
         url: "https://cdn-icons-png.flaticon.com/512/3112/3112618.png", 
         scaledSize: new google.maps.Size(40, 40),
@@ -2012,11 +2009,10 @@ function iniciarAnimacionMoto(path) {
     });
 
     let i = 0;
-    // Mueve la moto cada 300 milisegundos (ajustá para que vaya más rápido o lento)
     animacionInterval = setInterval(() => {
         i++;
         if (i >= path.length) {
-            i = 0; // Hace que vuelva al inicio y repita el viaje visualmente
+            i = 0; 
         }
         motoMarker.setPosition(path[i]);
     }, 300); 
@@ -2024,7 +2020,6 @@ function iniciarAnimacionMoto(path) {
 
 function calcularMatematicaEnvio(km) {
     const horaActual = new Date().getHours();
-    // Horario nocturno: Desde las 20:00 (8 PM) hasta las 05:59 am
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
     const tarifaBase = esNoche ? 3000 : 2200; 
@@ -2035,10 +2030,8 @@ function calcularMatematicaEnvio(km) {
     let costoExtra = 0;
     const kmFloat = parseFloat(km);
     
-    // Matemática: 1 km = 10 cuadras
     let cuadrasTotales = Math.round(kmFloat * 10);
     
-    // Si pasa de 10 cuadras, cobramos $100 por cada cuadra extra
     if(cuadrasTotales > 10) { 
         let cuadrasExtra = cuadrasTotales - 10;
         costoExtra = cuadrasExtra * 100;
@@ -2046,7 +2039,6 @@ function calcularMatematicaEnvio(km) {
     
     costoEnvioCalculado = tarifaBase + costoExtra;
     
-    // Mostramos en la pantalla la info completa para tranquilidad del comerciante
     if(document.getElementById('mapaKm')) {
         document.getElementById('mapaKm').textContent = `${km} km (${cuadrasTotales} cuadras)`;
     }
