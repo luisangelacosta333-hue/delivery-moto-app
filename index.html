@@ -873,7 +873,7 @@
                 </button>
             </div>
 
-            <!-- PANEL CADETE RADAR (MODIFICADO PARA PRODUCCIÓN) -->
+            <!-- PANEL CADETE RADAR -->
             <div id="modal-step-servimoto" class="sub-step" style="padding:24px 16px;">
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
                 <div style="background:linear-gradient(135deg, #0f172a, #050505); border-radius:1.5rem; padding:22px; border:3px solid #ff6b00; color:white; box-shadow:0 15px 35px rgba(0,0,0,0.5);">
@@ -883,6 +883,7 @@
                     </div>
                     <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px; text-align:center;">Panel de Operación</h3>
                     
+                    <!-- AVISO OBLIGATORIO DEL APK -->
                     <div style="background:rgba(22,163,74,0.15); border:1px solid #4ade80; padding:10px; border-radius:8px; margin:10px 0; font-size:11.5px; text-align:center; color:#bbf7d0; font-weight:700;">
                         ⚠️ Recordá descargar el APK/PWA desde la página principal y reiniciar la app para que el radar tome la señal GPS en segundo plano.
                     </div>
@@ -897,35 +898,16 @@
                             <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
                         </button>
                     </div>
-
-                    <!-- NUEVA SECCIÓN DE PAGOS Y SOPORTE PARA PRODUCCIÓN -->
                     <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:20px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
                         <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">Deuda Acumulada a Pagar</div>
                         <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:46px; font-weight:800; color:white; line-height:1; margin-bottom:8px;">$0</div>
-                        <div style="font-size:13px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:6px 16px; border-radius:999px; margin-bottom: 12px;" id="viajesMotoBadge">0 Viajes Confirmados</div>
-                        
-                        <!-- Panel de Datos Bancarios Oficiales -->
-                        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:16px; border-radius:1.2rem; text-align:left; margin-bottom:16px;">
-                            <div style="font-size:12px; font-weight:800; color:#4ade80; margin-bottom:8px;"><i class="ri-bank-card-fill"></i> DATOS PARA LIQUIDAR DEUDA</div>
-                            <div style="font-size:14px; color:white; font-weight:700; margin-bottom:4px;">Alias: <span style="color:#ffd700; user-select:all;">noir.elite.ceo</span></div>
-                            <div style="font-size:14px; color:white; font-weight:700;">CBU: <span style="color:#ffd700; user-select:all;">0110257630025717844115</span></div>
-                        </div>
-
-                        <!-- Lista de viajes confirmados -->
-                        <div id="listaViajesCadete" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px; max-height:150px; overflow-y:auto; text-align:left;">
-                            <!-- Inyectado por JS -->
-                        </div>
-
-                        <label class="btn-primary" style="width:100%; padding:14px; font-size:14px; cursor:pointer; background:linear-gradient(135deg,#16a34a,#15803d); border:none; justify-content:center;">
-                            <i class="ri-upload-cloud-2-fill" style="font-size:20px;"></i> ENVIAR COMPROBANTE
-                            <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">
-                        </label>
-
-                        <!-- Botón de Soporte Técnico -->
-                        <button onclick="window.open('https://wa.me/5493816092676', '_blank')" style="margin-top:12px; width:100%; background:#2563eb; color:white; border:none; padding:12px; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.4);">
-                            <i class="ri-whatsapp-fill" style="font-size:18px; vertical-align:middle;"></i> <span style="vertical-align:middle;">SOPORTE TÉCNICO</span>
-                        </button>
+                        <div style="font-size:13px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:6px 16px; border-radius:999px;" id="viajesMotoBadge">0 Viajes Realizados</div>
+                        <button onclick="simularViajeCadete()" style="margin-top:16px; width:100%; background:rgba(255,255,255,0.1); color:white; border:1px dashed rgba(255,255,255,0.3); padding:12px; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer;">+ SIMULAR VIAJE TERMINADO ($200)</button>
                     </div>
+                    <label class="btn-primary" style="width:100%; padding:18px; font-size:14.5px; cursor:pointer; background:linear-gradient(135deg,#16a34a,#15803d); border:none; justify-content:center;">
+                        <i class="ri-upload-cloud-2-fill" style="font-size:22px;"></i> SUBIR COMPROBANTE Y AUDITAR
+                        <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">
+                    </label>
                 </div>
             </div>
 
@@ -934,33 +916,12 @@
                 <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
                 <div class="step-indicator" style="color:#1d4ed8; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
                 <div style="display:flex; flex-direction:column; gap:12px;">
-                    <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira el Cadete? (Ej: San Martín 100)">
+                    <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira el Cadete? (Ej: Calle Origen Nro)">
                     <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;">
                         <option value="">Provincia Destino...</option>
-                        <option value="Buenos Aires">Buenos Aires</option>
-                        <option value="Catamarca">Catamarca</option>
-                        <option value="Chaco">Chaco</option>
-                        <option value="Chubut">Chubut</option>
-                        <option value="Córdoba">Córdoba</option>
-                        <option value="Corrientes">Corrientes</option>
-                        <option value="Entre Ríos">Entre Ríos</option>
-                        <option value="Formosa">Formosa</option>
-                        <option value="Jujuy">Jujuy</option>
-                        <option value="La Pampa">La Pampa</option>
-                        <option value="La Rioja">La Rioja</option>
-                        <option value="Mendoza">Mendoza</option>
-                        <option value="Misiones">Misiones</option>
-                        <option value="Neuquén">Neuquén</option>
-                        <option value="Río Negro">Río Negro</option>
-                        <option value="Salta">Salta</option>
-                        <option value="San Juan">San Juan</option>
-                        <option value="San Luis">San Luis</option>
-                        <option value="Santa Cruz">Santa Cruz</option>
-                        <option value="Santa Fe">Santa Fe</option>
-                        <option value="Santiago del Estero">Santiago del Estero</option>
-                        <option value="Tierra del Fuego">Tierra del Fuego</option>
                         <option value="Tucumán" selected>Tucumán</option>
-                        <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
+                        <option value="Buenos Aires">Buenos Aires</option>
+                        <option value="CABA">CABA</option>
                     </select>
                     <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino...">
                     <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿De qué calle a qué calle? (Ej: San Martín 100 al 500)">
@@ -1042,8 +1003,8 @@
 
 </body>
 </html>
-<!-- Script de Google Maps con la API Key -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
+<!-- Script de Google Maps con tu NUEVA API Key -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCW8skTMQsmY9yLESWqJ0OvcjAY43sMFnk&libraries=places"></script>
 
 <script>
 // ==========================================
@@ -1864,7 +1825,7 @@ async function simularViajeCadete() {
     if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Activá tu turno y el radar primero', 'error');
     
     viajesMotoCount++;
-    deudaMotoAcumulada += 200; // Matemática de producción: $200 x Viaje
+    deudaMotoAcumulada += 200; 
     
     try {
         await supabaseClient.from('moto_cadetes').update({ 
@@ -1928,7 +1889,6 @@ function abrirMapaMago() {
     
     modalMapa.classList.add('show');
     
-    // Ocultar el texto de fallback por defecto al abrir
     const fallbackText = document.getElementById('mapFallbackText');
     if(fallbackText) fallbackText.style.display = 'none';
     const canvas = document.getElementById("googleMapCanvas");
@@ -1948,7 +1908,7 @@ function abrirMapaMago() {
             if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
                 // VIENE DE VIAJE ESPECIAL / REMIS (De calle a calle)
                 let dirOrig = document.getElementById('dirOrigenEspecial').value.trim();
-                origenAddress = `${dirOrig}, Tucumán, Argentina`; // Contexto robusto para Google Maps
+                origenAddress = `${dirOrig}, Tucumán, Argentina`; 
                 
                 let calleHastaCalle = document.getElementById('dirDestinoEspecial').value.trim();
                 let ciudadDest = document.getElementById('ciuDestinoEspecial').value.trim();
@@ -1978,7 +1938,6 @@ function abrirMapaMago() {
                             const distanceMeters = response.routes[0].legs[0].distance.value;
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
-                            // Si google tira error por dirección no encontrada u otra cosa
                             if(canvas) canvas.style.display = 'none';
                             if(fallbackText) {
                                 fallbackText.style.display = 'flex';
