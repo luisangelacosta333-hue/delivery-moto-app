@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -2917,7 +2918,7 @@ async function guardarComercio() {
     const hCierra = document.getElementById('comercioCierra') ? document.getElementById('comercioCierra').value : "";
     const cat = document.getElementById('comercioCategoria') ? document.getElementById('comercioCategoria').value : "Varios";
     const aliasMP = document.getElementById('comercioAlias') ? document.getElementById('comercioAlias').value.trim() : "";
-    const cel = AppStore.get('cliente_celular');
+    const cel = AppStore.get('cliente_celular') || "00000000";
     
     if(!nom || !dir || !prov || !ciu || !hAbre || !hCierra) return mostrarToast('Completá todos los datos, incluyendo horarios', 'error');
     let urlSelfie = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c";
@@ -3316,10 +3317,12 @@ function renderizarCarritoDOM() {
     <div style="background:#f0fdf4; border:2px dashed #16a34a; border-radius:12px; padding:12px; margin-bottom:12px; text-align:center;">
         <div style="font-weight:800; color:#15803d; font-size:14px; margin-bottom:4px;">💳 Pagá la comida por Transferencia</div>
         <div style="color:#0f172a; font-size:13px; margin-bottom:8px;">Alias del local: <span style="font-weight:900; color:#2563eb; user-select:all;">${aliasOrigenCalculo || 'Consultar al local'}</span></div>
-        <label style="background:#16a34a; color:white; padding:8px 16px; border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; display:inline-block; box-shadow:0 4px 10px rgba(22,163,74,0.3);">
-            <i class="ri-camera-fill" style="margin-right:4px; vertical-align:middle;"></i> <span style="vertical-align:middle;">Subir Comprobante</span>
-            <input type="file" style="display:none;" accept="image/*" onchange="previewComprobanteCarrito(this)">
-        </label>
+        <div style="position:relative; display:inline-block; overflow:hidden;">
+            <button style="background:#16a34a; color:white; padding:10px 20px; border:none; border-radius:8px; font-weight:800; font-size:13px; box-shadow:0 4px 10px rgba(22,163,74,0.3); pointer-events:none;">
+                <i class="ri-camera-fill" style="margin-right:4px; vertical-align:middle;"></i> <span style="vertical-align:middle;">Subir Comprobante</span>
+            </button>
+            <input type="file" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;" accept="image/*" onchange="previewComprobanteCarrito(this)">
+        </div>
         <div id="lblComprobanteOk" style="font-size:12px; color:#15803d; font-weight:800; margin-top:6px; display:none;">✅ Comprobante Adjuntado</div>
     </div>
     `;
@@ -3556,5 +3559,5 @@ function calcularMatematicaEnvio(distancia) {
 }
 
 function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); abrirCarritoFinal(); }
-
 </script>
+
