@@ -1057,8 +1057,6 @@ window.gm_authFailure = function() {
     const fallbackText = document.getElementById('mapFallbackText');
     if(canvas) canvas.style.display = 'none';
     if(fallbackText) fallbackText.style.display = 'flex';
-    
-    // Le bajamos el cobro de contingencia a 1.5km para que no sea carísimo si Google falla
     calcularMatematicaEnvio("1.5");
 };
 
@@ -1859,7 +1857,6 @@ function activarRadar() {
     }
 }
 
-// LÓGICA DE PRODUCCIÓN: Confirmar viaje suma $200 de deuda automáticamente
 async function simularViajeCadete() {
     if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Activá tu turno y el radar primero', 'error');
     
@@ -1928,7 +1925,6 @@ function abrirMapaMago() {
     
     modalMapa.classList.add('show');
     
-    // Acá ASEGURAMOS que el mapa esté visible, sin la pantalla negra de la moto
     const fallbackText = document.getElementById('mapFallbackText');
     if(fallbackText) fallbackText.style.display = 'none';
     const canvas = document.getElementById("googleMapCanvas");
@@ -1945,36 +1941,33 @@ function abrirMapaMago() {
             let destinoAddress = "";
             let origenAddress = "";
 
+            // LIMPIADOR DE DIRECCIONES PARA GOOGLE MAPS
             if (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active')) {
                 // VIENE DE VIAJE ESPECIAL / REMIS (De calle a calle)
-                let dirOrig = document.getElementById('dirOrigenEspecial').value.trim();
+                let dirOrigLimpia = document.getElementById('dirOrigenEspecial').value.trim().split(',')[0];
                 let provDest = document.getElementById('selProvinciaEspecial').value.trim();
+                origenAddress = `${dirOrigLimpia}, ${provDest}, Argentina`; 
                 
-                // Forzamos un formato robusto para que Google siempre encuentre la calle
-                origenAddress = `${dirOrig}, ${provDest}, Argentina`; 
-                
-                let calleHastaCalle = document.getElementById('dirDestinoEspecial').value.trim();
+                let dirDestLimpia = document.getElementById('dirDestinoEspecial').value.trim().split(',')[0];
                 let ciudadDest = document.getElementById('ciuDestinoEspecial').value.trim();
-                destinoAddress = `${calleHastaCalle}, ${ciudadDest}, ${provDest}, Argentina`;
+                destinoAddress = `${dirDestLimpia}, ${ciudadDest}, ${provDest}, Argentina`;
             } else {
                 // VIENE DEL CARRITO (Comida / Local)
                 let provCliente = AppStore.get('cliente_prov') || 'Tucumán';
-                destinoAddress = `${AppStore.get('cliente_dir')}, ${AppStore.get('cliente_ciu')}, ${provCliente}, Argentina`;
+                let ciuCliente = AppStore.get('cliente_ciu') || 'Famaillá';
+                let dirClienteLimpia = (AppStore.get('cliente_dir') || "").split(',')[0].trim();
                 
-                // Fallback automático a Famaillá si no hay dirección calculada del local
-                origenAddress = direccionOrigenCalculo ? `${direccionOrigenCalculo}, Tucumán, Argentina` : "Famaillá, Tucumán, Argentina";
+                destinoAddress = `${dirClienteLimpia}, ${ciuCliente}, ${provCliente}, Argentina`;
+                
+                let dirLocalLimpia = direccionOrigenCalculo ? direccionOrigenCalculo.split(',')[0].trim() : "Centro";
+                origenAddress = `${dirLocalLimpia}, ${ciuCliente}, ${provCliente}, Argentina`;
             }
             
             try {
                 if(!window.mapObj && canvas) {
                     window.mapObj = new google.maps.Map(canvas, { zoom: 14, center: {lat: -27.0544, lng: -65.4111}, disableDefaultUI: false });
                     window.directionsService = new google.maps.DirectionsService();
-                    
-                    // Renderer oficial de Google para dibujar la línea y los pines
-                    window.directionsRenderer = new google.maps.DirectionsRenderer({ 
-                        map: window.mapObj, 
-                        suppressMarkers: false // Muestra los pines A y B en el mapa
-                    });
+                    window.directionsRenderer = new google.maps.DirectionsRenderer({ map: window.mapObj, suppressMarkers: false });
                 }
 
                 if(window.mapObj) google.maps.event.trigger(window.mapObj, 'resize');
@@ -1983,27 +1976,31 @@ function abrirMapaMago() {
                     window.directionsService.route({
                         origin: origenAddress, 
                         destination: destinoAddress, 
-                        travelMode: 'DRIVING' // Traza la ruta asumiendo que vamos en vehículo/moto
+                        travelMode: 'DRIVING'
                     }, function(response, status) {
                         if (status === 'OK') {
-                            // Dibuja la ruta en el mapa
                             window.directionsRenderer.setDirections(response);
-                            
-                            // Calcula distancia exacta en kilómetros y le dice a la matemática
                             const distanceMeters = response.routes[0].legs[0].distance.value;
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
-                            // Si falla la ruta, muestra el error de Google en la consola para auditar
-                            console.error("Fallo el Directions API. Motivo de Google:", status);
-                            mostrarToast("Dirección no encontrada por GPS. Calculando aproximado.", "error");
+                            console.warn("Directions API no encontró la calle exacta. Motivo:", status);
+                            mostrarToast("Dirección no encontrada por satélite. Usando tarifa aproximada.", "error");
                             
-                            // Aplica tarifa base de contingencia pero NO esconde el mapa
+                            // Si falla, mostramos el cartelito naranja de advertencia que diseñé
+                            if(document.getElementById('mapFallbackText')) {
+                                document.getElementById('mapFallbackText').style.display = 'flex';
+                                document.getElementById('mapFallbackText').innerHTML = `
+                                    <div style="background:#f97316; color:white; padding:12px; border-radius:12px; font-weight:800; font-size:14px; width:90%; box-shadow:0 10px 25px rgba(249,115,22,0.4);">
+                                        <i class="ri-error-warning-fill"></i> ¡Atención! No pudimos trazar la ruta satelital exacta. Se aplicará una tarifa base.
+                                    </div>
+                                `;
+                            }
                             calcularMatematicaEnvio("1.5"); 
                         } 
                     });
                 }
             } catch(e) {
-                console.error("Error crítico cargando Google Maps:", e);
+                console.error("Error crítico en Google Maps:", e);
                 calcularMatematicaEnvio("1.5");
             }
         }, 400); 
@@ -2015,16 +2012,19 @@ function calcularMatematicaEnvio(km) {
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
-    // MATEMÁTICA EXACTA DEL ENVÍO
+    // MATEMÁTICA EXACTA DEL ENVÍO (Por Cuadras)
     const tarifaBase = esNoche ? 3000 : 2200; 
     if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Costo Envío Noche' : 'Costo Envío Día';
     
     let costoExtra = 0;
     const kmFloat = parseFloat(km);
     
-    if(kmFloat > 1.0) { 
-        let excedenteKm = kmFloat - 1.0;
-        let cuadrasExtra = Math.ceil(excedenteKm / 0.1); 
+    // 1 km = 10 cuadras. Redondeamos el total de cuadras para ser exactos
+    let cuadrasTotales = Math.round(kmFloat * 10);
+    
+    // Si supera los primeros 1000 metros (10 cuadras), cobra $100 por cada cuadra extra
+    if(cuadrasTotales > 10) { 
+        let cuadrasExtra = cuadrasTotales - 10;
         costoExtra = cuadrasExtra * 100;
     }
     
