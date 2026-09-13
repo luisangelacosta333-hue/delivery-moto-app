@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -1488,6 +1489,7 @@ async function procesarLiquidacionIA(input) {
     }
 }
 </script>
+
 <!-- Script de Google Maps con tu NUEVA API Key -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCW8skTMQsmY9yLESWqJ0OvcjAY43sMFnk&libraries=places"></script>
 
@@ -1723,19 +1725,12 @@ async function cargarYRenderizarFeed() {
             let comercioData = dbComercios.find(c => c.id === p.id_comercio);
             let nomComercio = comercioData ? comercioData.nombre : "Local";
             let dirComercio = comercioData ? (comercioData.direccion + ", " + comercioData.ciudad + ", " + comercioData.provincia) : "";
-            // OBTENEMOS EL ALIAS PARA PASARLO AL CARRITO
             let aliasComercio = (comercioData && comercioData.alias_mp) ? comercioData.alias_mp : ""; 
             let urlLogoComercio = (comercioData && comercioData.img_selfie) ? comercioData.img_selfie : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
             
             html += `
             <div class="card-premium" style="padding:0; border-radius:16px; display:flex; flex-direction:column; background:white; border: 1px solid #f1f5f9; box-shadow: 0 10px 20px rgba(0,0,0,0.06); overflow:hidden; position:relative;">
                 
-                <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="position:absolute; top:10px; left:10px; display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.95); padding:6px 12px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.15); cursor:pointer; z-index:10; backdrop-filter: blur(4px);">
-                    <img src="${urlLogoComercio}" style="width:24px; height:24px; border-radius:50%; object-fit:cover; border:2px solid #f97316;">
-                    <span style="font-size:11px; font-weight:800; color:#0f172a;">${nomComercio}</span>
-                    <i class="ri-arrow-right-s-line" style="color:#f97316; font-size:14px;"></i>
-                </div>
-
                 <div style="height:140px; width:100%; position:relative; flex-shrink:0;">
                     <img src="${p.img_producto}" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;">
                     <div style="position:absolute; bottom:0; left:0; width:100%; height:50px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);"></div>
@@ -1747,9 +1742,15 @@ async function cargarYRenderizarFeed() {
                     
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <div style="color:#16a34a; font-weight:800; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+                        
+                        <!-- BOTÓN EN LA ZONA BLANCA PARA VER TODOS LOS ARTÍCULOS DEL LOCAL -->
+                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:5px; background:#f8fafc; border:1px solid #e2e8f0; padding:5px 10px; border-radius:20px; box-shadow:0 2px 5px rgba(0,0,0,0.03);">
+                            <img src="${urlLogoComercio}" style="width:18px; height:18px; border-radius:50%; object-fit:cover; border:1px solid #f97316;">
+                            <span style="font-size:11px; font-weight:800; color:#334155; max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${nomComercio}</span>
+                            <i class="ri-arrow-right-s-line" style="color:#f97316; font-size:13px;"></i>
+                        </div>
                     </div>
                     
-                    <!-- ACÁ LE PASAMOS EL ALIAS A LA FUNCIÓN DE COMPRAR -->
                     <button class="btn-primary" style="width:100%; padding:12px; font-size:13px; font-weight:800; border-radius:10px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 6px 15px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}')">
                         AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:16px; vertical-align:middle; margin-left:4px;"></i>
                     </button>
