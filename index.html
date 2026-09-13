@@ -1963,18 +1963,17 @@ function abrirMapaMago() {
                     window.directionsService.route({
                         origin: origenAddress, 
                         destination: destinoAddress, 
-                        travelMode: google.maps.TravelMode.DRIVING
+                        travelMode: google.maps.TravelMode.BICYCLING // <--- MAGIA ACÁ: Busca la ruta más corta/directa
                     }, function(response, status) {
                         if (status === 'OK') {
                             window.directionsRenderer.setDirections(response);
                             
                             const ruta = response.routes[0];
-                            const distanceMeters = ruta.legs[0].distance.value;
+                            const distanceMeters = ruta.legs[0].distance.value; // <--- METROS EXACTOS
                             
                             iniciarAnimacionMoto(ruta.overview_path);
-                            calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
+                            calcularMatematicaEnvio(distanceMeters); // <--- PASAMOS METROS A LA MATEMÁTICA
                         } else { 
-                            // 🚨 ALERTA DE DIAGNÓSTICO PARA VER QUÉ FALLA EN EL CELULAR 🚨
                             alert("⚠️ ATENCIÓN: Google Maps no pudo trazar la ruta.\n\nMotivo (Status): " + status + "\n\nOrigen enviado: " + origenAddress + "\nDestino enviado: " + destinoAddress + "\n\n* Si dice REQUEST_DENIED: Habilitá la 'Directions API' en Google Cloud.\n* Si dice ZERO_RESULTS: Las direcciones son muy cortas o no tienen número.");
                             
                             console.error("Google no dibujó la línea. Motivo:", status);
@@ -2018,7 +2017,19 @@ function iniciarAnimacionMoto(path) {
     }, 300); 
 }
 
-function calcularMatematicaEnvio(km) {
+function calcularMatematicaEnvio(distancia) {
+    let metrosReales = 0;
+    
+    // Si la distancia llega como texto "1.0" por culpa del fallback de error
+    if (typeof distancia === 'string' && distancia.includes('.')) {
+         metrosReales = parseFloat(distancia) * 1000;
+    } else {
+         metrosReales = parseInt(distancia); // Valor exacto enviado por Google
+    }
+
+    // Matemática de precisión: 1 cuadra son 100 metros. (Ej: 745m -> 7 cuadras)
+    let cuadrasTotales = Math.round(metrosReales / 100);
+
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
@@ -2028,10 +2039,8 @@ function calcularMatematicaEnvio(km) {
     }
     
     let costoExtra = 0;
-    const kmFloat = parseFloat(km);
     
-    let cuadrasTotales = Math.round(kmFloat * 10);
-    
+    // Si pasa de 10 cuadras, cobraremos $100 por cada cuadra extra
     if(cuadrasTotales > 10) { 
         let cuadrasExtra = cuadrasTotales - 10;
         costoExtra = cuadrasExtra * 100;
@@ -2039,8 +2048,11 @@ function calcularMatematicaEnvio(km) {
     
     costoEnvioCalculado = tarifaBase + costoExtra;
     
+    // Mostramos los kilómetros con dos decimales (Ej: 0.75 km)
+    let kmFormato = (metrosReales / 1000).toFixed(2);
+    
     if(document.getElementById('mapaKm')) {
-        document.getElementById('mapaKm').textContent = `${km} km (${cuadrasTotales} cuadras)`;
+        document.getElementById('mapaKm').textContent = `${kmFormato} km (${cuadrasTotales} cuadras)`;
     }
     
     if(document.getElementById('mapaCosto')) {
