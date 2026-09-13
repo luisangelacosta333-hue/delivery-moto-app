@@ -1008,21 +1008,6 @@
 
 <script>
 // ==========================================
-// TRUCO DE ORO: EVITAR QUE EL MAPA GRIS ROMPA LA APP
-// ==========================================
-window.gm_authFailure = function() {
-    console.warn("Google Maps bloqueado por facturación. Activando cálculo matemático de respaldo automático.");
-    // Si Google tira el error gris, ocultamos el mapa para que no se vea feo
-    const canvas = document.getElementById('googleMapCanvas');
-    const fallbackText = document.getElementById('mapFallbackText');
-    if(canvas) canvas.style.display = 'none';
-    if(fallbackText) fallbackText.style.display = 'flex';
-    
-    // Le bajamos el cobro de contingencia a 1.5km para que no sea carísimo si Google falla
-    calcularMatematicaEnvio("1.5");
-};
-
-// ==========================================
 // INSTALADOR NATIVO (APK / PWA) - ENERGY SOFTWARE
 // ==========================================
 let deferredPrompt;
@@ -1044,7 +1029,6 @@ function descargarAPK() {
             deferredPrompt = null;
         });
     } else {
-        // Alerta instructiva obligatoria si el botón automático falla en algunos celulares
         alert('📲 PARA INSTALAR LA APP:\n\n1. Toca los 3 puntitos (⋮) en la esquina superior derecha de tu navegador Chrome.\n2. Selecciona "Agregar a la pantalla principal" o "Instalar aplicación".\n\n⚠️ IMPORTANTE: Los cadetes DEBEN instalar la App para que el radar GPS no se corte al apagar la pantalla.');
     }
 }
@@ -1820,7 +1804,6 @@ function activarRadar() {
     }
 }
 
-// LÓGICA DE PRODUCCIÓN: Confirmar viaje suma $200 de deuda automáticamente
 async function simularViajeCadete() {
     if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Activá tu turno y el radar primero', 'error');
     
@@ -1870,7 +1853,7 @@ async function procesarLiquidacionIA(input) {
 }
 
 // ==========================================
-// MAPA GPS Y CÁLCULO DE ENVÍO SEPARADO
+// MAPA GPS DE GOOGLE - DIBUJO REAL EN PANTALLA
 // ==========================================
 function abrirCarritoFinal() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
@@ -1889,6 +1872,7 @@ function abrirMapaMago() {
     
     modalMapa.classList.add('show');
     
+    // Acá ASEGURAMOS que el mapa esté visible, sin la pantalla negra de la moto
     const fallbackText = document.getElementById('mapFallbackText');
     if(fallbackText) fallbackText.style.display = 'none';
     const canvas = document.getElementById("googleMapCanvas");
@@ -1938,19 +1922,16 @@ function abrirMapaMago() {
                             const distanceMeters = response.routes[0].legs[0].distance.value;
                             calcularMatematicaEnvio((distanceMeters / 1000).toFixed(1));
                         } else { 
-                            if(canvas) canvas.style.display = 'none';
-                            if(fallbackText) {
-                                fallbackText.style.display = 'flex';
-                                fallbackText.innerHTML = '<div style="font-size:40px; color:#ff6b00;"><i class="ri-alert-fill"></i></div><div style="color:white; font-weight:800; font-size:16px; margin-top:10px;">Calculando tarifa base de contingencia...</div>';
-                            }
-                            calcularMatematicaEnvio("1.5"); 
+                            // OJO: Si falla la ruta, NO ocultamos el mapa. Solo tiramos la alerta.
+                            console.error("Directions falló: " + status);
+                            mostrarToast("Error trazando la ruta exacta. Calculando estimado.", "error");
+                            calcularMatematicaEnvio("2.5"); 
                         } 
                     });
                 }
             } catch(e) {
-                if(canvas) canvas.style.display = 'none';
-                if(fallbackText) fallbackText.style.display = 'flex';
-                calcularMatematicaEnvio("1.5");
+                console.error("Error cargando Google Maps", e);
+                calcularMatematicaEnvio("2.5");
             }
         }, 400); 
     }, 100); 
@@ -1961,7 +1942,6 @@ function calcularMatematicaEnvio(km) {
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
-    // MATEMÁTICA EXACTA DEL ENVÍO
     const tarifaBase = esNoche ? 3000 : 2200; 
     if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Costo Envío Noche' : 'Costo Envío Día';
     
@@ -1976,13 +1956,13 @@ function calcularMatematicaEnvio(km) {
     
     costoEnvioCalculado = tarifaBase + costoExtra;
     
-    // Muestra SOLO el envío para el cadete en su respectiva caja
+    // Muestra SOLO el envío para el cadete
     if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
     
     let subtotalProductos = 0;
     carritoGlobal.forEach(i => { subtotalProductos += i.precio; });
     
-    // Muestra la comida del local por separado
+    // Muestra la comida del local
     if(document.getElementById('mapaTotalProductos')) {
         document.getElementById('mapaTotalProductos').textContent = '$' + subtotalProductos.toLocaleString('es-AR');
     }
@@ -2037,7 +2017,6 @@ function renderizarCarritoDOM() {
     }).join('');
 
     cont.innerHTML = listHTML;
-    // Solo muestra la comida en el subtotal del carrito
     totalUI.textContent = '$' + subtotal.toLocaleString('es-AR');
 }
 
@@ -2071,7 +2050,6 @@ function enviarPedidoEspecial() {
     AppStore.set('cliente_ciu', ciuDestino);
     AppStore.set('cliente_prov', provDestino);
     
-    // El precio de la comida es CERO porque es solo un servicio de traslado
     carritoGlobal.push({ nombre: "📦 Viaje Especial (De calle a calle)", precio: 0, detalle: txt });
     cerrarModalMarketplace();
     abrirMapaMago();
