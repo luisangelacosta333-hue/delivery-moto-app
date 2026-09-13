@@ -2309,6 +2309,7 @@ function cerrarMapa() { document.getElementById('modalMapaGrande').classList.rem
 </script>
 </body>
 </html>
+
 <!-- Script de Google Maps con tu NUEVA API Key -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCW8skTMQsmY9yLESWqJ0OvcjAY43sMFnk&libraries=places"></script>
 
@@ -2316,7 +2317,14 @@ function cerrarMapa() { document.getElementById('modalMapaGrande').classList.rem
 // ==========================================
 // 1. CONFIGURACIÓN Y VARIABLES GLOBALES
 // ==========================================
-window.gm_authFailure = function() { calcularMatematicaEnvio("1.0"); };
+window.gm_authFailure = function() { 
+    calcularMatematicaEnvio("1.0"); 
+    const canvas = document.getElementById("googleMapCanvas");
+    if(canvas) {
+        // SOLUCIÓN UX: Elimina la pantalla gris fea si la API Key falla y pone un mensaje amigable.
+        canvas.innerHTML = '<div style="padding:30px 20px; text-align:center; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#f8fafc;"><i class="ri-route-fill" style="font-size:45px; color:#94a3b8; margin-bottom:10px;"></i><div style="color:#0f172a; font-weight:900; font-size:16px;">Modo Satelital Inactivo</div><div style="color:#64748b; font-size:13px; margin-top:8px; line-height:1.4;">Se aplicó una tarifa base estándar de 10 cuadras para que puedas continuar con tu pedido sin problemas.</div></div>';
+    }
+};
 
 const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co';
 const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
@@ -2355,7 +2363,7 @@ let hasMoreProducts = true;
 let dbComerciosCache = []; 
 
 // ==========================================
-// 2. UTILIDADES GLOBALES (Instalador, Toast, Micrófono, Compresión)
+// 2. UTILIDADES GLOBALES
 // ==========================================
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -2638,7 +2646,7 @@ async function cargarYRenderizarFeed(isLoadMore = false) {
 }
 
 // ==========================================
-// 4. AUTH & LOGIN
+// 4. AUTH & LOGIN (¡SOLUCIONADO EL ERROR FALSO NARANJA!)
 // ==========================================
 function iniciarLogin(tipo) {
     tipoLoginActual = tipo; 
@@ -2673,38 +2681,46 @@ async function validarLogin() {
             data = signUpData;
         } else if (error) { throw error; }
 
-        sessionActual = data.user; 
+        sessionActual = data?.user || data; 
+        if (!sessionActual || !sessionActual.id) throw new Error("ID de usuario no disponible");
+
         AppStore.set('cliente_celular', cel); 
         mostrarToast('✅ Acceso Autorizado', 'success');
         
-        if(tipoLoginActual === 'comercio') {
-            miComercioLogueadoId = sessionActual.id;
-            irPaso('comercio');
-            cargarDatosComercioExistente(miComercioLogueadoId); 
-            renderizarAdminComercio(); 
-            renderizarBandejaPedidos(); 
-        } else if(tipoLoginActual === 'cadete') {
-            let { data: cadDB } = await supabaseClient.from('moto_cadetes').select('*').eq('id', sessionActual.id).single();
-            if(cadDB) {
-                viajesMotoCount = cadDB.viajes_realizados || 0;
-                deudaMotoAcumulada = cadDB.deuda_acumulada || 0;
-                document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
-                document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
-                irPaso('servimoto'); 
-            } else { irPaso('servimoto-onboarding'); }
-        } else if(tipoLoginActual === 'cliente') {
-            let { data: cliDB } = await supabaseClient.from('moto_clientes').select('*').eq('id', sessionActual.id).single();
-            if(cliDB) {
-                AppStore.set('cliente_dir', cliDB.direccion);
-                AppStore.set('cliente_ciu', cliDB.ciudad);
-                AppStore.set('cliente_prov', cliDB.provincia);
-                AppStore.set('cliente_nombre', cliDB.nombre || ''); 
-                if(productoPendienteAdd) procesarAgregadoCarrito();
-                irPaso('feed-global');
-            } else { irPaso('cliente-ubicacion'); }
-        }
+        // Ejecución segura desconectada del try-catch principal para evitar falsos errores
+        setTimeout(async () => {
+            if(tipoLoginActual === 'comercio') {
+                miComercioLogueadoId = sessionActual.id;
+                irPaso('comercio');
+                await cargarDatosComercioExistente(miComercioLogueadoId); 
+                renderizarAdminComercio(); 
+                renderizarBandejaPedidos(); 
+            } else if(tipoLoginActual === 'cadete') {
+                let { data: cadDB } = await supabaseClient.from('moto_cadetes').select('*').eq('id', sessionActual.id).single();
+                if(cadDB) {
+                    viajesMotoCount = cadDB.viajes_realizados || 0;
+                    deudaMotoAcumulada = cadDB.deuda_acumulada || 0;
+                    let badge = document.getElementById('viajesMotoBadge');
+                    let deuda = document.getElementById('deudaMoto');
+                    if(badge) badge.textContent = viajesMotoCount + ' Viajes Confirmados';
+                    if(deuda) deuda.textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+                    irPaso('servimoto'); 
+                } else { irPaso('servimoto-onboarding'); }
+            } else if(tipoLoginActual === 'cliente') {
+                let { data: cliDB } = await supabaseClient.from('moto_clientes').select('*').eq('id', sessionActual.id).single();
+                if(cliDB) {
+                    AppStore.set('cliente_dir', cliDB.direccion);
+                    AppStore.set('cliente_ciu', cliDB.ciudad);
+                    AppStore.set('cliente_prov', cliDB.provincia);
+                    AppStore.set('cliente_nombre', cliDB.nombre || ''); 
+                    if(productoPendienteAdd) procesarAgregadoCarrito();
+                    irPaso('feed-global');
+                } else { irPaso('cliente-ubicacion'); }
+            }
+        }, 50);
+
     } catch(e) {
-        console.error(e);
+        console.error("Error en validación pura de login:", e);
         mostrarToast('Error al conectar la cuenta. Reintentá.', 'error');
     }
 }
@@ -2795,7 +2811,7 @@ async function guardarPerfilCliente() {
 }
 
 // ==========================================
-// 6. PANEL COMERCIO
+// 6. PANEL COMERCIO (¡SOLUCIONADO LA DESAPARICIÓN DEL FEED!)
 // ==========================================
 function agregarPedidoBandejaComercio(total, destino, nombreCliente) {
     let nombreInfo = nombreCliente ? nombreCliente : "Cliente sin registrar";
@@ -2945,6 +2961,10 @@ async function guardarComercio() {
             img_portada: urlPortada, img_selfie: urlSelfie, alias_mp: aliasMP
         });
         if(error) throw error;
+        
+        // SOLUCIÓN CACHÉ FEED: Forzamos la limpieza de caché para que aparezca en el Feed global
+        dbComerciosCache = []; 
+        
         mostrarToast(`¡Local guardado exitósamente!`, 'success');
     } catch (e) {
         console.error(e);
@@ -2972,6 +2992,9 @@ async function agregarArticuloComercio() {
             referencia: ref, img_producto: urlArt, pausado: false
         });
         if(error) throw error;
+
+        // Limpieza de caché por precaución
+        dbComerciosCache = []; 
 
         mostrarToast(`¡Artículo publicado con éxito!`, 'success');
         document.getElementById('newArtNombre').value = '';
@@ -3560,4 +3583,3 @@ function calcularMatematicaEnvio(distancia) {
 
 function cerrarMapa() { document.getElementById('modalMapaGrande').classList.remove('show'); abrirCarritoFinal(); }
 </script>
-
