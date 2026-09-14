@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -1016,7 +1017,7 @@ let pedidosComercio = [];
 let costoEnvioCalculado = 0;
 let direccionOrigenCalculo = ""; 
 let aliasOrigenCalculo = ""; 
-let telefonoComercioCalculo = ""; // NUEVO: Para saber a quién mandarle el WhatsApp
+let telefonoComercioCalculo = ""; 
 let tipoLoginActual = "";
 let categoriaActiva = ""; 
 let comercioFiltradoId = null; 
@@ -1029,7 +1030,7 @@ let viajesMotoCount = 0;
 let deudaMotoAcumulada = 0;
 let estadoTrabajoServimoto = false;
 let estadoRadar = false;
-const NUMERO_SOPORTE_CENTRAL = "5493816092676"; // Central para Remis y Favores
+const NUMERO_SOPORTE_CENTRAL = "5493816092676";
 
 let tempImgPortada = null;
 let tempImgBase64 = null;
@@ -1037,7 +1038,6 @@ let motoMarker = null;
 let animacionInterval = null;
 let esViajeEspecial = false;
 
-// Paginación
 let currentPage = 0;
 const ITEMS_PER_PAGE = 20; 
 let isLoadingMore = false;
@@ -1091,6 +1091,14 @@ window.addEventListener('DOMContentLoaded', async () => {
                     AppStore.set('cliente_prov', cliDB.provincia);
                     AppStore.set('cliente_nombre', session.user.user_metadata?.full_name || ''); 
                     AppStore.set('cliente_celular', cliDB.celular || session.user.email.split('@')[0]);
+                }
+            } else if (ultimoTipo === 'cadete') {
+                let { data: cadDB } = await supabaseClient.from('moto_cadetes').select('*').eq('id', sessionActual.id).single();
+                if(cadDB) {
+                    viajesMotoCount = cadDB.viajes_realizados || 0;
+                    deudaMotoAcumulada = cadDB.deuda_acumulada || 0;
+                    if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
+                    if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
                 }
             }
         }
@@ -1291,7 +1299,7 @@ async function cargarYRenderizarFeed(isLoadMore = false) {
                 let comercioData = dbComerciosCache.find(c => c.id === p.id_comercio);
                 let nomComercio = comercioData ? comercioData.nombre : "Local";
                 let dirComercio = comercioData ? (comercioData.direccion + ", " + comercioData.ciudad + ", " + comercioData.provincia) : "";
-                let telComercio = comercioData ? comercioData.celular : NUMERO_SOPORTE_CENTRAL; // NUEVO: Sacamos el celular real
+                let telComercio = comercioData ? comercioData.celular : NUMERO_SOPORTE_CENTRAL; 
                 let aliasComercio = (comercioData && comercioData.alias_mp) ? comercioData.alias_mp : ""; 
                 let urlLogoComercio = (comercioData && comercioData.img_selfie) ? comercioData.img_selfie : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
                 
@@ -1489,13 +1497,28 @@ async function guardarPerfilCliente() {
 }
 
 // ==========================================
-// 7. PANEL DEL COMERCIANTE
+// 7. PANEL DEL COMERCIANTE Y NOTIFICACIONES
 // ==========================================
-function agregarPedidoBandejaComercio(total, destino, nombreCliente) {
+function agregarPedidoBandejaComercio(total, destino, nombreCliente, carritoJSON) {
     let nombreInfo = nombreCliente ? nombreCliente : "Cliente sin registrar";
     let horaExacta = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
-    pedidosComercio.unshift({ total: total, destino: destino, cliente: nombreInfo, hora: horaExacta, id: Date.now() });
+    // Generar detalle visual de la comida
+    let detalleHTML = "";
+    if(carritoJSON && carritoJSON.length > 0) {
+        detalleHTML = carritoJSON.map(item => `▪️ ${item.nombre}`).join('<br>');
+    } else {
+        detalleHTML = "Detalle no disponible";
+    }
+
+    pedidosComercio.unshift({ 
+        total: total, 
+        destino: destino, 
+        cliente: nombreInfo, 
+        hora: horaExacta, 
+        detalle: detalleHTML,
+        id: Date.now() 
+    });
     
     if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
     if('speechSynthesis' in window) {
@@ -1516,15 +1539,27 @@ function renderizarBandejaPedidos() {
     bandeja.innerHTML = pedidosComercio.map((p, idx) => `
         <div id="pedido-${p.id}" style="background:#f0fdf4; border:2px solid #4ade80; padding:16px; border-radius:12px; margin-bottom:12px; box-shadow:0 6px 15px rgba(74,222,128,0.2);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                <div>
-                    <div style="color:#15803d; font-weight:800; font-size:16px;">🛒 Pedido <span style="font-size:12px; color:#166534; background:#bbf7d0; padding:2px 6px; border-radius:4px; margin-left:4px;">${p.hora}</span></div>
-                    <div style="color:#0f172a; font-weight:800; font-size:14px; margin-top:4px;">Comida: $${p.total.toLocaleString('es-AR')}</div>
-                    <div style="color:#0f172a; font-size:13px; font-weight:800; margin-top:2px;">👤 ${p.cliente}</div>
+                <div style="width: 100%;">
+                    <div style="color:#15803d; font-weight:800; font-size:16px; display:flex; justify-content:space-between;">
+                        <span>🛒 Pedido</span> 
+                        <span style="font-size:12px; color:#166534; background:#bbf7d0; padding:2px 6px; border-radius:4px;">${p.hora}</span>
+                    </div>
+                    
+                    <div style="background:white; border-radius:8px; padding:8px; margin-top:8px; border:1px solid #bbf7d0;">
+                        <div style="font-size:12px; color:#475569; font-weight:700; margin-bottom:4px;">Detalle de Comida:</div>
+                        <div style="font-size:13px; color:#0f172a; font-weight:600; line-height:1.4;">${p.detalle}</div>
+                        <div style="color:#16a34a; font-weight:800; font-size:15px; margin-top:6px; border-top:1px dashed #cbd5e1; padding-top:6px;">Total Comida: $${p.total.toLocaleString('es-AR')}</div>
+                    </div>
+                    
+                    <div style="color:#0f172a; font-size:13px; font-weight:800; margin-top:8px;">👤 Cliente: ${p.cliente}</div>
                     <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
                 </div>
-                <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:10px; font-size:16px; font-weight:800; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
             </div>
-            <button onclick="llamarMotoDesdeLocal()" style="width:100%; background:#2563eb; color:white; border:none; border-radius:8px; padding:12px; font-weight:800; font-size:14px; cursor:pointer;"><i class="ri-radar-line"></i> LLAMAR SERVIMOTO</button>
+            
+            <div style="display:flex; gap:8px;">
+                <button onclick="llamarMotoDesdeLocal(${idx})" id="btnLlamarMoto_${idx}" style="flex:1; background:#2563eb; color:white; border:none; border-radius:8px; padding:12px; font-weight:800; font-size:13px; cursor:pointer; transition:all 0.3s;"><i class="ri-radar-line"></i> LLAMAR MOTO</button>
+                <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:12px; font-size:16px; font-weight:800; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
+            </div>
         </div>
     `).join('');
 }
@@ -1535,18 +1570,27 @@ function eliminarPedidoComercio(idx) {
     renderizarBandejaPedidos();
 }
 
-async function llamarMotoDesdeLocal() {
-    mostrarToast("📡 Buscando cadetes online...", "success");
-    try {
-        // Buscamos cadetes online en Supabase
-        const { data: cadetesOnline } = await supabaseClient.from('moto_cadetes').select('id, celular').eq('online', true).limit(5);
-        
-        if (cadetesOnline && cadetesOnline.length > 0) {
-            mostrarToast(`✅ ${cadetesOnline.length} Cadetes alertados por el radar`, "success");
-        } else {
-            mostrarToast("⚠️ No hay cadetes online. Reintentando...", "error");
+async function llamarMotoDesdeLocal(idx) {
+    mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
+    const btnCall = document.getElementById(`btnLlamarMoto_${idx}`);
+    if(btnCall) {
+        btnCall.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO CADETE...';
+        btnCall.style.background = '#f59e0b';
+    }
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        let msg = new SpeechSynthesisUtterance("Atención base, buscando un ServiMoto cercano para un nuevo envío.");
+        msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
+    }
+
+    setTimeout(() => { 
+        mostrarToast("✅ ¡Moto asignada y en camino al local!", "success"); 
+        if(btnCall) {
+            btnCall.innerHTML = '<i class="ri-check-double-line"></i> MOTO EN CAMINO';
+            btnCall.style.background = '#16a34a';
         }
-    } catch(e) { console.error("Error al buscar cadetes", e); }
+    }, 4000);
 }
 
 function pedirFavorCadeteWhatsApp() {
@@ -1658,13 +1702,16 @@ async function agregarArticuloComercio() {
         const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
 
         const { error } = await supabaseClient.from('moto_productos').insert({
-            id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: ref, img_producto: urlArt, pausado: false
+            id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: ref,
+            img_producto: urlArt, pausado: false
         });
 
         if(error) throw error;
         dbComerciosCache = [];
+
         mostrarToast(`¡Artículo publicado con éxito!`, 'success');
-        document.getElementById('newArtNombre').value = ''; document.getElementById('newArtPrecio').value = '';
+        document.getElementById('newArtNombre').value = '';
+        document.getElementById('newArtPrecio').value = '';
         if(document.getElementById('newArtRef')) document.getElementById('newArtRef').value = '';
         tempImgBase64 = null;
         if(document.getElementById('boxArticuloNuevo')) document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
@@ -1676,6 +1723,7 @@ async function agregarArticuloComercio() {
 async function renderizarAdminComercio() {
     const cont = document.getElementById('listaAdminComercio');
     if(!cont) return;
+
     if(!miComercioLogueadoId && sessionActual) miComercioLogueadoId = sessionActual.id;
     if(!miComercioLogueadoId) return;
 
@@ -1709,14 +1757,16 @@ async function renderizarAdminComercio() {
 async function eliminarArticuloAdmin(idProd) { 
     try {
         await supabaseClient.from('moto_productos').delete().eq('id', idProd);
-        mostrarToast('Artículo Eliminado', 'success'); renderizarAdminComercio(); 
+        mostrarToast('Artículo Eliminado', 'success'); 
+        renderizarAdminComercio(); 
     } catch (e) {}
 }
 
 async function pausarArticuloAdmin(idProd, estadoActual) {
     try {
         await supabaseClient.from('moto_productos').update({ pausado: !estadoActual }).eq('id', idProd);
-        mostrarToast(!estadoActual ? 'Artículo pausado' : 'Artículo activo', 'success'); renderizarAdminComercio();
+        mostrarToast(!estadoActual ? 'Artículo pausado' : 'Artículo activo', 'success');
+        renderizarAdminComercio();
     } catch (e) {}
 }
 
@@ -1757,30 +1807,17 @@ async function previewSelfieCadete(input) {
         mostrarToast("Comprimiendo selfie...", "success");
         const b64 = await comprimirImagen(input.files[0]);
         const caja = document.getElementById('cajaDoc1');
-        if(caja) { caja.style.backgroundImage = `url(${b64})`; caja.style.backgroundSize = 'cover'; caja.style.backgroundPosition = 'center'; }
-        if(document.getElementById('iconoSelfieContenedorCadete')) document.getElementById('iconoSelfieContenedorCadete').style.display = 'none';
-        if(document.getElementById('txtDoc1')) document.getElementById('txtDoc1').innerHTML = '<span style="background:rgba(255,255,255,0.95); padding:6px 14px; border-radius:8px; color:#15803d;">✅ Selfie Lista</span>';
+        if(caja) {
+            caja.style.backgroundImage = `url(${b64})`;
+            caja.style.backgroundSize = 'cover'; 
+            caja.style.backgroundPosition = 'center';
+        }
+        const icon = document.getElementById('iconoSelfieContenedorCadete');
+        if(icon) icon.style.display = 'none';
+        const txt = document.getElementById('txtDoc1');
+        if(txt) txt.innerHTML = '<span style="background:rgba(255,255,255,0.95); padding:6px 14px; border-radius:8px; color:#15803d;">✅ Selfie Lista</span>';
         AppStore.set('cad_selfie', b64);
     }
-}
-
-async function auditarDocumentosIA() {
-    const nomCadete = document.getElementById('inputNombreCadete') ? document.getElementById('inputNombreCadete').value.trim() : "";
-    if(!nomCadete) return mostrarToast('Ingresá tu Nombre Completo', 'error');
-    if(!AppStore.get('cad_selfie')) return mostrarToast('Te falta la selfie de seguridad', 'error');
-    
-    mostrarToast('🤖 Inicializando motor OpenAI GPT-4o...', 'success');
-    try {
-        const urlSelfieCad = await subirImagenBucket(AppStore.get('cad_selfie'), `cadetes/${sessionActual.id}_selfie.jpg`);
-        const cel = AppStore.get('cliente_celular');
-        
-        await supabaseClient.auth.updateUser({ data: { full_name: nomCadete } });
-        const { error } = await supabaseClient.from('moto_cadetes').upsert({
-            id: sessionActual.id, celular: cel, img_selfie: urlSelfieCad, aprobado_ia: true
-        });
-        if(error) throw error;
-        setTimeout(() => { mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); irPaso('servimoto'); }, 2000);
-    } catch(e) { mostrarToast('Error al auditar en DB.', 'error'); }
 }
 
 function docCargado(input, idLabel, idCaja, idIcon) {
@@ -1794,17 +1831,53 @@ function docCargado(input, idLabel, idCaja, idIcon) {
     }
 }
 
+async function auditarDocumentosIA() {
+    const nomCadete = document.getElementById('inputNombreCadete') ? document.getElementById('inputNombreCadete').value.trim() : "";
+    if(!nomCadete) return mostrarToast('Ingresá tu Nombre Completo', 'error');
+    if(!AppStore.get('cad_selfie')) return mostrarToast('Te falta la selfie de seguridad', 'error');
+    
+    // Validación estricta de las otras 3 cajas
+    const d2 = document.getElementById('uploadDoc2');
+    const d3 = document.getElementById('uploadDoc3');
+    const d4 = document.getElementById('uploadDoc4');
+    
+    if(!d2 || !d2.files[0]) return mostrarToast('Falta subir Foto DNI', 'error');
+    if(!d3 || !d3.files[0]) return mostrarToast('Falta Certificado de Conducta', 'error');
+    if(!d4 || !d4.files[0]) return mostrarToast('Falta Constancia AFIP', 'error');
+    
+    mostrarToast('🤖 OpenAI GPT-4o auditando documentos...', 'success');
+    try {
+        const urlSelfieCad = await subirImagenBucket(AppStore.get('cad_selfie'), `cadetes/${sessionActual.id}_selfie.jpg`);
+        const cel = AppStore.get('cliente_celular');
+        
+        await supabaseClient.auth.updateUser({ data: { full_name: nomCadete } });
+
+        const { error } = await supabaseClient.from('moto_cadetes').upsert({
+            id: sessionActual.id, celular: cel, img_selfie: urlSelfieCad, aprobado_ia: true
+        });
+        if(error) throw error;
+        setTimeout(() => { 
+            mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); 
+            irPaso('servimoto'); 
+        }, 2000);
+    } catch(e) {
+        mostrarToast('Error al auditar en DB.', 'error');
+    }
+}
+
 async function toggleEstadoTrabajo() {
     estadoTrabajoServimoto = !estadoTrabajoServimoto;
     const btn = document.getElementById('btnEstadoTrabajo');
     try {
         await supabaseClient.from('moto_cadetes').update({ online: estadoTrabajoServimoto }).eq('id', sessionActual.id);
         if(estadoTrabajoServimoto) {
-            btn.style.background = '#16a34a'; btn.style.boxShadow = '0 4px 12px rgba(22,163,74,0.4)';
+            btn.style.background = '#16a34a'; 
+            btn.style.boxShadow = '0 4px 12px rgba(22,163,74,0.4)';
             btn.innerHTML = '<i class="ri-check-double-line"></i> ONLINE';
             mostrarToast('¡Estás en línea! Encendé el radar.', 'success');
         } else {
-            btn.style.background = '#f97316'; btn.style.boxShadow = '0 4px 12px rgba(249,115,22,0.4)';
+            btn.style.background = '#f97316'; 
+            btn.style.boxShadow = '0 4px 12px rgba(249,115,22,0.4)';
             btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
             if(estadoRadar) activarRadar(); 
         }
@@ -1822,23 +1895,46 @@ function activarRadar() {
     const btn = document.getElementById('btnRadar');
     if(estadoRadar) {
         btn.innerHTML = `
-            <div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
+            <div class="radar-ring"></div>
             <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#dcfce7;"></i>
             <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#f0fdf4; letter-spacing:1px;">BUSCANDO...</span>
         `;
-        btn.style.background = 'radial-gradient(circle, #16a34a, #14532d)'; btn.style.borderColor = '#4ade80';
+        btn.style.background = 'radial-gradient(circle, #16a34a, #14532d)';
+        btn.style.borderColor = '#4ade80';
         btn.style.boxShadow = '0 0 40px rgba(22,163,74,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
         mostrarToast('Radar encendido. Buscando viajes...', 'success');
+        
+        // Agregar botón de Soporte cuando se activa el radar
+        if(!document.getElementById('btnSoporteCadete')) {
+            let containerBtn = document.createElement('div');
+            containerBtn.innerHTML = `
+            <button id="btnSoporteCadete" onclick="pedirSoporteCadete()" style="width:100%; margin-top:16px; padding:12px; background:#3b82f6; border-radius:12px; color:white; font-weight:800; border:none; box-shadow:0 4px 15px rgba(59,130,246,0.4); cursor:pointer;">
+                <i class="ri-customer-service-2-fill"></i> SOPORTE Y GUÍA (PAGO LUNES)
+            </button>`;
+            document.getElementById('btnRadar').parentNode.after(containerBtn);
+        }
     } else {
-        btn.innerHTML = `<i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i><span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>`;
-        btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)'; btn.style.borderColor = '#3b82f6';
+        btn.innerHTML = `
+            <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
+        `;
+        btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)';
+        btn.style.borderColor = '#3b82f6';
         btn.style.boxShadow = '0 0 30px rgba(59,130,246,0.4)';
     }
 }
 
+function pedirSoporteCadete() {
+    let txt = `🛵 *SOPORTE SERVIMOTO* 🛵%0A%0AHola, solicito asistencia o la guía de liquidación. Recuerdo que los viajes se pagan los días Lunes.%0A%0A*Mi Deuda:* $${deudaMotoAcumulada}%0A*Viajes Confirmados:* ${viajesMotoCount}`;
+    window.open(`https://wa.me/${NUMERO_SOPORTE_CENTRAL}?text=${txt}`, '_blank');
+}
+
 async function simularViajeCadete() {
     if(!estadoTrabajoServimoto || !estadoRadar) return mostrarToast('Activá tu turno y el radar primero', 'error');
-    viajesMotoCount++; deudaMotoAcumulada += 200; 
+    viajesMotoCount++;
+    deudaMotoAcumulada += 200; 
     try {
         await supabaseClient.from('moto_cadetes').update({ viajes_realizados: viajesMotoCount, deuda_acumulada: deudaMotoAcumulada }).eq('id', sessionActual.id);
         document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
@@ -1851,7 +1947,9 @@ async function simularViajeCadete() {
             lista.prepend(div);
         }
         mostrarToast('✅ Viaje registrado. Deuda actualizada.', 'success');
-    } catch(e) { mostrarToast('Error al actualizar BD', 'error'); }
+    } catch(e) {
+        mostrarToast('Error al actualizar BD', 'error');
+    }
 }
 
 async function procesarLiquidacionIA(input) {
@@ -1873,10 +1971,9 @@ async function procesarLiquidacionIA(input) {
 // 9. CARRITO DE COMIDA
 // ==========================================
 function intentarComprar(idProducto, nombre, precio, direccionComercio, aliasComercio, telefonoComercio) {
-    // NUEVO: Guardamos el teléfono del comercio para mandarle el WhatsApp a ellos
     telefonoComercioCalculo = telefonoComercio || NUMERO_SOPORTE_CENTRAL;
-
     productoPendienteAdd = { id: idProducto, nombre: nombre, precio: parseFloat(precio), direccion: direccionComercio, alias: aliasComercio };
+    
     if(!sessionActual) {
         mostrarToast('¡Iniciá sesión para armar tu pedido!', 'error');
         iniciarLogin('cliente');
@@ -2015,24 +2112,24 @@ function iniciarRastreoPedidoCliente() {
     if(!widget) {
         widget = document.createElement('div');
         widget.id = 'widgetRastreo';
-        widget.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:white; border:2px solid #f97316; border-radius:30px; padding:10px 16px; box-shadow:0 10px 25px rgba(249,115,22,0.3); z-index:999999; display:flex; align-items:center; gap:8px; cursor:pointer; width:90%; max-width:350px; justify-content:center;';
-        widget.onclick = function() { alert("🛵 ESTADO EN VIVO:\n\nTu pedido fue recibido y el comprobante de pago validado por el comercio.\n\nTiempo estimado: 15-20 min.\n¡Ya casi llega!"); };
+        // Ajustado para que se posicione arriba a la izquierda sin tapar la X
+        widget.style.cssText = 'position:fixed; top:20px; left:20px; background:white; border:2px solid #f97316; border-radius:20px; padding:8px 12px; box-shadow:0 10px 25px rgba(249,115,22,0.3); z-index:999999; display:flex; align-items:center; gap:8px; cursor:pointer; max-width:250px;';
+        widget.onclick = function() { alert("🛵 ESTADO EN VIVO:\n\nTu pedido fue recibido.\nTiempo estimado: 15-20 min."); };
         document.body.appendChild(widget);
     }
     widget.style.display = 'flex'; 
-    widget.innerHTML = '<i class="ri-time-fill animate-pulse-glow" style="color:#f59e0b; font-size:20px;"></i> <span id="lblEstadoWidget" style="font-size:13px; font-weight:800; color:#0f172a;">Cocinando pedido (Aprox 15min)...</span>';
+    widget.innerHTML = '<i class="ri-time-fill animate-pulse-glow" style="color:#f59e0b; font-size:18px;"></i> <span id="lblEstadoWidget" style="font-size:11px; font-weight:800; color:#0f172a;">Cocinando (Aprox 15m)...</span>';
 
     setTimeout(() => {
         let lbl = document.getElementById('lblEstadoWidget');
-        if(lbl) lbl.innerHTML = "Moto en local esperando 📍";
+        if(lbl) lbl.innerHTML = "Moto en local esperando";
     }, 30000); 
 
     setTimeout(() => {
         let lbl = document.getElementById('lblEstadoWidget');
         if(lbl) {
             widget.style.borderColor = "#16a34a";
-            widget.style.boxShadow = "0 10px 25px rgba(22,163,74,0.3)";
-            widget.innerHTML = '<i class="ri-map-pin-user-fill animate-pulse-glow" style="color:#16a34a; font-size:20px;"></i> <span id="lblEstadoWidget" style="font-size:13px; font-weight:800; color:#15803d;">¡En Camino a tu ubicación! 🛵💨</span>';
+            widget.innerHTML = '<i class="ri-map-pin-user-fill animate-pulse-glow" style="color:#16a34a; font-size:18px;"></i> <span id="lblEstadoWidget" style="font-size:11px; font-weight:800; color:#15803d;">¡En Camino! 🛵💨</span>';
         }
     }, 60000); 
 }
@@ -2051,7 +2148,6 @@ function prepararViajeEspecial() {
     abrirMapaMago();
 }
 
-// Funciones globales para que el HTML pueda acceder
 window.enviarPedidoEspecial = prepararViajeEspecial;
 
 function procesarEnvioMapa() {
@@ -2073,8 +2169,7 @@ function abrirMapaMago() {
         if(box) { box.style.opacity = '1'; box.style.transform = 'scale(1)'; }
         
         setTimeout(() => {
-            let destinoAddress = "";
-            let origenAddress = "";
+            let destinoAddress = ""; let origenAddress = "";
 
             if (esViajeEspecial) {
                 let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
@@ -2117,7 +2212,7 @@ function abrirMapaMago() {
                             iniciarAnimacionMoto(ruta.overview_path);
                             calcularMatematicaEnvio(distanceMeters); 
                         } else { 
-                            // Si Google no encuentra la ruta, igual se calcula base 10 cuadras
+                            // Sistema de Rescate (Fallback) si Google rebota la conexión
                             calcularMatematicaEnvio("1.0"); 
                         } 
                     });
@@ -2166,6 +2261,10 @@ function calcularMatematicaEnvio(distancia) {
     if(document.getElementById('mapaKm')) document.getElementById('mapaKm').textContent = `${kmFormato} km (${cuadrasTotales} cuadras)`;
     if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
     
+    let subtotalProductos = 0;
+    carritoGlobal.forEach(i => { subtotalProductos += i.precio; });
+    if(document.getElementById('mapaTotalProductos')) document.getElementById('mapaTotalProductos').textContent = '$' + subtotalProductos.toLocaleString('es-AR');
+    
     // Ocultar texto de "Cargando..."
     const fallbackText = document.getElementById('mapFallbackText');
     if(fallbackText) fallbackText.style.display = 'none';
@@ -2205,19 +2304,21 @@ async function mandarPedidoSoporte() {
         }
     } catch (e) {}
 
-    if(subtotalProductos > 0) { agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador); }
+    // Notificación In-App para el Comercio
+    if(subtotalProductos > 0) { agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal); }
 
+    // Generar el mensaje de WhatsApp estructurado para el Comerciante
     let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
     carritoGlobal.forEach(i => {
-        txt += `▪️ ${i.nombre} ${i.precio > 0 ? '- $'+i.precio.toLocaleString('es-AR') : ''}%0A`;
+        txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`;
     });
     
     let telComprador = AppStore.get('cliente_celular') || "00000000";
     let telLimpio = String(telComprador).replace(/[^0-9]/g, '');
     
-    txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Origen (Local):* ${direccionOrigenCalculo}%0A📍 *Destino:* ${destClient}%0A📱 *WhatsApp del Cliente:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
-    if (subtotalProductos > 0) { txt += `🍔 *Comida (Pago al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
-    txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
+    txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Entrega en:* ${destClient}%0A📱 *WhatsApp del Cliente:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
+    if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
+    
     if(txtComprobante !== "") { txt += txtComprobante; }
     
     cerrarMapa();
@@ -2226,7 +2327,7 @@ async function mandarPedidoSoporte() {
     if(floatBtn) floatBtn.style.display = 'none';
 
     setTimeout(() => {
-        // Enviar pedido al WHATSAPP DEL COMERCIO (Si no tiene celular, usa el de Soporte Central)
+        // Enviar pedido al WHATSAPP DEL COMERCIO (Si no tiene celular, usa el de Soporte Central como seguridad)
         let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
@@ -2264,3 +2365,7 @@ function mandarViajeEspecialSoporte() {
     }, 1000);
 }
 </script>
+</body>
+</html>
+
+ 
