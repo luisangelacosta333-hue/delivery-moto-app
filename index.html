@@ -2287,6 +2287,7 @@ let motoMarker = null;
 let animacionInterval = null;
 let esViajeEspecial = false;
 
+// Variables Paginación
 let currentPage = 0;
 const ITEMS_PER_PAGE = 20; 
 let isLoadingMore = false;
@@ -2297,7 +2298,7 @@ let dbComerciosCache = [];
 // AUTO-CARGA: PROVINCIAS Y SESIÓN
 // ==========================================
 window.addEventListener('DOMContentLoaded', async () => {
-    // 1. INYECTAR LAS 24 PROVINCIAS AUTOMÁTICAMENTE (Para no alargar tu HTML)
+    // Inyectar provincias para no alargar el HTML
     const PROVINCIAS_ARG = [
         "Buenos Aires", "Ciudad Autónoma de Buenos Aires", "Catamarca", "Chaco", "Chubut",
         "Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja",
@@ -2308,7 +2309,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     selects.forEach(id => {
         const el = document.getElementById(id);
         if (el && el.options.length > 0) {
-            const firstOpt = el.options[0]; // Guardamos el "Seleccionar..."
+            const firstOpt = el.options[0];
             el.innerHTML = '';
             el.appendChild(firstOpt);
             PROVINCIAS_ARG.forEach(prov => {
@@ -2316,13 +2317,13 @@ window.addEventListener('DOMContentLoaded', async () => {
                 let val = prov === "Ciudad Autónoma de Buenos Aires" ? "CABA" : prov;
                 opt.value = val;
                 opt.text = prov;
-                if (val === "Tucumán") opt.selected = true; // Por defecto
+                if (val === "Tucumán") opt.selected = true;
                 el.appendChild(opt);
             });
         }
     });
 
-    // 2. RECUPERAR SESIÓN (Para que no tire error el carrito)
+    // Recuperar sesión automáticamente
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
@@ -2495,7 +2496,7 @@ function irPaso(paso) {
     const el = document.getElementById(`modal-step-${paso}`);
     if(el) el.classList.add('active'); 
     
-    // Oculta el widget si no es el feed
+    // Oculta el widget si sos comercio o cadete
     let widget = document.getElementById('widgetRastreo');
     if(paso === 'comercio' || paso === 'servimoto' || paso === 'login') {
         if(widget) widget.style.display = 'none';
@@ -2507,6 +2508,7 @@ function irPaso(paso) {
     }
 }
 
+// CARGA DE FEED
 async function cargarYRenderizarFeed(isLoadMore = false) {
     const container = document.getElementById('gridMercadoLibre');
     if(!container) return; 
@@ -2624,9 +2626,7 @@ async function cargarYRenderizarFeed(isLoadMore = false) {
     }
 }
 
-// ==========================================
-// 4. AUTH & LOGIN
-// ==========================================
+// LOGIN / AUTH
 function iniciarLogin(tipo) {
     tipoLoginActual = tipo; 
     let tituloLogin = "Acceso a Cuenta";
@@ -2727,7 +2727,7 @@ async function cargarDatosComercioExistente(id) {
 }
 
 // ==========================================
-// 5. CLIENTE (PERFIL) Y SUPABASE
+// 5. CLIENTE (PERFIL)
 // ==========================================
 async function previewSelfieCliente(input) {
     if(input.files && input.files[0]) {
@@ -2749,7 +2749,7 @@ async function guardarPerfilCliente() {
     const ciu = document.getElementById('inputCiudadCliente') ? document.getElementById('inputCiudadCliente').value.trim() : "";
     const dir = document.getElementById('inputDireccionCliente') ? document.getElementById('inputDireccionCliente').value.trim() : "";
     
-    // Recuperamos el celular desde la memoria o desde el correo del login
+    // SOLUCIÓN AL ERROR DE SUPABASE: Rescatar el celular de forma segura si la página se recargó
     let cel = AppStore.get('cliente_celular');
     if (!cel && sessionActual && sessionActual.email) {
         cel = sessionActual.email.split('@')[0];
@@ -2779,9 +2779,9 @@ async function guardarPerfilCliente() {
             img_selfie: urlFoto || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
         });
         
-        // ALERTA PARA DESCUBRIR ERROR DE DB DEL COMPRADOR
         if (error) {
-            alert("🛑 ERROR DE SUPABASE:\n" + error.message + "\n\nFijate si falta la columna 'provincia', 'ciudad' o 'direccion' en la tabla 'moto_clientes'.");
+            mostrarToast('Error en Supabase. Ver consola', 'error');
+            console.error("Error BD:", error);
             throw error;
         }
 
@@ -2796,7 +2796,7 @@ async function guardarPerfilCliente() {
         irPaso('feed-global');
         
     } catch(e) {
-        mostrarToast('Error al guardar datos. Revisá la alerta.', 'error');
+        mostrarToast('Error al guardar datos. Faltan columnas en tu BD.', 'error');
     }
 }
 
@@ -2805,7 +2805,7 @@ async function guardarPerfilCliente() {
 // ==========================================
 function agregarPedidoBandejaComercio(total, destino, nombreCliente) {
     let nombreInfo = nombreCliente ? nombreCliente : "Cliente sin registrar";
-    // HORA EXACTA PARA QUE NO SE PISEN LOS PEDIDOS
+    // SOLUCIÓN: Agregamos hora exacta y un ID para que no se pisen si entran juntos
     let horaExacta = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
     pedidosComercio.unshift({ 
@@ -2838,7 +2838,7 @@ function renderizarBandejaPedidos() {
         <div id="pedido-${p.id}" style="background:#f0fdf4; border:2px solid #4ade80; padding:16px; border-radius:12px; margin-bottom:12px; box-shadow:0 6px 15px rgba(74,222,128,0.2);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
                 <div>
-                    <div style="color:#15803d; font-weight:800; font-size:16px;">🛒 Pedido Recibido <span style="font-size:12px; color:#166534; background:#bbf7d0; padding:2px 6px; border-radius:4px; margin-left:4px;">${p.hora}</span></div>
+                    <div style="color:#15803d; font-weight:800; font-size:16px;">🛒 Pedido <span style="font-size:12px; color:#166534; background:#bbf7d0; padding:2px 6px; border-radius:4px; margin-left:4px;">${p.hora}</span></div>
                     <div style="color:#0f172a; font-weight:800; font-size:14px; margin-top:4px;">Comida: $${p.total.toLocaleString('es-AR')}</div>
                     <div style="color:#0f172a; font-size:13px; font-weight:800; margin-top:2px;">👤 ${p.cliente}</div>
                     <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
@@ -3269,6 +3269,7 @@ function procesarAgregadoCarrito() {
 }
 
 function abrirCarritoFinal() {
+    esViajeEspecial = false;
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     cerrarModalMarketplace();
     const modalCarrito = document.getElementById('modalCarritoFinal');
@@ -3485,11 +3486,11 @@ function abrirMapaMago() {
             let origenAddress = "";
 
             if (esViajeEspecial) {
-                let dirOrig = document.getElementById('dirOrigenEspecial').value.trim();
-                let provDest = document.getElementById('selProvinciaEspecial').value.trim() || "Tucumán";
-                let ciudadDest = document.getElementById('ciuDestinoEspecial').value.trim() || "Famaillá";
+                let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
+                let provDest = document.getElementById('selProvinciaEspecial') ? document.getElementById('selProvinciaEspecial').value.trim() : "Tucumán";
+                let ciudadDest = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "Famaillá";
                 origenAddress = `${dirOrig}, ${ciudadDest}, ${provDest}, Argentina`; 
-                let dirDest = document.getElementById('dirDestinoEspecial').value.trim();
+                let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
                 destinoAddress = `${dirDest}, ${ciudadDest}, ${provDest}, Argentina`;
             } else {
                 let provCliente = AppStore.get('cliente_prov') || 'Tucumán';
@@ -3590,9 +3591,9 @@ function cerrarMapa() {
 
 // LOGICA DE VIAJES ESPECIALES
 function prepararViajeEspecial() {
-    let dirOrig = document.getElementById('dirOrigenEspecial').value.trim();
-    let ciuDest = document.getElementById('ciuDestinoEspecial').value.trim();
-    let dirDest = document.getElementById('dirDestinoEspecial').value.trim();
+    let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
+    let ciuDest = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "";
+    let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
 
     if(!dirOrig || !dirDest || !ciuDest) return mostrarToast('Completá las dos calles y la ciudad.', 'error');
     
@@ -3636,4 +3637,8 @@ function mandarViajeEspecialSoporte() {
         iniciarRastreoPedidoCliente(); 
     }, 1000);
 }
+
+// Respaldo global por si el HTML tiene la funcion vieja
+window.enviarPedidoEspecial = prepararViajeEspecial;
+
 </script>
