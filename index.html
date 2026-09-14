@@ -202,7 +202,7 @@
     <div class="nav-container">
         <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
             <div style="position:relative;width:46px;height:46px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(255,107,0,.6);border:2px solid #ffd700;">
-                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo Delivery Moto" onerror="this.style.display='none'">
+                <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo Delivery Moto">
             </div>
             <div style="display:flex;flex-direction:column;">
                 <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:white;line-height:1;">DELIVERY MOTO</span>
@@ -567,7 +567,7 @@
         </div>
         <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;font-size:12.5px;font-weight:700; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
             <div>© 2026 Delivery Moto • Energy Software.</div>
-            <div>Hecho en Argentina</div>
+            <div>Hecho en Argentina 🇦🇷</div>
         </div>
     </div>
 </footer>
@@ -1139,10 +1139,7 @@ async function mandarPedidoSoporte() {
     if(subtotalProductos > 0) { agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal); }
 
     let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
-    carritoGlobal.forEach(i => {
-        txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`;
-    });
-    
+    carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
     if(txtComprobante !== "") { txt += txtComprobante; }
     
     let telComprador = AppStore.get('cliente_celular') || "00000000";
@@ -1164,7 +1161,6 @@ async function mandarPedidoSoporte() {
         let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
-        
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
         iniciarRastreoPedidoCliente(pedidoCreadoId); 
     }, 2500); 
@@ -1300,8 +1296,7 @@ async function mandarViajeEspecialSoporte() {
             const hora = new Date().getHours();
             const esNoche = (hora >= 20 || hora < 6);
             const tarifaBase = esNoche ? 3000 : 2200;
-            let costoExtra = 0;
-            if (cuadras > 10) costoExtra = (cuadras - 10) * 100;
+            let costoExtra = 0; if (cuadras > 10) costoExtra = (cuadras - 10) * 100;
             const costoTotal = tarifaBase + costoExtra;
 
             document.getElementById('demoDistancia').textContent = distanciaKm + ' km';
@@ -1314,15 +1309,16 @@ async function mandarViajeEspecialSoporte() {
         } else {
             capaRuta = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], { color: '#ea580c', weight: 5, dashArray: '10, 10' }).addTo(mapaDemo);
             mapaDemo.fitBounds(L.latLngBounds([[origen.lat, origen.lng], [destino.lat, destino.lng]]), { padding: [60, 60] });
-            const distMetros = calcularDistanciaHaversine(origen.lat, origen.lng, destino.lat, destino.lng);
+            const R = 6371000; const dLat = (destino.lat - origen.lat) * Math.PI / 180; const dLng = (destino.lng - origen.lng) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(origen.lat * Math.PI / 180) * Math.cos(destino.lat * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+            const distMetros = R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
             const distanciaKm = (distMetros / 1000).toFixed(2);
             const duracionMin = Math.round((distMetros / 1000) / 0.025); 
             const cuadras = Math.round(distMetros / 100);
             const hora = new Date().getHours();
             const esNoche = (hora >= 20 || hora < 6);
             const tarifaBase = esNoche ? 3000 : 2200;
-            let costoExtra = 0;
-            if (cuadras > 10) costoExtra = (cuadras - 10) * 100;
+            let costoExtra = 0; if (cuadras > 10) costoExtra = (cuadras - 10) * 100;
             const costoTotal = tarifaBase + costoExtra;
 
             document.getElementById('demoDistancia').textContent = distanciaKm + ' km (aprox)';
@@ -1379,10 +1375,8 @@ async function mandarViajeEspecialSoporte() {
     }
 
     if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
-
     window.addEventListener('resize', function() { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
 </script>
-
 </body>
 </html>
