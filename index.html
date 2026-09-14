@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" style="margin:0;padding:0;scroll-behavior:smooth;">
 <head>
@@ -1223,6 +1224,7 @@ async function mandarViajeEspecialSoporte() {
 </script>
 </body>
 </html>
+
 <script>
 // ==========================================
 // 1. LIBRERÍAS EXTERNAS Y CONFIGURACIÓN BASE
@@ -1865,7 +1867,6 @@ function eliminarPedidoComercio(idx) {
 }
 
 async function llamarMotoDesdeLocal(idx) {
-    if(navigator.vibrate) navigator.vibrate(50);
     mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
     const btnCall = document.getElementById(`btnLlamarMoto_${idx}`);
     if(btnCall) {
@@ -2418,7 +2419,7 @@ function iniciarRastreoPedidoCliente(pedidoId) {
     widget.style.display = 'flex'; 
     widget.innerHTML = '<i class="ri-time-fill animate-pulse-glow" style="color:#f59e0b; font-size:16px;"></i> <span id="lblEstadoWidget" style="font-size:11px; font-weight:800; color:#0f172a; line-height:1.2;">Preparando pedido...</span>';
 
-    // SUPABASE REALTIME 
+    // SUPABASE REALTIME
     if(pedidoId) {
         supabaseClient.channel('custom-all-channel')
           .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'moto_pedidos', filter: `id=eq.${pedidoId}` }, payload => {
@@ -2438,7 +2439,7 @@ function iniciarRastreoPedidoCliente(pedidoId) {
 }
 
 // ==========================================
-// 10. MAPA LEAFLET Y ENVÍO A WHATSAPP
+// 10. MAPA GPS Y ENVÍO (LEAFLET / OSRM / NOMINATIM)
 // ==========================================
 function prepararViajeEspecial() {
     let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
@@ -2468,116 +2469,127 @@ function pedirFavorDirectoCliente() {
     window.open(`https://wa.me/${NUMERO_SOPORTE_CENTRAL}?text=${txt}`, '_blank');
 }
 
+function initMapaLeaflet() {
+    if (mapaMagoObj) return;
+    mapaMagoObj = L.map('mapaCanvas', { zoomControl: false, attributionControl: false }).setView([-26.8083, -65.2176], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapaMagoObj);
+}
+
+async function geocodificarDireccion(direccion) {
+    try {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1&countrycodes=ar`;
+        const res = await fetch(url, { headers: { 'Accept-Language': 'es-AR,es;q=0.9' } });
+        const datos = await res.json();
+        if (datos && datos.length > 0) return { lat: parseFloat(datos[0].lat), lng: parseFloat(datos[0].lon), nombre: datos[0].display_name };
+        return null;
+    } catch (e) { return null; }
+}
+
+async function calcularRutaOSRM(origen, destino) {
+    try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson&steps=true`;
+        const res = await fetch(url);
+        const datos = await res.json();
+        if (datos.code === 'Ok' && datos.routes && datos.routes.length > 0) {
+            const ruta = datos.routes[0];
+            return {
+                distancia: ruta.distance, 
+                duracion: ruta.duration,
+                coordenadas: ruta.geometry.coordinates.map(c => [c[1], c[0]])
+            };
+        }
+        return null;
+    } catch (e) { return null; }
+}
+
+function calcularDistanciaHaversine(lat1, lng1, lat2, lng2) {
+    const R = 6371000; 
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+
 function abrirMapaMago() {
     cerrarCarrito();
     const modalMapa = document.getElementById('modalMapaGrande');
     if(!modalMapa) return;
     modalMapa.classList.add('show');
     
-    const canvas = document.getElementById("googleMapCanvas");
-    if(canvas) canvas.style.display = 'block';
-
-    setTimeout(() => {
+    setTimeout(async () => {
         const box = document.getElementById('mapaBox');
         if(box) { box.style.opacity = '1'; box.style.transform = 'scale(1)'; }
         
-        // Inicializa mapa Leaflet que vos tenías funcionando en tu HTML
-        if (!mapaMagoObj) {
-            mapaMagoObj = L.map('googleMapCanvas', { zoomControl: false, attributionControl: false }).setView([-26.8083, -65.2176], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapaMagoObj);
+        initMapaLeaflet();
+        setTimeout(() => { if(mapaMagoObj) mapaMagoObj.invalidateSize(); }, 300);
+
+        let strOrigen = ""; let strDestino = "";
+        if (esViajeEspecial) {
+            let dO = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
+            let pD = document.getElementById('selProvinciaEspecial') ? document.getElementById('selProvinciaEspecial').value.trim() : "Tucumán";
+            let cD = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "Famaillá";
+            strOrigen = `${dO}, ${cD}, ${pD}, Argentina`; 
+            let dD = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
+            strDestino = `${dD}, ${cD}, ${pD}, Argentina`;
+        } else {
+            let pC = AppStore.get('cliente_prov') || 'Tucumán';
+            let cC = AppStore.get('cliente_ciu') || 'Famaillá';
+            let dC = AppStore.get('cliente_dir');
+            strDestino = `${dC}, ${cC}, ${pC}, Argentina`;
+            let dL = direccionOrigenCalculo ? direccionOrigenCalculo : "Plaza Principal";
+            strOrigen = `${dL}, ${cC}, ${pC}, Argentina`;
         }
 
-        setTimeout(async () => {
-            if(mapaMagoObj) mapaMagoObj.invalidateSize();
-
-            let strOrigen = ""; let strDestino = "";
-            if (esViajeEspecial) {
-                let dO = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
-                let pD = document.getElementById('selProvinciaEspecial') ? document.getElementById('selProvinciaEspecial').value.trim() : "Tucumán";
-                let cD = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "Famaillá";
-                strOrigen = `${dO}, ${cD}, ${pD}, Argentina`; 
-                let dD = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
-                strDestino = `${dD}, ${cD}, ${pD}, Argentina`;
-            } else {
-                let pC = AppStore.get('cliente_prov') || 'Tucumán';
-                let cC = AppStore.get('cliente_ciu') || 'Famaillá';
-                let dC = AppStore.get('cliente_dir');
-                strDestino = `${dC}, ${cC}, ${pC}, Argentina`;
-                let dL = direccionOrigenCalculo ? direccionOrigenCalculo : "Plaza Principal";
-                strOrigen = `${dL}, ${cC}, ${pC}, Argentina`;
+        try {
+            const origen = await geocodificarDireccion(strOrigen);
+            const destino = await geocodificarDireccion(strDestino);
+            
+            if(!origen || !destino) {
+                calcularMatematicaEnvio("1.0"); 
+                return;
             }
 
-            try {
-                // 1) Encontramos las coordenadas usando tu lógica de Nominatim
-                const resOri = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(strOrigen)}&limit=1&countrycodes=ar`);
-                const dataOri = await resOri.json();
+            if(magoLayerGroup) {
+                magoLayerGroup.clearLayers();
+            } else {
+                magoLayerGroup = L.featureGroup().addTo(mapaMagoObj);
+            }
+            if (animacionIntervalMago) clearInterval(animacionIntervalMago);
+
+            const icoOri = L.divIcon({ className:'custom-marker', html:'<div class="custom-marker-origen"><i class="ri-store-fill"></i></div>', iconSize:[32,32], iconAnchor:[16,32] });
+            const icoDes = L.divIcon({ className:'custom-marker', html:'<div class="custom-marker-destino"><i class="ri-home-4-fill"></i></div>', iconSize:[32,32], iconAnchor:[16,32] });
+            
+            L.marker([origen.lat, origen.lng], {icon:icoOri}).addTo(magoLayerGroup);
+            L.marker([destino.lat, destino.lng], {icon:icoDes}).addTo(magoLayerGroup);
+
+            const ruta = await calcularRutaOSRM(origen, destino);
+            let distMeters = 1000;
+
+            if (ruta) {
+                capaRutaMago = L.polyline(ruta.coordenadas, { color:'#ea580c', weight:6, opacity:0.85, dashArray:'12, 8', className:'ruta-animada' }).addTo(magoLayerGroup);
+                mapaMagoObj.fitBounds(magoLayerGroup.getBounds(), { padding: [40, 40] });
+                distMeters = ruta.distancia;
+
+                const iconoMotoObj = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png', iconSize: [36, 36], iconAnchor: [18, 18] });
+                motoMarkerMago = L.marker(ruta.coordenadas[0], {icon: iconoMotoObj, zIndexOffset: 1000}).addTo(magoLayerGroup);
                 
-                const resDes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(strDestino)}&limit=1&countrycodes=ar`);
-                const dataDes = await resDes.json();
+                let i = 0;
+                animacionIntervalMago = setInterval(() => {
+                    i++; if (i >= ruta.coordenadas.length) i = 0; 
+                    motoMarkerMago.setLatLng(ruta.coordenadas[i]);
+                }, 300);
 
-                if(!dataOri || dataOri.length === 0 || !dataDes || dataDes.length === 0) {
-                    calcularMatematicaEnvio("1.0"); 
-                    return;
-                }
+            } else {
+                capaRutaMago = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], { color:'#ea580c', weight:5, dashArray:'10, 10' }).addTo(magoLayerGroup);
+                mapaMagoObj.fitBounds(magoLayerGroup.getBounds(), { padding: [40, 40] });
+                distMeters = calcularDistanciaHaversine(origen.lat, origen.lng, destino.lat, destino.lng);
+            }
 
-                const origen = { lat: parseFloat(dataOri[0].lat), lng: parseFloat(dataOri[0].lon) };
-                const destino = { lat: parseFloat(dataDes[0].lat), lng: parseFloat(dataDes[0].lon) };
+            calcularMatematicaEnvio(distMeters);
 
-                // 2) Limpiamos el mapa
-                if(magoLayerGroup) { magoLayerGroup.clearLayers(); } 
-                else { magoLayerGroup = L.featureGroup().addTo(mapaMagoObj); }
-                if (animacionIntervalMago) clearInterval(animacionIntervalMago);
-
-                // 3) Ponemos los Pines
-                const icoOri = L.divIcon({ className:'custom-marker', html:'<div style="background:#16a34a; width:32px; height:32px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:3px solid white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.3);"><i class="ri-store-fill" style="transform:rotate(45deg); color:white; font-size:14px;"></i></div>', iconSize:[32,32], iconAnchor:[16,32] });
-                const icoDes = L.divIcon({ className:'custom-marker', html:'<div style="background:#ea580c; width:32px; height:32px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); border:3px solid white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.3);"><i class="ri-home-4-fill" style="transform:rotate(45deg); color:white; font-size:14px;"></i></div>', iconSize:[32,32], iconAnchor:[16,32] });
-                
-                L.marker([origen.lat, origen.lng], {icon:icoOri}).addTo(magoLayerGroup);
-                L.marker([destino.lat, destino.lng], {icon:icoDes}).addTo(magoLayerGroup);
-
-                // 4) Buscamos la ruta con tu lógica OSRM
-                const urlRuta = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson`;
-                const resRuta = await fetch(urlRuta);
-                const datosRuta = await resRuta.json();
-                
-                let distMeters = 1000;
-
-                if (datosRuta.code === 'Ok' && datosRuta.routes.length > 0) {
-                    const ruta = datosRuta.routes[0];
-                    const coordenadasRuta = ruta.geometry.coordinates.map(c => [c[1], c[0]]); // Leaflet usa LatLng
-                    
-                    capaRutaMago = L.polyline(coordenadasRuta, { color:'#ea580c', weight:6, opacity:0.85, dashArray:'12, 8' }).addTo(magoLayerGroup);
-                    mapaMagoObj.fitBounds(magoLayerGroup.getBounds(), { padding: [40, 40] });
-                    distMeters = ruta.distance;
-
-                    // Moto animada
-                    const iconoMotoObj = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png', iconSize: [36, 36], iconAnchor: [18, 18] });
-                    motoMarkerMago = L.marker(coordenadasRuta[0], {icon: iconoMotoObj, zIndexOffset: 1000}).addTo(magoLayerGroup);
-                    
-                    let i = 0;
-                    animacionIntervalMago = setInterval(() => {
-                        i++; if (i >= coordenadasRuta.length) i = 0; 
-                        motoMarkerMago.setLatLng(coordenadasRuta[i]);
-                    }, 300);
-
-                } else {
-                    // Si falla el OSRM, tira linea recta
-                    capaRutaMago = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], { color:'#ea580c', weight:5, dashArray:'10, 10' }).addTo(magoLayerGroup);
-                    mapaMagoObj.fitBounds(magoLayerGroup.getBounds(), { padding: [40, 40] });
-                    
-                    // Haversine
-                    const R = 6371000; 
-                    const dLat = (destino.lat - origen.lat) * Math.PI / 180;
-                    const dLng = (destino.lng - origen.lng) * Math.PI / 180;
-                    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(origen.lat * Math.PI / 180) * Math.cos(destino.lat * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
-                    distMeters = R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-                }
-
-                calcularMatematicaEnvio(distMeters);
-
-            } catch(e) { calcularMatematicaEnvio("1.0"); }
-        }, 400); 
-    }, 100); 
+        } catch(e) { calcularMatematicaEnvio("1.0"); }
+    }, 400); 
 }
 
 function calcularMatematicaEnvio(distancia) {
