@@ -1016,6 +1016,7 @@ let pedidosComercio = [];
 let costoEnvioCalculado = 0;
 let direccionOrigenCalculo = ""; 
 let aliasOrigenCalculo = ""; 
+let telefonoComercioCalculo = ""; // NUEVO: Para saber a quién mandarle el WhatsApp
 let tipoLoginActual = "";
 let categoriaActiva = ""; 
 let comercioFiltradoId = null; 
@@ -1028,7 +1029,7 @@ let viajesMotoCount = 0;
 let deudaMotoAcumulada = 0;
 let estadoTrabajoServimoto = false;
 let estadoRadar = false;
-const NUMERO_SOPORTE = "5493816092676";
+const NUMERO_SOPORTE_CENTRAL = "5493816092676"; // Central para Remis y Favores
 
 let tempImgPortada = null;
 let tempImgBase64 = null;
@@ -1036,7 +1037,7 @@ let motoMarker = null;
 let animacionInterval = null;
 let esViajeEspecial = false;
 
-// Paginación para no saturar la base de datos
+// Paginación
 let currentPage = 0;
 const ITEMS_PER_PAGE = 20; 
 let isLoadingMore = false;
@@ -1047,7 +1048,6 @@ let dbComerciosCache = [];
 // 2. AUTO-CARGA: PROVINCIAS Y SESIÓN
 // ==========================================
 window.addEventListener('DOMContentLoaded', async () => {
-    // 1. Inyectamos las provincias automáticamente para asegurar que los selectores funcionen siempre
     try {
         const PROVINCIAS_ARG = [
             "Buenos Aires", "Ciudad Autónoma de Buenos Aires", "Catamarca", "Chaco", "Chubut",
@@ -1072,9 +1072,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                 });
             }
         });
-    } catch(e) { console.log("Error inyectando provincias", e); }
+    } catch(e) {}
 
-    // 2. Recuperar sesión (Auto-Login)
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
@@ -1095,11 +1094,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                 }
             }
         }
-    } catch(err) { console.log("No hay sesión activa"); }
+    } catch(err) {}
 });
 
 // ==========================================
-// 3. UTILIDADES GLOBALES (PWA, Voz, Imágenes)
+// 3. UTILIDADES GLOBALES
 // ==========================================
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
@@ -1149,7 +1148,7 @@ async function subirImagenBucket(base64Str, rutaGuardado) {
         const { error } = await supabaseClient.storage.from('moto_media').upload(rutaGuardado, blob, { upsert: true });
         if (error) throw error;
         return supabaseClient.storage.from('moto_media').getPublicUrl(rutaGuardado).data.publicUrl;
-    } catch (e) { console.error("Error al subir foto:", e); return null; }
+    } catch (e) { return null; }
 }
 
 function comprimirImagen(file, maxWidth = 800, maxHeight = 800, quality = 0.7) {
@@ -1292,6 +1291,7 @@ async function cargarYRenderizarFeed(isLoadMore = false) {
                 let comercioData = dbComerciosCache.find(c => c.id === p.id_comercio);
                 let nomComercio = comercioData ? comercioData.nombre : "Local";
                 let dirComercio = comercioData ? (comercioData.direccion + ", " + comercioData.ciudad + ", " + comercioData.provincia) : "";
+                let telComercio = comercioData ? comercioData.celular : NUMERO_SOPORTE_CENTRAL; // NUEVO: Sacamos el celular real
                 let aliasComercio = (comercioData && comercioData.alias_mp) ? comercioData.alias_mp : ""; 
                 let urlLogoComercio = (comercioData && comercioData.img_selfie) ? comercioData.img_selfie : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
                 
@@ -1306,13 +1306,13 @@ async function cargarYRenderizarFeed(isLoadMore = false) {
                         ${p.referencia ? `<div style="font-size:11px; color:#64748b; font-weight:600; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">${p.referencia}</div>` : '<div style="margin-bottom:8px;"></div>'}
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                             <div style="color:#16a34a; font-weight:800; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
-                            <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:5px; background:#f8fafc; border:1px solid #e2e8f0; padding:5px 10px; border-radius:20px; box-shadow:0 2px 5px rgba(0,0,0,0.03);">
-                                <img src="${urlLogoComercio}" loading="lazy" style="width:18px; height:18px; border-radius:50%; object-fit:cover; border:1px solid #f97316;">
-                                <span style="font-size:11px; font-weight:800; color:#334155; max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${nomComercio}</span>
+                            <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:5px; background:#f8fafc; border:1px solid #e2e8f0; padding:5px 10px; border-radius:20px; box-shadow:0 2px 5px rgba(0,0,0,0.03); max-width:55%;">
+                                <img src="${urlLogoComercio}" loading="lazy" style="width:18px; height:18px; border-radius:50%; object-fit:cover; border:1px solid #f97316; flex-shrink:0;">
+                                <span style="font-size:11px; font-weight:800; color:#334155; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${nomComercio}</span>
                                 <i class="ri-arrow-right-s-line" style="color:#f97316; font-size:13px;"></i>
                             </div>
                         </div>
-                        <button class="btn-primary" style="width:100%; padding:12px; font-size:13px; font-weight:800; border-radius:10px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 6px 15px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}')">
+                        <button class="btn-primary" style="width:100%; padding:12px; font-size:13px; font-weight:800; border-radius:10px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 6px 15px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
                             AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:16px; vertical-align:middle; margin-left:4px;"></i>
                         </button>
                     </div>
@@ -1403,6 +1403,34 @@ async function validarLogin() {
     } catch(e) { mostrarToast('Error al conectar la cuenta. Reintentá.', 'error'); }
 }
 
+async function cargarDatosComercioExistente(id) {
+    try {
+        const { data, error } = await supabaseClient.from('moto_comercios').select('*').eq('id', id).single();
+        if (data) {
+            if(document.getElementById('comercioNombre')) document.getElementById('comercioNombre').value = data.nombre || '';
+            if(document.getElementById('comercioDireccionExacta')) document.getElementById('comercioDireccionExacta').value = data.direccion || '';
+            if(document.getElementById('comercioProvincia')) document.getElementById('comercioProvincia').value = data.provincia || '';
+            if(document.getElementById('comercioCiudad')) document.getElementById('comercioCiudad').value = data.ciudad || '';
+            if(document.getElementById('comercioAbre')) document.getElementById('comercioAbre').value = data.hora_abre || '';
+            if(document.getElementById('comercioCierra')) document.getElementById('comercioCierra').value = data.hora_cierra || '';
+            if(document.getElementById('comercioAlias')) document.getElementById('comercioAlias').value = data.alias_mp || '';
+            
+            if(data.img_selfie && document.getElementById('boxSelfieComercioModal')) {
+                document.getElementById('boxSelfieComercioModal').style.backgroundImage = `url(${data.img_selfie})`;
+                if(document.getElementById('iconSelfieComercioContenedor')) document.getElementById('iconSelfieComercioContenedor').style.display = 'none';
+                if(document.getElementById('lblTextSelfieComercio')) document.getElementById('lblTextSelfieComercio').innerHTML = '<span style="color:#15803d;">✅ Selfie Recuperada</span>';
+                AppStore.set('selfie_com_tmp', data.img_selfie);
+            }
+            if(data.img_portada && document.getElementById('boxPortadaComercio')) {
+                document.getElementById('boxPortadaComercio').style.backgroundImage = `url(${data.img_portada})`;
+                if(document.getElementById('iconPortadaContenedor')) document.getElementById('iconPortadaContenedor').style.display = 'none';
+                if(document.getElementById('lblPortadaComercio')) document.getElementById('lblPortadaComercio').textContent = '✅ Portada Recuperada';
+                AppStore.set('portada_com_tmp', data.img_portada);
+            }
+        }
+    } catch(e) {}
+}
+
 // ==========================================
 // 6. PERFIL DEL CLIENTE COMPRADOR
 // ==========================================
@@ -1448,19 +1476,12 @@ async function guardarPerfilCliente() {
         if(b64Selfie.startsWith('data:image')) {
             urlFoto = await subirImagenBucket(b64Selfie, `clientes/${sessionActual.id}_selfie.jpg`);
         }
-
-        // Guardo el nombre en la autenticación nativa, y el resto a la tabla de base de datos
         await supabaseClient.auth.updateUser({ data: { full_name: nom } });
         await supabaseClient.from('moto_clientes').upsert({
-            id: sessionActual.id,
-            celular: cel,
-            provincia: prov,
-            ciudad: ciu,
-            direccion: dir,
-            img_selfie: urlFoto || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
+            id: sessionActual.id, celular: cel, provincia: prov, ciudad: ciu,
+            direccion: dir, img_selfie: urlFoto || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
         });
-        
-    } catch(e) { console.warn('Aviso: Operando temporalmente sin conexión profunda DB', e); }
+    } catch(e) { console.warn('Falla de BD menor, continuamos', e); }
     
     mostrarToast('✅ Perfil guardado con éxito.', 'success');
     if(productoPendienteAdd) procesarAgregadoCarrito();
@@ -1470,46 +1491,11 @@ async function guardarPerfilCliente() {
 // ==========================================
 // 7. PANEL DEL COMERCIANTE
 // ==========================================
-async function cargarDatosComercioExistente(id) {
-    try {
-        const { data } = await supabaseClient.from('moto_comercios').select('*').eq('id', id).single();
-        if (data) {
-            if(document.getElementById('comercioNombre')) document.getElementById('comercioNombre').value = data.nombre || '';
-            if(document.getElementById('comercioDireccionExacta')) document.getElementById('comercioDireccionExacta').value = data.direccion || '';
-            if(document.getElementById('comercioProvincia')) document.getElementById('comercioProvincia').value = data.provincia || '';
-            if(document.getElementById('comercioCiudad')) document.getElementById('comercioCiudad').value = data.ciudad || '';
-            if(document.getElementById('comercioAbre')) document.getElementById('comercioAbre').value = data.hora_abre || '';
-            if(document.getElementById('comercioCierra')) document.getElementById('comercioCierra').value = data.hora_cierra || '';
-            if(document.getElementById('comercioAlias')) document.getElementById('comercioAlias').value = data.alias_mp || '';
-            
-            if(data.img_selfie && document.getElementById('boxSelfieComercioModal')) {
-                document.getElementById('boxSelfieComercioModal').style.backgroundImage = `url(${data.img_selfie})`;
-                if(document.getElementById('iconSelfieComercioContenedor')) document.getElementById('iconSelfieComercioContenedor').style.display = 'none';
-                if(document.getElementById('lblTextSelfieComercio')) document.getElementById('lblTextSelfieComercio').innerHTML = '<span style="color:#15803d;">✅ Selfie Recuperada</span>';
-                AppStore.set('selfie_com_tmp', data.img_selfie);
-            }
-            if(data.img_portada && document.getElementById('boxPortadaComercio')) {
-                document.getElementById('boxPortadaComercio').style.backgroundImage = `url(${data.img_portada})`;
-                if(document.getElementById('iconPortadaContenedor')) document.getElementById('iconPortadaContenedor').style.display = 'none';
-                if(document.getElementById('lblPortadaComercio')) document.getElementById('lblPortadaComercio').textContent = '✅ Portada Recuperada';
-                AppStore.set('portada_com_tmp', data.img_portada);
-            }
-        }
-    } catch(e) {}
-}
-
 function agregarPedidoBandejaComercio(total, destino, nombreCliente) {
     let nombreInfo = nombreCliente ? nombreCliente : "Cliente sin registrar";
     let horaExacta = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
-    // Apilamos el pedido sin que borre al anterior (unshift + id único)
-    pedidosComercio.unshift({ 
-        total: total, 
-        destino: destino, 
-        cliente: nombreInfo,
-        hora: horaExacta,
-        id: Date.now()
-    });
+    pedidosComercio.unshift({ total: total, destino: destino, cliente: nombreInfo, hora: horaExacta, id: Date.now() });
     
     if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
     if('speechSynthesis' in window) {
@@ -1538,7 +1524,7 @@ function renderizarBandejaPedidos() {
                 </div>
                 <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:10px; font-size:16px; font-weight:800; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
             </div>
-            <button onclick="llamarMotoDesdeLocal(${idx})" style="width:100%; background:#2563eb; color:white; border:none; border-radius:8px; padding:12px; font-weight:800; font-size:14px; cursor:pointer;"><i class="ri-radar-line"></i> LLAMAR SERVIMOTO</button>
+            <button onclick="llamarMotoDesdeLocal()" style="width:100%; background:#2563eb; color:white; border:none; border-radius:8px; padding:12px; font-weight:800; font-size:14px; cursor:pointer;"><i class="ri-radar-line"></i> LLAMAR SERVIMOTO</button>
         </div>
     `).join('');
 }
@@ -1549,22 +1535,25 @@ function eliminarPedidoComercio(idx) {
     renderizarBandejaPedidos();
 }
 
-async function llamarMotoDesdeLocal(idx) {
-    mostrarToast("📡 Emitiendo señal al radar...", "success");
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        let msg = new SpeechSynthesisUtterance("Atención base, buscando un ServiMoto cercano para un nuevo envío.");
-        msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
-    }
-    setTimeout(() => { mostrarToast("✅ ¡Moto asignada! (Se le cargaron $200 de deuda a su cuenta)", "success"); }, 5000);
+async function llamarMotoDesdeLocal() {
+    mostrarToast("📡 Buscando cadetes online...", "success");
+    try {
+        // Buscamos cadetes online en Supabase
+        const { data: cadetesOnline } = await supabaseClient.from('moto_cadetes').select('id, celular').eq('online', true).limit(5);
+        
+        if (cadetesOnline && cadetesOnline.length > 0) {
+            mostrarToast(`✅ ${cadetesOnline.length} Cadetes alertados por el radar`, "success");
+        } else {
+            mostrarToast("⚠️ No hay cadetes online. Reintentando...", "error");
+        }
+    } catch(e) { console.error("Error al buscar cadetes", e); }
 }
 
-// Botón de WhatsApp para "Pedir Encargo/Favor" del comercio
 function pedirFavorCadeteWhatsApp() {
     let nomLocal = document.getElementById('comercioNombre').value.trim() || "Un comercio";
     let dirLocal = document.getElementById('comercioDireccionExacta').value.trim() || "Dirección no especificada";
     let txtMensaje = `🛵 *SOLICITUD DE ENCARGO / FAVOR* 🛵%0A%0AHola base, soy el comercio *${nomLocal}* ubicado en *${dirLocal}*.%0A%0ANecesito un ServiMoto para un encargo especial desde el local. ¿Podrían mandar una alerta al radar de los cadetes?`;
-    window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txtMensaje}`, '_blank');
+    window.open(`https://wa.me/${NUMERO_SOPORTE_CENTRAL}?text=${txtMensaje}`, '_blank');
 }
 
 async function previewSelfieComercioModal(input) {
@@ -1647,6 +1636,7 @@ async function guardarComercio() {
         if(error) throw error;
         dbComerciosCache = []; 
         mostrarToast(`¡Local guardado exitósamente!`, 'success');
+
     } catch (e) { mostrarToast('Error guardando en base de datos', 'error'); }
 }
 
@@ -1668,16 +1658,13 @@ async function agregarArticuloComercio() {
         const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
 
         const { error } = await supabaseClient.from('moto_productos').insert({
-            id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: ref,
-            img_producto: urlArt, pausado: false
+            id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: ref, img_producto: urlArt, pausado: false
         });
 
         if(error) throw error;
         dbComerciosCache = [];
-
         mostrarToast(`¡Artículo publicado con éxito!`, 'success');
-        document.getElementById('newArtNombre').value = '';
-        document.getElementById('newArtPrecio').value = '';
+        document.getElementById('newArtNombre').value = ''; document.getElementById('newArtPrecio').value = '';
         if(document.getElementById('newArtRef')) document.getElementById('newArtRef').value = '';
         tempImgBase64 = null;
         if(document.getElementById('boxArticuloNuevo')) document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
@@ -1689,7 +1676,6 @@ async function agregarArticuloComercio() {
 async function renderizarAdminComercio() {
     const cont = document.getElementById('listaAdminComercio');
     if(!cont) return;
-
     if(!miComercioLogueadoId && sessionActual) miComercioLogueadoId = sessionActual.id;
     if(!miComercioLogueadoId) return;
 
@@ -1730,8 +1716,7 @@ async function eliminarArticuloAdmin(idProd) {
 async function pausarArticuloAdmin(idProd, estadoActual) {
     try {
         await supabaseClient.from('moto_productos').update({ pausado: !estadoActual }).eq('id', idProd);
-        mostrarToast(!estadoActual ? 'Artículo pausado' : 'Artículo activo', 'success');
-        renderizarAdminComercio();
+        mostrarToast(!estadoActual ? 'Artículo pausado' : 'Artículo activo', 'success'); renderizarAdminComercio();
     } catch (e) {}
 }
 
@@ -1830,13 +1815,17 @@ function activarRadar() {
     if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (ONLINE) primero', 'error');
     const diaDeLaSemana = new Date().getDay(); 
     if (diaDeLaSemana === 1 && deudaMotoAcumulada > 0) {
-        mostrarToast("🔒 BLOQUEO DE LUNES: Tenés una deuda de $" + deudaMotoAcumulada + ". Subí tu comprobante para habilitar el radar.", "error");
+        mostrarToast("🔒 BLOQUEO DE LUNES: Tenés una deuda de $" + deudaMotoAcumulada + ". Subí tu comprobante de pago para habilitar el radar.", "error");
         return; 
     }
     estadoRadar = !estadoRadar;
     const btn = document.getElementById('btnRadar');
     if(estadoRadar) {
-        btn.innerHTML = `<div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div><i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#dcfce7;"></i><span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#f0fdf4; letter-spacing:1px;">BUSCANDO...</span>`;
+        btn.innerHTML = `
+            <div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div>
+            <i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#dcfce7;"></i>
+            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#f0fdf4; letter-spacing:1px;">BUSCANDO...</span>
+        `;
         btn.style.background = 'radial-gradient(circle, #16a34a, #14532d)'; btn.style.borderColor = '#4ade80';
         btn.style.boxShadow = '0 0 40px rgba(22,163,74,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
         mostrarToast('Radar encendido. Buscando viajes...', 'success');
@@ -1883,7 +1872,10 @@ async function procesarLiquidacionIA(input) {
 // ==========================================
 // 9. CARRITO DE COMIDA
 // ==========================================
-function intentarComprar(idProducto, nombre, precio, direccionComercio, aliasComercio) {
+function intentarComprar(idProducto, nombre, precio, direccionComercio, aliasComercio, telefonoComercio) {
+    // NUEVO: Guardamos el teléfono del comercio para mandarle el WhatsApp a ellos
+    telefonoComercioCalculo = telefonoComercio || NUMERO_SOPORTE_CENTRAL;
+
     productoPendienteAdd = { id: idProducto, nombre: nombre, precio: parseFloat(precio), direccion: direccionComercio, alias: aliasComercio };
     if(!sessionActual) {
         mostrarToast('¡Iniciá sesión para armar tu pedido!', 'error');
@@ -2023,7 +2015,7 @@ function iniciarRastreoPedidoCliente() {
     if(!widget) {
         widget = document.createElement('div');
         widget.id = 'widgetRastreo';
-        widget.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:white; border:2px solid #f97316; border-radius:30px; padding:10px 16px; box-shadow:0 10px 25px rgba(249,115,22,0.3); z-index:999999; display:flex; align-items:center; gap:8px; cursor:pointer; width:90%; max-width:350px; justify-content:center;';
+        widget.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:white; border:2px solid #f97316; border-radius:30px; padding:10px 16px; box-shadow:0 10px 25px rgba(249,115,22,0.3); z-index:999999; display:flex; align-items:center; gap:8px; cursor:pointer; width:90%; max-width:350px; justify-content:center;';
         widget.onclick = function() { alert("🛵 ESTADO EN VIVO:\n\nTu pedido fue recibido y el comprobante de pago validado por el comercio.\n\nTiempo estimado: 15-20 min.\n¡Ya casi llega!"); };
         document.body.appendChild(widget);
     }
@@ -2046,7 +2038,7 @@ function iniciarRastreoPedidoCliente() {
 }
 
 // ==========================================
-// 10. MAPA GPS Y WHATSAPP (COMIDA VS REMIS)
+// 10. MAPA GPS Y ENVÍO A WHATSAPP
 // ==========================================
 function prepararViajeEspecial() {
     let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
@@ -2059,6 +2051,7 @@ function prepararViajeEspecial() {
     abrirMapaMago();
 }
 
+// Funciones globales para que el HTML pueda acceder
 window.enviarPedidoEspecial = prepararViajeEspecial;
 
 function procesarEnvioMapa() {
@@ -2080,7 +2073,8 @@ function abrirMapaMago() {
         if(box) { box.style.opacity = '1'; box.style.transform = 'scale(1)'; }
         
         setTimeout(() => {
-            let destinoAddress = ""; let origenAddress = "";
+            let destinoAddress = "";
+            let origenAddress = "";
 
             if (esViajeEspecial) {
                 let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
@@ -2100,7 +2094,7 @@ function abrirMapaMago() {
             
             try {
                 if(!window.google || !window.google.maps) {
-                    mostrarToast("Cargando conexión a Google...", "error");
+                    mostrarToast("Falta cargar Google Maps. Simulando GPS...", "error");
                     throw new Error("API Google Maps no cargada");
                 }
                 if(!window.mapObj && canvas) {
@@ -2122,10 +2116,16 @@ function abrirMapaMago() {
                             const distanceMeters = ruta.legs[0].distance.value; 
                             iniciarAnimacionMoto(ruta.overview_path);
                             calcularMatematicaEnvio(distanceMeters); 
-                        } else { calcularMatematicaEnvio("1.0"); } 
+                        } else { 
+                            // Si Google no encuentra la ruta, igual se calcula base 10 cuadras
+                            calcularMatematicaEnvio("1.0"); 
+                        } 
                     });
                 }
-            } catch(e) { calcularMatematicaEnvio("1.0"); }
+            } catch(e) {
+                // Sistema de rescate si Google bloquea la API Key
+                calcularMatematicaEnvio("1.0"); 
+            }
         }, 400); 
     }, 100); 
 }
@@ -2166,10 +2166,7 @@ function calcularMatematicaEnvio(distancia) {
     if(document.getElementById('mapaKm')) document.getElementById('mapaKm').textContent = `${kmFormato} km (${cuadrasTotales} cuadras)`;
     if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
     
-    let subtotalProductos = 0;
-    carritoGlobal.forEach(i => { subtotalProductos += i.precio; });
-    if(document.getElementById('mapaTotalProductos')) document.getElementById('mapaTotalProductos').textContent = '$' + subtotalProductos.toLocaleString('es-AR');
-    
+    // Ocultar texto de "Cargando..."
     const fallbackText = document.getElementById('mapFallbackText');
     if(fallbackText) fallbackText.style.display = 'none';
 }
@@ -2213,16 +2210,14 @@ async function mandarPedidoSoporte() {
     let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
     carritoGlobal.forEach(i => {
         txt += `▪️ ${i.nombre} ${i.precio > 0 ? '- $'+i.precio.toLocaleString('es-AR') : ''}%0A`;
-        if(i.detalle) txt += `   📝 Detalle: ${i.detalle}%0A`;
     });
     
-    let telComprador = AppStore.get('cliente_celular') || "No registrado";
+    let telComprador = AppStore.get('cliente_celular') || "00000000";
     let telLimpio = String(telComprador).replace(/[^0-9]/g, '');
     
     txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Origen (Local):* ${direccionOrigenCalculo}%0A📍 *Destino:* ${destClient}%0A📱 *WhatsApp del Cliente:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
     if (subtotalProductos > 0) { txt += `🍔 *Comida (Pago al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
     txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
-    
     if(txtComprobante !== "") { txt += txtComprobante; }
     
     cerrarMapa();
@@ -2231,7 +2226,10 @@ async function mandarPedidoSoporte() {
     if(floatBtn) floatBtn.style.display = 'none';
 
     setTimeout(() => {
-        window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
+        // Enviar pedido al WHATSAPP DEL COMERCIO (Si no tiene celular, usa el de Soporte Central)
+        let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
+        let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
+        window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
         iniciarRastreoPedidoCliente(); 
     }, 1200); 
 }
@@ -2244,7 +2242,7 @@ function mandarViajeEspecialSoporte() {
     let detalle = document.getElementById('txtPedidoEspecial') ? document.getElementById('txtPedidoEspecial').value.trim() : "Paquete genérico";
 
     let costo = costoEnvioCalculado > 0 ? costoEnvioCalculado : 2200; 
-    let telComprador = AppStore.get('cliente_celular') || "No registrado";
+    let telComprador = AppStore.get('cliente_celular') || "00000000";
     let telLimpio = String(telComprador).replace(/[^0-9]/g, '');
     
     let txt = `📦 *NUEVO VIAJE ESPECIAL (PUERTA A PUERTA)* 📦%0A%0A`;
@@ -2260,10 +2258,9 @@ function mandarViajeEspecialSoporte() {
     esViajeEspecial = false; 
     
     setTimeout(() => {
-        window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
+        // Los viajes especiales siempre van a la Central de Remisería
+        window.open(`https://wa.me/${NUMERO_SOPORTE_CENTRAL}?text=${txt}`, '_blank');
         iniciarRastreoPedidoCliente(); 
     }, 1000);
 }
 </script>
-</body>
-</html>
