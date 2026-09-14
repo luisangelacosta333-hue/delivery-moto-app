@@ -1,36 +1,68 @@
-<html lang="es" style="margin:0;padding:0;scroll-behavior:smooth;">
+<!DOCTYPE html>
+<html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DELIVERY MOTO | Marketplace Premium</title>
 
+    <!-- ========================================== -->
+    <!-- LIBRERÍAS EXTERNAS Y FUENTES               -->
+    <!-- ========================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <!-- LEAFLET MAPAS (reemplaza Google Maps - funciona SIN API KEY) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1/dist/leaflet.css">
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1/dist/leaflet.js"></script>
     
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkRFTElWRVJZIE1PVE8iLAogICJzaG9ydF9uYW1lIjogIkRlbGl2ZXJ5TW90byIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmN2VkIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNmIwMCIKfQ==">
-</head>
-<body>
+    <!-- ========================================== -->
+    <!-- PWA MANIFEST                               -->
+    <!-- ========================================== -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkRFTElWRVJZIE1PVE8iLAogICJzaG9ydF9uYW1lIjogIkRlbGl2ZXJ5TW90byIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmN2VkIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNmIwMCIKZX0=">
 
-<script>
-(function(){
-    var s = document.createElement('style');
-    s.textContent = `
-        :root {
-            --bg: #fefcf8;
-            --card: #ffffff;
-            --text: #0f172a;
-            --muted: #64748b;
-            --accent: #ea580c;
-            --accent-soft: rgba(234,88,12,.14);
-            --accent2: #16a34a;
-            --accent2-soft: rgba(22,163,74,.14);
-            --border: rgba(15,23,42,.07);
-        }
+    <script>
+        // SEGURIDAD ANTI-COPIA PREMIUM
+        document.addEventListener('contextmenu', event => event.preventDefault()); 
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; 
+            if(e.ctrlKey && e.keyCode == 85) return false; 
+            if(e.ctrlKey && e.keyCode == 83) return false; 
+        };
+
+        // STORE DE MEMORIA Y CONFIGURACIÓN
+        const AppStore = (function() {
+            const memory = new Map();
+            const MAX_SIZE = 500; 
+            return {
+                set: function(key, value) {
+                    if(memory.size >= MAX_SIZE) {
+                        const firstKey = memory.keys().next().value;
+                        memory.delete(firstKey);
+                    }
+                    memory.set(key, value);
+                },
+                get: function(key) { return memory.get(key); },
+                remove: function(key) { memory.delete(key); },
+                clear: function() { memory.clear(); }
+            };
+        })();
+
+        AppStore.set('config', {
+            aliasCobro: 'noir.elite.ceo',
+            cbuCobro: '0110257630025717844115',
+            costoDia: 2200,
+            costoNoche: 3000,
+            costoCuadraExtra: 100,
+            soportePrincipal: '3816092676',
+            soporteSecundario: '3815110171'
+        });
+    </script>
+
+    <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-serif; background: #fff7ed; color: #0f172a; }
 
@@ -39,6 +71,7 @@
         @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,0,.6); } 50% { box-shadow: 0 0 0 28px rgba(255,107,0,0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes ringRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes micPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22,163,74,.6); } 50% { transform: scale(1.08); box-shadow: 0 0 0 18px rgba(22,163,74,0); } }
         @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         @keyframes shimmerGold { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(.95) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -49,6 +82,7 @@
         .animate-slide-up { animation: slideUp .7s cubic-bezier(.16,1,.3,1) both; }
         .animate-ring { animation: ringRotate 25s linear infinite; }
         .animate-ring-slow { animation: ringRotate 45s linear infinite reverse; }
+        .animate-mic { animation: micPulse 1.1s ease-in-out infinite; }
         .animate-fade-in-scale { animation: fadeInScale .35s cubic-bezier(.16,1,.3,1) both; }
         .animate-moto { animation: motoDrive 2.5s ease-in-out infinite; }
 
@@ -67,6 +101,9 @@
         .btn-secondary { background: white; color: #cc4400; font-weight: 800; border-radius: 1rem; border: 2.5px solid #ff6b00; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 6px 20px rgba(255,107,0,.15); }
         .btn-secondary:hover { transform: translateY(-3px); background: #fff7ed; box-shadow: 0 14px 35px rgba(255,107,0,.3); }
 
+        .btn-dark { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid #ff6b00; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; box-shadow: 0 12px 28px rgba(0,0,0,.3); }
+        .btn-dark:hover { transform: translateY(-3px); background: linear-gradient(135deg, #ff6b00, #cc4400); box-shadow: 0 18px 42px rgba(255,107,0,.5); }
+
         .btn-apk { background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.25); cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .55rem; box-shadow: 0 12px 30px rgba(22,163,74,.45), inset 0 1px 0 rgba(255,255,255,.3); }
         .btn-apk:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 42px rgba(22,163,74,.6); }
 
@@ -82,7 +119,7 @@
         
         .badge-dorado { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(135deg, rgba(255,215,0,.22), rgba(255,140,0,.1)); color: #fff7e6; border: 1.5px solid rgba(255,215,0,.5); box-shadow: 0 4px 15px rgba(255,215,0,.15); }
 
-        .nav-fixed { position: absolute; top: 0; left: 0; width: 100%; height: 76px; z-index: 500; background: linear-gradient(135deg,#1a0a00,#2d1200); border-bottom: 3px solid #ff6b00; box-shadow: 0 4px 28px rgba(0,0,0,.4); display: flex; align-items: center; }
+        .nav-fixed { position: fixed; top: 0; left: 0; width: 100%; height: 76px; z-index: 500; background: linear-gradient(135deg,#1a0a00,#2d1200); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 3px solid #ff6b00; box-shadow: 0 4px 28px rgba(0,0,0,.4); display: flex; align-items: center; }
         .nav-container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; }
 
         .mic-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255,255,255,.35); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all .3s; background: linear-gradient(135deg, #16a34a, #15803d); color: white; box-shadow: 0 4px 15px rgba(22,163,74,.4); flex-shrink: 0; }
@@ -95,7 +132,7 @@
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.95); backdrop-filter: blur(10px); z-index: 999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; padding: 0; }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
-        .modal-box { background: #fff7ed; border-radius: 0; width: 100%; max-height: 100vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.16,1,.3,1); position: relative; display: flex; flex-direction: column; }
+        .modal-box { background: #fff7ed; border-radius: 0; width: 100%; height: 100vh; max-height: 100vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.16,1,.3,1); position: relative; display: flex; flex-direction: column; }
         .modal-overlay.show .modal-box { transform: translateY(0); }
         
         @media (min-width: 768px) { 
@@ -143,72 +180,23 @@
         ::-webkit-scrollbar-track { background: #fff7ed; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
 
+        .expanded-container { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999999 !important; border-radius: 0 !important; border: none !important; margin: 0 !important; display: flex; flex-direction: column; background:#fff7ed; }
+        .expanded-list-content { max-height: calc(100vh - 80px) !important; flex: 1; overflow-y:auto;}
+
         /* ESTILOS ESPECIALES PARA EL MAPA LEAFLET */
-        #mapaCanvas {
-            width: 100%;
-            height: 100%;
-            min-height: 350px;
-            border-radius: 0;
-            z-index: 1;
-        }
-        .leaflet-container {
-            font-family: 'Quicksand', sans-serif;
-            background: #e6eef5;
-        }
-        .leaflet-popup-content-wrapper {
-            border-radius: 12px;
-            border: 2px solid #ff6b00;
-        }
-        .leaflet-popup-content {
-            margin: 10px 14px;
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 700;
-        }
-        .custom-marker-origen {
-            background: #16a34a;
-            width: 32px;
-            height: 32px;
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
-            border: 3px solid white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .custom-marker-origen i {
-            transform: rotate(45deg);
-            color: white;
-            font-size: 14px;
-        }
-        .custom-marker-destino {
-            background: #ea580c;
-            width: 32px;
-            height: 32px;
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
-            border: 3px solid white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .custom-marker-destino i {
-            transform: rotate(45deg);
-            color: white;
-            font-size: 14px;
-        }
-        .ruta-animada {
-            stroke-dasharray: 10, 10;
-            animation: dash 1s linear infinite;
-        }
-        @keyframes dash {
-            to { stroke-dashoffset: -20; }
-        }
-    `;
-    document.head.appendChild(s);
-})();
-</script>
+        #mapaCanvas { width: 100%; height: 100%; min-height: 350px; border-radius: 0; z-index: 1; }
+        .leaflet-container { font-family: 'Quicksand', sans-serif; background: #e6eef5; }
+        .leaflet-popup-content-wrapper { border-radius: 12px; border: 2px solid #ff6b00; }
+        .leaflet-popup-content { margin: 10px 14px; font-family: 'Quicksand', sans-serif; font-weight: 700; }
+        .custom-marker-origen { background: #16a34a; width: 32px; height: 32px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+        .custom-marker-origen i { transform: rotate(45deg); color: white; font-size: 14px; }
+        .custom-marker-destino { background: #ea580c; width: 32px; height: 32px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+        .custom-marker-destino i { transform: rotate(45deg); color: white; font-size: 14px; }
+        .ruta-animada { stroke-dasharray: 10, 10; animation: dash 1s linear infinite; }
+        @keyframes dash { to { stroke-dashoffset: -20; } }
+    </style>
+</head>
+<body>
 
 <nav class="nav-fixed">
     <div class="nav-container">
@@ -604,94 +592,654 @@
         </div>
 
         <div style="padding:0; flex:1; display:flex; flex-direction:column; overflow-y:auto;">
+            <!-- MENÚ PRINCIPAL -->
             <div id="modal-step-1" class="sub-step active" style="padding:24px 16px;">
-                <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">Que necesitas hoy?</h4>
+                <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Qué necesitás hoy?</h4>
                 <div style="display:flex; flex-direction:column; gap:12px;">
-                    <button class="option-card" onclick="iniciarDemoRapida()" style="border:2px solid #ff6b00; background:linear-gradient(to right, #fff, #fff7ed);">
-                        <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(255,107,0,0.4);"><i class="ri-map-pin-range-fill"></i></div>
+                    <button class="option-card" onclick="irPaso('feed-global')" style="border:2px solid #ff6b00; background:linear-gradient(to right, #fff, #fff7ed);">
+                        <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(255,107,0,0.4);"><i class="ri-shopping-bag-3-fill"></i></div>
                         <div style="flex:1; text-align:left;">
-                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px;">Calcular Envio GPS</div>
-                            <div style="font-size:12px; color:#64748b; font-weight:600;">Ingresa direcciones y obtén ruta + costo.</div>
+                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px;">Quiero Comprar</div>
+                            <div style="font-size:12px; color:#64748b; font-weight:600;">Explorá los locales y elegí qué comer.</div>
                         </div>
                         <i class="ri-arrow-right-s-line" style="font-size:26px; color:#ff6b00;"></i>
                     </button>
                     
-                    <button class="option-card" onclick="mostrarToast('Funcionalidad de catalogo en desarrollo', 'success')" style="border-color:#3b82f6; background:linear-gradient(to right, #fff, #eff6ff);">
-                        <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #3b82f6, #1d4ed8); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(59,130,246,0.4);"><i class="ri-shopping-bag-3-fill"></i></div>
+                    <button class="option-card" onclick="irPaso('pedido-especial')" style="border-color:#3b82f6; background:linear-gradient(to right, #fff, #eff6ff);">
+                        <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #3b82f6, #1d4ed8); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(59,130,246,0.4);"><i class="ri-motorbike-fill"></i></div>
                         <div style="flex:1; text-align:left;">
-                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px;">Ver Catalogo</div>
-                            <div style="font-size:12px; color:#64748b; font-weight:600;">Explora los locales disponibles.</div>
+                            <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px;">Pedir un Cadete</div>
+                            <div style="font-size:12px; color:#64748b; font-weight:600;">Viajes especiales o paquetes rápidos.</div>
                         </div>
                         <i class="ri-arrow-right-s-line" style="font-size:26px; color:#3b82f6;"></i>
                     </button>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px;">
+                        <button class="option-card" style="padding:16px; flex-direction:column; gap:8px; text-align:center;" onclick="iniciarLogin('comercio')">
+                            <div style="width:42px; height:42px; border-radius:12px; background:#fff7ed; color:#ff6b00; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid #ffd4b3;"><i class="ri-store-2-fill"></i></div>
+                            <div><div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#0f172a;">Soy Comercio</div></div>
+                        </button>
+                        <button class="option-card-dark" style="padding:16px; flex-direction:column; gap:8px; text-align:center;" onclick="iniciarLogin('cadete')">
+                            <div style="width:42px; height:42px; border-radius:12px; background:rgba(74,222,128,0.15); color:#4ade80; display:flex; align-items:center; justify-content:center; font-size:20px; border:1.5px solid rgba(74,222,128,0.3);"><i class="ri-shield-keyhole-fill"></i></div>
+                            <div><div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:white;">Servimoto</div></div>
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <!-- FEED GLOBAL -->
+            <div id="modal-step-feed-global" class="sub-step" style="padding:0;">
+                <div style="padding:12px 16px 8px 16px; background:white; position:sticky; top:0; z-index:10; border-bottom:1px solid #e2e8f0; box-shadow:0 4px 10px rgba(0,0,0,0.03);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <button class="btn-volver" style="margin:0; padding:6px 12px; font-size:12px;" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Inicio</button>
+                        <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; margin:0;">Catálogo Global</h3>
+                    </div>
+                    
+                    <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:8px; scrollbar-width:none;">
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('')">Todos</button>
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('pizza')">🍕 Pizza</button>
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('comida rápida')">🍔 Rápida</button>
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('farmacia')">💊 Farma</button>
+                        <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('kiosco')">🍫 Kiosco</button>
+                    </div>
+
+                    <div style="display:flex; gap:6px;" id="cajaFiltrosFeedHTML">
+                        <select class="select-provincia" id="filtroProvincia" style="margin:0; padding:8px 12px; font-size:12px; flex:1; border-radius:8px;" onchange="filtrarFeedGlobal()">
+                            <option value="">Todas las Provincias...</option>
+                        </select>
+                        <input type="text" class="input-buscar" id="filtroCiudad" placeholder="Tu Ciudad..." style="margin:0; padding:8px 12px; font-size:12px; flex:1; border-radius:8px;" onkeyup="filtrarFeedGlobal()">
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); align-items:start; gap:10px; padding:12px;" id="gridMercadoLibre"></div>
+            </div>
+
+            <!-- LOGIN -->
+            <div id="modal-step-login" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
+                <div class="step-indicator" id="lblTipoLogin">Acceso a Cuenta</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px;">Ingresá tus credenciales</h3>
+                <p style="color:#64748b; font-size:14px; margin-bottom:16px; line-height:1.5;" id="descLogin">Registrate o iniciá sesión de forma segura.</p>
+                <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
+                    <input type="tel" class="input-buscar" id="loginCelular" placeholder="Tu Celular (Sin 0 ni 15)">
+                    <input type="text" class="input-buscar" id="loginClave" placeholder="Clave (Ej: ABC123 o PIN Nuevo)">
+                    <button class="btn-primary" style="padding:14px;" onclick="validarLogin()">INGRESAR A MI CUENTA <i class="ri-arrow-right-line"></i></button>
+                </div>
+            </div>
+
+            <!-- COMPLETAR PERFIL DEL CLIENTE -->
+            <div id="modal-step-cliente-ubicacion" class="sub-step" style="padding:24px 16px;">
+                <div class="step-indicator" style="background:#dcfce7; color:#166534; border-color:#86efac;"><i class="ri-map-pin-user-fill"></i> Completar Perfil</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin-bottom:4px;">Tus Datos y Destino</h3>
+                <p style="color:#64748b;font-size:13.5px;margin-bottom:20px;line-height:1.5;">Configurá tu nombre, dirección de entrega y selfie por única vez por seguridad.</p>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <input type="text" class="input-buscar" id="inputNombreCliente" placeholder="Tu Nombre y Apellido Completo" style="margin:0;">
+                    <label id="boxSelfieClienteModal" style="background:#f8fafc; border:3px dashed #3b82f6; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; position:relative; overflow:hidden;">
+                        <div style="width:70px; height:70px; border-radius:50%; background:#eff6ff; display:flex; align-items:center; justify-content:center; border:2px solid #bfdbfe;" id="iconSelfieClienteContenedor">
+                            <i class="ri-camera-lens-fill" style="font-size:36px; color:#2563eb;"></i>
+                        </div>
+                        <span style="font-weight:800; color:#1d4ed8; font-size:15px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblTextSelfieCliente">Selfie de Seguridad (Obligatoria)</span>
+                        <input type="file" accept="image/*" capture="user" id="uploadSelfieCliente" style="display:none;" onchange="previewSelfieCliente(this)">
+                    </label>
+                    <select class="select-provincia" id="selProvinciaCliente" style="margin:0;"></select>
+                    <input type="text" class="input-buscar" id="inputCiudadCliente" placeholder="Ciudad (Ej: Famaillá)" style="margin:0;">
+                    <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro" style="margin:0;">
+                    <button class="btn-primary" style="padding:16px; margin-top: 8px; font-size:15px; background:linear-gradient(135deg, #16a34a, #15803d); border:none; box-shadow:0 10px 25px rgba(22,163,74,0.4);" onclick="guardarPerfilCliente()">GUARDAR Y CONTINUAR COMPRA</button>
+                </div>
+            </div>
+
+            <!-- PANEL COMERCIO -->
+            <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 16px;">Panel Comercial</h3>
+                
+                <div id="bandejaPedidosComercio" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;"></div>
+
+                <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
+                    <label id="boxSelfieComercioModal" style="background:#f0fdf4; border:3px dashed #4ade80; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; position:relative; overflow:hidden;">
+                        <div style="width:70px; height:70px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; border:2px solid #86efac;" id="iconSelfieComercioContenedor"><i class="ri-camera-lens-fill" style="font-size:36px; color:#16a34a;"></i></div>
+                        <span style="font-weight:800; color:#15803d; font-size:15px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblTextSelfieComercio">1. Selfie de Seguridad (Obligatorio)</span>
+                        <input type="file" accept="image/*" capture="user" id="uploadSelfieComercio" style="display:none;" onchange="previewSelfieComercioModal(this)">
+                    </label>
+                    <label id="boxPortadaComercio" style="background:#f8fafc; border:3px dashed #ffb380; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 200px; position:relative; overflow:hidden;">
+                        <div style="width:64px; height:64px; border-radius:16px; background:#fff7ed; display:flex; align-items:center; justify-content:center; border:2px solid #ffd4b3;" id="iconPortadaContenedor"><i class="ri-image-add-fill" style="font-size:32px; color:#ff6b00;"></i></div>
+                        <span style="font-weight:800; color:#cc4400; font-size:14px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblPortadaComercio">2. Subir Foto de Portada (Local)</span>
+                        <input type="file" accept="image/*" id="uploadPortadaComercio" style="display:none;" onchange="previewPortada(this)">
+                    </label>
+                    <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
+                    <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta (Ej: 9 de Julio 120)" style="margin:0;">
+                    
+                    <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6;">
+                        <option value="">Rubro / Categoría de tu Local...</option>
+                        <option value="Comida Rápida">🍔 Comida Rápida / Sandwichería</option>
+                        <option value="Pizzería">🍕 Pizzería / Empanadas</option>
+                        <option value="Kiosco">🍫 Kiosco / Almacén / Minimarket</option>
+                        <option value="Farmacia">💊 Farmacia / Perfumería</option>
+                        <option value="Bebidas">🍷 Bebidas / Heladería</option>
+                        <option value="Ropa">👕 Tienda de Ropa / Accesorios</option>
+                        <option value="Varios">🛍️ Comercios Varios</option>
+                    </select>
+
+                    <div style="margin-bottom: 4px; margin-top:4px;">
+                        <label style="font-weight: 800; font-size: 13px; color: #0f172a; display: block; margin-bottom: 6px;">
+                            <i class="ri-bank-card-fill" style="color: #2563eb;"></i> Alias / CBU para recibir transferencias:
+                        </label>
+                        <input type="text" class="input-buscar" id="comercioAlias" placeholder="Ej: kiosco.mamoly.mp" style="margin:0;">
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
+                        <div>
+                            <label style="font-size:11px; font-weight:800; color:#64748b;">Abre:</label>
+                            <input type="time" class="input-buscar" id="comercioAbre" style="margin:0; padding:12px; font-size:14px;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:800; color:#64748b;">Cierra:</label>
+                            <input type="time" class="input-buscar" id="comercioCierra" style="margin:0; padding:12px; font-size:14px;">
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:14px; font-size:14px;"></select>
+                        <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:14px; font-size:14px;">
+                    </div>
+                    <button class="btn-primary" style="padding:16px; font-size:15px; margin-top:8px;" onclick="guardarComercio()">GUARDAR DATOS DEL LOCAL</button>
+                </div>
+                
+                <button class="btn-secondary" style="width:100%; padding:14px; margin-bottom: 24px; border-color:#2563eb; color:#1d4ed8; background:#eff6ff;" onclick="pedirFavorCadeteWhatsApp()">
+                    <i class="ri-whatsapp-fill" style="font-size:22px; margin-right:8px; vertical-align:middle;"></i>
+                    <span style="vertical-align:middle;">PEDIR ENCARGO A SERVIMOTO</span>
+                </button>
+
+                <div style="background:#f8fafc; border:2px solid #cbd5e1; border-radius:1.5rem; padding:20px; margin-bottom:20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
+                    <h4 style="font-weight:800; font-size:18px; margin-bottom:16px; color:#0f172a;"><i class="ri-add-circle-fill" style="color:#3b82f6;"></i> Crear Artículo Nuevo</h4>
+                    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
+                        <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre del Artículo (Ej: Lomo Completo)" style="margin:0; padding:16px; font-size:16px;">
+                        <input type="number" class="input-buscar" id="newArtPrecio" placeholder="Precio Final ($)" style="margin:0; padding:16px; font-size:16px; font-weight:800; color:#16a34a;">
+                        <textarea class="textarea-buscar" id="newArtRef" placeholder="Descripción / Referencia (Opcional)" style="margin:0; padding:16px; font-size:14px; min-height:80px;"></textarea>
+                    </div>
+                    <label id="boxArticuloNuevo" style="background:white; border:3px dashed #94a3b8; padding:32px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:16px; background-size: cover; background-position: center; min-height: 180px; position: relative; overflow:hidden; transition:all 0.3s;">
+                        <div style="width:60px; height:60px; border-radius:16px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border:2px solid #e2e8f0; margin-bottom:10px;" id="iconPlatoContenedor"><i class="ri-camera-3-fill" style="font-size:32px; color:#64748b;"></i></div>
+                        <span style="font-size:15px; font-weight:800; color:#0f172a; position: relative; z-index: 2; background: rgba(255,255,255,0.95); padding: 8px 16px; border-radius: 10px;" id="lblArtFoto">Subir Foto Real (Obligatorio)</span>
+                        <input type="file" accept="image/*" id="uploadArticulo" style="display:none;" onchange="previewArtFoto(this)">
+                    </label>
+                    <button class="btn-primary" style="width:100%; padding:16px; font-size:16px; background:linear-gradient(135deg, #3b82f6, #1d4ed8); border:none; box-shadow:0 10px 25px rgba(59,130,246,0.4);" onclick="agregarArticuloComercio()">
+                        <i class="ri-upload-cloud-2-fill"></i> PUBLICAR EN EL CATÁLOGO
+                    </button>
+                </div>
+                
+                <div id="contenedorListaArticulos" style="background:white; border-radius:1.5rem; padding:20px; border:2px solid #ffe4cc; transition: all 0.3s ease;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a; margin:0;"><i class="ri-list-check" style="color:#ff6b00;"></i> Tus Artículos</h4>
+                        <button onclick="togglePantallaCompletaArticulos()" style="background:#fff7ed; color:#cc4400; border:2px solid #ffd4b3; border-radius:8px; padding:6px 10px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                            <i class="ri-fullscreen-line" id="iconExpandir"></i> <span id="textExpandir">Expandir</span>
+                        </button>
+                    </div>
+                    <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:10px; max-height:250px; overflow-y:auto; padding-right:4px; transition: all 0.3s ease;"></div>
+                </div>
+            </div>
+
+            <!-- PANEL CADETE ONBOARDING -->
+            <div id="modal-step-servimoto-onboarding" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso('login')"><i class="ri-arrow-left-s-line"></i> Atrás</button>
+                <div class="step-indicator" style="background:#dcfce7; color:#166534; border-color:#86efac;"><i class="ri-shield-keyhole-fill"></i> Registro Oficial Cadetes</div>
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 8px;">Certificación de Identidad</h3>
+                <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
+                    <input type="text" class="input-buscar" id="inputNombreCadete" placeholder="Tu Nombre y Apellido Completo" style="margin:0;">
+                    <label id="cajaDoc1" style="background:white; border:3px dashed #ff6b00; border-radius:1.5rem; padding:28px 16px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-height: 200px; position:relative; overflow:hidden;">
+                        <div style="width:64px; height:64px; border-radius:50%; background:#fff7ed; display:flex; align-items:center; justify-content:center; border:2px solid #ffb380;" id="iconoSelfieContenedorCadete"><i class="ri-camera-lens-fill" style="font-size:32px; color:#ff6b00;"></i></div>
+                        <span style="font-size:15px; font-weight:800; color:#0f172a; position:relative; z-index:2;" id="txtDoc1">1. Tomate una Foto Selfie (Rostro)</span>
+                        <input type="file" accept="image/*" capture="user" id="uploadDoc1" style="display:none;" onchange="previewSelfieCadete(this)">
+                    </label>
+                    <div style="display:grid; grid-template-columns:1fr; gap:12px;">
+                        <label id="cajaDoc2" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
+                            <div style="width:40px; height:40px; border-radius:10px; background:#eff6ff; display:flex; align-items:center; justify-content:center; border:1px solid #bfdbfe;"><i id="iconDoc2" class="ri-id-card-fill" style="font-size:20px; color:#3b82f6;"></i></div>
+                            <div style="flex:1;"><div style="font-size:13.5px; font-weight:800; color:#0f172a;" id="txtDoc2">2. Foto DNI (Frente y Dorso)</div></div>
+                            <input type="file" accept="image/*,application/pdf" id="uploadDoc2" style="display:none;" onchange="docCargado(this, 'txtDoc2', 'cajaDoc2', 'iconDoc2')">
+                        </label>
+                        <label id="cajaDoc3" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
+                            <div style="width:40px; height:40px; border-radius:10px; background:#f0fdf4; display:flex; align-items:center; justify-content:center; border:1px solid #bbf7d0;"><i id="iconDoc3" class="ri-file-shield-2-fill" style="font-size:20px; color:#16a34a;"></i></div>
+                            <div style="flex:1;"><div style="font-size:13.5px; font-weight:800; color:#0f172a;" id="txtDoc3">3. Buena Conducta</div></div>
+                            <input type="file" accept="image/*,application/pdf" id="uploadDoc3" style="display:none;" onchange="docCargado(this, 'txtDoc3', 'cajaDoc3', 'iconDoc3')">
+                        </label>
+                        <label id="cajaDoc4" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
+                            <div style="width:40px; height:40px; border-radius:10px; background:#fef3c7; display:flex; align-items:center; justify-content:center; border:1px solid #fde68a;"><i id="iconDoc4" class="ri-government-fill" style="font-size:20px; color:#d97706;"></i></div>
+                            <div style="flex:1;"><div style="font-size:13.5px; font-weight:800; color:#0f172a;" id="txtDoc4">4. Constancia AFIP</div></div>
+                            <input type="file" accept="image/*,application/pdf" id="uploadDoc4" style="display:none;" onchange="docCargado(this, 'txtDoc4', 'cajaDoc4', 'iconDoc4')">
+                        </label>
+                    </div>
+                </div>
+                <button class="btn-primary" style="width:100%; padding:16px; font-size:15px; background:linear-gradient(135deg, #16a34a, #15803d);" onclick="auditarDocumentosIA()">
+                    <i class="ri-robot-2-fill" style="font-size:20px;"></i> AUDITAR PERFIL CON IA
+                </button>
+            </div>
+
+            <!-- PANEL CADETE RADAR -->
+            <div id="modal-step-servimoto" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
+                <div style="background:linear-gradient(135deg, #0f172a, #050505); border-radius:1.5rem; padding:22px; border:3px solid #ff6b00; color:white; box-shadow:0 15px 35px rgba(0,0,0,0.5);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                        <span class="badge-dorado" style="border:1px solid rgba(74,222,128,0.5);"><i class="ri-shield-check-fill" style="color:#4ade80;"></i> IA ACTIVA</span>
+                        <span style="color:#4ade80; font-size:11.5px; font-weight:800; font-family:monospace;">MOTO-902</span>
+                    </div>
+                    <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px; text-align:center;">Panel de Operación</h3>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:1rem; margin-top:16px; margin-bottom:24px;">
+                         <div style="font-size:14px; font-weight:800; color:rgba(255,255,255,0.9);">Turno Actual:</div>
+                         <button id="btnEstadoTrabajo" onclick="toggleEstadoTrabajo()" style="background:#f97316; color:white; border:none; padding:10px 18px; border-radius:999px; font-weight:800; font-size:12px; cursor:pointer; box-shadow:0 4px 12px rgba(249,115,22,0.4); transition:all 0.3s;"><i class="ri-close-circle-fill"></i> INACTIVO</button>
+                    </div>
+                    <div style="display:flex; justify-content:center; margin-bottom: 32px; margin-top: 20px;">
+                        <button id="btnRadar" onclick="activarRadar()" style="width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #1e3a8a, #0f172a); color: white; border: 4px solid #3b82f6; box-shadow: 0 0 30px rgba(59,130,246,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; cursor:pointer; position: relative;">
+                            <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
+                            <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
+                        </button>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:20px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
+                        <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">Deuda Acumulada a Pagar</div>
+                        <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:46px; font-weight:800; color:white; line-height:1; margin-bottom:8px;">$0</div>
+                        <div style="font-size:13px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:6px 16px; border-radius:999px; margin-bottom: 12px;" id="viajesMotoBadge">0 Viajes Confirmados</div>
+                        
+                        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:16px; border-radius:1.2rem; text-align:left; margin-bottom:16px;">
+                            <div style="font-size:12px; font-weight:800; color:#4ade80; margin-bottom:8px;"><i class="ri-bank-card-fill"></i> DATOS PARA LIQUIDAR DEUDA</div>
+                            <div style="font-size:14px; color:white; font-weight:700; margin-bottom:4px;">Alias: <span style="color:#ffd700; user-select:all;">noir.elite.ceo</span></div>
+                            <div style="font-size:14px; color:white; font-weight:700;">CBU: <span style="color:#ffd700; user-select:all;">0110257630025717844115</span></div>
+                        </div>
+
+                        <div id="listaViajesCadete" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px; max-height:150px; overflow-y:auto; text-align:left;"></div>
+
+                        <label class="btn-primary" style="width:100%; padding:14px; font-size:14px; cursor:pointer; background:linear-gradient(135deg,#16a34a,#15803d); border:none; justify-content:center;">
+                            <i class="ri-upload-cloud-2-fill" style="font-size:20px;"></i> ENVIAR COMPROBANTE
+                            <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PEDIDO ESPECIAL (REMIS) -->
+            <div id="modal-step-pedido-especial" class="sub-step" style="padding:24px 16px;">
+                <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
+                <div class="step-indicator" style="color:#1d4ed8; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira el Cadete? (Ej: San Martín 100)">
+                    <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;"></select>
+                    <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino...">
+                    <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿De qué calle a qué calle? (Ej: San Martín 100 al 500)">
+                    <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Encomienda o paquete rápido)"></textarea>
+                    
+                    <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">CALCULAR ENVÍO EN MAPA</button>
+                    
+                    <div style="text-align:center; margin: 4px 0; font-weight:800; color:#64748b; font-size:12px;">O</div>
+
+                    <button class="btn-secondary" style="padding:14px; border-color:#2563eb; color:#1d4ed8; background:#eff6ff;" onclick="pedirFavorDirectoCliente()">
+                        <i class="ri-whatsapp-fill" style="font-size:22px; margin-right:8px; vertical-align:middle;"></i>
+                        <span style="vertical-align:middle;">PEDIR ENCARGO POR WHATSAPP</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL DEL CARRITO DE COMPRAS  -->
+<!-- ========================================== -->
+<div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
+    <div class="modal-box" style="padding:24px; border:3.5px solid #16a34a; max-width:440px; border-radius:1.5rem; height:auto;">
+        <button class="modal-close-btn" style="border-color:#16a34a; color:#15803d;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
+        <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin:0 0 16px;"><i class="ri-shopping-cart-2-fill" style="color:#16a34a;"></i> Tu Carrito</h3>
+        
+        <div id="contenidoCarrito" style="max-height:450px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
+
+        <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Subtotal Comida</span>
+            <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#15803d; line-height:1;">$0</span>
+        </div>
+
+        <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="abrirMapaMago()">
+            <i class="ri-map-pin-line" style="font-size:22px;"></i> CALCULAR ENVÍO EN MAPA
+        </button>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MAPA GPS (LEAFLET INTEGRADO) -->
+<!-- ========================================== -->
+<div id="modalMapaGrande" class="modal-overlay" style="background:rgba(15,23,42,.98);">
+    <div style="width:100%; max-width:850px; height:100vh; background:#0f172a; border-radius:0; border:none; position:relative; overflow:hidden; box-shadow:0 0 100px rgba(255,107,0,0.5); display:flex; flex-direction:column; transform:scale(0.95); transition:all .35s; opacity:0;" id="mapaBox">
+        <div style="position:absolute; top:16px; left:16px; right:16px; z-index:1000; display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="background:rgba(255,255,255,.95); padding:12px 18px; border-radius:1rem; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:2px solid #ff6b00;">
+                <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:17px; color:#0f172a; margin:0;"><i class="ri-radar-fill" style="color:#ff6b00;"></i> Trazado GPS</h3>
+            </div>
+            <button onclick="cerrarMapa()" style="width:40px; height:40px; border-radius:50%; background:#f97316; color:white; border:2px solid #fff; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ri-close-line"></i></button>
+        </div>
+        
+        <div style="flex:1; width:100%; height:100%; min-height:350px; position:relative; background:#e6eef5;">
+            <div id="mapaCanvas" style="width:100%; height:100%; position:absolute; inset:0; z-index:1;"></div>
+            <div id="mapFallbackText" style="position:absolute; inset:0; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:#0f172a; z-index:2;">
+                <div class="animate-moto" style="font-size:64px; color:#ff6b00;"><i class="ri-motorbike-fill"></i></div>
+                <div style="font-family:'Sora',sans-serif; font-weight:800; color:white; font-size:18px;">Calculando cotización matemática de envío...</div>
+            </div>
+        </div>
+
+        <div style="background:white; padding:20px 24px; border-top:4px solid #ff6b00; position:relative; z-index:1000;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                <div style="background:#f8fafc; padding:12px; border-radius:1rem; border:2px solid #cbd5e1; text-align:center;">
+                    <div style="font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase;">Distancia GPS</div>
+                    <div id="mapaKm" style="font-family:'Sora',sans-serif; font-size:22px; font-weight:800; color:#0f172a; margin-top:2px;">...</div>
+                </div>
+                <div style="background:#fff7ed; padding:12px; border-radius:1rem; border:2px solid #ffd4b3; text-align:center;">
+                    <div style="font-size:10px; font-weight:800; color:#cc4400; text-transform:uppercase;" id="lblTarifaBase">Costo Envío (Al Cadete)</div>
+                    <div id="mapaCosto" style="font-family:'Sora',sans-serif; font-size:22px; font-weight:800; color:#ff6b00; margin-top:2px;">$--</div>
+                </div>
+            </div>
+            <p style="font-size:11.5px; color:#166534; text-align:center; font-weight:800; background:#f0fdf4; padding:8px; border-radius:8px; margin-bottom:12px;">
+                💡 Importante: El envío se paga por separado directamente al ServiMoto.
+            </p>
+            <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="procesarEnvioMapa()">
+                ENVIAR PEDIDO A CENTRAL <i class="ri-robot-2-fill" style="font-size:22px;"></i>
+            </button>
         </div>
     </div>
 </div>
 
 <script>
+// ==========================================
+// MAPA LEAFLET LOGIC (INCRUSTADO EN MARKETPLACE)
+// ==========================================
+let mapaMagoObj = null;
+let capaRutaMago = null;
+let motoMarkerMago = null;
+let animacionIntervalMago = null;
+
+function initMapaMago() {
+    if (!mapaMagoObj) {
+        mapaMagoObj = L.map('mapaCanvas', { zoomControl: false, attributionControl: false }).setView([-26.8083, -65.2176], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapaMagoObj);
+    }
+}
+
+async function geocodificarDireccion(direccion) {
+    try {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1&countrycodes=ar`;
+        const res = await fetch(url, { headers: { 'Accept-Language': 'es-AR,es;q=0.9' } });
+        const datos = await res.json();
+        if (datos && datos.length > 0) return { lat: parseFloat(datos[0].lat), lng: parseFloat(datos[0].lon), nombre: datos[0].display_name };
+        return null;
+    } catch (e) { return null; }
+}
+
+async function calcularRutaOSRM(origen, destino) {
+    try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson&steps=true`;
+        const res = await fetch(url);
+        const datos = await res.json();
+        if (datos.code === 'Ok' && datos.routes && datos.routes.length > 0) {
+            const ruta = datos.routes[0];
+            return {
+                distancia: ruta.distance, 
+                duracion: ruta.duration,
+                coordenadas: ruta.geometry.coordinates.map(c => [c[1], c[0]])
+            };
+        }
+        return null;
+    } catch (e) { return null; }
+}
+
+function calcularDistanciaHaversine(lat1, lng1, lat2, lng2) {
+    const R = 6371000; 
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+
+function abrirMapaMago() {
+    cerrarCarrito();
+    const modalMapa = document.getElementById('modalMapaGrande');
+    if(!modalMapa) return;
+    modalMapa.classList.add('show');
+    
+    setTimeout(async () => {
+        const box = document.getElementById('mapaBox');
+        if(box) { box.style.opacity = '1'; box.style.transform = 'scale(1)'; }
+        
+        initMapaMago();
+        setTimeout(() => { if(mapaMagoObj) mapaMagoObj.invalidateSize(); }, 300);
+
+        let strOrigen = ""; let strDestino = "";
+        if (esViajeEspecial) {
+            let dO = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
+            let pD = document.getElementById('selProvinciaEspecial') ? document.getElementById('selProvinciaEspecial').value.trim() : "Tucumán";
+            let cD = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "Famaillá";
+            strOrigen = `${dO}, ${cD}, ${pD}, Argentina`; 
+            let dD = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
+            strDestino = `${dD}, ${cD}, ${pD}, Argentina`;
+        } else {
+            let pC = AppStore.get('cliente_prov') || 'Tucumán';
+            let cC = AppStore.get('cliente_ciu') || 'Famaillá';
+            let dC = AppStore.get('cliente_dir');
+            strDestino = `${dC}, ${cC}, ${pC}, Argentina`;
+            let dL = direccionOrigenCalculo ? direccionOrigenCalculo : "Plaza Principal";
+            strOrigen = `${dL}, ${cC}, ${pC}, Argentina`;
+        }
+
+        try {
+            const origen = await geocodificarDireccion(strOrigen);
+            const destino = await geocodificarDireccion(strDestino);
+            
+            if(!origen || !destino) {
+                calcularMatematicaEnvio("1.0"); 
+                return;
+            }
+
+            if(window.magoLayerGroup) {
+                window.magoLayerGroup.clearLayers();
+            } else {
+                window.magoLayerGroup = L.featureGroup().addTo(mapaMagoObj);
+            }
+            if (animacionIntervalMago) clearInterval(animacionIntervalMago);
+
+            const icoOri = L.divIcon({ className:'custom-marker', html:'<div class="custom-marker-origen"><i class="ri-store-fill"></i></div>', iconSize:[32,32], iconAnchor:[16,32] });
+            const icoDes = L.divIcon({ className:'custom-marker', html:'<div class="custom-marker-destino"><i class="ri-home-4-fill"></i></div>', iconSize:[32,32], iconAnchor:[16,32] });
+            
+            L.marker([origen.lat, origen.lng], {icon:icoOri}).addTo(window.magoLayerGroup);
+            L.marker([destino.lat, destino.lng], {icon:icoDes}).addTo(window.magoLayerGroup);
+
+            const ruta = await calcularRutaOSRM(origen, destino);
+            let distMeters = 1000;
+
+            if (ruta) {
+                capaRutaMago = L.polyline(ruta.coordenadas, { color:'#ea580c', weight:6, opacity:0.85, dashArray:'12, 8', className:'ruta-animada' }).addTo(window.magoLayerGroup);
+                mapaMagoObj.fitBounds(window.magoLayerGroup.getBounds(), { padding: [40, 40] });
+                distMeters = ruta.distancia;
+
+                const iconoMotoObj = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png', iconSize: [36, 36], iconAnchor: [18, 18] });
+                motoMarkerMago = L.marker(ruta.coordenadas[0], {icon: iconoMotoObj, zIndexOffset: 1000}).addTo(window.magoLayerGroup);
+                
+                let i = 0;
+                animacionIntervalMago = setInterval(() => {
+                    i++; if (i >= ruta.coordenadas.length) i = 0; 
+                    motoMarkerMago.setLatLng(ruta.coordenadas[i]);
+                }, 300);
+
+            } else {
+                capaRutaMago = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], { color:'#ea580c', weight:5, dashArray:'10, 10' }).addTo(window.magoLayerGroup);
+                mapaMagoObj.fitBounds(window.magoLayerGroup.getBounds(), { padding: [40, 40] });
+                distMeters = calcularDistanciaHaversine(origen.lat, origen.lng, destino.lat, destino.lng);
+            }
+
+            calcularMatematicaEnvio(distMeters);
+
+        } catch(e) { calcularMatematicaEnvio("1.0"); }
+    }, 400); 
+}
+
+function calcularMatematicaEnvio(distancia) {
+    let metrosReales = 0;
+    if (typeof distancia === 'string' && distancia.includes('.')) { metrosReales = parseFloat(distancia) * 1000; } 
+    else { metrosReales = parseInt(distancia); }
+
+    let cuadrasTotales = Math.round(metrosReales / 100);
+    const horaActual = new Date().getHours();
+    const esNoche = (horaActual >= 20 || horaActual < 6);
+    
+    const tarifaBase = esNoche ? 3000 : 2200; 
+    if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Costo Envío Noche' : 'Costo Envío Día';
+    
+    let costoExtra = 0;
+    if(cuadrasTotales > 10) { costoExtra = (cuadrasTotales - 10) * 100; }
+    
+    costoEnvioCalculado = tarifaBase + costoExtra;
+    let kmFormato = (metrosReales / 1000).toFixed(2);
+    
+    if(document.getElementById('mapaKm')) document.getElementById('mapaKm').textContent = `${kmFormato} km (${cuadrasTotales} cuadras)`;
+    if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
+    
+    let celCliente = AppStore.get('cliente_celular') || "Sin teléfono";
+    let pInfo = document.querySelector("#modalMapaGrande p");
+    if(pInfo) pInfo.innerHTML = `💡 Importante: El envío se paga por separado al ServiMoto.<br><span style="font-weight:600; color:#0f172a; margin-top:4px; display:inline-block;">(Tu celular para este viaje: ${celCliente})</span>`;
+    
+    let subtotalProductos = 0;
+    carritoGlobal.forEach(i => { subtotalProductos += i.precio; });
+    if(document.getElementById('mapaTotalProductos')) document.getElementById('mapaTotalProductos').textContent = '$' + subtotalProductos.toLocaleString('es-AR');
+    
+    const fallbackText = document.getElementById('mapFallbackText');
+    if(fallbackText) fallbackText.style.display = 'none';
+}
+
+function cerrarMapa() { 
+    document.getElementById('modalMapaGrande').classList.remove('show'); 
+    if(!esViajeEspecial) { abrirCarritoFinal(); }
+}
+
+async function mandarPedidoSoporte() {
+    if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
+    
+    let subtotalProductos = 0;
+    carritoGlobal.forEach(i => subtotalProductos += i.precio);
+    let destClient = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu');
+    let nomComprador = AppStore.get('cliente_nombre') || "No registrado"; 
+    
+    let txtComprobante = "";
+    if(AppStore.get('comprobante_tmp')) {
+        mostrarToast("⏳ Procesando comprobante...", "success");
+        try {
+            let urlComp = await subirImagenBucket(AppStore.get('comprobante_tmp'), `comprobantes/pago_${Date.now()}.jpg`);
+            if(urlComp) {
+                txtComprobante = `%0A📎 *VER COMPROBANTE DE PAGO:* ${urlComp}%0A`;
+                AppStore.set('comprobante_tmp', null); 
+            }
+        } catch(e) {}
+    }
+    
+    let pedidoCreadoId = null;
+    try {
+        if(sessionActual) {
+            const { data } = await supabaseClient.from('moto_pedidos').insert({
+                id_cliente: sessionActual.id, origen_dir: direccionOrigenCalculo, destino_dir: destClient,
+                total_comida: subtotalProductos, total_envio: costoEnvioCalculado, detalle_json: carritoGlobal
+            }).select();
+            if(data && data.length > 0) pedidoCreadoId = data[0].id;
+        }
+    } catch (e) {}
+
+    if(subtotalProductos > 0) { agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal); }
+
+    let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
+    carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
+    if(txtComprobante !== "") { txt += txtComprobante; }
+    
+    let telComprador = AppStore.get('cliente_celular') || "00000000";
+    let telLimpio = String(telComprador).replace(/[^0-9]/g, '');
+    
+    txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Entrega en:* ${destClient}%0A📱 *WhatsApp del Cliente:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
+    if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
+    txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
+    
+    cerrarMapa();
+    carritoGlobal = [];
+    localStorage.removeItem('moto_carrito_guardado');
+    const floatBtn = document.getElementById('btnFloatingCart');
+    if(floatBtn) floatBtn.style.display = 'none';
+
+    dispararConfetti();
+
+    setTimeout(() => {
+        let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
+        let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
+        if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
+        window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
+        iniciarRastreoPedidoCliente(pedidoCreadoId); 
+    }, 2500); 
+}
+
+async function mandarViajeEspecialSoporte() {
+    let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
+    let provDest = document.getElementById('selProvinciaEspecial') ? document.getElementById('selProvinciaEspecial').value.trim() : "Tucumán";
+    let ciuDest = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "";
+    let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
+    let detalle = document.getElementById('txtPedidoEspecial') ? document.getElementById('txtPedidoEspecial').value.trim() : "Paquete genérico";
+
+    let costo = costoEnvioCalculado > 0 ? costoEnvioCalculado : 2200; 
+    
+    mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
+    cerrarMapa();
+    esViajeEspecial = false; 
+    
+    let pedidoCreadoId = null;
+    try {
+        if(sessionActual) {
+            const { data } = await supabaseClient.from('moto_pedidos').insert({
+                id_cliente: sessionActual.id, 
+                origen_dir: dirOrig, 
+                destino_dir: `${dirDest}, ${ciuDest}, ${provDest}`,
+                total_comida: 0, 
+                total_envio: costo, 
+                detalle_json: [{nombre: "Viaje Especial", detalle: detalle}]
+            }).select();
+            if(data && data.length > 0) pedidoCreadoId = data[0].id;
+        }
+    } catch (e) {}
+
+    dispararConfetti();
+
+    setTimeout(() => {
+        mostrarToast("✅ ¡Viaje en el radar! Moto asignándose...", "success");
+        iniciarRastreoPedidoCliente(pedidoCreadoId); 
+    }, 2500);
+}
+// ==========================================
+// SCRIPT DEL MAPA DEMO INTERACTIVO DE LA LANDING
+// ==========================================
 (function() {
-    // ==========================================
-    // VARIABLES GLOBALES
-    // ==========================================
     let mapaDemo = null;
     let marcadorOrigen = null;
     let marcadorDestino = null;
     let capaRuta = null;
-    let carritoGlobal = [];
     let deferredPrompt = null;
 
-    // ==========================================
-    // INICIALIZACION DEL MAPA DEMO
-    // ==========================================
     function initMapaDemo() {
         if (mapaDemo) return;
-        
-        // Coordenadas de San Miguel de Tucuman como centro inicial
         mapaDemo = L.map('mapaDemo', {
             zoomControl: true,
             attributionControl: true
         }).setView([-26.8083, -65.2176], 13);
-
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
+            attribution: '&copy; OpenStreetMap',
             maxZoom: 19
         }).addTo(mapaDemo);
-
-        // Forzar redimensionamiento después de un pequeño retraso
-        setTimeout(function() {
-            if (mapaDemo) mapaDemo.invalidateSize();
-        }, 200);
+        setTimeout(function() { if (mapaDemo) mapaDemo.invalidateSize(); }, 200);
     }
 
-    // ==========================================
-    // GEOCODIFICACION CON NOMINATIM
-    // ==========================================
     async function geocodificarDireccion(direccion) {
         try {
             const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1&countrycodes=ar`;
-            const respuesta = await fetch(url, {
-                headers: { 'Accept-Language': 'es-AR,es;q=0.9' }
-            });
+            const respuesta = await fetch(url, { headers: { 'Accept-Language': 'es-AR,es;q=0.9' } });
             const datos = await respuesta.json();
-            if (datos && datos.length > 0) {
-                return {
-                    lat: parseFloat(datos[0].lat),
-                    lng: parseFloat(datos[0].lon),
-                    nombre: datos[0].display_name
-                };
-            }
+            if (datos && datos.length > 0) return { lat: parseFloat(datos[0].lat), lng: parseFloat(datos[0].lon), nombre: datos[0].display_name };
             return null;
-        } catch (e) {
-            console.error('Error geocodificacion:', e);
-            return null;
-        }
+        } catch (e) { return null; }
     }
 
-    // ==========================================
-    // CALCULO DE RUTA CON OSRM
-    // ==========================================
     async function calcularRutaOSRM(origen, destino) {
         try {
             const url = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson&steps=true`;
@@ -700,107 +1248,56 @@
             if (datos.code === 'Ok' && datos.routes && datos.routes.length > 0) {
                 const ruta = datos.routes[0];
                 return {
-                    distancia: ruta.distance, // metros
-                    duracion: ruta.duration, // segundos
-                    coordenadas: ruta.geometry.coordinates.map(function(c) { return [c[1], c[0]]; }), // Leaflet usa [lat, lng]
+                    distancia: ruta.distance,
+                    duracion: ruta.duration,
+                    coordenadas: ruta.geometry.coordinates.map(function(c) { return [c[1], c[0]]; }),
                     pasos: ruta.legs[0].steps
                 };
             }
             return null;
-        } catch (e) {
-            console.error('Error OSRM:', e);
-            return null;
-        }
+        } catch (e) { return null; }
     }
 
-    // ==========================================
-    // FUNCION PRINCIPAL: CALCULAR RUTA DEMO
-    // ==========================================
     window.calcularRutaDemo = async function() {
         const inputOrigen = document.getElementById('demoOrigen');
         const inputDestino = document.getElementById('demoDestino');
         const infoBox = document.getElementById('mapaDemoInfo');
         
         if (!inputOrigen.value.trim() || !inputDestino.value.trim()) {
-            mostrarToast('Ingresa ambas direcciones', 'error');
-            return;
+            mostrarToast('Ingresa ambas direcciones', 'error'); return;
         }
-
         infoBox.innerHTML = '<i class="ri-loader-4-line animate-ring" style="color:#ff6b00;"></i> Buscando direcciones...';
         infoBox.style.borderColor = '#ff6b00';
 
-        // Paso 1: Geocodificar origen
         const origen = await geocodificarDireccion(inputOrigen.value.trim());
         if (!origen) {
-            infoBox.innerHTML = '<i class="ri-error-warning-fill" style="color:#ef4444;"></i> No se encontro el ORIGEN. Se mas especifico.';
-            infoBox.style.borderColor = '#ef4444';
-            return;
+            infoBox.innerHTML = '<i class="ri-error-warning-fill" style="color:#ef4444;"></i> No se encontro el ORIGEN.';
+            infoBox.style.borderColor = '#ef4444'; return;
         }
-
-        infoBox.innerHTML = '<i class="ri-loader-4-line animate-ring" style="color:#ff6b00;"></i> Origen encontrado. Buscando destino...';
-
-        // Paso 2: Geocodificar destino
+        infoBox.innerHTML = '<i class="ri-loader-4-line animate-ring" style="color:#ff6b00;"></i> Buscando destino...';
         const destino = await geocodificarDireccion(inputDestino.value.trim());
         if (!destino) {
-            infoBox.innerHTML = '<i class="ri-error-warning-fill" style="color:#ef4444;"></i> No se encontro el DESTINO. Se mas especifico.';
-            infoBox.style.borderColor = '#ef4444';
-            return;
+            infoBox.innerHTML = '<i class="ri-error-warning-fill" style="color:#ef4444;"></i> No se encontro el DESTINO.';
+            infoBox.style.borderColor = '#ef4444'; return;
         }
+        infoBox.innerHTML = '<i class="ri-loader-4-line animate-ring" style="color:#ff6b00;"></i> Calculando ruta...';
 
-        infoBox.innerHTML = '<i class="ri-loader-4-line animate-ring" style="color:#ff6b00;"></i> Calculando ruta optima...';
-
-        // Paso 3: Limpiar marcadores y rutas anteriores
         if (marcadorOrigen) mapaDemo.removeLayer(marcadorOrigen);
         if (marcadorDestino) mapaDemo.removeLayer(marcadorDestino);
         if (capaRuta) mapaDemo.removeLayer(capaRuta);
 
-        // Paso 4: Crear marcadores personalizados
-        const iconoOrigen = L.divIcon({
-            className: 'custom-marker',
-            html: '<div class="custom-marker-origen"><i class="ri-store-fill"></i></div>',
-            iconSize: [32, 32],
-            iconAnchor: [16, 32]
-        });
+        const iconoOrigen = L.divIcon({ className: 'custom-marker', html: '<div class="custom-marker-origen"><i class="ri-store-fill"></i></div>', iconSize: [32, 32], iconAnchor: [16, 32] });
+        const iconoDestino = L.divIcon({ className: 'custom-marker', html: '<div class="custom-marker-destino"><i class="ri-home-4-fill"></i></div>', iconSize: [32, 32], iconAnchor: [16, 32] });
 
-        const iconoDestino = L.divIcon({
-            className: 'custom-marker',
-            html: '<div class="custom-marker-destino"><i class="ri-home-4-fill"></i></div>',
-            iconSize: [32, 32],
-            iconAnchor: [16, 32]
-        });
+        marcadorOrigen = L.marker([origen.lat, origen.lng], { icon: iconoOrigen }).addTo(mapaDemo).bindPopup('<strong style="color:#16a34a;">ORIGEN</strong><br>' + origen.nombre.substring(0, 80));
+        marcadorDestino = L.marker([destino.lat, destino.lng], { icon: iconoDestino }).addTo(mapaDemo).bindPopup('<strong style="color:#ea580c;">DESTINO</strong><br>' + destino.nombre.substring(0, 80));
 
-        marcadorOrigen = L.marker([origen.lat, origen.lng], { icon: iconoOrigen })
-            .addTo(mapaDemo)
-            .bindPopup('<strong style="color:#16a34a;">ORIGEN</strong><br>' + origen.nombre.substring(0, 80));
-
-        marcadorDestino = L.marker([destino.lat, destino.lng], { icon: iconoDestino })
-            .addTo(mapaDemo)
-            .bindPopup('<strong style="color:#ea580c;">DESTINO</strong><br>' + destino.nombre.substring(0, 80));
-
-        // Paso 5: Calcular ruta con OSRM
         const ruta = await calcularRutaOSRM(origen, destino);
-        
         if (ruta) {
-            // Dibujar ruta con animacion
-            capaRuta = L.polyline(ruta.coordenadas, {
-                color: '#ea580c',
-                weight: 6,
-                opacity: 0.85,
-                lineJoin: 'round',
-                lineCap: 'round',
-                dashArray: '12, 8',
-                className: 'ruta-animada'
-            }).addTo(mapaDemo);
-
-            // Ajustar vista para que se vean ambos puntos y la ruta
-            const limites = L.latLngBounds(ruta.coordenadas);
-            mapaDemo.fitBounds(limites, { padding: [60, 60] });
-
-            // Mostrar resultados
+            capaRuta = L.polyline(ruta.coordenadas, { color: '#ea580c', weight: 6, opacity: 0.85, dashArray: '12, 8', className: 'ruta-animada' }).addTo(mapaDemo);
+            mapaDemo.fitBounds(L.latLngBounds(ruta.coordenadas), { padding: [60, 60] });
             const distanciaKm = (ruta.distancia / 1000).toFixed(2);
             const duracionMin = Math.round(ruta.duracion / 60);
-            
-            // Calcular costo
             const cuadras = Math.round(ruta.distancia / 100);
             const hora = new Date().getHours();
             const esNoche = (hora >= 20 || hora < 6);
@@ -817,21 +1314,11 @@
             infoBox.innerHTML = '<i class="ri-checkbox-circle-fill" style="color:#16a34a;"></i> Ruta calculada: ' + distanciaKm + ' km • ~' + duracionMin + ' min';
             infoBox.style.borderColor = '#16a34a';
         } else {
-            // Fallback: mostrar linea recta entre puntos
-            capaRuta = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], {
-                color: '#ea580c',
-                weight: 5,
-                opacity: 0.7,
-                dashArray: '10, 10'
-            }).addTo(mapaDemo);
-
-            const limites = L.latLngBounds([[origen.lat, origen.lng], [destino.lat, destino.lng]]);
-            mapaDemo.fitBounds(limites, { padding: [60, 60] });
-
-            // Calculo aproximado
+            capaRuta = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], { color: '#ea580c', weight: 5, dashArray: '10, 10' }).addTo(mapaDemo);
+            mapaDemo.fitBounds(L.latLngBounds([[origen.lat, origen.lng], [destino.lat, destino.lng]]), { padding: [60, 60] });
             const distMetros = calcularDistanciaHaversine(origen.lat, origen.lng, destino.lat, destino.lng);
             const distanciaKm = (distMetros / 1000).toFixed(2);
-            const duracionMin = Math.round((distMetros / 1000) / 0.025); // ~25 km/h promedio moto
+            const duracionMin = Math.round((distMetros / 1000) / 0.025); 
             const cuadras = Math.round(distMetros / 100);
             const hora = new Date().getHours();
             const esNoche = (hora >= 20 || hora < 6);
@@ -850,41 +1337,20 @@
         }
     };
 
-    // ==========================================
-    // FUNCION AUXILIAR: CALCULO HAVERSINE (distancia linea recta)
-    // ==========================================
     function calcularDistanciaHaversine(lat1, lng1, lat2, lng2) {
-        const R = 6371000; // Radio de la tierra en metros
+        const R = 6371000; 
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLng = (lng2 - lng1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLng/2) * Math.sin(dLng/2);
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         return R * c;
     }
 
-    // ==========================================
-    // CENTRAR MAPA
-    // ==========================================
     window.centrarMapaDemo = function() {
         if (mapaDemo) {
             mapaDemo.setView([-26.8083, -65.2176], 13);
             setTimeout(function() { mapaDemo.invalidateSize(); }, 100);
         }
-    };
-
-    // ==========================================
-    // FUNCIONES MODAL
-    // ==========================================
-    window.abrirModalMarketplace = function() {
-        document.getElementById('modalMarketplace').classList.add('show');
-        document.body.style.overflow = 'hidden';
-    };
-
-    window.cerrarModalMarketplace = function() {
-        document.getElementById('modalMarketplace').classList.remove('show');
-        document.body.style.overflow = '';
     };
 
     window.iniciarDemoRapida = function() {
@@ -899,82 +1365,9 @@
         }, 300);
     };
 
-    // ==========================================
-    // TOAST
-    // ==========================================
-    window.mostrarToast = function(msg, tipo) {
-        const container = document.getElementById('toast-container');
-        if(!container) return;
-        const t = document.createElement('div');
-        t.style.background = tipo === 'error' ? '#ef4444' : '#16a34a'; 
-        t.style.color = 'white'; 
-        t.style.padding = '12px 20px'; 
-        t.style.borderRadius = '10px';
-        t.style.fontWeight = '800'; 
-        t.style.fontSize = '14px'; 
-        t.style.marginTop = '8px';
-        t.style.boxShadow = `0 10px 25px ${tipo === 'error' ? 'rgba(239,68,68,0.3)' : 'rgba(22,163,74,0.3)'}`;
-        t.style.transition = 'all .3s ease';
-        t.innerHTML = `<i class="${tipo==='error'?'ri-error-warning-fill':'ri-checkbox-circle-fill'}" style="margin-right:8px;"></i> ${msg}`;
-        container.appendChild(t);
-        setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(20px)'; setTimeout(() => t.remove(), 300); }, 3500);
-    };
-
-    // ==========================================
-    // MICROFONO / ASISTENTE DE VOZ
-    // ==========================================
-    window.activarMicrofono = function() {
-        const btn = document.getElementById('micIcon');
-        if(btn) { btn.classList.remove('ri-mic-fill'); btn.classList.add('ri-mic-2-fill'); }
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); 
-            const mensaje = "La empresa Energy Software te trae la nueva aplicacion Delivery Moto. El mapa GPS ya esta funcionando con OpenStreetMap. Ingresa una direccion de origen y una de destino para calcular la ruta punto a punto automaticamente.";
-            const speech = new SpeechSynthesisUtterance(mensaje);
-            speech.lang = 'es-AR'; speech.rate = 1.05;
-            speech.onend = () => { if(btn) { btn.classList.remove('ri-mic-2-fill'); btn.classList.add('ri-mic-fill'); } };
-            window.speechSynthesis.speak(speech);
-            mostrarToast("Asistente de voz activado", "success");
-        }
-    };
-
-    // ==========================================
-    // SCROLL SUAVE
-    // ==========================================
-    window.scrollToId = function(id) {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    // ==========================================
-    // PWA / APK
-    // ==========================================
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-    
-    window.descargarAPK = function() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') mostrarToast('Instalando la App', 'success');
-                deferredPrompt = null;
-            });
-        } else { 
-            alert('En tu navegador Chrome, toca los 3 puntitos y selecciona "Agregar a la pantalla principal".'); 
-        }
-    };
-
-    // ==========================================
-    // INICIALIZACION AL CARGAR
-    // ==========================================
     function init() {
-        // Inicializar mapa demo
         initMapaDemo();
-        
-        // Calcular ruta inicial automaticamente
-        setTimeout(function() {
-            calcularRutaDemo();
-        }, 800);
-
-        // Observador para invalidar el mapa cuando entre en viewport
+        setTimeout(function() { calcularRutaDemo(); }, 800);
         if ('IntersectionObserver' in window) {
             const observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
@@ -987,20 +1380,13 @@
         }
     }
 
-    // Ejecutar inmediatamente (no usar DOMContentLoaded - ya se disparo)
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
 
-    // Redimensionar mapa cuando cambia el tamaño de ventana
-    window.addEventListener('resize', function() {
-        if (mapaDemo) mapaDemo.invalidateSize();
-    });
+    window.addEventListener('resize', function() { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
 </script>
-
+</body>
+</html>
 <script>
 // ==========================================
 // 1. LIBRERÍAS EXTERNAS Y CONFIGURACIÓN BASE
@@ -2507,4 +2893,3 @@ async function mandarViajeEspecialSoporte() {
     }, 2500);
 }
 </script>
-
