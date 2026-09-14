@@ -971,7 +971,6 @@
                     <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino...">
                     <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿De qué calle a qué calle? (Ej: San Martín 100 al 500)">
                     <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Encomienda o paquete rápido)"></textarea>
-                    <!-- ACÁ LLAMAMOS A LA FUNCIÓN QUE PREPARA EL VIAJE ESPECIAL Y ABRE EL MAPA -->
                     <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="prepararViajeEspecial()">CALCULAR ENVÍO DE CALLE A CALLE</button>
                 </div>
             </div>
@@ -1039,7 +1038,6 @@
                 💡 Importante: El envío se paga por separado directamente al ServiMoto.
             </p>
 
-            <!-- ESTE BOTÓN AHORA ES INTELIGENTE Y SABE SI ES CARRITO O VIAJE ESPECIAL -->
             <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="procesarEnvioMapa()">
                 ENVIAR PEDIDO A CENTRAL <i class="ri-robot-2-fill" style="font-size:22px;"></i>
             </button>
@@ -1053,12 +1051,8 @@
 // ==========================================
 
 // ANTI-PANTALLA NEGRA GOOGLE MAPS
-window.gm_authFailure = function() {
+window.gm_authFailure = function() { 
     calcularMatematicaEnvio("1.0"); 
-    const canvas = document.getElementById("googleMapCanvas");
-    if(canvas) {
-        canvas.innerHTML = '<div style="padding:30px 20px; text-align:center; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#f8fafc;"><i class="ri-route-fill" style="font-size:45px; color:#94a3b8; margin-bottom:10px;"></i><div style="color:#0f172a; font-weight:900; font-size:16px;">Modo Satelital Inactivo</div><div style="color:#64748b; font-size:13px; margin-top:8px; line-height:1.4;">Se aplicó una tarifa base estándar de 10 cuadras para que puedas continuar con tu pedido sin problemas.</div></div>';
-    }
 };
 
 // INSTALADOR PWA
@@ -1123,7 +1117,7 @@ let isLoadingMore = false;
 let hasMoreProducts = true;
 let dbComerciosCache = []; 
 
-// PERSISTENCIA DE SESIÓN: Para que no se pierdan los datos al recargar si sos Comercio o Cadete
+// PERSISTENCIA DE SESIÓN
 window.addEventListener('DOMContentLoaded', async () => {
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -1273,7 +1267,6 @@ function irPaso(paso) {
     const el = document.getElementById(`modal-step-${paso}`);
     if(el) el.classList.add('active'); 
     
-    // OCULTA EL CARTEL "EN CAMINO A TU UBICACIÓN" PARA COMERCIOS Y CADETES
     if(paso === 'comercio' || paso === 'servimoto' || paso === 'login') {
         let widget = document.getElementById('widgetRastreo');
         if(widget) widget.style.display = 'none';
@@ -1455,7 +1448,9 @@ async function validarLogin() {
             data = signUpData;
         } else if (error) { throw error; }
 
-        sessionActual = data.user; 
+        sessionActual = data?.user || data; 
+        if (!sessionActual || !sessionActual.id) throw new Error("ID de usuario no disponible");
+
         AppStore.set('cliente_celular', cel); 
         localStorage.setItem('ultimo_login_tipo', tipoLoginActual); 
 
@@ -1465,7 +1460,7 @@ async function validarLogin() {
             if(tipoLoginActual === 'comercio') {
                 miComercioLogueadoId = sessionActual.id;
                 irPaso('comercio');
-                cargarDatosComercioExistente(miComercioLogueadoId); 
+                await cargarDatosComercioExistente(miComercioLogueadoId); 
                 renderizarAdminComercio(); 
                 renderizarBandejaPedidos(); 
             } else if(tipoLoginActual === 'cadete') {
@@ -1473,8 +1468,10 @@ async function validarLogin() {
                 if(cadDB) {
                     viajesMotoCount = cadDB.viajes_realizados || 0;
                     deudaMotoAcumulada = cadDB.deuda_acumulada || 0;
-                    if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
-                    if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+                    let badge = document.getElementById('viajesMotoBadge');
+                    let deuda = document.getElementById('deudaMoto');
+                    if(badge) badge.textContent = viajesMotoCount + ' Viajes Confirmados';
+                    if(deuda) deuda.textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
                     irPaso('servimoto'); 
                 } else { irPaso('servimoto-onboarding'); }
             } else if(tipoLoginActual === 'cliente') {
@@ -1491,246 +1488,42 @@ async function validarLogin() {
         }, 50);
 
     } catch(e) {
-        console.error(e);
+        console.error("Error en validación pura de login:", e);
         mostrarToast('Error al conectar la cuenta. Reintentá.', 'error');
     }
 }
 
-// CARRITO Y CHECKOUT
-function intentarComprar(idProducto, nombre, precio, direccionComercio, aliasComercio) {
-    productoPendienteAdd = { id: idProducto, nombre: nombre, precio: parseFloat(precio), direccion: direccionComercio, alias: aliasComercio };
-    if(!sessionActual) {
-        mostrarToast('¡Iniciá sesión para armar tu pedido!', 'error');
-        iniciarLogin('cliente');
-        return;
-    }
-    if(!AppStore.get('cliente_dir')) {
-        mostrarToast('Falta configurar tu dirección de entrega', 'error');
-        irPaso('cliente-ubicacion');
-        return;
-    }
-    procesarAgregadoCarrito();
-}
-
-function procesarAgregadoCarrito() {
-    if(!productoPendienteAdd) return;
-    carritoGlobal.push({ nombre: productoPendienteAdd.nombre, precio: productoPendienteAdd.precio, cantidad: 1 });
-    direccionOrigenCalculo = productoPendienteAdd.direccion; 
-    aliasOrigenCalculo = productoPendienteAdd.alias;
-    mostrarToast(`✅ Agregaste: ${productoPendienteAdd.nombre}`, 'success');
-    
-    const floatBtn = document.getElementById('btnFloatingCart');
-    const badge = document.getElementById('badgeCarrito');
-    if(floatBtn) floatBtn.style.display = 'flex';
-    if(badge) {
-        badge.textContent = carritoGlobal.length;
-        badge.style.transform = 'scale(1.3)';
-        setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200);
-    }
-    productoPendienteAdd = null; 
-}
-
-function abrirCarritoFinal() {
-    if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
-    cerrarModalMarketplace();
-    const modalCarrito = document.getElementById('modalCarritoFinal');
-    if(modalCarrito) {
-        modalCarrito.classList.add('show');
-        renderizarCarritoDOM();
-    }
-}
-
-function cerrarCarrito() { document.getElementById('modalCarritoFinal').classList.remove('show'); }
-
-function pedirNuevaDireccionEnvio() {
-    let dirActual = AppStore.get('cliente_dir') || "";
-    let nuevaDir = prompt("🛵 Ingresá la dirección exacta donde estás ahora (Ej: San Martín 850):", dirActual);
-    if(nuevaDir && nuevaDir.trim() !== "") {
-        AppStore.set('cliente_dir', nuevaDir.trim());
-        renderizarCarritoDOM();
-        mostrarToast("✅ Dirección de entrega actualizada", "success");
-    }
-}
-
-async function previewComprobanteCarrito(input) {
-    if(input.files && input.files[0]) {
-        mostrarToast("Comprimiendo comprobante...", "success");
-        const b64 = await comprimirImagen(input.files[0]);
-        AppStore.set('comprobante_tmp', b64);
-        let lbl = document.getElementById('lblComprobanteOk');
-        if(lbl) { lbl.style.display = 'block'; lbl.innerHTML = '✅ Foto adjuntada lista para enviar'; }
-        mostrarToast("Comprobante listo", "success");
-    }
-}
-
-function renderizarCarritoDOM() {
-    const cont = document.getElementById('contenidoCarrito');
-    const totalUI = document.getElementById('totalFinalCarrito');
-    if(!cont || !totalUI) return;
-    
-    let subtotal = 0;
-    let listHTML = "";
-    let nomComprador = AppStore.get('cliente_nombre') || "Cliente sin registrar";
-    let dirComprador = AppStore.get('cliente_dir') || "Dirección no configurada";
-    let ciuComprador = AppStore.get('cliente_ciu') || "";
-    
-    listHTML += `
-    <div style="background:white; padding:14px; border-radius:12px; margin-bottom:14px; border:2px solid #e2e8f0; font-size:13px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
-        <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:12px;">
-            <i class="ri-store-3-fill" style="color:#ff6b00; font-size:16px;"></i>
-            <div>
-                <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase;">Retira en (Local/Origen):</div>
-                <div style="color:#0f172a; font-weight:700;">${direccionOrigenCalculo || 'Local central'}</div>
-            </div>
-        </div>
-        <div style="height:1px; background:#e2e8f0; margin-bottom:12px;"></div>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="display:flex; align-items:flex-start; gap:8px;">
-                <i class="ri-map-pin-user-fill" style="color:#16a34a; font-size:16px;"></i>
-                <div>
-                    <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase;">Entrega a (Cliente/Destino):</div>
-                    <div style="color:#0f172a; font-weight:900; color:#15803d;">👤 ${nomComprador}</div>
-                    <div style="color:#0f172a; font-weight:700;">📍 ${dirComprador}, ${ciuComprador}</div>
-                </div>
-            </div>
-            <button onclick="pedirNuevaDireccionEnvio()" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:8px; font-weight:800; font-size:11px; cursor:pointer; box-shadow:0 2px 6px rgba(59,130,246,0.3);">CAMBIAR DIR.</button>
-        </div>
-    </div>
-    <div style="background:#f0fdf4; border:2px dashed #16a34a; border-radius:12px; padding:12px; margin-bottom:12px; text-align:center;">
-        <div style="font-weight:800; color:#15803d; font-size:14px; margin-bottom:4px;">💳 Pagá la comida por Transferencia</div>
-        <div style="color:#0f172a; font-size:13px; margin-bottom:8px;">Alias del local: <span style="font-weight:900; color:#2563eb; user-select:all;">${aliasOrigenCalculo || 'Consultar al local'}</span></div>
-        <div style="position:relative; display:inline-block; overflow:hidden;">
-            <button style="background:#16a34a; color:white; padding:10px 20px; border:none; border-radius:8px; font-weight:800; font-size:13px; box-shadow:0 4px 10px rgba(22,163,74,0.3); pointer-events:none;">
-                <i class="ri-camera-fill" style="margin-right:4px; vertical-align:middle;"></i> <span style="vertical-align:middle;">Subir Comprobante</span>
-            </button>
-            <input type="file" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;" accept="image/*" onchange="previewComprobanteCarrito(this)">
-        </div>
-        <div id="lblComprobanteOk" style="font-size:12px; color:#15803d; font-weight:800; margin-top:6px; display:none;">✅ Comprobante Adjuntado</div>
-    </div>
-    `;
-
-    listHTML += carritoGlobal.map((item, idx) => {
-        subtotal += item.precio;
-        return `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:8px;">
-            <div>
-                <div style="font-weight:800; font-size:14px; color:#0f172a;">${item.nombre}</div>
-                <div style="color:#16a34a; font-weight:800; font-size:13px;">$${item.precio.toLocaleString('es-AR')}</div>
-            </div>
-            <button onclick="borrarItemCarrito(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; width:32px; height:32px; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button>
-        </div>`;
-    }).join('');
-
-    cont.innerHTML = listHTML;
-    totalUI.textContent = '$' + subtotal.toLocaleString('es-AR');
-}
-
-function borrarItemCarrito(idx) {
-    carritoGlobal.splice(idx, 1);
-    const badge = document.getElementById('badgeCarrito');
-    if(badge) badge.textContent = carritoGlobal.length;
-    if(carritoGlobal.length === 0) {
-        costoEnvioCalculado = 0;
-        const floatBtn = document.getElementById('btnFloatingCart');
-        if(floatBtn) floatBtn.style.display = 'none';
-        cerrarCarrito();
-    } else {
-        renderizarCarritoDOM();
-    }
-}
-
-function iniciarRastreoPedidoCliente() {
-    let widget = document.getElementById('widgetRastreo');
-    if(!widget) {
-        widget = document.createElement('div');
-        widget.id = 'widgetRastreo';
-        widget.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:white; border:2px solid #f97316; border-radius:30px; padding:10px 16px; box-shadow:0 10px 25px rgba(249,115,22,0.3); z-index:999999; display:flex; align-items:center; gap:8px; cursor:pointer; width:90%; max-width:350px; justify-content:center;';
-        widget.onclick = function() {
-            alert("🛵 ESTADO EN VIVO:\n\nTu pedido fue recibido y el comprobante de pago validado por el comercio.\n\nTiempo estimado: 15-20 min.\n¡Ya casi llega!");
-        };
-        document.body.appendChild(widget);
-    }
-    
-    widget.style.display = 'flex'; 
-    widget.innerHTML = '<i class="ri-time-fill animate-pulse-glow" style="color:#f59e0b; font-size:20px;"></i> <span id="lblEstadoWidget" style="font-size:13px; font-weight:800; color:#0f172a;">Cocinando pedido (Aprox 15min)...</span>';
-
-    setTimeout(() => {
-        let lbl = document.getElementById('lblEstadoWidget');
-        if(lbl) lbl.innerHTML = "Moto en local esperando 📍";
-    }, 30000); 
-
-    setTimeout(() => {
-        let lbl = document.getElementById('lblEstadoWidget');
-        if(lbl) {
-            widget.style.borderColor = "#16a34a";
-            widget.style.boxShadow = "0 10px 25px rgba(22,163,74,0.3)";
-            widget.innerHTML = '<i class="ri-map-pin-user-fill animate-pulse-glow" style="color:#16a34a; font-size:20px;"></i> <span id="lblEstadoWidget" style="font-size:13px; font-weight:800; color:#15803d;">¡En Camino a tu ubicación! 🛵💨</span>';
-        }
-    }, 60000); 
-}
-
-async function mandarPedidoSoporte() {
-    if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
-    
-    let subtotalProductos = 0;
-    carritoGlobal.forEach(i => subtotalProductos += i.precio);
-    let destClient = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu');
-    let nomComprador = AppStore.get('cliente_nombre') || "No registrado";
-    
-    let txtComprobante = "";
-    if(AppStore.get('comprobante_tmp')) {
-        mostrarToast("⏳ Procesando comprobante...", "success");
-        try {
-            let urlComp = await subirImagenBucket(AppStore.get('comprobante_tmp'), `comprobantes/pago_${Date.now()}.jpg`);
-            if(urlComp) {
-                txtComprobante = `%0A📎 *Comprobante de Pago Listo:* ${urlComp}%0A`;
-                AppStore.set('comprobante_tmp', null); 
-            }
-        } catch(e) { console.error("Error comprobante", e); }
-    }
-    
+async function cargarDatosComercioExistente(id) {
     try {
-        if(sessionActual) {
-            await supabaseClient.from('moto_pedidos').insert({
-                id_cliente: sessionActual.id,
-                origen_dir: direccionOrigenCalculo,
-                destino_dir: destClient,
-                total_comida: subtotalProductos,
-                total_envio: costoEnvioCalculado,
-                detalle_json: carritoGlobal
-            });
+        const { data, error } = await supabaseClient.from('moto_comercios').select('*').eq('id', id).single();
+        if (data) {
+            if(document.getElementById('comercioNombre')) document.getElementById('comercioNombre').value = data.nombre || '';
+            if(document.getElementById('comercioDireccionExacta')) document.getElementById('comercioDireccionExacta').value = data.direccion || '';
+            if(document.getElementById('comercioProvincia')) document.getElementById('comercioProvincia').value = data.provincia || '';
+            if(document.getElementById('comercioCiudad')) document.getElementById('comercioCiudad').value = data.ciudad || '';
+            if(document.getElementById('comercioAbre')) document.getElementById('comercioAbre').value = data.hora_abre || '';
+            if(document.getElementById('comercioCierra')) document.getElementById('comercioCierra').value = data.hora_cierra || '';
+            if(document.getElementById('comercioAlias')) document.getElementById('comercioAlias').value = data.alias_mp || '';
+            
+            if(data.img_selfie && document.getElementById('boxSelfieComercioModal')) {
+                document.getElementById('boxSelfieComercioModal').style.backgroundImage = `url(${data.img_selfie})`;
+                if(document.getElementById('iconSelfieComercioContenedor')) document.getElementById('iconSelfieComercioContenedor').style.display = 'none';
+                if(document.getElementById('lblTextSelfieComercio')) document.getElementById('lblTextSelfieComercio').innerHTML = '<span style="color:#15803d;">✅ Selfie Recuperada</span>';
+                AppStore.set('selfie_com_tmp', data.img_selfie);
+            }
+            if(data.img_portada && document.getElementById('boxPortadaComercio')) {
+                document.getElementById('boxPortadaComercio').style.backgroundImage = `url(${data.img_portada})`;
+                if(document.getElementById('iconPortadaContenedor')) document.getElementById('iconPortadaContenedor').style.display = 'none';
+                if(document.getElementById('lblPortadaComercio')) document.getElementById('lblPortadaComercio').textContent = '✅ Portada Recuperada';
+                AppStore.set('portada_com_tmp', data.img_portada);
+            }
         }
-    } catch (e) { console.warn("Error DB"); }
-
-    if(subtotalProductos > 0) {
-        agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador);
-    }
-
-    let txt = "🔥 *NUEVO PEDIDO EN LA RED* 🔥%0A%0A";
-    carritoGlobal.forEach(i => {
-        txt += `▪️ ${i.nombre} ${i.precio > 0 ? '- $'+i.precio.toLocaleString('es-AR') : ''}%0A`;
-        if(i.detalle) txt += `   📝 Detalle: ${i.detalle}%0A`;
-    });
-    
-    let telComprador = AppStore.get('cliente_celular') || "No registrado";
-    txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Origen:* ${direccionOrigenCalculo}%0A📍 *Destino:* ${destClient}%0A📱 *Celular:* ${telComprador}%0A---------------------------%0A`;
-    if (subtotalProductos > 0) { txt += `🍔 *Comida (Pago al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
-    txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
-    
-    if(txtComprobante !== "") { txt += txtComprobante; }
-    
-    cerrarMapa();
-    carritoGlobal = [];
-    const floatBtn = document.getElementById('btnFloatingCart');
-    if(floatBtn) floatBtn.style.display = 'none';
-
-    setTimeout(() => {
-        window.open(`https://wa.me/${NUMERO_SOPORTE}?text=${txt}`, '_blank');
-        iniciarRastreoPedidoCliente(); 
-    }, 1200); 
+    } catch(e) { console.log("Comercio nuevo o sin datos."); }
 }
 
-// CLIENTE: UBICACIÓN Y SELFIE A BD
+// ==========================================
+// 5. CLIENTE (PERFIL)
+// ==========================================
 async function previewSelfieCliente(input) {
     if(input.files && input.files[0]) {
         mostrarToast("Comprimiendo imagen...", "success");
@@ -1751,7 +1544,8 @@ async function guardarPerfilCliente() {
     const prov = document.getElementById('selProvinciaCliente') ? document.getElementById('selProvinciaCliente').value : "";
     const ciu = document.getElementById('inputCiudadCliente') ? document.getElementById('inputCiudadCliente').value.trim() : "";
     const dir = document.getElementById('inputDireccionCliente') ? document.getElementById('inputDireccionCliente').value.trim() : "";
-    const cel = AppStore.get('cliente_celular');
+    
+    const cel = AppStore.get('cliente_celular') || "00000000"; 
     const b64Selfie = AppStore.get('selfie_cliente_tmp');
 
     if(!nom || !prov || !ciu || !dir) return mostrarToast('Completá tu Nombre, Provincia, Ciudad y Dirección', 'error');
@@ -1760,8 +1554,11 @@ async function guardarPerfilCliente() {
     mostrarToast('⏳ Guardando perfil seguro...', 'success');
     
     try {
-        const urlFoto = await subirImagenBucket(b64Selfie, `clientes/${sessionActual.id}_selfie.jpg`);
-        
+        let urlFoto = b64Selfie;
+        if(b64Selfie.startsWith('data:image')) {
+            urlFoto = await subirImagenBucket(b64Selfie, `clientes/${sessionActual.id}_selfie.jpg`);
+        }
+
         const { error } = await supabaseClient.from('moto_clientes').upsert({
             id: sessionActual.id,
             nombre: nom, 
@@ -1772,7 +1569,10 @@ async function guardarPerfilCliente() {
             img_selfie: urlFoto || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
         });
         
-        if (error) throw error;
+        if (error) {
+            alert("🛑 ERROR EXACTO DE SUPABASE:\n\n" + error.message + "\n\nFijate si te falta agregar alguna columna nueva en la tabla 'moto_clientes'.");
+            throw error;
+        }
 
         AppStore.set('cliente_nombre', nom);
         AppStore.set('cliente_prov', prov);
@@ -1785,11 +1585,13 @@ async function guardarPerfilCliente() {
         
     } catch(e) {
         console.error(e);
-        mostrarToast('Error al guardar datos. Revisá las columnas de Supabase.', 'error');
+        mostrarToast('Error al guardar datos. Revisá la alerta.', 'error');
     }
 }
 
-// COMERCIOS: PANEL Y CARGA A SUPABASE
+// ==========================================
+// 6. PANEL COMERCIO
+// ==========================================
 function agregarPedidoBandejaComercio(total, destino, nombreCliente) {
     let nombreInfo = nombreCliente ? nombreCliente : "Cliente sin registrar";
     pedidosComercio.unshift({ total: total, destino: destino, cliente: nombreInfo });
