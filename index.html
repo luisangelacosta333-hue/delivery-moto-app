@@ -13,8 +13,8 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- SCRIPT DE GOOGLE MAPS CON TU LLAVE REAL -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
+    <!-- SCRIPT DE GOOGLE MAPS CORREGIDO Y LIMPIO (SIN PLACES) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8"></script>
 
     <!-- ========================================== -->
     <!-- PWA MANIFEST                               -->
@@ -906,13 +906,6 @@
                     <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Encomienda o paquete rápido)"></textarea>
                     
                     <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">CALCULAR ENVÍO EN MAPA</button>
-                    
-                    <div style="text-align:center; margin: 4px 0; font-weight:800; color:#64748b; font-size:12px;">O</div>
-
-                    <button class="btn-secondary" style="padding:14px; border-color:#2563eb; color:#1d4ed8; background:#eff6ff;" onclick="pedirFavorDirectoCliente()">
-                        <i class="ri-whatsapp-fill" style="font-size:22px; margin-right:8px; vertical-align:middle;"></i>
-                        <span style="vertical-align:middle;">PEDIR ENCARGO POR WHATSAPP</span>
-                    </button>
                 </div>
             </div>
 
@@ -986,7 +979,7 @@
 </html>
 <script>
 // ==========================================
-// 1. LIBRERÍAS EXTERNAS Y CONFIGURACIÓN
+// 1. CONFIGURACIÓN, LIBRERÍAS Y VARIABLES GLOBALES
 // ==========================================
 // Inyección dinámica de librería Confetti Premium
 const confettiScript = document.createElement('script');
@@ -1033,7 +1026,7 @@ let hasMoreProducts = true;
 let dbComerciosCache = []; 
 
 // ==========================================
-// 2. AUTO-CARGA: SESIÓN Y BOTONES GPS MÁGICOS
+// 2. AUTO-CARGA: SESIÓN Y PROVINCIAS
 // ==========================================
 window.addEventListener('DOMContentLoaded', async () => {
     // A) Inyectar Provincias automáticamente
@@ -1063,21 +1056,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         });
     } catch(e) {}
 
-    // B) Inyectar Botones Mágicos de GPS (Punto 1 Premium)
-    const inyectarBtnGPS = (inputId) => {
-        const inputObj = document.getElementById(inputId);
-        if(inputObj && !document.getElementById('btnGPS_'+inputId)) {
-            inputObj.insertAdjacentHTML('beforebegin', `
-                <button id="btnGPS_${inputId}" type="button" onclick="autocompletarConGPS('${inputId}')" style="margin-bottom:8px; padding:10px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; border-radius:10px; width:100%; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 10px rgba(59,130,246,0.15);">
-                    <i class="ri-gps-fill" style="font-size:16px;"></i> Usar mi ubicación actual
-                </button>
-            `);
-        }
-    };
-    inyectarBtnGPS('inputDireccionCliente');
-    inyectarBtnGPS('dirOrigenEspecial');
-
-    // C) Recuperar Carrito Inmortal
+    // B) Recuperar Carrito Inmortal
     let carritoGuardado = localStorage.getItem('moto_carrito_guardado');
     if(carritoGuardado) {
         carritoGlobal = JSON.parse(carritoGuardado);
@@ -1089,7 +1068,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // D) Recuperar Sesión Auth
+    // C) Recuperar Sesión Auth
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
@@ -1119,13 +1098,10 @@ window.addEventListener('DOMContentLoaded', async () => {
             }
         }
     } catch(err) {}
-
-    // E) Activar Autocompletado de Calles de Google (Punto 2 Premium)
-    setTimeout(initAutocompletadoGoogle, 1500);
 });
 
 // ==========================================
-// 3. UTILIDADES PREMIUM (Voz, Confeti, GPS)
+// 3. UTILIDADES PREMIUM (Voz, Confeti)
 // ==========================================
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
@@ -1140,41 +1116,9 @@ function descargarAPK() {
     } else { alert('📲 En tu navegador Chrome, tocá los 3 puntitos (⋮) y seleccioná "Agregar a la pantalla principal".'); }
 }
 
-function initAutocompletadoGoogle() {
-    if(window.google && window.google.maps && window.google.maps.places) {
-        // Limitamos la búsqueda a Argentina
-        const opciones = { componentRestrictions: { country: "ar" } };
-        const d1 = document.getElementById('inputDireccionCliente');
-        const d2 = document.getElementById('dirOrigenEspecial');
-        const d3 = document.getElementById('dirDestinoEspecial');
-        if(d1) new google.maps.places.Autocomplete(d1, opciones);
-        if(d2) new google.maps.places.Autocomplete(d2, opciones);
-        if(d3) new google.maps.places.Autocomplete(d3, opciones);
-    }
-}
-
-function autocompletarConGPS(inputId) {
-    if(navigator.vibrate) navigator.vibrate(50);
-    if(navigator.geolocation) {
-        mostrarToast("📍 Conectando satélite...", "success");
-        navigator.geolocation.getCurrentPosition((pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            const geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ location: {lat, lng} }, (res, status) => {
-                if(status === 'OK' && res[0]) {
-                    document.getElementById(inputId).value = res[0].formatted_address.split(',')[0];
-                    mostrarToast("✅ Ubicación encontrada", "success");
-                    if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
-                } else { mostrarToast("No pudimos leer la calle. Escribila.", "error"); }
-            });
-        }, () => { mostrarToast("Activá el GPS de tu celular", "error"); });
-    }
-}
-
 function dispararConfetti() {
     if(typeof confetti !== 'undefined') {
-        if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
         var duration = 3 * 1000;
         var end = Date.now() + duration;
         (function frame() {
@@ -1367,7 +1311,6 @@ async function cargarYRenderizarFeed(isLoadMore = false) {
                 let aliasComercio = (comercioData && comercioData.alias_mp) ? comercioData.alias_mp : ""; 
                 let urlLogoComercio = (comercioData && comercioData.img_selfie) ? comercioData.img_selfie : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
                 
-                // Etiqueta de Proximidad Inteligente Inyectada (Punto 4 Premium)
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
                 
                 html += `
@@ -1905,7 +1848,7 @@ async function auditarDocumentosIA() {
     if(!nomCadete) return mostrarToast('Ingresá tu Nombre Completo', 'error');
     if(!AppStore.get('cad_selfie')) return mostrarToast('Te falta la selfie de seguridad', 'error');
     
-    // Validación estricta de las 4 cajas (Punto 6 Premium)
+    // Validación estricta de las otras 3 cajas
     const d2 = document.getElementById('uploadDoc2');
     const d3 = document.getElementById('uploadDoc3');
     const d4 = document.getElementById('uploadDoc4');
@@ -2062,7 +2005,7 @@ function intentarComprar(idProducto, nombre, precio, direccionComercio, aliasCom
 function procesarAgregadoCarrito() {
     if(!productoPendienteAdd) return;
     carritoGlobal.push({ nombre: productoPendienteAdd.nombre, precio: productoPendienteAdd.precio, cantidad: 1 });
-    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Memoria Inmortal (Punto 6 Premium)
+    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Memoria Inmortal 
     direccionOrigenCalculo = productoPendienteAdd.direccion; 
     aliasOrigenCalculo = productoPendienteAdd.alias;
     mostrarToast(`✅ Agregaste: ${productoPendienteAdd.nombre}`, 'success');
@@ -2170,7 +2113,7 @@ function renderizarCarritoDOM() {
 
 function borrarItemCarrito(idx) {
     carritoGlobal.splice(idx, 1);
-    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Actualizar memoria
+    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); 
     const badge = document.getElementById('badgeCarrito');
     if(badge) badge.textContent = carritoGlobal.length;
     if(carritoGlobal.length === 0) {
@@ -2193,7 +2136,7 @@ function iniciarRastreoPedidoCliente(pedidoId) {
     widget.style.display = 'flex'; 
     widget.innerHTML = '<i class="ri-time-fill animate-pulse-glow" style="color:#f59e0b; font-size:16px;"></i> <span id="lblEstadoWidget" style="font-size:11px; font-weight:800; color:#0f172a; line-height:1.2;">Preparando pedido...</span>';
 
-    // SUPABASE REALTIME (Punto 4 Premium)
+    // SUPABASE REALTIME 
     if(pedidoId) {
         supabaseClient.channel('custom-all-channel')
           .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'moto_pedidos', filter: `id=eq.${pedidoId}` }, payload => {
