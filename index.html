@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <!-- SCRIPT DE GOOGLE MAPS CON TU LLAVE REAL -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBTBkuhHOAc4RLclDHZkqLfHFdf7gzhlX8&libraries=places"></script>
 
     <!-- ========================================== -->
     <!-- PWA MANIFEST                               -->
@@ -901,38 +901,19 @@
                 <div class="step-indicator" style="color:#1d4ed8; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
                 <div style="display:flex; flex-direction:column; gap:12px;">
                     <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira el Cadete? (Ej: San Martín 100)">
-                    <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;">
-                        <option value="">Provincia Destino...</option>
-                        <option value="Buenos Aires">Buenos Aires</option>
-                        <option value="CABA">Ciudad Autónoma de Buenos Aires</option>
-                        <option value="Catamarca">Catamarca</option>
-                        <option value="Chaco">Chaco</option>
-                        <option value="Chubut">Chubut</option>
-                        <option value="Córdoba">Córdoba</option>
-                        <option value="Corrientes">Corrientes</option>
-                        <option value="Entre Ríos">Entre Ríos</option>
-                        <option value="Formosa">Formosa</option>
-                        <option value="Jujuy">Jujuy</option>
-                        <option value="La Pampa">La Pampa</option>
-                        <option value="La Rioja">La Rioja</option>
-                        <option value="Mendoza">Mendoza</option>
-                        <option value="Misiones">Misiones</option>
-                        <option value="Neuquén">Neuquén</option>
-                        <option value="Río Negro">Río Negro</option>
-                        <option value="Salta">Salta</option>
-                        <option value="San Juan">San Juan</option>
-                        <option value="San Luis">San Luis</option>
-                        <option value="Santa Cruz">Santa Cruz</option>
-                        <option value="Santa Fe">Santa Fe</option>
-                        <option value="Santiago del Estero">Santiago del Estero</option>
-                        <option value="Tierra del Fuego">Tierra del Fuego</option>
-                        <option value="Tucumán" selected>Tucumán</option>
-                    </select>
+                    <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;"></select>
                     <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino...">
                     <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿De qué calle a qué calle? (Ej: San Martín 100 al 500)">
                     <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Encomienda o paquete rápido)"></textarea>
                     
                     <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">CALCULAR ENVÍO EN MAPA</button>
+                    
+                    <div style="text-align:center; margin: 4px 0; font-weight:800; color:#64748b; font-size:12px;">O</div>
+
+                    <button class="btn-secondary" style="padding:14px; border-color:#2563eb; color:#1d4ed8; background:#eff6ff;" onclick="pedirFavorDirectoCliente()">
+                        <i class="ri-whatsapp-fill" style="font-size:22px; margin-right:8px; vertical-align:middle;"></i>
+                        <span style="vertical-align:middle;">PEDIR ENCARGO POR WHATSAPP</span>
+                    </button>
                 </div>
             </div>
 
@@ -1002,17 +983,20 @@
     </div>
 </div>
 
+</body>
+</html>
+
 
 
 <script>
 
 // ==========================================
 
-// 1. CONFIGURACIÓN, LIBRERÍAS Y VARIABLES
+// 1. CONFIGURACIÓN, LIBRERÍAS Y VARIABLES GLOBALES
 
 // ==========================================
 
-// Inyectamos librería de Confetti Premium
+// Inyección dinámica de librería Confetti Premium
 
 const confettiScript = document.createElement('script');
 
@@ -1094,13 +1078,13 @@ let dbComerciosCache = []; 
 
 // ==========================================
 
-// 2. AUTO-CARGA: SESIÓN, PROVINCIAS Y BOTONES GPS
+// 2. AUTO-CARGA: SESIÓN Y PROVINCIAS
 
 // ==========================================
 
 window.addEventListener('DOMContentLoaded', async () => {
 
-    // A) Inyectar Provincias
+    // A) Inyectar Provincias automáticamente
 
     try {
 
@@ -1153,34 +1137,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     } catch(e) {}
 
 
-    // B) Inyectar Botones Mágicos de GPS
-
-    const inyectarBtnGPS = (inputId) => {
-
-        const inputObj = document.getElementById(inputId);
-
-        if(inputObj) {
-
-            inputObj.insertAdjacentHTML('beforebegin', `
-
-                <button type="button" onclick="autocompletarConGPS('${inputId}')" style="margin-bottom:8px; padding:10px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; border-radius:10px; width:100%; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 10px rgba(59,130,246,0.15);">
-
-                    <i class="ri-gps-fill" style="font-size:16px;"></i> Usar mi ubicación actual
-
-                </button>
-
-            `);
-
-        }
-
-    };
-
-    inyectarBtnGPS('inputDireccionCliente');
-
-    inyectarBtnGPS('dirOrigenEspecial');
-
-
-    // C) Recuperar Carrito Inmortal
+    // B) Recuperar Carrito Inmortal
 
     let carritoGuardado = localStorage.getItem('moto_carrito_guardado');
 
@@ -1203,7 +1160,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-    // D) Recuperar Sesión Auth
+    // C) Recuperar Sesión Auth
 
     try {
 
@@ -1268,7 +1225,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // ==========================================
 
-// 3. UTILIDADES PREMIUM GLOBALES
+// 3. UTILIDADES PREMIUM (Voz, Confeti)
 
 // ==========================================
 
@@ -1296,56 +1253,11 @@ function descargarAPK() {
 }
 
 
-function autocompletarConGPS(inputId) {
-
-    if(navigator.vibrate) navigator.vibrate(50);
-
-    if(navigator.geolocation) {
-
-        mostrarToast("📍 Conectando satélite...", "success");
-
-        navigator.geolocation.getCurrentPosition((pos) => {
-
-            const lat = pos.coords.latitude;
-
-            const lng = pos.coords.longitude;
-
-            const geocoder = new google.maps.Geocoder();
-
-            geocoder.geocode({ location: {lat, lng} }, (res, status) => {
-
-                if(status === 'OK' && res[0]) {
-
-                    document.getElementById(inputId).value = res[0].formatted_address.split(',')[0];
-
-                    mostrarToast("✅ Ubicación encontrada", "success");
-
-                    if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
-
-                } else {
-
-                    mostrarToast("No pudimos leer la calle. Escribila.", "error");
-
-                }
-
-            });
-
-        }, () => {
-
-            mostrarToast("Activá el GPS de tu celular", "error");
-
-        });
-
-    }
-
-}
-
-
 function dispararConfetti() {
 
     if(typeof confetti !== 'undefined') {
 
-        if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
         var duration = 3 * 1000;
 
@@ -1709,8 +1621,6 @@ async function cargarYRenderizarFeed(isLoadMore = false) {
                 let urlLogoComercio = (comercioData && comercioData.img_selfie) ? comercioData.img_selfie : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
 
                 
-
-                // Inyectamos la etiqueta "Premium" de tiempo de llegada simulado
 
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
 
@@ -2239,8 +2149,6 @@ function eliminarPedidoComercio(idx) {
 
 async function llamarMotoDesdeLocal(idx) {
 
-    if(navigator.vibrate) navigator.vibrate(50);
-
     mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
 
     const btnCall = document.getElementById(`btnLlamarMoto_${idx}`);
@@ -2754,11 +2662,11 @@ async function auditarDocumentosIA() {
 
     
 
-    if(!d2 || !d2.files[0]) return mostrarToast('Falta subir Foto DNI', 'error');
+    if(!d2 || !d2.files || d2.files.length === 0) return mostrarToast('Falta subir Foto DNI', 'error');
 
-    if(!d3 || !d3.files[0]) return mostrarToast('Falta Certificado de Conducta', 'error');
+    if(!d3 || !d3.files || d3.files.length === 0) return mostrarToast('Falta Certificado de Conducta', 'error');
 
-    if(!d4 || !d4.files[0]) return mostrarToast('Falta Constancia AFIP', 'error');
+    if(!d4 || !d4.files || d4.files.length === 0) return mostrarToast('Falta Constancia AFIP', 'error');
 
     
 
@@ -3050,7 +2958,7 @@ function procesarAgregadoCarrito() {
 
     carritoGlobal.push({ nombre: productoPendienteAdd.nombre, precio: productoPendienteAdd.precio, cantidad: 1 });
 
-    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Guardar memoria inmortal
+    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Memoria Inmortal 
 
     direccionOrigenCalculo = productoPendienteAdd.direccion; 
 
@@ -3258,7 +3166,7 @@ function borrarItemCarrito(idx) {
 
     carritoGlobal.splice(idx, 1);
 
-    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Actualizar memoria
+    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); 
 
     const badge = document.getElementById('badgeCarrito');
 
@@ -3302,7 +3210,7 @@ function iniciarRastreoPedidoCliente(pedidoId) {
     widget.innerHTML = '<i class="ri-time-fill animate-pulse-glow" style="color:#f59e0b; font-size:16px;"></i> <span id="lblEstadoWidget" style="font-size:11px; font-weight:800; color:#0f172a; line-height:1.2;">Preparando pedido...</span>';
 
 
-    // SUPABASE REALTIME: Conexión mágica al cambio de estados en base de datos
+    // SUPABASE REALTIME 
 
     if(pedidoId) {
 
@@ -3325,7 +3233,7 @@ function iniciarRastreoPedidoCliente(pedidoId) {
     }
 
 
-    // Fallback de rescate por si la base no transmite en Realtime
+    // Fallback de rescate si el realtime falla
 
     setTimeout(() => {
 
@@ -3506,6 +3414,8 @@ function abrirMapaMago() {
 
                         } else { 
 
+                            // Sistema de Rescate (Fallback) si Google rebota la conexión
+
                             calcularMatematicaEnvio("1.0"); 
 
                         } 
@@ -3515,6 +3425,8 @@ function abrirMapaMago() {
                 }
 
             } catch(e) {
+
+                // Sistema de rescate si Google bloquea la API Key
 
                 calcularMatematicaEnvio("1.0"); 
 
@@ -3596,8 +3508,6 @@ function calcularMatematicaEnvio(distancia) {
 
     
 
-    // Inyectar celular en el mapa visual para confianza del cliente
-
     let celCliente = AppStore.get('cliente_celular') || "Sin teléfono";
 
     let pInfo = document.querySelector("#modalMapaGrande p");
@@ -3613,6 +3523,8 @@ function calcularMatematicaEnvio(distancia) {
     if(document.getElementById('mapaTotalProductos')) document.getElementById('mapaTotalProductos').textContent = '$' + subtotalProductos.toLocaleString('es-AR');
 
     
+
+    // Ocultar texto de "Cargando..."
 
     const fallbackText = document.getElementById('mapFallbackText');
 
@@ -3737,14 +3649,18 @@ async function mandarPedidoSoporte() {
     if(floatBtn) floatBtn.style.display = 'none';
 
 
-    dispararConfetti();
+    dispararConfetti(); // Animación premium final
 
 
     setTimeout(() => {
 
+        // Enviar pedido al WHATSAPP DEL COMERCIO
+
         let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
 
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
+
+        // Garantizar prefijo 549 por seguridad para links directos
 
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
 
@@ -3813,7 +3729,7 @@ async function mandarViajeEspecialSoporte() {
     } catch (e) {}
 
 
-    dispararConfetti();
+    dispararConfetti(); // Animación premium final
 
 
     setTimeout(() => {
