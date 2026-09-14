@@ -1008,11 +1008,11 @@
 
 // ==========================================
 
-// 1. LIBRERÍAS EXTERNAS Y CONFIGURACIÓN
+// 1. CONFIGURACIÓN, LIBRERÍAS Y VARIABLES
 
 // ==========================================
 
-// Inyección dinámica de librería Confetti Premium
+// Inyectamos librería de Confetti Premium
 
 const confettiScript = document.createElement('script');
 
@@ -1094,13 +1094,13 @@ let dbComerciosCache = []; 
 
 // ==========================================
 
-// 2. AUTO-CARGA: SESIÓN Y BOTONES GPS MÁGICOS
+// 2. AUTO-CARGA: SESIÓN, PROVINCIAS Y BOTONES GPS
 
 // ==========================================
 
 window.addEventListener('DOMContentLoaded', async () => {
 
-    // A) Inyectar Provincias automáticamente
+    // A) Inyectar Provincias
 
     try {
 
@@ -1153,17 +1153,17 @@ window.addEventListener('DOMContentLoaded', async () => {
     } catch(e) {}
 
 
-    // B) Inyectar Botones Mágicos de GPS (Punto 1 Premium)
+    // B) Inyectar Botones Mágicos de GPS
 
     const inyectarBtnGPS = (inputId) => {
 
         const inputObj = document.getElementById(inputId);
 
-        if(inputObj && !document.getElementById('btnGPS_'+inputId)) {
+        if(inputObj) {
 
             inputObj.insertAdjacentHTML('beforebegin', `
 
-                <button id="btnGPS_${inputId}" type="button" onclick="autocompletarConGPS('${inputId}')" style="margin-bottom:8px; padding:10px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; border-radius:10px; width:100%; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 10px rgba(59,130,246,0.15);">
+                <button type="button" onclick="autocompletarConGPS('${inputId}')" style="margin-bottom:8px; padding:10px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; border-radius:10px; width:100%; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 10px rgba(59,130,246,0.15);">
 
                     <i class="ri-gps-fill" style="font-size:16px;"></i> Usar mi ubicación actual
 
@@ -1263,17 +1263,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     } catch(err) {}
 
-
-    // E) Activar Autocompletado de Calles de Google (Punto 2 Premium)
-
-    setTimeout(initAutocompletadoGoogle, 1500);
-
 });
 
 
 // ==========================================
 
-// 3. UTILIDADES PREMIUM (Voz, Confeti, GPS)
+// 3. UTILIDADES PREMIUM GLOBALES
 
 // ==========================================
 
@@ -1297,31 +1292,6 @@ function descargarAPK() {
         });
 
     } else { alert('📲 En tu navegador Chrome, tocá los 3 puntitos (⋮) y seleccioná "Agregar a la pantalla principal".'); }
-
-}
-
-
-function initAutocompletadoGoogle() {
-
-    if(window.google && window.google.maps && window.google.maps.places) {
-
-        // Limitamos la búsqueda a Argentina
-
-        const opciones = { componentRestrictions: { country: "ar" } };
-
-        const d1 = document.getElementById('inputDireccionCliente');
-
-        const d2 = document.getElementById('dirOrigenEspecial');
-
-        const d3 = document.getElementById('dirDestinoEspecial');
-
-        if(d1) new google.maps.places.Autocomplete(d1, opciones);
-
-        if(d2) new google.maps.places.Autocomplete(d2, opciones);
-
-        if(d3) new google.maps.places.Autocomplete(d3, opciones);
-
-    }
 
 }
 
@@ -1352,11 +1322,19 @@ function autocompletarConGPS(inputId) {
 
                     if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
-                } else { mostrarToast("No pudimos leer la calle. Escribila.", "error"); }
+                } else {
+
+                    mostrarToast("No pudimos leer la calle. Escribila.", "error");
+
+                }
 
             });
 
-        }, () => { mostrarToast("Activá el GPS de tu celular", "error"); });
+        }, () => {
+
+            mostrarToast("Activá el GPS de tu celular", "error");
+
+        });
 
     }
 
@@ -1732,7 +1710,7 @@ async function cargarYRenderizarFeed(isLoadMore = false) {
 
                 
 
-                // Etiqueta de Proximidad Inteligente Inyectada (Punto 4 Premium)
+                // Inyectamos la etiqueta "Premium" de tiempo de llegada simulado
 
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
 
@@ -2261,6 +2239,8 @@ function eliminarPedidoComercio(idx) {
 
 async function llamarMotoDesdeLocal(idx) {
 
+    if(navigator.vibrate) navigator.vibrate(50);
+
     mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
 
     const btnCall = document.getElementById(`btnLlamarMoto_${idx}`);
@@ -2764,7 +2744,7 @@ async function auditarDocumentosIA() {
 
     
 
-    // Validación estricta de las 4 cajas (Punto 6 Premium)
+    // Validación estricta de las otras 3 cajas
 
     const d2 = document.getElementById('uploadDoc2');
 
@@ -2774,11 +2754,11 @@ async function auditarDocumentosIA() {
 
     
 
-    if(!d2 || !d2.files || d2.files.length === 0) return mostrarToast('Falta subir Foto DNI', 'error');
+    if(!d2 || !d2.files[0]) return mostrarToast('Falta subir Foto DNI', 'error');
 
-    if(!d3 || !d3.files || d3.files.length === 0) return mostrarToast('Falta Certificado de Conducta', 'error');
+    if(!d3 || !d3.files[0]) return mostrarToast('Falta Certificado de Conducta', 'error');
 
-    if(!d4 || !d4.files || d4.files.length === 0) return mostrarToast('Falta Constancia AFIP', 'error');
+    if(!d4 || !d4.files[0]) return mostrarToast('Falta Constancia AFIP', 'error');
 
     
 
@@ -3070,7 +3050,7 @@ function procesarAgregadoCarrito() {
 
     carritoGlobal.push({ nombre: productoPendienteAdd.nombre, precio: productoPendienteAdd.precio, cantidad: 1 });
 
-    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Memoria Inmortal (Punto 6 Premium)
+    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Guardar memoria inmortal
 
     direccionOrigenCalculo = productoPendienteAdd.direccion; 
 
@@ -3322,7 +3302,7 @@ function iniciarRastreoPedidoCliente(pedidoId) {
     widget.innerHTML = '<i class="ri-time-fill animate-pulse-glow" style="color:#f59e0b; font-size:16px;"></i> <span id="lblEstadoWidget" style="font-size:11px; font-weight:800; color:#0f172a; line-height:1.2;">Preparando pedido...</span>';
 
 
-    // SUPABASE REALTIME (Punto 4 Premium)
+    // SUPABASE REALTIME: Conexión mágica al cambio de estados en base de datos
 
     if(pedidoId) {
 
@@ -3345,7 +3325,7 @@ function iniciarRastreoPedidoCliente(pedidoId) {
     }
 
 
-    // Fallback de rescate si el realtime falla
+    // Fallback de rescate por si la base no transmite en Realtime
 
     setTimeout(() => {
 
@@ -3526,8 +3506,6 @@ function abrirMapaMago() {
 
                         } else { 
 
-                            // Sistema de Rescate (Fallback) si Google rebota la conexión
-
                             calcularMatematicaEnvio("1.0"); 
 
                         } 
@@ -3537,8 +3515,6 @@ function abrirMapaMago() {
                 }
 
             } catch(e) {
-
-                // Sistema de rescate si Google bloquea la API Key
 
                 calcularMatematicaEnvio("1.0"); 
 
@@ -3620,6 +3596,8 @@ function calcularMatematicaEnvio(distancia) {
 
     
 
+    // Inyectar celular en el mapa visual para confianza del cliente
+
     let celCliente = AppStore.get('cliente_celular') || "Sin teléfono";
 
     let pInfo = document.querySelector("#modalMapaGrande p");
@@ -3635,8 +3613,6 @@ function calcularMatematicaEnvio(distancia) {
     if(document.getElementById('mapaTotalProductos')) document.getElementById('mapaTotalProductos').textContent = '$' + subtotalProductos.toLocaleString('es-AR');
 
     
-
-    // Ocultar texto de "Cargando..."
 
     const fallbackText = document.getElementById('mapFallbackText');
 
@@ -3761,18 +3737,14 @@ async function mandarPedidoSoporte() {
     if(floatBtn) floatBtn.style.display = 'none';
 
 
-    dispararConfetti(); // Animación premium final
+    dispararConfetti();
 
 
     setTimeout(() => {
 
-        // Enviar pedido al WHATSAPP DEL COMERCIO
-
         let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
 
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
-
-        // Garantizar prefijo 549 por seguridad para links directos
 
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
 
@@ -3841,7 +3813,7 @@ async function mandarViajeEspecialSoporte() {
     } catch (e) {}
 
 
-    dispararConfetti(); // Animación premium final
+    dispararConfetti();
 
 
     setTimeout(() => {
