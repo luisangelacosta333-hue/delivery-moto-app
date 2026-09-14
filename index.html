@@ -2248,7 +2248,6 @@ function mandarViajeEspecialSoporte() {
 
 </body>
 </html>
-
 <script>
 // ==========================================
 // 1. CONFIGURACIÓN Y VARIABLES GLOBALES
@@ -2295,35 +2294,40 @@ let hasMoreProducts = true;
 let dbComerciosCache = []; 
 
 // ==========================================
-// AUTO-CARGA: PROVINCIAS Y SESIÓN
+// AUTO-CARGA: PROVINCIAS Y SESIÓN (SIN TOCAR HTML)
 // ==========================================
 window.addEventListener('DOMContentLoaded', async () => {
-    // Inyectar provincias para no alargar el HTML
-    const PROVINCIAS_ARG = [
-        "Buenos Aires", "Ciudad Autónoma de Buenos Aires", "Catamarca", "Chaco", "Chubut",
-        "Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja",
-        "Mendoza", "Misiones", "Neuquén", "Río Negro", "Salta", "San Juan", "San Luis",
-        "Santa Cruz", "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán"
-    ];
-    const selects = ['filtroProvincia', 'selProvinciaCliente', 'comercioProvincia', 'selProvinciaEspecial'];
-    selects.forEach(id => {
-        const el = document.getElementById(id);
-        if (el && el.options.length > 0) {
-            const firstOpt = el.options[0];
-            el.innerHTML = '';
-            el.appendChild(firstOpt);
-            PROVINCIAS_ARG.forEach(prov => {
-                let opt = document.createElement('option');
-                let val = prov === "Ciudad Autónoma de Buenos Aires" ? "CABA" : prov;
-                opt.value = val;
-                opt.text = prov;
-                if (val === "Tucumán") opt.selected = true;
-                el.appendChild(opt);
-            });
-        }
-    });
+    // 1. Inyectamos las 24 provincias automáticamente
+    try {
+        const PROVINCIAS_ARG = [
+            "Buenos Aires", "Ciudad Autónoma de Buenos Aires", "Catamarca", "Chaco", "Chubut",
+            "Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja",
+            "Mendoza", "Misiones", "Neuquén", "Río Negro", "Salta", "San Juan", "San Luis",
+            "Santa Cruz", "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán"
+        ];
+        const selects = ['filtroProvincia', 'selProvinciaCliente', 'comercioProvincia', 'selProvinciaEspecial'];
+        selects.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.options.length > 0) {
+                el.innerHTML = ''; // Limpiar select
+                let optPlaceholder = document.createElement('option');
+                optPlaceholder.value = "";
+                optPlaceholder.text = "Seleccionar Provincia...";
+                el.appendChild(optPlaceholder);
+                
+                PROVINCIAS_ARG.forEach(prov => {
+                    let opt = document.createElement('option');
+                    let val = prov === "Ciudad Autónoma de Buenos Aires" ? "CABA" : prov;
+                    opt.value = val;
+                    opt.text = prov;
+                    if (val === "Tucumán") opt.selected = true;
+                    el.appendChild(opt);
+                });
+            }
+        });
+    } catch(e) { console.log("Error inyectando provincias", e); }
 
-    // Recuperar sesión automáticamente
+    // 2. Recuperamos sesión del comprador/comerciante para evitar bloqueos
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
@@ -2344,7 +2348,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 }
             }
         }
-    } catch(err) {}
+    } catch(err) { console.log("Sesión previa no encontrada"); }
 });
 
 // ==========================================
@@ -2500,6 +2504,8 @@ function irPaso(paso) {
     let widget = document.getElementById('widgetRastreo');
     if(paso === 'comercio' || paso === 'servimoto' || paso === 'login') {
         if(widget) widget.style.display = 'none';
+    } else {
+        if(widget) widget.style.display = 'flex';
     }
 
     if(paso === 'feed-global') {
@@ -2727,7 +2733,7 @@ async function cargarDatosComercioExistente(id) {
 }
 
 // ==========================================
-// 5. CLIENTE (PERFIL)
+// 5. CLIENTE (PERFIL) Y SUPABASE
 // ==========================================
 async function previewSelfieCliente(input) {
     if(input.files && input.files[0]) {
@@ -2749,7 +2755,7 @@ async function guardarPerfilCliente() {
     const ciu = document.getElementById('inputCiudadCliente') ? document.getElementById('inputCiudadCliente').value.trim() : "";
     const dir = document.getElementById('inputDireccionCliente') ? document.getElementById('inputDireccionCliente').value.trim() : "";
     
-    // SOLUCIÓN AL ERROR DE SUPABASE: Rescatar el celular de forma segura si la página se recargó
+    // PROTECCIÓN CONTRA EL ERROR DE SUPABASE
     let cel = AppStore.get('cliente_celular');
     if (!cel && sessionActual && sessionActual.email) {
         cel = sessionActual.email.split('@')[0];
@@ -2780,7 +2786,6 @@ async function guardarPerfilCliente() {
         });
         
         if (error) {
-            mostrarToast('Error en Supabase. Ver consola', 'error');
             console.error("Error BD:", error);
             throw error;
         }
@@ -2805,7 +2810,6 @@ async function guardarPerfilCliente() {
 // ==========================================
 function agregarPedidoBandejaComercio(total, destino, nombreCliente) {
     let nombreInfo = nombreCliente ? nombreCliente : "Cliente sin registrar";
-    // SOLUCIÓN: Agregamos hora exacta y un ID para que no se pisen si entran juntos
     let horaExacta = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
     pedidosComercio.unshift({ 
@@ -3408,6 +3412,10 @@ function iniciarRastreoPedidoCliente() {
 }
 
 async function mandarPedidoSoporte() {
+    if (esViajeEspecial || (document.getElementById('modal-step-pedido-especial') && document.getElementById('modal-step-pedido-especial').classList.contains('active'))) {
+        return mandarViajeEspecialSoporte();
+    }
+
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     
     let subtotalProductos = 0;
@@ -3444,7 +3452,6 @@ async function mandarPedidoSoporte() {
         if(i.detalle) txt += `   📝 Detalle: ${i.detalle}%0A`;
     });
     
-    // WHATSAPP LINK DEL CLIENTE
     let telComprador = AppStore.get('cliente_celular') || "No registrado";
     let telLimpio = telComprador.replace(/[^0-9]/g, '');
     
@@ -3589,8 +3596,8 @@ function cerrarMapa() {
     }
 }
 
-// LOGICA DE VIAJES ESPECIALES
-function prepararViajeEspecial() {
+// LOGICA DE VIAJES ESPECIALES VINCULADA A TU HTML
+function enviarPedidoEspecial() {
     let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
     let ciuDest = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "";
     let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
@@ -3637,8 +3644,5 @@ function mandarViajeEspecialSoporte() {
         iniciarRastreoPedidoCliente(); 
     }, 1000);
 }
-
-// Respaldo global por si el HTML tiene la funcion vieja
-window.enviarPedidoEspecial = prepararViajeEspecial;
-
 </script>
+
