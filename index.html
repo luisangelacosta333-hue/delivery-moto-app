@@ -987,12 +987,11 @@
 </html>
 
 
-
 <script>
 
 // ==========================================
 
-// 1. CONFIGURACIÓN, LIBRERÍAS Y VARIABLES GLOBALES
+// 1. LIBRERÍAS EXTERNAS Y CONFIGURACIÓN
 
 // ==========================================
 
@@ -1078,7 +1077,7 @@ let dbComerciosCache = []; 
 
 // ==========================================
 
-// 2. AUTO-CARGA: SESIÓN Y PROVINCIAS
+// 2. AUTO-CARGA: SESIÓN Y BOTONES GPS MÁGICOS
 
 // ==========================================
 
@@ -1137,7 +1136,34 @@ window.addEventListener('DOMContentLoaded', async () => {
     } catch(e) {}
 
 
-    // B) Recuperar Carrito Inmortal
+    // B) Inyectar Botones Mágicos de GPS (Punto 1 Premium)
+
+    const inyectarBtnGPS = (inputId) => {
+
+        const inputObj = document.getElementById(inputId);
+
+        if(inputObj && !document.getElementById('btnGPS_'+inputId)) {
+
+            inputObj.insertAdjacentHTML('beforebegin', `
+
+                <button id="btnGPS_${inputId}" type="button" onclick="autocompletarConGPS('${inputId}')" style="margin-bottom:8px; padding:10px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; border-radius:10px; width:100%; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 10px rgba(59,130,246,0.15);">
+
+                    <i class="ri-gps-fill" style="font-size:16px;"></i> Usar mi ubicación actual
+
+                </button>
+
+            `);
+
+        }
+
+    };
+
+    inyectarBtnGPS('inputDireccionCliente');
+
+    inyectarBtnGPS('dirOrigenEspecial');
+
+
+    // C) Recuperar Carrito Inmortal
 
     let carritoGuardado = localStorage.getItem('moto_carrito_guardado');
 
@@ -1160,7 +1186,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
 
-    // C) Recuperar Sesión Auth
+    // D) Recuperar Sesión Auth
 
     try {
 
@@ -1220,12 +1246,17 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     } catch(err) {}
 
+
+    // E) Activar Autocompletado de Calles de Google (Punto 2 Premium)
+
+    setTimeout(initAutocompletadoGoogle, 1500);
+
 });
 
 
 // ==========================================
 
-// 3. UTILIDADES PREMIUM (Voz, Confeti)
+// 3. UTILIDADES PREMIUM (Voz, Confeti, GPS)
 
 // ==========================================
 
@@ -1253,11 +1284,73 @@ function descargarAPK() {
 }
 
 
+function initAutocompletadoGoogle() {
+
+    if(window.google && window.google.maps && window.google.maps.places) {
+
+        // Limitamos la búsqueda a Argentina
+
+        const opciones = { componentRestrictions: { country: "ar" } };
+
+        const d1 = document.getElementById('inputDireccionCliente');
+
+        const d2 = document.getElementById('dirOrigenEspecial');
+
+        const d3 = document.getElementById('dirDestinoEspecial');
+
+        if(d1) new google.maps.places.Autocomplete(d1, opciones);
+
+        if(d2) new google.maps.places.Autocomplete(d2, opciones);
+
+        if(d3) new google.maps.places.Autocomplete(d3, opciones);
+
+    }
+
+}
+
+
+function autocompletarConGPS(inputId) {
+
+    if(navigator.vibrate) navigator.vibrate(50);
+
+    if(navigator.geolocation) {
+
+        mostrarToast("📍 Conectando satélite...", "success");
+
+        navigator.geolocation.getCurrentPosition((pos) => {
+
+            const lat = pos.coords.latitude;
+
+            const lng = pos.coords.longitude;
+
+            const geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({ location: {lat, lng} }, (res, status) => {
+
+                if(status === 'OK' && res[0]) {
+
+                    document.getElementById(inputId).value = res[0].formatted_address.split(',')[0];
+
+                    mostrarToast("✅ Ubicación encontrada", "success");
+
+                    if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+                } else { mostrarToast("No pudimos leer la calle. Escribila.", "error"); }
+
+            });
+
+        }, () => { mostrarToast("Activá el GPS de tu celular", "error"); });
+
+    }
+
+}
+
+
 function dispararConfetti() {
 
     if(typeof confetti !== 'undefined') {
 
-        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
 
         var duration = 3 * 1000;
 
@@ -1621,6 +1714,8 @@ async function cargarYRenderizarFeed(isLoadMore = false) {
                 let urlLogoComercio = (comercioData && comercioData.img_selfie) ? comercioData.img_selfie : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
 
                 
+
+                // Etiqueta de Proximidad Inteligente Inyectada (Punto 4 Premium)
 
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
 
@@ -2652,7 +2747,7 @@ async function auditarDocumentosIA() {
 
     
 
-    // Validación estricta de las otras 3 cajas
+    // Validación estricta de las 4 cajas (Punto 6 Premium)
 
     const d2 = document.getElementById('uploadDoc2');
 
@@ -2958,7 +3053,7 @@ function procesarAgregadoCarrito() {
 
     carritoGlobal.push({ nombre: productoPendienteAdd.nombre, precio: productoPendienteAdd.precio, cantidad: 1 });
 
-    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Memoria Inmortal 
+    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Memoria Inmortal (Punto 6 Premium)
 
     direccionOrigenCalculo = productoPendienteAdd.direccion; 
 
@@ -3166,7 +3261,7 @@ function borrarItemCarrito(idx) {
 
     carritoGlobal.splice(idx, 1);
 
-    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); 
+    localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); // Actualizar memoria
 
     const badge = document.getElementById('badgeCarrito');
 
@@ -3210,7 +3305,7 @@ function iniciarRastreoPedidoCliente(pedidoId) {
     widget.innerHTML = '<i class="ri-time-fill animate-pulse-glow" style="color:#f59e0b; font-size:16px;"></i> <span id="lblEstadoWidget" style="font-size:11px; font-weight:800; color:#0f172a; line-height:1.2;">Preparando pedido...</span>';
 
 
-    // SUPABASE REALTIME 
+    // SUPABASE REALTIME (Punto 4 Premium)
 
     if(pedidoId) {
 
@@ -3743,5 +3838,6 @@ async function mandarViajeEspecialSoporte() {
 }
 
 </script>
+
 
 
