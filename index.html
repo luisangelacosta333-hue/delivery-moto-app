@@ -281,6 +281,7 @@
     </div>
 </section>
 
+<!-- SECCIONES DE INFO (CÓMO FUNCIONA, CADETES, COMERCIOS, FUNCIONES) -->
 <section id="funciona" style="padding:64px 22px;position:relative;background:#fff7ed;" class="radial-orange bg-grid-orange">
     <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;">
         <div style="text-align:center;margin-bottom:44px;">
@@ -372,7 +373,7 @@
                 </div>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:12px;">
-                <button class="btn-primary" style="padding:15px 26px;font-size:15.5px;" onclick="abrirModalMarketplace()">
+                <button class="btn-primary" style="padding:15px 26px;font-size:15.5px;" onclick="iniciarLogin('cadete')">
                     <i class="ri-motorbike-fill" style="font-size:20px;"></i> POSTULARME
                 </button>
             </div>
@@ -405,7 +406,7 @@
                 </div>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:12px;">
-                <button class="btn-primary" style="padding:15px 26px;font-size:15.5px;" onclick="abrirModalMarketplace()">
+                <button class="btn-primary" style="padding:15px 26px;font-size:15.5px;" onclick="iniciarLogin('comercio')">
                     <i class="ri-add-circle-fill" style="font-size:20px;"></i> CREAR MI COMERCIO
                 </button>
             </div>
@@ -523,8 +524,8 @@
 <section style="padding:70px 22px;background:linear-gradient(135deg,#1a0a00 0%,#cc4400 50%,#ff6b00 100%);position:relative;overflow:hidden;">
     <div style="position:absolute;inset:0;background:radial-gradient(450px 280px at 80% 20%,rgba(255,215,0,.25),transparent 70%);pointer-events:none;"></div>
     <div style="max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:2;">
-        <h2 class="section-title" style="font-size:clamp(28px,4.5vw,54px);color:white;margin:0 0 16px;text-shadow:0 4px 22px rgba(0,0,0,.4);">Listo para unirte a<br><span class="text-gradient-gold">Delivery Moto</span>?</h2>
-        <p style="color:rgba(255,255,255,.92);font-size:17px;max-width:560px;margin:0 auto 32px;line-height:1.6;font-weight:500;">Comerciantes, clientes y cadetes, todos ganan con Delivery Moto.</p>
+        <h2 class="section-title" style="font-size:clamp(28px,4.5vw,54px);color:white;margin:0 0 16px;text-shadow:0 4px 22px rgba(0,0,0,.4);">¿Listo para unirte a<br><span class="text-gradient-gold">Delivery Moto</span>?</h2>
+        <p style="color:rgba(255,255,255,.92);font-size:17px;max-width:560px;margin:0 auto 32px;line-height:1.6;font-weight:500;">Comerciantes, clientes y cadetes — todos ganan con Delivery Moto.</p>
         <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:24px;">
             <button class="btn-primary animate-pulse-glow" style="padding:18px 32px;font-size:17px;border-color:rgba(255,255,255,.45);" onclick="abrirModalMarketplace()">
                 <i class="ri-store-2-fill" style="font-size:22px;"></i> ENTRAR AL MARKETPLACE
@@ -1138,7 +1139,10 @@ async function mandarPedidoSoporte() {
     if(subtotalProductos > 0) { agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal); }
 
     let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
-    carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
+    carritoGlobal.forEach(i => {
+        txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`;
+    });
+    
     if(txtComprobante !== "") { txt += txtComprobante; }
     
     let telComprador = AppStore.get('cliente_celular') || "00000000";
@@ -1160,9 +1164,46 @@ async function mandarPedidoSoporte() {
         let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
+        
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
         iniciarRastreoPedidoCliente(pedidoCreadoId); 
     }, 2500); 
+}
+
+async function mandarViajeEspecialSoporte() {
+    let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
+    let provDest = document.getElementById('selProvinciaEspecial') ? document.getElementById('selProvinciaEspecial').value.trim() : "Tucumán";
+    let ciuDest = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "";
+    let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
+    let detalle = document.getElementById('txtPedidoEspecial') ? document.getElementById('txtPedidoEspecial').value.trim() : "Paquete genérico";
+
+    let costo = costoEnvioCalculado > 0 ? costoEnvioCalculado : 2200; 
+    
+    mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
+    cerrarMapa();
+    esViajeEspecial = false; 
+    
+    let pedidoCreadoId = null;
+    try {
+        if(sessionActual) {
+            const { data } = await supabaseClient.from('moto_pedidos').insert({
+                id_cliente: sessionActual.id, 
+                origen_dir: dirOrig, 
+                destino_dir: `${dirDest}, ${ciuDest}, ${provDest}`,
+                total_comida: 0, 
+                total_envio: costo, 
+                detalle_json: [{nombre: "Viaje Especial", detalle: detalle}]
+            }).select();
+            if(data && data.length > 0) pedidoCreadoId = data[0].id;
+        }
+    } catch (e) {}
+
+    dispararConfetti();
+
+    setTimeout(() => {
+        mostrarToast("✅ ¡Viaje en el radar! Moto asignándose...", "success");
+        iniciarRastreoPedidoCliente(pedidoCreadoId); 
+    }, 2500);
 }
 
 // ==========================================
@@ -1273,16 +1314,15 @@ async function mandarPedidoSoporte() {
         } else {
             capaRuta = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], { color: '#ea580c', weight: 5, dashArray: '10, 10' }).addTo(mapaDemo);
             mapaDemo.fitBounds(L.latLngBounds([[origen.lat, origen.lng], [destino.lat, destino.lng]]), { padding: [60, 60] });
-            const R = 6371000; const dLat = (destino.lat - origen.lat) * Math.PI / 180; const dLng = (destino.lng - origen.lng) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(origen.lat * Math.PI / 180) * Math.cos(destino.lat * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
-            const distMetros = R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+            const distMetros = calcularDistanciaHaversine(origen.lat, origen.lng, destino.lat, destino.lng);
             const distanciaKm = (distMetros / 1000).toFixed(2);
             const duracionMin = Math.round((distMetros / 1000) / 0.025); 
             const cuadras = Math.round(distMetros / 100);
             const hora = new Date().getHours();
             const esNoche = (hora >= 20 || hora < 6);
             const tarifaBase = esNoche ? 3000 : 2200;
-            let costoExtra = 0; if (cuadras > 10) costoExtra = (cuadras - 10) * 100;
+            let costoExtra = 0;
+            if (cuadras > 10) costoExtra = (cuadras - 10) * 100;
             const costoTotal = tarifaBase + costoExtra;
 
             document.getElementById('demoDistancia').textContent = distanciaKm + ' km (aprox)';
@@ -1294,6 +1334,15 @@ async function mandarPedidoSoporte() {
             infoBox.style.borderColor = '#f59e0b';
         }
     };
+
+    function calcularDistanciaHaversine(lat1, lng1, lat2, lng2) {
+        const R = 6371000; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
 
     window.centrarMapaDemo = function() {
         if (mapaDemo) {
@@ -1307,7 +1356,10 @@ async function mandarPedidoSoporte() {
         setTimeout(function() {
             const seccion = document.querySelector('#mapaDemoContainer').closest('section');
             if (seccion) seccion.scrollIntoView({ behavior: 'smooth' });
-            setTimeout(function() { if (mapaDemo) mapaDemo.invalidateSize(); calcularRutaDemo(); }, 600);
+            setTimeout(function() {
+                if (mapaDemo) mapaDemo.invalidateSize();
+                calcularRutaDemo();
+            }, 600);
         }, 300);
     };
 
@@ -1327,6 +1379,10 @@ async function mandarPedidoSoporte() {
     }
 
     if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+
     window.addEventListener('resize', function() { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
 </script>
+
+</body>
+</html>
