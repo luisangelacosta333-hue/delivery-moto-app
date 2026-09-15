@@ -1745,7 +1745,10 @@ window.activarMicrofono = function() {
     if(btn) { btn.classList.remove('ri-mic-fill'); btn.classList.add('ri-mic-2-fill', 'animate-pulse-glow'); }
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel(); 
-        const mensaje = "La empresa Energy Software te trae la nueva aplicación Delivery Moto. Atención comerciantes, farmacias y negocios: comiencen a publicar y aumenten sus ventas. ¡Sumate al marketplace!";
+        
+        // === NUEVO TEXTO DE AUDIO LOCUTOR PREMIUM ===
+        const mensaje = "Energy Software presenta Libre Moto, la plataforma ideal para tu ciudad. Si sos comerciante, podés publicar tus productos y potenciar tus ventas rápidamente. Si sos cliente, comprás con tranquilidad total: nuestros Servi Motos están verificados con certificado de buena conducta, y el sistema cruza imágenes para garantizar cien por ciento de transparencia en tu pedido. Además, podés generar ingresos sumándote como cadete hoy mismo. Recordá: para recibir la señal del radar de viajes en tiempo real, es indispensable que descargues nuestra aplicación APK instalable. ¡Descargá, publicá, y empezá a mover tu economía con Libre Moto!";
+        
         const speech = new SpeechSynthesisUtterance(mensaje);
         speech.lang = 'es-AR'; speech.rate = 1.05;
         speech.onend = () => { if(btn) { btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow'); btn.classList.add('ri-mic-fill'); } };
@@ -1956,7 +1959,6 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
         if (!isLoadMore) {
             container.innerHTML = '';
             
-            // === BANNER PREMIUM DE LOCAL ===
             if (comercioFiltradoId) {
                 let comInfo = dbComerciosCache.find(c => c.id === comercioFiltradoId);
                 if(comInfo) {
@@ -1987,6 +1989,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                     </div>`;
                 }
             }
+            
             if(btnLimpiarFiltro) container.innerHTML += btnLimpiarFiltro;
         } else {
             const bottomLoader = document.getElementById('bottomLoader');
@@ -2276,7 +2279,6 @@ window.llamarMotoDesdeLocal = async function(idx) {
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
     let viaje_id = pedidoInfo.id || Date.now();
     
-    // Guardamos el ID del viaje para que el comerciante también pueda chatear si el widget está activo
     AppStore.set('my_last_trip_id', viaje_id);
 
     canalRadar.send({
@@ -2908,7 +2910,6 @@ window.mandarPedidoSoporte = async function() {
     if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
     txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     
-    // Guardamos el ID del viaje para que el widget escuche la aceptación del cadete
     let idViajeFinal = pedidoCreadoId || Date.now();
     AppStore.set('my_last_trip_id', idViajeFinal); 
     
