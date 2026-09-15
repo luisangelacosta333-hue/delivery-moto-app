@@ -1483,7 +1483,7 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
         let p = payload.payload;
         mostrarToast("¡NUEVO VIAJE ENCONTRADO!", "success");
         setTimeout(() => {
-            alert(`🚨 ALERTA DE RADAR - NUEVO VIAJE 🚨\n\n🏪 Retirar en:\n${p.local}\n\n🚩 Entregar a:\n${p.destino}\n\n¡Dirigite al comercio!`);
+            alert(`🚨 ALERTA DE RADAR - NUEVO VIAJE 🚨\n\n🏪 Retirar en:\n${p.local}\n\n🚩 Entregar a:\n${p.destino}\n\n¡Dirigite de inmediato!`);
         }, 500);
     }
 }).subscribe();
@@ -2119,8 +2119,8 @@ window.llamarMotoDesdeLocal = async function(idx) {
         let msg = new SpeechSynthesisUtterance("Atención base, buscando un ServiMoto cercano para un nuevo envío.");
         msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
     }
-    
-    // === COMUNICACIÓN EN TIEMPO REAL CON EL RADAR ===
+
+    // === ENVÍO DE SEÑAL AL RADAR EN TIEMPO REAL ===
     let pedidoInfo = pedidosComercio[idx];
     let nombreLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Comercio Local";
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
@@ -2130,7 +2130,7 @@ window.llamarMotoDesdeLocal = async function(idx) {
         event: 'nuevo_viaje',
         payload: { local: `${nombreLocal} (${dirLocal})`, destino: pedidoInfo.destino }
     });
-    // ================================================
+    // ===============================================
 
     setTimeout(() => { 
         mostrarToast("✅ ¡Moto asignada y en camino al local!", "success"); 
@@ -2473,6 +2473,17 @@ window.renderizarCarritoDOM = function() {
             <div style="display:flex; align-items:flex-start; gap:8px;"><i class="ri-map-pin-user-fill" style="color:#16a34a; font-size:16px;"></i><div><div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase;">Entrega a (Cliente/Destino):</div><div style="color:#0f172a; font-weight:900; color:#15803d;">👤 ${nomComprador}</div><div style="color:#0f172a; font-weight:700;">📍 ${dirComprador}, ${ciuComprador}</div></div></div>
             <button onclick="pedirNuevaDireccionEnvio()" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:8px; font-weight:800; font-size:11px; cursor:pointer;">CAMBIAR DIR.</button>
         </div>
+        
+        <!-- === CAMPO VISUAL DEL WHATSAPP PARA EVITAR NUMEROS CRUZADOS === -->
+        <div style="margin-top:12px; padding-top:12px; border-top:1px dashed #e2e8f0;">
+            <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase; margin-bottom:4px;">Tu WhatsApp (Para que te avisen):</div>
+            <div style="display:flex; align-items:center; gap:8px; background:#f1f5f9; padding:8px; border-radius:8px;">
+                <i class="ri-whatsapp-fill" style="color:#16a34a; font-size:18px;"></i>
+                <input type="number" id="inputCelularCarrito" value="${AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || ''}" placeholder="Ej: 381..." style="width:100%; border:none; outline:none; background:transparent; font-weight:800; color:#0f172a; font-size:14px;">
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        
     </div>
     <div style="background:#f0fdf4; border:2px dashed #16a34a; border-radius:12px; padding:12px; margin-bottom:12px; text-align:center;">
         <div style="font-weight:800; color:#15803d; font-size:14px; margin-bottom:4px;">💳 Pagá la comida por Transferencia</div><div style="color:#0f172a; font-size:13px; margin-bottom:8px;">Alias del local: <span style="font-weight:900; color:#2563eb; user-select:all;">${aliasOrigenCalculo || 'Consultar al local'}</span></div>
@@ -2719,14 +2730,15 @@ window.mandarPedidoSoporte = async function() {
     carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
     if(txtComprobante !== "") { txt += txtComprobante; }
     
-    // Extracción BLINDADA del celular desde la cuenta de login para evitar bugs de caché
-    let telComprador = "";
-    if (sessionActual && sessionActual.email && sessionActual.email.includes('@')) {
-        telComprador = sessionActual.email.split('@')[0];
+    // === EXTRACCIÓN DEL WHATSAPP DESDE LA CAJA VISUAL DEL CARRITO ===
+    let telInput = document.getElementById('inputCelularCarrito');
+    let telComprador = telInput && telInput.value.trim() !== "" ? telInput.value.trim() : "";
+    
+    if (!telComprador) {
+        telComprador = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
     } else {
-        telComprador = AppStore.get('cliente_celular');
+        AppStore.set('cliente_celular_real', telComprador); // Guardamos por si vuelve a comprar
     }
-    if (!telComprador || telComprador === "") telComprador = "00000000";
     
     let telLimpio = String(telComprador).replace(/[^0-9]/g, '');
     if (telLimpio.startsWith("54")) {
@@ -2737,6 +2749,7 @@ window.mandarPedidoSoporte = async function() {
         }
     }
     telLimpio = telLimpio.replace(/^0?15?/, '');
+    // ===============================================================
     
     txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Entrega en:* ${destClient}%0A📱 *WhatsApp del Cliente:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
     if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
@@ -2786,14 +2799,14 @@ window.mandarViajeEspecialSoporte = async function() {
             if(data && data.length > 0) pedidoCreadoId = data[0].id;
         }
     } catch (e) {}
-    
-    // === COMUNICACIÓN EN TIEMPO REAL CON EL RADAR (VIAJE ESPECIAL) ===
+
+    // === SEÑAL DE VIAJE ESPECIAL AL RADAR ===
     canalRadar.send({
         type: 'broadcast',
         event: 'nuevo_viaje',
         payload: { local: dirOrig, destino: `${dirDest}, ${ciuDest}` }
     });
-    // =================================================================
+    // ========================================
 
     window.dispararConfetti();
 
