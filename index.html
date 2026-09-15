@@ -2887,31 +2887,12 @@ async function mandarPedidoSoporte() {
     carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
     if(txtComprobante !== "") { txt += txtComprobante; }
     
-    let telInput = document.getElementById('inputCelularCarrito');
-    let telComprador = telInput && telInput.value.trim() !== "" ? telInput.value.trim() : "";
-    
-    if (!telComprador) {
-        telComprador = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
-    } else {
-        AppStore.set('cliente_celular_real', telComprador); 
-    }
-    
+    let telComprador = AppStore.get('cliente_celular') || "00000000";
     let telLimpio = String(telComprador).replace(/[^0-9]/g, '');
-    if (telLimpio.startsWith("54")) {
-        if (telLimpio.startsWith("549")) {
-            telLimpio = telLimpio.substring(3);
-        } else {
-            telLimpio = telLimpio.substring(2);
-        }
-    }
-    telLimpio = telLimpio.replace(/^0?15?/, '');
     
     txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Entrega en:* ${destClient}%0A📱 *WhatsApp del Cliente:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
     if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
     txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
-    
-    let idViajeFinal = pedidoCreadoId || Date.now();
-    AppStore.set('my_last_trip_id', idViajeFinal); 
     
     cerrarMapa();
     carritoGlobal = [];
@@ -2926,7 +2907,7 @@ async function mandarPedidoSoporte() {
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
-        iniciarRastreoPedidoCliente(idViajeFinal); 
+        iniciarRastreoPedidoCliente(pedidoCreadoId); 
     }, 2500); 
 }
 
@@ -2958,25 +2939,11 @@ async function mandarViajeEspecialSoporte() {
         }
     } catch (e) {}
 
-    let idViajeFinal = pedidoCreadoId || Date.now();
-    AppStore.set('my_last_trip_id', idViajeFinal);
-
-    canalRadar.send({
-        type: 'broadcast',
-        event: 'nuevo_viaje',
-        payload: { 
-            viaje_id: idViajeFinal, 
-            local: dirOrig, 
-            destino: `${dirDest}, ${ciuDest}`,
-            costo: costo 
-        }
-    });
-
     dispararConfetti();
 
     setTimeout(() => {
         mostrarToast("✅ ¡Viaje en el radar! Moto asignándose...", "success");
-        iniciarRastreoPedidoCliente(idViajeFinal); 
+        iniciarRastreoPedidoCliente(pedidoCreadoId); 
     }, 2500);
 }
 
