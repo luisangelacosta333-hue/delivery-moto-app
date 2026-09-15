@@ -1590,6 +1590,28 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
     // LÓGICA PARA EL CLIENTE O COMERCIANTE (Actualiza el widget y habilita WhatsApp directo)
     let miViajeId = AppStore.get('my_last_trip_id');
     if (miViajeId && String(miViajeId) === String(p.viaje_id)) {
+        
+        // === RESTAURAR BOTÓN DE FAVOR (VISUAL FEEDBACK PREMIUM) ===
+        if (window.btnFavorRef && window.btnFavorRef.el) {
+            clearTimeout(window.timeoutFavor);
+            let b = window.btnFavorRef.el;
+            b.innerHTML = `✅ ¡ASIGNADO A ${p.cadete_nombre.toUpperCase()}!`;
+            b.style.background = '#2563eb'; // Azul de éxito
+            b.style.border = '2px solid #2563eb';
+            b.style.color = 'white';
+            
+            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            
+            setTimeout(() => {
+                b.innerHTML = window.btnFavorRef.html;
+                b.style.background = window.btnFavorRef.bg;
+                b.style.color = window.btnFavorRef.color;
+                b.style.border = window.btnFavorRef.border;
+                b.style.pointerEvents = 'auto';
+                window.btnFavorRef = null;
+            }, 4000);
+        }
+        
         let widget = document.getElementById('widgetRastreo');
         if (widget) {
             widget.style.borderColor = "#16a34a"; 
@@ -1598,7 +1620,7 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
                 let cel = p.cadete_celular ? String(p.cadete_celular).replace(/[^0-9]/g, '') : NUMERO_SOPORTE_CENTRAL;
                 window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te espero con el pedido.', '_blank'); 
             };
-            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            if(navigator.vibrate && (!window.btnFavorRef || !window.btnFavorRef.el)) navigator.vibrate([200, 100, 200]);
             mostrarToast("¡Moto asignada! Tocá para chatear con el cadete.", "success");
         }
     }
@@ -1612,7 +1634,7 @@ window.aceptarViajeRadar = function(viaje_id) {
     let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
     let miCelular = AppStore.get('cliente_celular') || '00000000';
     
-    // --- NUEVA LÓGICA: Sumar 200 pesos al cadete automáticamente al aceptar ---
+    // Sumar 200 pesos al cadete automáticamente al aceptar
     viajesMotoCount += 1;
     deudaMotoAcumulada += 200;
     
@@ -1625,7 +1647,6 @@ window.aceptarViajeRadar = function(viaje_id) {
             deuda_acumulada: deudaMotoAcumulada
         }).eq('id', sessionActual.id).then(() => {});
     }
-    // -------------------------------------------------------------------------
 
     canalRadar.send({
         type: 'broadcast',
@@ -2332,8 +2353,36 @@ window.llamarMotoDesdeLocal = async function(idx) {
     }, 3000);
 };
 
-window.pedirFavorCadeteWhatsApp = function() {
+// === NUEVO: Lógica del Botón con Feedback Visual para Comercio ===
+window.pedirFavorCadeteWhatsApp = function(evt) {
+    // Detectar el botón que fue presionado (o buscarlo como respaldo)
+    let btn = (evt && evt.currentTarget) ? evt.currentTarget : (window.event ? window.event.currentTarget : null);
+    if (!btn) { 
+        document.querySelectorAll('button').forEach(b => {
+            if(b.innerText.includes('PEDIR ENCARGO')) btn = b;
+        });
+    }
+    
+    // Guardar el estado original del botón
+    let htmlOriginal = btn ? btn.innerHTML : "";
+    let bgOriginal = btn ? btn.style.background : "";
+    let borderOriginal = btn ? btn.style.border : "";
+    let colorOriginal = btn ? btn.style.color : "";
+
+    // Cambiar a verde buscando
+    if (btn) {
+        btn.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO MOTO...';
+        btn.style.background = '#16a34a'; 
+        btn.style.color = 'white';
+        btn.style.border = '2px solid #16a34a';
+        btn.style.pointerEvents = 'none'; // Evita doble clic
+        // Guardamos la referencia global para restaurarlo cuando acepten
+        window.btnFavorRef = { el: btn, html: htmlOriginal, bg: bgOriginal, border: borderOriginal, color: colorOriginal };
+    }
+
+    if(navigator.vibrate) navigator.vibrate(50);
     mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
+
     let nomLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Un comercio";
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
     let viaje_id = Date.now();
@@ -2345,15 +2394,31 @@ window.pedirFavorCadeteWhatsApp = function() {
         event: 'nuevo_viaje',
         payload: { 
             viaje_id: viaje_id, 
-            local: `${nomLocal} (${dirLocal})`, 
+            local: dirLocal ? `${nomLocal} (${dirLocal})` : nomLocal,
             destino: "Encargo / Favor",
             costo: "A conv." 
         }
     });
 
-    setTimeout(() => { 
-        mostrarToast("✅ ¡Alerta enviada a motos cercanas!", "success"); 
-    }, 1000);
+    // Timeout de 45 segundos (Sistema Anti-cuelgue)
+    window.timeoutFavor = setTimeout(() => {
+        if (window.btnFavorRef && window.btnFavorRef.el) {
+            let b = window.btnFavorRef.el;
+            b.innerHTML = '<i class="ri-error-warning-line"></i> SIN MOTOS, REINTENTAR';
+            b.style.background = '#f97316';
+            b.style.border = '2px solid #f97316';
+            mostrarToast("No hay motos disponibles ahora. Reintentá en unos minutos.", "error");
+            
+            setTimeout(() => {
+                b.innerHTML = window.btnFavorRef.html;
+                b.style.background = window.btnFavorRef.bg;
+                b.style.color = window.btnFavorRef.color;
+                b.style.border = window.btnFavorRef.border;
+                b.style.pointerEvents = 'auto';
+                window.btnFavorRef = null;
+            }, 3000);
+        }
+    }, 45000); 
 };
 
 window.previewSelfieComercioModal = async function(input) {
@@ -2752,8 +2817,32 @@ window.procesarEnvioMapa = function() {
     if(esViajeEspecial) { window.mandarViajeEspecialSoporte(); } else { window.mandarPedidoSoporte(); }
 };
 
-window.pedirFavorDirectoCliente = function() {
+// === NUEVO: Lógica del Botón con Feedback Visual para el Cliente también ===
+window.pedirFavorDirectoCliente = function(evt) {
+    let btn = (evt && evt.currentTarget) ? evt.currentTarget : (window.event ? window.event.currentTarget : null);
+    if (!btn) {
+        document.querySelectorAll('button').forEach(b => {
+            if(b.innerText.includes('PEDIR ENCARGO')) btn = b;
+        });
+    }
+    
+    let htmlOriginal = btn ? btn.innerHTML : "";
+    let bgOriginal = btn ? btn.style.background : "";
+    let borderOriginal = btn ? btn.style.border : "";
+    let colorOriginal = btn ? btn.style.color : "";
+
+    if (btn) {
+        btn.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO MOTO...';
+        btn.style.background = '#16a34a'; 
+        btn.style.color = 'white';
+        btn.style.border = '2px solid #16a34a';
+        btn.style.pointerEvents = 'none';
+        window.btnFavorRef = { el: btn, html: htmlOriginal, bg: bgOriginal, border: borderOriginal, color: colorOriginal };
+    }
+
+    if(navigator.vibrate) navigator.vibrate(50);
     mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
+
     let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "Cliente";
     let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "A coordinar";
     let detalle = document.getElementById('txtPedidoEspecial') ? document.getElementById('txtPedidoEspecial').value.trim() : "";
@@ -2772,9 +2861,24 @@ window.pedirFavorDirectoCliente = function() {
         }
     });
 
-    setTimeout(() => { 
-        mostrarToast("✅ ¡Solicitud enviada al radar!", "success"); 
-    }, 1000);
+    window.timeoutFavor = setTimeout(() => {
+        if (window.btnFavorRef && window.btnFavorRef.el) {
+            let b = window.btnFavorRef.el;
+            b.innerHTML = '<i class="ri-error-warning-line"></i> SIN MOTOS, REINTENTAR';
+            b.style.background = '#f97316';
+            b.style.border = '2px solid #f97316';
+            mostrarToast("No hay motos disponibles ahora. Reintentá en unos minutos.", "error");
+            
+            setTimeout(() => {
+                b.innerHTML = window.btnFavorRef.html;
+                b.style.background = window.btnFavorRef.bg;
+                b.style.color = window.btnFavorRef.color;
+                b.style.border = window.btnFavorRef.border;
+                b.style.pointerEvents = 'auto';
+                window.btnFavorRef = null;
+            }, 4000);
+        }
+    }, 45000);
 };
 
 function initMapaMago() {
@@ -2889,7 +2993,6 @@ window.calcularMatematicaEnvio = function(distancia) {
     const horaActual = new Date().getHours();
     const esNoche = (horaActual >= 20 || horaActual < 6);
     
-    // --- NUEVA LÓGICA: Tarifa de Día 2000 ---
     const tarifaBase = esNoche ? 3000 : 2000; 
     
     if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Costo Envío Noche' : 'Costo Envío Día';
@@ -3007,7 +3110,6 @@ window.mandarViajeEspecialSoporte = async function() {
     let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
     let detalle = document.getElementById('txtPedidoEspecial') ? document.getElementById('txtPedidoEspecial').value.trim() : "Paquete genérico";
 
-    // --- NUEVA LÓGICA: Tarifa de Día 2000 si no se calcula ---
     let costo = costoEnvioCalculado > 0 ? costoEnvioCalculado : 2000; 
     
     mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
@@ -3126,7 +3228,6 @@ window.mandarViajeEspecialSoporte = async function() {
             const hora = new Date().getHours();
             const esNoche = (hora >= 20 || hora < 6);
             
-            // --- NUEVA LÓGICA: Tarifa de Día 2000 ---
             const tarifaBase = esNoche ? 3000 : 2000;
             
             let costoExtra = 0; if (cuadras > 10) costoExtra = (cuadras - 10) * 100;
@@ -3151,7 +3252,6 @@ window.mandarViajeEspecialSoporte = async function() {
             const hora = new Date().getHours();
             const esNoche = (hora >= 20 || hora < 6);
             
-            // --- NUEVA LÓGICA: Tarifa de Día 2000 ---
             const tarifaBase = esNoche ? 3000 : 2000;
             
             let costoExtra = 0; if (cuadras > 10) costoExtra = (cuadras - 10) * 100;
