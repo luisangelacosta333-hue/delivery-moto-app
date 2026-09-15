@@ -2716,7 +2716,7 @@ function initMapaMago() {
     }
 }
 
-async function geocodificarDireccionMago(direccion) {
+async function geocodificarDireccion(direccion) {
     try {
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&limit=1&countrycodes=ar`;
         const res = await fetch(url, { headers: { 'Accept-Language': 'es-AR,es;q=0.9' } });
@@ -2726,7 +2726,7 @@ async function geocodificarDireccionMago(direccion) {
     } catch (e) { return null; }
 }
 
-async function calcularRutaOSRMMago(origen, destino) {
+async function calcularRutaOSRM(origen, destino) {
     try {
         const url = `https://router.project-osrm.org/route/v1/driving/${origen.lng},${origen.lat};${destino.lng},${destino.lat}?overview=full&geometries=geojson&steps=true`;
         const res = await fetch(url);
@@ -2745,7 +2745,7 @@ function calcularDistanciaHaversine(lat1, lng1, lat2, lng2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
 }
 
-window.abrirMapaMago = function() {
+function abrirMapaMago() {
     cerrarCarrito();
     const modalMapa = document.getElementById('modalMapaGrande');
     if(!modalMapa) return;
@@ -2779,8 +2779,8 @@ window.abrirMapaMago = function() {
         }
 
         try {
-            const origen = await geocodificarDireccionMago(strOrigen);
-            const destino = await geocodificarDireccionMago(strDestino);
+            const origen = await geocodificarDireccion(strOrigen);
+            const destino = await geocodificarDireccion(strDestino);
             
             if(!origen || !destino) { window.calcularMatematicaEnvio("1.0"); return; }
 
@@ -2793,7 +2793,7 @@ window.abrirMapaMago = function() {
             L.marker([origen.lat, origen.lng], { icon: icoOri }).addTo(magoLayerGroup).bindPopup('<strong style="color:#16a34a;">ORIGEN</strong><br>' + (origen.nombre ? origen.nombre.substring(0, 80) : strOrigen));
             L.marker([destino.lat, destino.lng], { icon: icoDes }).addTo(magoLayerGroup).bindPopup('<strong style="color:#ea580c;">DESTINO</strong><br>' + (destino.nombre ? destino.nombre.substring(0, 80) : strDestino));
 
-            const ruta = await calcularRutaOSRMMago(origen, destino);
+            const ruta = await calcularRutaOSRM(origen, destino);
             let distMeters = 1000;
 
             if (ruta) {
@@ -2810,9 +2810,9 @@ window.abrirMapaMago = function() {
 
         } catch(e) { window.calcularMatematicaEnvio("1.0"); }
     }, 400); 
-};
+}
 
-window.calcularMatematicaEnvio = function(distancia) {
+function calcularMatematicaEnvio(distancia) {
     let metrosReales = 0;
     if (typeof distancia === 'string' && distancia.includes('.')) { metrosReales = parseFloat(distancia) * 1000; } 
     else { metrosReales = parseInt(distancia); }
@@ -2843,14 +2843,14 @@ window.calcularMatematicaEnvio = function(distancia) {
     
     const fallbackText = document.getElementById('mapFallbackText');
     if(fallbackText) fallbackText.style.display = 'none';
-};
+}
 
-window.cerrarMapa = function() { 
+function cerrarMapa() { 
     document.getElementById('modalMapaGrande').classList.remove('show'); 
-    if(!esViajeEspecial) { window.abrirCarritoFinal(); }
-};
+    if(!esViajeEspecial) { abrirCarritoFinal(); }
+}
 
-window.mandarPedidoSoporte = async function() {
+async function mandarPedidoSoporte() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     
     let subtotalProductos = 0;
@@ -2881,7 +2881,7 @@ window.mandarPedidoSoporte = async function() {
         }
     } catch (e) {}
 
-    if(subtotalProductos > 0) { window.agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal); }
+    if(subtotalProductos > 0) { agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal); }
 
     let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
     carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
@@ -2913,24 +2913,24 @@ window.mandarPedidoSoporte = async function() {
     let idViajeFinal = pedidoCreadoId || Date.now();
     AppStore.set('my_last_trip_id', idViajeFinal); 
     
-    window.cerrarMapa();
+    cerrarMapa();
     carritoGlobal = [];
     localStorage.removeItem('moto_carrito_guardado');
     const floatBtn = document.getElementById('btnFloatingCart');
     if(floatBtn) floatBtn.style.display = 'none';
 
-    window.dispararConfetti();
+    dispararConfetti();
 
     setTimeout(() => {
         let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
-        window.iniciarRastreoPedidoCliente(idViajeFinal); 
+        iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500); 
-};
+}
 
-window.mandarViajeEspecialSoporte = async function() {
+async function mandarViajeEspecialSoporte() {
     let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "";
     let provDest = document.getElementById('selProvinciaEspecial') ? document.getElementById('selProvinciaEspecial').value.trim() : "Tucumán";
     let ciuDest = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "";
@@ -2940,7 +2940,7 @@ window.mandarViajeEspecialSoporte = async function() {
     let costo = costoEnvioCalculado > 0 ? costoEnvioCalculado : 2200; 
     
     mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
-    window.cerrarMapa();
+    cerrarMapa();
     esViajeEspecial = false; 
     
     let pedidoCreadoId = null;
@@ -2972,17 +2972,21 @@ window.mandarViajeEspecialSoporte = async function() {
         }
     });
 
-    window.dispararConfetti();
+    dispararConfetti();
 
     setTimeout(() => {
         mostrarToast("✅ ¡Viaje en el radar! Moto asignándose...", "success");
-        window.iniciarRastreoPedidoCliente(idViajeFinal); 
+        iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500);
-};
+}
 
 // ==========================================
-// 10. MAPA DEMO INTERACTIVO DE LA LANDING
+// 12. MAPA DEMO INTERACTIVO DE LA LANDING PAGE
 // ==========================================
+window.calcularRutaDemo = calcularRutaDemo;
+window.centrarMapaDemo = centrarMapaDemo;
+window.iniciarDemoRapida = iniciarDemoRapida;
+
 (function() {
     let mapaDemo = null;
     let marcadorOrigen = null;
@@ -2991,8 +2995,14 @@ window.mandarViajeEspecialSoporte = async function() {
 
     function initMapaDemo() {
         if (mapaDemo) return;
-        mapaDemo = L.map('mapaDemo', { zoomControl: true, attributionControl: true }).setView([-26.8083, -65.2176], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap', maxZoom: 19 }).addTo(mapaDemo);
+        mapaDemo = L.map('mapaDemo', {
+            zoomControl: true,
+            attributionControl: true
+        }).setView([-26.8083, -65.2176], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap',
+            maxZoom: 19
+        }).addTo(mapaDemo);
         setTimeout(function() { if (mapaDemo) mapaDemo.invalidateSize(); }, 200);
     }
 
@@ -3013,7 +3023,12 @@ window.mandarViajeEspecialSoporte = async function() {
             const datos = await respuesta.json();
             if (datos.code === 'Ok' && datos.routes && datos.routes.length > 0) {
                 const ruta = datos.routes[0];
-                return { distancia: ruta.distance, duracion: ruta.duration, coordenadas: ruta.geometry.coordinates.map(function(c) { return [c[1], c[0]]; }), pasos: ruta.legs[0].steps };
+                return {
+                    distancia: ruta.distance,
+                    duracion: ruta.duration,
+                    coordenadas: ruta.geometry.coordinates.map(function(c) { return [c[1], c[0]]; }),
+                    pasos: ruta.legs[0].steps
+                };
             }
             return null;
         } catch (e) { return null; }
@@ -3024,15 +3039,23 @@ window.mandarViajeEspecialSoporte = async function() {
         const inputDestino = document.getElementById('demoDestino');
         const infoBox = document.getElementById('mapaDemoInfo');
         
-        if (!inputOrigen.value.trim() || !inputDestino.value.trim()) { window.mostrarToast('Ingresa ambas direcciones', 'error'); return; }
+        if (!inputOrigen.value.trim() || !inputDestino.value.trim()) {
+            mostrarToast('Ingresa ambas direcciones', 'error'); return;
+        }
         infoBox.innerHTML = '<i class="ri-loader-4-line animate-ring" style="color:#ff6b00;"></i> Buscando direcciones...';
         infoBox.style.borderColor = '#ff6b00';
 
         const origen = await geocodificarDireccionDemo(inputOrigen.value.trim());
-        if (!origen) { infoBox.innerHTML = '<i class="ri-error-warning-fill" style="color:#ef4444;"></i> No se encontro el ORIGEN.'; infoBox.style.borderColor = '#ef4444'; return; }
+        if (!origen) {
+            infoBox.innerHTML = '<i class="ri-error-warning-fill" style="color:#ef4444;"></i> No se encontro el ORIGEN.';
+            infoBox.style.borderColor = '#ef4444'; return;
+        }
         infoBox.innerHTML = '<i class="ri-loader-4-line animate-ring" style="color:#ff6b00;"></i> Buscando destino...';
         const destino = await geocodificarDireccionDemo(inputDestino.value.trim());
-        if (!destino) { infoBox.innerHTML = '<i class="ri-error-warning-fill" style="color:#ef4444;"></i> No se encontro el DESTINO.'; infoBox.style.borderColor = '#ef4444'; return; }
+        if (!destino) {
+            infoBox.innerHTML = '<i class="ri-error-warning-fill" style="color:#ef4444;"></i> No se encontro el DESTINO.';
+            infoBox.style.borderColor = '#ef4444'; return;
+        }
         infoBox.innerHTML = '<i class="ri-loader-4-line animate-ring" style="color:#ff6b00;"></i> Calculando ruta...';
 
         if (marcadorOrigen) mapaDemo.removeLayer(marcadorOrigen);
@@ -3090,6 +3113,15 @@ window.mandarViajeEspecialSoporte = async function() {
         }
     };
 
+    function calcularDistanciaHaversine(lat1, lng1, lat2, lng2) {
+        const R = 6371000; 
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
     window.centrarMapaDemo = function() {
         if (mapaDemo) {
             mapaDemo.setView([-26.8083, -65.2176], 13);
@@ -3098,17 +3130,20 @@ window.mandarViajeEspecialSoporte = async function() {
     };
 
     window.iniciarDemoRapida = function() {
-        window.cerrarModalMarketplace();
+        cerrarModalMarketplace();
         setTimeout(function() {
             const seccion = document.querySelector('#mapaDemoContainer').closest('section');
             if (seccion) seccion.scrollIntoView({ behavior: 'smooth' });
-            setTimeout(function() { if (mapaDemo) mapaDemo.invalidateSize(); window.calcularRutaDemo(); }, 600);
+            setTimeout(function() {
+                if (mapaDemo) mapaDemo.invalidateSize();
+                calcularRutaDemo();
+            }, 600);
         }, 300);
     };
 
     function init() {
         initMapaDemo();
-        setTimeout(function() { window.calcularRutaDemo(); }, 800);
+        setTimeout(function() { calcularRutaDemo(); }, 800);
         if ('IntersectionObserver' in window) {
             const observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
@@ -3122,6 +3157,7 @@ window.mandarViajeEspecialSoporte = async function() {
     }
 
     if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+
     window.addEventListener('resize', function() { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
 </script>
