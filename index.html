@@ -2549,14 +2549,9 @@ window.abrirMapaMago = function() {
     if(!modalMapa) return;
     modalMapa.classList.add('show');
     
-    // === FUERZA BRUTA PARA MATAR EL CARTEL NEGRO ===
-    if(document.getElementById('mapFallbackText')) document.getElementById('mapFallbackText').style.display = 'none';
-    document.querySelectorAll('div').forEach(el => {
-        if(el.innerHTML && el.innerHTML.includes('Calculando cotización matemática')) {
-            el.style.display = 'none';
-        }
-    });
-    // ===============================================
+    // Apaga el cartel negro instantáneamente buscando por su ID original, sin afectar al resto de la APP.
+    const fallbackText = document.getElementById('mapFallbackText');
+    if(fallbackText) fallbackText.style.display = 'none';
     
     setTimeout(async () => {
         const box = document.getElementById('mapaBox');
@@ -2591,21 +2586,33 @@ window.abrirMapaMago = function() {
             if(magoLayerGroup) { magoLayerGroup.clearLayers(); } else { magoLayerGroup = L.featureGroup().addTo(mapaMagoObj); }
             if (animacionIntervalMago) clearInterval(animacionIntervalMago);
 
+            // Trasladamos el diseño exacto de los pines y el popup interactivo de la landing page
             const icoOri = L.divIcon({ className: 'custom-marker', html: '<div class="custom-marker-origen"><i class="ri-store-fill"></i></div>', iconSize: [32, 32], iconAnchor: [16, 32] });
             const icoDes = L.divIcon({ className: 'custom-marker', html: '<div class="custom-marker-destino"><i class="ri-home-4-fill"></i></div>', iconSize: [32, 32], iconAnchor: [16, 32] });
             
-            L.marker([origen.lat, origen.lng], {icon: icoOri}).addTo(magoLayerGroup).bindPopup('<strong style="color:#16a34a;">ORIGEN</strong><br>' + (origen.nombre ? origen.nombre.substring(0, 80) : ''));
-            L.marker([destino.lat, destino.lng], {icon: icoDes}).addTo(magoLayerGroup).bindPopup('<strong style="color:#ea580c;">DESTINO</strong><br>' + (destino.nombre ? destino.nombre.substring(0, 80) : ''));
+            L.marker([origen.lat, origen.lng], { icon: icoOri }).addTo(magoLayerGroup).bindPopup('<strong style="color:#16a34a;">ORIGEN</strong><br>' + (origen.nombre ? origen.nombre.substring(0, 80) : strOrigen));
+            L.marker([destino.lat, destino.lng], { icon: icoDes }).addTo(magoLayerGroup).bindPopup('<strong style="color:#ea580c;">DESTINO</strong><br>' + (destino.nombre ? destino.nombre.substring(0, 80) : strDestino));
 
             const ruta = await calcularRutaOSRMMago(origen, destino);
             let distMeters = 1000;
 
             if (ruta) {
-                capaRutaMago = L.polyline(ruta.coordenadas, { color:'#ea580c', weight:6, opacity:0.85, dashArray:'12, 8', className: 'ruta-animada' }).addTo(magoLayerGroup);
+                // Le pasamos el diseño "ruta-animada" idéntico a la landing
+                capaRutaMago = L.polyline(ruta.coordenadas, { color: '#ea580c', weight: 6, opacity: 0.85, dashArray: '12, 8', className: 'ruta-animada' }).addTo(magoLayerGroup);
                 mapaMagoObj.fitBounds(magoLayerGroup.getBounds(), { padding: [40, 40] });
                 distMeters = ruta.distancia;
+
+                const iconoMotoObj = L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png', iconSize: [36, 36], iconAnchor: [18, 18] });
+                motoMarkerMago = L.marker(ruta.coordenadas[0], {icon: iconoMotoObj, zIndexOffset: 1000}).addTo(magoLayerGroup);
+                
+                let i = 0;
+                animacionIntervalMago = setInterval(() => {
+                    i++; if (i >= ruta.coordenadas.length) i = 0; 
+                    motoMarkerMago.setLatLng(ruta.coordenadas[i]);
+                }, 300);
+
             } else {
-                capaRutaMago = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], { color:'#ea580c', weight:5, dashArray:'10, 10', className: 'ruta-animada' }).addTo(magoLayerGroup);
+                capaRutaMago = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], { color: '#ea580c', weight: 5, dashArray: '10, 10', className: 'ruta-animada' }).addTo(magoLayerGroup);
                 mapaMagoObj.fitBounds(magoLayerGroup.getBounds(), { padding: [40, 40] });
                 distMeters = calcularDistanciaHaversine(origen.lat, origen.lng, destino.lat, destino.lng);
             }
@@ -2691,18 +2698,18 @@ window.mandarPedidoSoporte = async function() {
     carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
     if(txtComprobante !== "") { txt += txtComprobante; }
     
-    // === CORRECCIÓN WHATSAPP EXCLUSIVO DEL CLIENTE ===
-    let telComprador = AppStore.get('cliente_celular');
+    // Extracción obligatoria del celular de quien compró (evita el bug de localStorage)
+    let telComprador = "00000000";
     if (sessionActual && sessionActual.email && sessionActual.email.includes('@')) {
         let posibleNum = sessionActual.email.split('@')[0];
         if (!isNaN(posibleNum)) telComprador = posibleNum;
+    } else {
+        telComprador = AppStore.get('cliente_celular') || "00000000";
     }
-    if (!telComprador) telComprador = "00000000";
     
     let telLimpio = String(telComprador).replace(/[^0-9]/g, '');
     if (telLimpio.startsWith("549")) telLimpio = telLimpio.substring(3);
     telLimpio = telLimpio.replace(/^0?15?/, '');
-    // ==================================================
     
     txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Entrega en:* ${destClient}%0A📱 *WhatsApp del Cliente:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
     if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
@@ -2720,6 +2727,7 @@ window.mandarPedidoSoporte = async function() {
         let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
+        
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
         window.iniciarRastreoPedidoCliente(pedidoCreadoId); 
     }, 2500); 
