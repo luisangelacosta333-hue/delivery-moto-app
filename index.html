@@ -130,9 +130,10 @@
         .nav-link { color: rgba(255,255,255,.92); font-weight: 700; font-size: 14px; transition: all .2s; cursor: pointer; padding: 5px 2px; border-bottom: 2px solid transparent; white-space: nowrap; }
         .nav-link:hover { color: #ffd700; border-bottom-color: #ffd700; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.95); backdrop-filter: blur(10px); z-index: 999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; padding: 0; }
+        /* CANDADO ANTI DESBORDE: max-width 100vw y overflow-x hidden */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.95); backdrop-filter: blur(10px); z-index: 999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; padding: 0; overflow-x: hidden; }
         .modal-overlay.show { opacity: 1; pointer-events: auto; }
-        .modal-box { background: #fff7ed; border-radius: 0; width: 100%; height: 100vh; max-height: 100vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.16,1,.3,1); position: relative; display: flex; flex-direction: column; }
+        .modal-box { background: #fff7ed; border-radius: 0; width: 100%; max-width: 100vw; overflow-x: hidden; height: 100vh; max-height: 100vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.16,1,.3,1); position: relative; display: flex; flex-direction: column; }
         .modal-overlay.show .modal-box { transform: translateY(0); }
         
         @media (min-width: 768px) { 
@@ -144,7 +145,7 @@
         .modal-close-btn { position: absolute; top: 14px; right: 14px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.95); border: 3px solid #f97316; color: #ea580c; font-size: 24px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .25s; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,.2); }
         .modal-close-btn:hover { background: #f97316; color: white; transform: rotate(90deg); }
         
-        .sub-step { display: none; padding: 20px 16px; flex: 1; animation: fadeInScale .3s ease; width: 100%; }
+        .sub-step { display: none; padding: 20px 16px; flex: 1; animation: fadeInScale .3s ease; width: 100%; max-width: 100vw; overflow-x: hidden; }
         .sub-step.active { display: block; }
 
         .option-card { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #ffe4cc; background: white; cursor: pointer; display: flex; flex-direction: row; align-items: center; gap: 14px; text-align: left; transition: all .3s; font-family: inherit; width: 100%; }
@@ -153,7 +154,8 @@
         .option-card-dark { padding: 18px; border-radius: 1.2rem; border: 2.5px solid #ff6b00; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; cursor: pointer; display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 14px; text-align: left; transition: all .3s; font-family: inherit; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
         .option-card-dark:hover { transform: translateY(-3px); box-shadow: 0 18px 42px rgba(255,107,0,.35); background: linear-gradient(135deg, #cc4400, #ff6b00); }
 
-        .select-provincia, .input-buscar, .textarea-buscar { width: 100%; padding: 16px; border-radius: 1rem; border: 2.5px solid #ffe4cc; background: white; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 15px; color: #0f172a; outline: none; transition: all .25s; margin-bottom: 12px; }
+        /* CANDADO PARA INPUTS: Evita que estiren la pantalla */
+        .select-provincia, .input-buscar, .textarea-buscar { width: 100%; max-width: 100%; padding: 16px; border-radius: 1rem; border: 2.5px solid #ffe4cc; background: white; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 15px; color: #0f172a; outline: none; transition: all .25s; margin-bottom: 12px; text-overflow: ellipsis; overflow: hidden; }
         .select-provincia { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ff6b00' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 48px; }
         .select-provincia:focus, .input-buscar:focus, .textarea-buscar:focus { border-color: #ff6b00; box-shadow: 0 0 0 4px rgba(255,107,0,.12); }
         
@@ -180,8 +182,8 @@
         ::-webkit-scrollbar-track { background: #fff7ed; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#ff8c00,#cc4400); border-radius: 10px; }
 
-        .expanded-container { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999999 !important; border-radius: 0 !important; border: none !important; margin: 0 !important; display: flex; flex-direction: column; background:#fff7ed; }
-        .expanded-list-content { max-height: calc(100vh - 80px) !important; flex: 1; overflow-y:auto;}
+        .expanded-container { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999999 !important; border-radius: 0 !important; border: none !important; margin: 0 !important; display: flex; flex-direction: column; background:#fff7ed; overflow-x: hidden; }
+        .expanded-list-content { max-height: calc(100vh - 80px) !important; flex: 1; overflow-y:auto; overflow-x: hidden;}
 
         /* ESTILOS ESPECIALES PARA LOS MAPAS LEAFLET */
         #mapaCanvas, #mapaDemo { width: 100%; height: 100%; z-index: 1; border-radius: inherit; }
@@ -686,11 +688,11 @@
                     </div>
 
                     <div style="display:flex; gap:6px;" id="cajaFiltrosFeedHTML">
-                        <select class="select-provincia" id="filtroProvincia" style="margin:0; padding:8px 12px; font-size:12px; flex:1; border-radius:8px;" onchange="filtrarFeedGlobal()"></select>
-                        <input type="text" class="input-buscar" id="filtroCiudad" placeholder="Tu Ciudad..." style="margin:0; padding:8px 12px; font-size:12px; flex:1; border-radius:8px;" onkeyup="filtrarFeedGlobal()">
+                        <select class="select-provincia" id="filtroProvincia" style="margin:0; padding:8px 12px; font-size:12px; flex:1; border-radius:8px; min-width:0;" onchange="filtrarFeedGlobal()"></select>
+                        <input type="text" class="input-buscar" id="filtroCiudad" placeholder="Tu Ciudad..." style="margin:0; padding:8px 12px; font-size:12px; flex:1; border-radius:8px; min-width:0;" onkeyup="filtrarFeedGlobal()">
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); align-items:start; gap:10px; padding:12px;" id="gridMercadoLibre"></div>
+                <div style="display:grid; grid-template-columns:repeat(2, 1fr); align-items:start; gap:10px; padding:12px;" id="gridMercadoLibre"></div>
             </div>
 
             <!-- LOGIN -->
@@ -749,18 +751,18 @@
                     <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta (Ej: 9 de Julio 120)" style="margin:0;">
                     
                     <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6;">
-                        <option value="">Rubro / Categoría de tu Local...</option>
-                        <option value="Comida Rápida">🍔 Comida Rápida / Sandwichería</option>
-                        <option value="Pizzería">🍕 Pizzería / Empanadas</option>
-                        <option value="Rotisería">🍗 Rotisería / Viandas</option>
-                        <option value="Panadería">🥐 Panadería / Pastelería / Tortas</option>
-                        <option value="Heladería">🍦 Heladería / Postres</option>
-                        <option value="Kiosco">🍫 Kiosco / Almacén / Minimarket</option>
+                        <option value="">Categoría del Local...</option>
+                        <option value="Comida Rápida">🍔 Comida Rápida</option>
+                        <option value="Pizzería">🍕 Pizzería</option>
+                        <option value="Rotisería">🍗 Rotisería</option>
+                        <option value="Panadería">🥐 Panadería / Tortas</option>
+                        <option value="Heladería">🍦 Heladería</option>
+                        <option value="Kiosco">🍫 Kiosco / Almacén</option>
                         <option value="Carnicería">🥩 Carnicería / Verdulería</option>
-                        <option value="Farmacia">💊 Farmacia / Perfumería</option>
-                        <option value="Bebidas">🍷 Bebidas / Vinoteca</option>
-                        <option value="Ropa">👕 Tienda de Ropa / Accesorios</option>
-                        <option value="Varios">🛍️ Comercios Varios</option>
+                        <option value="Farmacia">💊 Farmacia</option>
+                        <option value="Bebidas">🍷 Bebidas</option>
+                        <option value="Ropa">👕 Tienda de Ropa</option>
+                        <option value="Varios">🛍️ Varios</option>
                     </select>
 
                     <div style="margin-bottom: 4px; margin-top:4px;">
@@ -1263,6 +1265,9 @@ async function mandarPedidoSoporte() {
     if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
     txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     
+    let idViajeFinal = pedidoCreadoId || Date.now();
+    AppStore.set('my_last_trip_id', idViajeFinal); 
+    
     cerrarMapa();
     carritoGlobal = [];
     localStorage.removeItem('moto_carrito_guardado');
@@ -1276,7 +1281,7 @@ async function mandarPedidoSoporte() {
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
-        iniciarRastreoPedidoCliente(pedidoCreadoId); 
+        iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500); 
 }
 
@@ -1329,6 +1334,42 @@ async function mandarViajeEspecialSoporte() {
         iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500);
 }
+
+// Lógica para que el cadete asuma el viaje y se le cobre la deuda
+window.aceptarViajeRadar = async function(viaje_id) {
+    let btn = document.getElementById('btnAceptar_' + viaje_id);
+    if(btn) { btn.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> BLOQUEANDO...'; btn.style.background = '#f59e0b'; btn.style.pointerEvents = 'none'; }
+    
+    let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
+    let miCelular = AppStore.get('cliente_celular') || '00000000';
+
+    try {
+        if(sessionActual) {
+            viajesMotoCount += 1;
+            deudaMotoAcumulada += 200;
+            if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
+            if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+            
+            supabaseClient.from('moto_cadetes').update({
+                viajes_realizados: viajesMotoCount,
+                deuda_acumulada: deudaMotoAcumulada
+            }).eq('id', sessionActual.id).then();
+        }
+    } catch(e) { console.log('Error sumando deuda', e); }
+    
+    canalRadar.send({
+        type: 'broadcast',
+        event: 'viaje_reclamado',
+        payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular }
+    });
+    
+    setTimeout(() => {
+        mostrarToast("¡Viaje tuyo! Dirigite al origen. (+$200 Deuda)", "success");
+        let card = document.getElementById('alertaViaje_' + viaje_id);
+        if(card) card.remove();
+        if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+    }, 800);
+};
 
 // ==========================================
 // 12. MAPA DEMO INTERACTIVO DE LA LANDING PAGE
@@ -1510,42 +1551,6 @@ window.iniciarDemoRapida = iniciarDemoRapida;
 
     window.addEventListener('resize', function() { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
-</script>
-<script>
-window.aceptarViajeRadar = async function(viaje_id) {
-    let btn = document.getElementById('btnAceptar_' + viaje_id);
-    if(btn) { btn.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> BLOQUEANDO...'; btn.style.background = '#f59e0b'; btn.style.pointerEvents = 'none'; }
-    
-    let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
-    let miCelular = AppStore.get('cliente_celular') || '00000000';
-
-    try {
-        if(sessionActual) {
-            viajesMotoCount += 1;
-            deudaMotoAcumulada += 200;
-            if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
-            if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
-            
-            supabaseClient.from('moto_cadetes').update({
-                viajes_realizados: viajesMotoCount,
-                deuda_acumulada: deudaMotoAcumulada
-            }).eq('id', sessionActual.id).then();
-        }
-    } catch(e) { console.log('Error sumando deuda', e); }
-    
-    canalRadar.send({
-        type: 'broadcast',
-        event: 'viaje_reclamado',
-        payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular }
-    });
-    
-    setTimeout(() => {
-        mostrarToast("¡Viaje tuyo! Dirigite al origen. (+$200 Deuda)", "success");
-        let card = document.getElementById('alertaViaje_' + viaje_id);
-        if(card) card.remove();
-        if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
-    }, 800);
-};
 </script>
 </body>
 </html>
