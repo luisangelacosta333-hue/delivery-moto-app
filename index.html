@@ -1573,11 +1573,11 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
         `;
         document.body.appendChild(card);
 
-        let barra = document.getElementById('progreso_' + p.viaje_id);
-        let timeLeft = 30;
+        // AUMENTADO A 90 SEGUNDOS (1 minuto y medio) para que el cadete tenga tiempo
+        let timeLeft = 90;
         let interval = setInterval(() => {
             timeLeft--;
-            if(barra) barra.style.width = (timeLeft / 30 * 100) + '%';
+            if(barra) barra.style.width = (timeLeft / 90 * 100) + '%';
             if(timeLeft <= 0) {
                 clearInterval(interval);
                 let tarjeta = document.getElementById('alertaViaje_' + p.viaje_id);
@@ -1603,7 +1603,7 @@ canalRadar.on('broadcast', { event: 'viaje_coordinando' }, (payload) => {
             widget.style.borderColor = "#25D366"; 
             widget.innerHTML = `<i class="ri-whatsapp-fill animate-pulse-glow" style="color:#25D366; font-size:18px;"></i> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">Moto encontrada<br>¡Coordiná ahora!</span>`;
             widget.onclick = function() { 
-                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te pedí el viaje por la app.', '_blank'); 
+                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te pedí el viaje por la app. Quería coordinar los detalles.', '_blank'); 
             };
             if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
             mostrarToast("¡Una moto te aceptó! Tocá para coordinar por WhatsApp.", "success");
@@ -1620,7 +1620,7 @@ canalRadar.on('broadcast', { event: 'viaje_coordinando' }, (payload) => {
             b.style.pointerEvents = 'auto';
             b.onclick = function(e) {
                 e.preventDefault(); e.stopPropagation();
-                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te pedí el encargo.', '_blank');
+                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te pedí el encargo. Quería coordinar los detalles.', '_blank');
             };
         }
     }
@@ -1675,7 +1675,7 @@ canalRadar.on('broadcast', { event: 'viaje_reclamado' }, (payload) => {
             widget.style.borderColor = "#16a34a"; 
             widget.innerHTML = `<i class="ri-map-pin-user-fill animate-pulse-glow" style="color:#16a34a; font-size:16px;"></i> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">¡${p.cadete_nombre} confirmado!</span>`;
             widget.onclick = function() { 
-                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te espero con el pedido.', '_blank'); 
+                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te espero.', '_blank'); 
             };
             if(navigator.vibrate && (!window.btnFavorRef || !window.btnFavorRef.el)) navigator.vibrate([200, 100, 200]);
             mostrarToast("¡Viaje confirmado! El cadete ya está en camino.", "success");
@@ -2425,7 +2425,7 @@ window.eliminarPedidoComercio = function(idx) {
 window.llamarMotoDesdeLocal = async function(idx) {
     mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
     const btnCall = document.getElementById(`btnLlamarMoto_${idx}`);
-    if(btnCall) { btnCall.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO CADETE...'; btnCall.style.background = '#f59e0b'; }
+    if(btnCall) { btnCall.innerHTML = '<i class="ri-radar-line animate-ring"></i> BUSCANDO PARA COORDINAR...'; btnCall.style.background = '#f59e0b'; }
 
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -2474,7 +2474,7 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
     let colorOriginal = btn ? btn.style.color : "";
 
     if (btn) {
-        btn.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO MOTO...';
+        btn.innerHTML = '<i class="ri-radar-line animate-ring"></i> BUSCANDO PARA COORDINAR...';
         btn.style.background = '#16a34a'; 
         btn.style.color = 'white';
         btn.style.border = '2px solid #16a34a';
@@ -2504,6 +2504,7 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
         }
     });
 
+    // Timeout aumentado a 90 segundos
     window.timeoutFavor = setTimeout(() => {
         if (window.btnFavorRef && window.btnFavorRef.el) {
             let b = window.btnFavorRef.el;
@@ -2521,7 +2522,7 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
                 window.btnFavorRef = null;
             }, 3000);
         }
-    }, 45000); 
+    }, 90000); 
 };
 
 window.previewSelfieComercioModal = async function(input) {
@@ -2935,7 +2936,7 @@ window.pedirFavorDirectoCliente = function(evt) {
     let colorOriginal = btn ? btn.style.color : "";
 
     if (btn) {
-        btn.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO MOTO...';
+        btn.innerHTML = '<i class="ri-radar-line animate-ring"></i> BUSCANDO PARA COORDINAR...';
         btn.style.background = '#16a34a'; 
         btn.style.color = 'white';
         btn.style.border = '2px solid #16a34a';
@@ -2983,7 +2984,7 @@ window.pedirFavorDirectoCliente = function(evt) {
                 window.btnFavorRef = null;
             }, 4000);
         }
-    }, 45000);
+    }, 90000); // 90 Segundos
 };
 
 function initMapaMago() {
@@ -3113,7 +3114,17 @@ window.calcularMatematicaEnvio = function(distancia) {
     
     let celCliente = AppStore.get('cliente_celular') || "Sin teléfono";
     let pInfo = document.querySelector("#modalMapaGrande p");
-    if(pInfo) pInfo.innerHTML = `💡 Importante: El envío se paga por separado al ServiMoto.<br><span style="font-weight:600; color:#0f172a; margin-top:4px; display:inline-block;">(Tu celular para este viaje: ${celCliente})</span>`;
+    
+    // NUEVO TEXTO DE PRE-COORDINACIÓN EN MAPA
+    if(pInfo) pInfo.innerHTML = `💡 <b>Importante:</b> Al solicitar el viaje, buscaremos un ServiMoto en el radar. <b>Deberán pre-coordinar los detalles por WhatsApp</b> antes de confirmar el viaje.<br><span style="font-weight:600; color:#0f172a; margin-top:4px; display:inline-block;">(Tu celular para este viaje: ${celCliente})</span>`;
+    
+    // CAMBIO DE BOTÓN CONFIRMAR A "PRE-COORDINAR"
+    let btnConfirmarMapa = document.querySelector('#modalMapaGrande button[onclick="procesarEnvioMapa()"]');
+    if(btnConfirmarMapa) {
+        btnConfirmarMapa.innerHTML = '<i class="ri-whatsapp-fill" style="font-size:16px; vertical-align:middle; margin-right:4px;"></i> PRE-COORDINAR VIAJE';
+        btnConfirmarMapa.style.background = '#25D366';
+        btnConfirmarMapa.style.boxShadow = '0 4px 10px rgba(37,211,102,0.3)';
+    }
     
     let subtotalProductos = 0;
     carritoGlobal.forEach(i => { subtotalProductos += i.precio; });
@@ -3203,7 +3214,23 @@ window.mandarPedidoSoporte = async function() {
         let telDestinoFinal = telefonoComercioCalculo || NUMERO_SOPORTE_CENTRAL;
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
+        
+        // ABRIR WHATSAPP CON COMERCIO
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
+        
+        // AVISAR A RADAR MOTO CON FLUJO DE PRE-COORDINACION
+        canalRadar.send({
+            type: 'broadcast',
+            event: 'nuevo_viaje',
+            payload: { 
+                viaje_id: idViajeFinal, 
+                local: direccionOrigenCalculo || "Local central", 
+                destino: destClient,
+                costo: costoEnvioCalculado,
+                tel_cliente: telComprador
+            }
+        });
+        
         window.iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500); 
 };
