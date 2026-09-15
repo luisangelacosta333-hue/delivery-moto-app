@@ -622,6 +622,7 @@
             <div id="modal-step-1" class="sub-step active" style="padding:24px 16px;">
                 <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Qué necesitás hoy?</h4>
                 <div style="display:flex; flex-direction:column; gap:12px;">
+                    
                     <button class="option-card" onclick="irPaso('feed-global')" style="border:2px solid #ff6b00; background:linear-gradient(to right, #fff, #fff7ed);">
                         <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(255,107,0,0.4); flex-shrink:0;"><i class="ri-shopping-bag-3-fill"></i></div>
                         <div style="flex:1; text-align:left;">
@@ -1509,6 +1510,42 @@ window.iniciarDemoRapida = iniciarDemoRapida;
 
     window.addEventListener('resize', function() { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
+</script>
+<script>
+window.aceptarViajeRadar = async function(viaje_id) {
+    let btn = document.getElementById('btnAceptar_' + viaje_id);
+    if(btn) { btn.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> BLOQUEANDO...'; btn.style.background = '#f59e0b'; btn.style.pointerEvents = 'none'; }
+    
+    let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
+    let miCelular = AppStore.get('cliente_celular') || '00000000';
+
+    try {
+        if(sessionActual) {
+            viajesMotoCount += 1;
+            deudaMotoAcumulada += 200;
+            if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
+            if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+            
+            supabaseClient.from('moto_cadetes').update({
+                viajes_realizados: viajesMotoCount,
+                deuda_acumulada: deudaMotoAcumulada
+            }).eq('id', sessionActual.id).then();
+        }
+    } catch(e) { console.log('Error sumando deuda', e); }
+    
+    canalRadar.send({
+        type: 'broadcast',
+        event: 'viaje_reclamado',
+        payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular }
+    });
+    
+    setTimeout(() => {
+        mostrarToast("¡Viaje tuyo! Dirigite al origen. (+$200 Deuda)", "success");
+        let card = document.getElementById('alertaViaje_' + viaje_id);
+        if(card) card.remove();
+        if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+    }, 800);
+};
 </script>
 </body>
 </html>
