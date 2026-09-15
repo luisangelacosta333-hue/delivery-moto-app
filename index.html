@@ -1551,6 +1551,8 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
 
 }).on('broadcast', { event: 'viaje_reclamado' }, (payload) => {
     let p = payload.payload;
+    
+    // LÓGICA PARA LOS OTROS CADETES (TARJETA NARANJA)
     let card = document.getElementById('alertaViaje_' + p.viaje_id);
     if (card) {
         card.classList.add('tomado');
@@ -1564,6 +1566,23 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
         `;
         setTimeout(() => { if(card) card.remove(); }, 3500); 
     }
+    
+    // LÓGICA PARA EL CLIENTE O COMERCIANTE (Actualiza el widget y habilita WhatsApp directo)
+    let miViajeId = AppStore.get('my_last_trip_id');
+    if (miViajeId && String(miViajeId) === String(p.viaje_id)) {
+        let widget = document.getElementById('widgetRastreo');
+        if (widget) {
+            widget.style.borderColor = "#16a34a"; 
+            widget.innerHTML = `<i class="ri-motorbike-fill animate-pulse-glow" style="color:#16a34a; font-size:16px;"></i> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">¡${p.cadete_nombre} en camino!</span>`;
+            widget.onclick = function() { 
+                let cel = p.cadete_celular ? String(p.cadete_celular).replace(/[^0-9]/g, '') : NUMERO_SOPORTE_CENTRAL;
+                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te espero con el pedido.', '_blank'); 
+            };
+            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            mostrarToast("¡Moto asignada! Tocá para chatear con el cadete.", "success");
+        }
+    }
+    
 }).subscribe();
 
 window.aceptarViajeRadar = function(viaje_id) {
@@ -1571,14 +1590,16 @@ window.aceptarViajeRadar = function(viaje_id) {
     if(btn) { btn.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> BLOQUEANDO...'; btn.style.background = '#f59e0b'; btn.style.pointerEvents = 'none'; }
     
     let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
+    let miCelular = AppStore.get('cliente_celular') || '00000000';
+    
     canalRadar.send({
         type: 'broadcast',
         event: 'viaje_reclamado',
-        payload: { viaje_id: viaje_id, cadete_nombre: miNombre }
+        payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular }
     });
     
     setTimeout(() => {
-        mostrarToast("¡Viaje tuyo! Dirigite al local.", "success");
+        mostrarToast("¡Viaje tuyo! Dirigite al origen.", "success");
         let card = document.getElementById('alertaViaje_' + viaje_id);
         if(card) card.remove();
         if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
@@ -1846,7 +1867,6 @@ window.filtrarFeedPorComercio = function(idComercio) {
     comercioFiltradoId = idComercio; resetPagination(); cargarYRenderizarFeed();
     mostrarToast("Filtrando productos de este local", "success");
     
-    // === AUTO-MINIMIZAR FILTROS SUPERIORES (SMOOTH SCROLL AL BANNER) ===
     setTimeout(() => {
         const grid = document.getElementById('gridMercadoLibre');
         if (grid) {
@@ -1854,7 +1874,6 @@ window.filtrarFeedPorComercio = function(idComercio) {
             window.scrollTo({ top: y, behavior: 'smooth' });
         }
     }, 300);
-    // ===================================================================
 };
 
 window.limpiarFiltroComercio = function() { comercioFiltradoId = null; resetPagination(); cargarYRenderizarFeed(); };
@@ -1937,32 +1956,27 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
         if (!isLoadMore) {
             container.innerHTML = '';
             
-            // === CREACIÓN DEL BANNER PREMIUM DEL LOCAL (REEMPLAZA AL BOTÓN ABURRIDO) ===
+            // === BANNER PREMIUM DE LOCAL ===
             if (comercioFiltradoId) {
                 let comInfo = dbComerciosCache.find(c => c.id === comercioFiltradoId);
                 if(comInfo) {
                     let imgPortada = comInfo.img_portada || 'https://images.unsplash.com/photo-1550547660-d9450f859349';
-                    let imgSelfie = comInfo.img_selfie || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
+                    let imgSelfieRaw = comInfo.img_selfie;
+                    let imgSelfie = (imgSelfieRaw && imgSelfieRaw !== 'null' && imgSelfieRaw.trim() !== '') ? imgSelfieRaw : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
+                    
                     btnLimpiarFiltro = `
-                    <div style="grid-column:1/-1; margin-bottom:15px; border-radius:16px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.08); background:white; position:relative; border:1px solid #e2e8f0;">
-                        
-                        <!-- Portada con Gradiente -->
+                    <div style="grid-column:1/-1; margin-bottom:15px; border-radius:16px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.08); background:white; position:relative; border:1px solid #e2e8f0; z-index:1;">
                         <div style="height:110px; width:100%; background-image:url('${imgPortada}'); background-size:cover; background-position:center; position:relative;">
                             <div style="position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8));"></div>
-                            
-                            <!-- Botón "X" de Cerrar -->
-                            <button onclick="limpiarFiltroComercio()" style="position:absolute; top:10px; right:10px; background:rgba(255,255,255,0.2); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.4); border-radius:50%; width:32px; height:32px; color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;"><i class="ri-close-line" style="font-size:22px;"></i></button>
-                            
-                            <!-- La Motito Animada -->
-                            <div style="position:absolute; bottom:2px; width:100%; height:30px; overflow:hidden; z-index:5; border-bottom: 2px dashed rgba(255,255,255,0.2);">
+                            <button onclick="limpiarFiltroComercio()" style="position:absolute; top:10px; right:10px; background:rgba(255,255,255,0.2); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.4); border-radius:50%; width:32px; height:32px; color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5;"><i class="ri-close-line" style="font-size:22px;"></i></button>
+                            <div style="position:absolute; bottom:2px; width:100%; height:30px; overflow:hidden; z-index:3; border-bottom: 2px dashed rgba(255,255,255,0.2);">
                                 <i class="ri-motorbike-fill" style="position:absolute; color:#f97316; font-size:24px; animation: motoRunBanner 4s linear infinite; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i>
                             </div>
                         </div>
                         
-                        <!-- Info del Local Solapada -->
-                        <div style="padding:12px 16px 16px 16px; display:flex; gap:14px; position:relative;">
-                            <div style="margin-top:-45px; z-index:10;">
-                                <img src="${imgSelfie}" style="width:75px; height:75px; border-radius:12px; border:3px solid white; object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.1); background:white;">
+                        <div style="padding:12px 16px 16px 16px; display:flex; gap:14px; position:relative; z-index:2;">
+                            <div style="margin-top:-40px;">
+                                <img src="${imgSelfie}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" style="width:75px; height:75px; border-radius:50%; border:3px solid white; object-fit:cover; box-shadow:0 0 15px rgba(255,255,255,0.9), 0 4px 10px rgba(0,0,0,0.15); background:white;">
                             </div>
                             <div style="flex:1; padding-top:4px;">
                                 <div style="font-weight:900; font-size:17px; color:#0f172a; line-height:1.2; margin-bottom:6px;">${comInfo.nombre}</div>
@@ -1971,12 +1985,8 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                             </div>
                         </div>
                     </div>`;
-                } else {
-                    btnLimpiarFiltro = `<div style="grid-column:1/-1; margin-bottom:10px;"><button onclick="limpiarFiltroComercio()" style="width:100%; padding:12px; background:#f1f5f9; border:2px dashed #94a3b8; border-radius:12px; font-weight:800; color:#475569; cursor:pointer; font-size:13px;"><i class="ri-close-circle-fill" style="color:#ef4444; font-size:16px; vertical-align:middle;"></i> <span style="vertical-align:middle;">Cerrar catálogo del local</span></button></div>`;
                 }
             }
-            // =================================================================================
-            
             if(btnLimpiarFiltro) container.innerHTML += btnLimpiarFiltro;
         } else {
             const bottomLoader = document.getElementById('bottomLoader');
@@ -1997,7 +2007,8 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 let dirComercio = comercioData ? (comercioData.direccion + ", " + comercioData.ciudad + ", " + comercioData.provincia) : "";
                 let telComercio = comercioData ? comercioData.celular : NUMERO_SOPORTE_CENTRAL; 
                 let aliasComercio = (comercioData && comercioData.alias_mp) ? comercioData.alias_mp : ""; 
-                let urlLogoComercio = (comercioData && comercioData.img_selfie) ? comercioData.img_selfie : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
+                let imgSelfieRaw = comercioData ? comercioData.img_selfie : null;
+                let urlLogoComercio = (imgSelfieRaw && imgSelfieRaw !== 'null' && imgSelfieRaw.trim() !== '') ? imgSelfieRaw : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
                 
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
                 
@@ -2013,7 +2024,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                         ${p.referencia ? `<div style="font-size:11px; color:#64748b; font-weight:600; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">${p.referencia}</div>` : '<div style="margin-bottom:8px;"></div>'}
                         
                         <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:10px; background:#fff7ed; border:1px solid #ffd4b3; padding:4px 8px; border-radius:10px; width:fit-content;">
-                            <img src="${urlLogoComercio}" loading="lazy" style="width:20px; height:20px; border-radius:50%; object-fit:cover; border:1.5px solid #f97316; flex-shrink:0;">
+                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:20px; height:20px; border-radius:50%; object-fit:cover; border:1.5px solid #f97316; flex-shrink:0;">
                             <span style="font-size:11px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:110px;">${nomComercio}</span>
                         </div>
 
@@ -2263,12 +2274,16 @@ window.llamarMotoDesdeLocal = async function(idx) {
     let pedidoInfo = pedidosComercio[idx];
     let nombreLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Comercio Local";
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
+    let viaje_id = pedidoInfo.id || Date.now();
     
+    // Guardamos el ID del viaje para que el comerciante también pueda chatear si el widget está activo
+    AppStore.set('my_last_trip_id', viaje_id);
+
     canalRadar.send({
         type: 'broadcast',
         event: 'nuevo_viaje',
         payload: { 
-            viaje_id: pedidoInfo.id, 
+            viaje_id: viaje_id, 
             local: `${nombreLocal} (${dirLocal})`, 
             destino: pedidoInfo.destino,
             costo: pedidoInfo.total 
@@ -2893,6 +2908,10 @@ window.mandarPedidoSoporte = async function() {
     if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
     txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     
+    // Guardamos el ID del viaje para que el widget escuche la aceptación del cadete
+    let idViajeFinal = pedidoCreadoId || Date.now();
+    AppStore.set('my_last_trip_id', idViajeFinal); 
+    
     window.cerrarMapa();
     carritoGlobal = [];
     localStorage.removeItem('moto_carrito_guardado');
@@ -2906,7 +2925,7 @@ window.mandarPedidoSoporte = async function() {
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
-        window.iniciarRastreoPedidoCliente(pedidoCreadoId); 
+        window.iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500); 
 };
 
@@ -2938,11 +2957,14 @@ window.mandarViajeEspecialSoporte = async function() {
         }
     } catch (e) {}
 
+    let idViajeFinal = pedidoCreadoId || Date.now();
+    AppStore.set('my_last_trip_id', idViajeFinal);
+
     canalRadar.send({
         type: 'broadcast',
         event: 'nuevo_viaje',
         payload: { 
-            viaje_id: pedidoCreadoId || Date.now(), 
+            viaje_id: idViajeFinal, 
             local: dirOrig, 
             destino: `${dirDest}, ${ciuDest}`,
             costo: costo 
@@ -2953,7 +2975,7 @@ window.mandarViajeEspecialSoporte = async function() {
 
     setTimeout(() => {
         mostrarToast("✅ ¡Viaje en el radar! Moto asignándose...", "success");
-        window.iniciarRastreoPedidoCliente(pedidoCreadoId); 
+        window.iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500);
 };
 
