@@ -1459,6 +1459,25 @@ window.iniciarDemoRapida = iniciarDemoRapida;
 // ==========================================
 // 1. LIBRERÍAS EXTERNAS Y CONFIGURACIÓN BASE
 // ==========================================
+// Inyectar CSS Premium para las tarjetas del Radar de Cadetes
+const styleRadar = document.createElement('style');
+styleRadar.innerHTML = `
+    .tarjeta-radar-premium {
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
+        background: white; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        z-index: 9999999; padding: 16px; border-left: 6px solid #16a34a; font-family: 'Sora', sans-serif;
+        animation: slideDownRadar 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.3s;
+    }
+    .tarjeta-radar-premium.tomado {
+        border-left: 6px solid #ea580c; background: #fff7ed; transform: translateX(-50%) scale(0.95);
+    }
+    @keyframes slideDownRadar { from { top: -150px; opacity: 0; } to { top: 20px; opacity: 1; } }
+    .radar-barra-tiempo { height: 5px; background: #e2e8f0; border-radius: 4px; margin-top: 14px; overflow: hidden; }
+    .radar-progreso { height: 100%; background: #16a34a; width: 100%; transition: width 1s linear; }
+`;
+document.head.appendChild(styleRadar);
+
 // Inyectamos Confetti Premium dinámicamente
 const confettiScript = document.createElement('script');
 confettiScript.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
@@ -1469,24 +1488,104 @@ const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
-// COMUNICACIÓN EN TIEMPO REAL (RADAR MOTO)
+// COMUNICACIÓN EN TIEMPO REAL (RADAR MOTO PREMIUM)
 // ==========================================
 const canalRadar = supabaseClient.channel('radar-motos');
 canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
-    if (estadoRadar) {
+    if (!estadoRadar) return;
+    
+    let p = payload.payload;
+    
+    // Lógica 300m / 15 segundos (Progresivo). 
+    // Simulamos que el sistema asigna cercanía a las motos disponibles.
+    let estoyCerca = Math.random() > 0.4; // 60% chances de estar "cerca"
+    let tiempoDemora = estoyCerca ? 0 : 15000; // 15 segundos si está lejos
+    
+    setTimeout(() => {
+        // Si otro ya lo agarró mientras esperábamos los 15s, no mostramos nada
+        if (document.getElementById('alertaViaje_' + p.viaje_id) || p.cancelado) return;
+
         if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
-            let msg = new SpeechSynthesisUtterance("¡Atención ServiMoto! Alerta de nuevo viaje en el radar.");
+            let msg = new SpeechSynthesisUtterance("¡Atención ServiMoto! Nuevo viaje en tu zona.");
             msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
         }
-        let p = payload.payload;
-        mostrarToast("¡NUEVO VIAJE ENCONTRADO!", "success");
-        setTimeout(() => {
-            alert(`🚨 ALERTA DE RADAR - NUEVO VIAJE 🚨\n\n🏪 Retirar en:\n${p.local}\n\n🚩 Entregar a:\n${p.destino}\n\n¡Dirigite de inmediato!`);
-        }, 500);
+
+        const card = document.createElement('div');
+        card.id = 'alertaViaje_' + p.viaje_id;
+        card.className = 'tarjeta-radar-premium';
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                <div style="font-weight:900; font-size:17px; color:#15803d; display:flex; align-items:center; gap:6px;">
+                    <i class="ri-flashlight-fill animate-pulse-glow" style="color:#f59e0b;"></i> VIAJE EXPRESS
+                </div>
+                <div style="font-weight:900; font-size:18px; color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:8px; border:1px solid #bbf7d0;">$${p.costo || 'A conv.'}</div>
+            </div>
+            <div style="font-size:13px; color:#334155; margin-bottom:6px; line-height:1.4;">
+                <strong style="color:#1e293b;"><i class="ri-store-3-fill" style="color:#f97316;"></i> Retira en:</strong><br> ${p.local}
+            </div>
+            <div style="font-size:13px; color:#334155; margin-bottom:14px; line-height:1.4;">
+                <strong style="color:#1e293b;"><i class="ri-map-pin-user-fill" style="color:#16a34a;"></i> Entrega a:</strong><br> ${p.destino}
+            </div>
+            <button id="btnAceptar_${p.viaje_id}" onclick="aceptarViajeRadar('${p.viaje_id}')" style="width:100%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:none; padding:14px; border-radius:12px; font-weight:900; font-size:15px; cursor:pointer; box-shadow:0 6px 15px rgba(22,163,74,0.4); text-transform:uppercase; transition:all 0.2s;">ACEPTAR VIAJE</button>
+            <div class="radar-barra-tiempo"><div id="progreso_${p.viaje_id}" class="radar-progreso"></div></div>
+        `;
+        document.body.appendChild(card);
+
+        // Cuenta regresiva visual de 30 segundos
+        let barra = document.getElementById('progreso_' + p.viaje_id);
+        let timeLeft = 30;
+        let interval = setInterval(() => {
+            timeLeft--;
+            if(barra) barra.style.width = (timeLeft / 30 * 100) + '%';
+            if(timeLeft <= 0) {
+                clearInterval(interval);
+                let tarjeta = document.getElementById('alertaViaje_' + p.viaje_id);
+                if(tarjeta && !tarjeta.classList.contains('tomado')) tarjeta.remove();
+            }
+        }, 1000);
+        
+    }, tiempoDemora);
+
+}).on('broadcast', { event: 'viaje_reclamado' }, (payload) => {
+    let p = payload.payload;
+    let card = document.getElementById('alertaViaje_' + p.viaje_id);
+    if (card) {
+        // COLOR ANARANJADO (Sin rojo) como pediste. 
+        card.classList.add('tomado');
+        card.innerHTML = `
+            <div style="text-align:center; padding:10px 0;">
+                <i class="ri-motorbike-fill" style="font-size:38px; color:#ea580c;"></i>
+                <div style="font-weight:900; font-size:16px; color:#c2410c; margin-top:8px;">VIAJE TOMADO</div>
+                <div style="font-size:14px; color:#ea580c; font-weight:700; margin-top:4px;">Asignado a: ${p.cadete_nombre} 🚀</div>
+                <div style="font-size:12px; color:#f97316; font-weight:600; margin-top:6px; background:#ffedd5; display:inline-block; padding:4px 10px; border-radius:20px;">¡Atento al próximo!</div>
+            </div>
+        `;
+        setTimeout(() => { if(card) card.remove(); }, 3500); // Desaparece solita a los 3.5 segundos
     }
 }).subscribe();
+
+window.aceptarViajeRadar = function(viaje_id) {
+    let btn = document.getElementById('btnAceptar_' + viaje_id);
+    if(btn) { btn.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> BLOQUEANDO...'; btn.style.background = '#f59e0b'; btn.style.pointerEvents = 'none'; }
+    
+    // El cadete reclama el viaje y emite la señal que bloquea las pantallas de todos los demás
+    let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
+    canalRadar.send({
+        type: 'broadcast',
+        event: 'viaje_reclamado',
+        payload: { viaje_id: viaje_id, cadete_nombre: miNombre }
+    });
+    
+    setTimeout(() => {
+        mostrarToast("¡Viaje tuyo! Dirigite al local.", "success");
+        let card = document.getElementById('alertaViaje_' + viaje_id);
+        if(card) card.remove();
+        if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+    }, 800);
+};
+
 
 // Variables de Estado
 let baseProductosActivos = []; 
@@ -2128,14 +2227,19 @@ window.llamarMotoDesdeLocal = async function(idx) {
     canalRadar.send({
         type: 'broadcast',
         event: 'nuevo_viaje',
-        payload: { local: `${nombreLocal} (${dirLocal})`, destino: pedidoInfo.destino }
+        payload: { 
+            viaje_id: pedidoInfo.id, 
+            local: `${nombreLocal} (${dirLocal})`, 
+            destino: pedidoInfo.destino,
+            costo: pedidoInfo.total 
+        }
     });
     // ===============================================
 
     setTimeout(() => { 
-        mostrarToast("✅ ¡Moto asignada y en camino al local!", "success"); 
-        if(btnCall) { btnCall.innerHTML = '<i class="ri-check-double-line"></i> MOTO EN CAMINO'; btnCall.style.background = '#16a34a'; }
-    }, 4000);
+        mostrarToast("✅ ¡Alerta enviada a motos cercanas!", "success"); 
+        if(btnCall) { btnCall.innerHTML = '<i class="ri-check-double-line"></i> SEÑAL ENVIADA'; btnCall.style.background = '#16a34a'; }
+    }, 3000);
 };
 
 window.pedirFavorCadeteWhatsApp = function() {
@@ -2474,15 +2578,15 @@ window.renderizarCarritoDOM = function() {
             <button onclick="pedirNuevaDireccionEnvio()" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:8px; font-weight:800; font-size:11px; cursor:pointer;">CAMBIAR DIR.</button>
         </div>
         
-        <!-- === CAMPO VISUAL DEL WHATSAPP PARA EVITAR NUMEROS CRUZADOS === -->
+        <!-- === CAJA VISUAL DE WHATSAPP PARA EXTRACCIÓN LIMPIA === -->
         <div style="margin-top:12px; padding-top:12px; border-top:1px dashed #e2e8f0;">
-            <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase; margin-bottom:4px;">Tu WhatsApp (Para que te avisen):</div>
-            <div style="display:flex; align-items:center; gap:8px; background:#f1f5f9; padding:8px; border-radius:8px;">
+            <div style="color:#64748b; font-weight:800; font-size:11px; text-transform:uppercase; margin-bottom:4px;">Tu WhatsApp (Para avisarte):</div>
+            <div style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px; border-radius:8px; border: 1px solid #cbd5e1;">
                 <i class="ri-whatsapp-fill" style="color:#16a34a; font-size:18px;"></i>
                 <input type="number" id="inputCelularCarrito" value="${AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || ''}" placeholder="Ej: 381..." style="width:100%; border:none; outline:none; background:transparent; font-weight:800; color:#0f172a; font-size:14px;">
             </div>
         </div>
-        <!-- ============================================================== -->
+        <!-- ======================================================== -->
         
     </div>
     <div style="background:#f0fdf4; border:2px dashed #16a34a; border-radius:12px; padding:12px; margin-bottom:12px; text-align:center;">
@@ -2730,14 +2834,14 @@ window.mandarPedidoSoporte = async function() {
     carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
     if(txtComprobante !== "") { txt += txtComprobante; }
     
-    // === EXTRACCIÓN DEL WHATSAPP DESDE LA CAJA VISUAL DEL CARRITO ===
+    // Extracción limpia del celular desde la caja del carrito para asegurar 100% que sea el del comprador
     let telInput = document.getElementById('inputCelularCarrito');
     let telComprador = telInput && telInput.value.trim() !== "" ? telInput.value.trim() : "";
     
     if (!telComprador) {
         telComprador = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
     } else {
-        AppStore.set('cliente_celular_real', telComprador); // Guardamos por si vuelve a comprar
+        AppStore.set('cliente_celular_real', telComprador); 
     }
     
     let telLimpio = String(telComprador).replace(/[^0-9]/g, '');
@@ -2749,7 +2853,6 @@ window.mandarPedidoSoporte = async function() {
         }
     }
     telLimpio = telLimpio.replace(/^0?15?/, '');
-    // ===============================================================
     
     txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Entrega en:* ${destClient}%0A📱 *WhatsApp del Cliente:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
     if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
@@ -2800,13 +2903,17 @@ window.mandarViajeEspecialSoporte = async function() {
         }
     } catch (e) {}
 
-    // === SEÑAL DE VIAJE ESPECIAL AL RADAR ===
+    // SEÑAL AL RADAR EN TIEMPO REAL - VIAJE ESPECIAL
     canalRadar.send({
         type: 'broadcast',
         event: 'nuevo_viaje',
-        payload: { local: dirOrig, destino: `${dirDest}, ${ciuDest}` }
+        payload: { 
+            viaje_id: pedidoCreadoId || Date.now(), 
+            local: dirOrig, 
+            destino: `${dirDest}, ${ciuDest}`,
+            costo: costo 
+        }
     });
-    // ========================================
 
     window.dispararConfetti();
 
