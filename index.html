@@ -1501,6 +1501,18 @@ stylePremium.innerHTML = `
         0% { left: -50px; transform: scaleX(1); }
         100% { left: 100%; transform: scaleX(1); }
     }
+
+    /* NUEVO: GRILLA COMPACTA 2x2 PARA EL CATÁLOGO */
+    .grilla-productos-compacta {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        align-items: start;
+        padding-bottom: 20px;
+    }
+    .loader-full-width {
+        grid-column: 1 / -1;
+    }
 `;
 document.head.appendChild(stylePremium);
 
@@ -1517,6 +1529,8 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 // COMUNICACIÓN EN TIEMPO REAL (RADAR MOTO)
 // ==========================================
 const canalRadar = supabaseClient.channel('radar-motos');
+
+// EVENTO 1: LLEGA UN VIAJE NUEVO AL RADAR
 canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
     if (!estadoRadar) return;
     
@@ -1550,7 +1564,11 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
             <div style="font-size:13px; color:#334155; margin-bottom:14px; line-height:1.4;">
                 <strong style="color:#1e293b;"><i class="ri-map-pin-user-fill" style="color:#16a34a;"></i> Entrega a:</strong><br> ${p.destino}
             </div>
-            <button id="btnAceptar_${p.viaje_id}" onclick="aceptarViajeRadar('${p.viaje_id}')" style="width:100%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:none; padding:14px; border-radius:12px; font-weight:900; font-size:15px; cursor:pointer; box-shadow:0 6px 15px rgba(22,163,74,0.4); text-transform:uppercase; transition:all 0.2s;">ACEPTAR VIAJE</button>
+            
+            <button id="btnAceptar_${p.viaje_id}" onclick="iniciarCoordinacion('${p.viaje_id}', '${p.tel_cliente || ''}')" style="width:100%; background:linear-gradient(135deg, #3b82f6, #1d4ed8); color:white; border:none; padding:14px; border-radius:12px; font-weight:900; font-size:14px; cursor:pointer; box-shadow:0 6px 15px rgba(59,130,246,0.4); text-transform:uppercase; transition:all 0.2s;">
+                ACEPTAR PARA COORDINAR <i class="ri-arrow-right-s-line" style="vertical-align:middle;"></i>
+            </button>
+            
             <div class="radar-barra-tiempo"><div id="progreso_${p.viaje_id}" class="radar-progreso"></div></div>
         `;
         document.body.appendChild(card);
@@ -1563,13 +1581,53 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
             if(timeLeft <= 0) {
                 clearInterval(interval);
                 let tarjeta = document.getElementById('alertaViaje_' + p.viaje_id);
-                if(tarjeta && !tarjeta.classList.contains('tomado')) tarjeta.remove();
+                if(tarjeta && !tarjeta.classList.contains('tomado') && !tarjeta.classList.contains('coordinando')) tarjeta.remove();
             }
         }, 1000);
         
     }, tiempoDemora);
+});
 
-}).on('broadcast', { event: 'viaje_reclamado' }, (payload) => {
+// EVENTO 2: EL CADETE ACEPTÓ Y ESTÁ COORDINANDO
+canalRadar.on('broadcast', { event: 'viaje_coordinando' }, (payload) => {
+    let p = payload.payload;
+    let miViajeId = AppStore.get('my_last_trip_id');
+    
+    if (miViajeId && String(miViajeId) === String(p.viaje_id)) {
+        let cel = p.cadete_celular ? String(p.cadete_celular).replace(/[^0-9]/g, '') : NUMERO_SOPORTE_CENTRAL;
+        if(!cel.startsWith("549")) cel = "549" + cel.replace(/^0?15?/, '');
+        
+        // Actualiza el Widget flotante
+        let widget = document.getElementById('widgetRastreo');
+        if (widget) {
+            widget.style.borderColor = "#25D366"; 
+            widget.innerHTML = `<i class="ri-whatsapp-fill animate-pulse-glow" style="color:#25D366; font-size:18px;"></i> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">Moto encontrada<br>¡Coordiná ahora!</span>`;
+            widget.onclick = function() { 
+                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te pedí el viaje por la app.', '_blank'); 
+            };
+            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            mostrarToast("¡Una moto te aceptó! Tocá para coordinar por WhatsApp.", "success");
+        }
+
+        // Si se pidió por Botón Favor directo (Comerciante o Cliente)
+        if (window.btnFavorRef && window.btnFavorRef.el) {
+            clearTimeout(window.timeoutFavor);
+            let b = window.btnFavorRef.el;
+            b.innerHTML = `<i class="ri-whatsapp-fill" style="vertical-align:middle; font-size:18px;"></i> HABLAR CON ${p.cadete_nombre.toUpperCase()}`;
+            b.style.background = '#25D366';
+            b.style.border = '2px solid #25D366';
+            b.style.color = 'white';
+            b.style.pointerEvents = 'auto';
+            b.onclick = function(e) {
+                e.preventDefault(); e.stopPropagation();
+                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te pedí el encargo.', '_blank');
+            };
+        }
+    }
+});
+
+// EVENTO 3: EL VIAJE FUE CONFIRMADO FINALMENTE
+canalRadar.on('broadcast', { event: 'viaje_reclamado' }, (payload) => {
     let p = payload.payload;
     
     // LÓGICA PARA LOS OTROS CADETES (TARJETA NARANJA)
@@ -1579,7 +1637,7 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
         card.innerHTML = `
             <div style="text-align:center; padding:10px 0;">
                 <i class="ri-motorbike-fill" style="font-size:38px; color:#ea580c;"></i>
-                <div style="font-weight:900; font-size:16px; color:#c2410c; margin-top:8px;">VIAJE TOMADO</div>
+                <div style="font-weight:900; font-size:16px; color:#c2410c; margin-top:8px;">VIAJE CONFIRMADO</div>
                 <div style="font-size:14px; color:#ea580c; font-weight:700; margin-top:4px;">Asignado a: ${p.cadete_nombre} 🚀</div>
                 <div style="font-size:12px; color:#f97316; font-weight:600; margin-top:6px; background:#ffedd5; display:inline-block; padding:4px 10px; border-radius:20px;">¡Atento al próximo!</div>
             </div>
@@ -1587,16 +1645,15 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
         setTimeout(() => { if(card) card.remove(); }, 3500); 
     }
     
-    // LÓGICA PARA EL CLIENTE O COMERCIANTE (Actualiza el widget y habilita WhatsApp directo)
+    // LÓGICA PARA EL CLIENTE O COMERCIANTE (Actualiza estado a "Viaje Confirmado")
     let miViajeId = AppStore.get('my_last_trip_id');
     if (miViajeId && String(miViajeId) === String(p.viaje_id)) {
         
-        // === RESTAURAR BOTÓN DE FAVOR (VISUAL FEEDBACK PREMIUM) ===
         if (window.btnFavorRef && window.btnFavorRef.el) {
             clearTimeout(window.timeoutFavor);
             let b = window.btnFavorRef.el;
-            b.innerHTML = `✅ ¡ASIGNADO A ${p.cadete_nombre.toUpperCase()}!`;
-            b.style.background = '#2563eb'; // Azul de éxito
+            b.innerHTML = `✅ ¡VIAJE CONFIRMADO!`;
+            b.style.background = '#2563eb'; 
             b.style.border = '2px solid #2563eb';
             b.style.color = 'white';
             
@@ -1614,27 +1671,73 @@ canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
         
         let widget = document.getElementById('widgetRastreo');
         if (widget) {
+            let cel = p.cadete_celular ? String(p.cadete_celular).replace(/[^0-9]/g, '') : NUMERO_SOPORTE_CENTRAL;
             widget.style.borderColor = "#16a34a"; 
-            widget.innerHTML = `<i class="ri-motorbike-fill animate-pulse-glow" style="color:#16a34a; font-size:16px;"></i> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">¡${p.cadete_nombre} en camino!</span>`;
+            widget.innerHTML = `<i class="ri-map-pin-user-fill animate-pulse-glow" style="color:#16a34a; font-size:16px;"></i> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">¡${p.cadete_nombre} confirmado!</span>`;
             widget.onclick = function() { 
-                let cel = p.cadete_celular ? String(p.cadete_celular).replace(/[^0-9]/g, '') : NUMERO_SOPORTE_CENTRAL;
                 window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te espero con el pedido.', '_blank'); 
             };
             if(navigator.vibrate && (!window.btnFavorRef || !window.btnFavorRef.el)) navigator.vibrate([200, 100, 200]);
-            mostrarToast("¡Moto asignada! Tocá para chatear con el cadete.", "success");
+            mostrarToast("¡Viaje confirmado! El cadete ya está en camino.", "success");
         }
     }
     
 }).subscribe();
 
-window.aceptarViajeRadar = function(viaje_id) {
+// LÓGICA DEL CADETE PARA INICIAR COORDINACIÓN
+window.iniciarCoordinacion = function(viaje_id, telCliente) {
     let btn = document.getElementById('btnAceptar_' + viaje_id);
-    if(btn) { btn.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> BLOQUEANDO...'; btn.style.background = '#f59e0b'; btn.style.pointerEvents = 'none'; }
-    
+    if(btn) btn.style.display = 'none';
+
+    let card = document.getElementById('alertaViaje_' + viaje_id);
+    if(card) card.classList.add('coordinando'); // Para que no se borre con el timeout inicial
+
+    let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
+    let miCelular = AppStore.get('cliente_celular') || '00000000';
+
+    // Avisa al cliente que alguien aceptó y quiere coordinar
+    canalRadar.send({
+        type: 'broadcast',
+        event: 'viaje_coordinando',
+        payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular }
+    });
+
+    let telLimpio = String(telCliente).replace(/[^0-9]/g, '');
+    if(!telLimpio || telLimpio === "00000000") telLimpio = NUMERO_SOPORTE_CENTRAL;
+    if(!telLimpio.startsWith("549")) telLimpio = "549" + telLimpio.replace(/^0?15?/, '');
+
+    let divCoord = document.createElement('div');
+    divCoord.innerHTML = `
+        <div style="background:#fff7ed; padding:12px; border-radius:10px; border:2px dashed #f97316; margin-top:10px; text-align:center;">
+            <div style="font-size:11px; font-weight:900; color:#ea580c; margin-bottom:10px; text-transform:uppercase;">⚠️ OBLIGATORIO: Coordinar antes de confirmar</div>
+            
+            <button onclick="window.open('https://wa.me/${telLimpio}?text=Hola, soy ${miNombre} de ServiMoto. Acepté tu pedido, pasame los detalles por favor.', '_blank')" style="background:#25D366; color:white; border:none; padding:12px; border-radius:8px; font-weight:900; font-size:13px; width:100%; margin-bottom:10px; box-shadow:0 4px 10px rgba(37,211,102,0.3); cursor:pointer;">
+                <i class="ri-whatsapp-fill" style="font-size:18px; vertical-align:middle;"></i> HABLAR CON CLIENTE
+            </button>
+            
+            <button onclick="confirmarViajeCoordinado('${viaje_id}')" style="background:#16a34a; color:white; border:none; padding:12px; border-radius:8px; font-weight:900; font-size:13px; width:100%; box-shadow:0 4px 10px rgba(22,163,74,0.3); cursor:pointer;">
+                ✅ YA HABLÉ, CONFIRMAR VIAJE
+            </button>
+        </div>
+    `;
+    card.appendChild(divCoord);
+
+    // Si pasan 3 minutos (180 seg) y no confirmó, se elimina para no trabar el sistema
+    setTimeout(() => {
+        let checkCard = document.getElementById('alertaViaje_' + viaje_id);
+        if(checkCard && !checkCard.classList.contains('tomado')) {
+            checkCard.remove();
+            mostrarToast("Tiempo agotado. El viaje se liberó.", "error");
+        }
+    }, 180000); 
+};
+
+// LÓGICA DEL CADETE PARA CONFIRMAR EL VIAJE FINAL Y PAGAR LOS 200
+window.confirmarViajeCoordinado = function(viaje_id) {
     let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
     let miCelular = AppStore.get('cliente_celular') || '00000000';
     
-    // Sumar 200 pesos al cadete automáticamente al aceptar
+    // SUMAMOS LA DEUDA RECIÉN AHORA
     viajesMotoCount += 1;
     deudaMotoAcumulada += 200;
     
@@ -1648,6 +1751,7 @@ window.aceptarViajeRadar = function(viaje_id) {
         }).eq('id', sessionActual.id).then(() => {});
     }
 
+    // AVISA A TODOS QUE EL VIAJE YA SE CERRÓ
     canalRadar.send({
         type: 'broadcast',
         event: 'viaje_reclamado',
@@ -1655,11 +1759,9 @@ window.aceptarViajeRadar = function(viaje_id) {
     });
     
     setTimeout(() => {
-        mostrarToast("¡Viaje tuyo! Se sumaron $200 a tu cuenta.", "success");
-        let card = document.getElementById('alertaViaje_' + viaje_id);
-        if(card) card.remove();
+        mostrarToast("¡Viaje confirmado! Se sumaron $200 a tu cuenta.", "success");
         if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
-    }, 800);
+    }, 500);
 };
 
 // Variables de Estado
@@ -1963,13 +2065,17 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
     if(!container || isLoadingMore || (!hasMoreProducts && isLoadMore)) return;
     isLoadingMore = true;
 
+    // APLICAR CLASE DE GRILLA COMPACTA
+    container.classList.add('grilla-productos-compacta');
+
     if (!isLoadMore) {
-        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#16a34a;"><i class="ri-loader-4-line animate-ring"></i> Cargando catálogo...</div>`;
+        container.innerHTML = `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#16a34a;"><i class="ri-loader-4-line animate-ring"></i> Cargando catálogo...</div>`;
         currentPage = 0; hasMoreProducts = true;
     } else {
         const loaderDiv = document.createElement('div');
         loaderDiv.id = 'bottomLoader';
-        loaderDiv.style.cssText = "grid-column:1/-1; text-align:center; padding:20px; color:#ff6b00; font-weight:bold;";
+        loaderDiv.className = 'loader-full-width';
+        loaderDiv.style.cssText = "text-align:center; padding:20px; color:#ff6b00; font-weight:bold;";
         loaderDiv.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> Cargando más...';
         container.appendChild(loaderDiv);
     }
@@ -1996,7 +2102,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
         const idsValidos = comerciosValidos.map(c => c.id);
         
         if(idsValidos.length === 0 && !comercioFiltradoId) {
-            container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay locales disponibles con estos filtros.</div>`;
+            container.innerHTML = `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay locales disponibles con estos filtros.</div>`;
             isLoadingMore = false; hasMoreProducts = false; return;
         }
 
@@ -2022,7 +2128,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                     let imgSelfie = (imgSelfieRaw && imgSelfieRaw !== 'null' && imgSelfieRaw.trim() !== '') ? imgSelfieRaw : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
                     
                     btnLimpiarFiltro = `
-                    <div style="grid-column:1/-1; margin-bottom:15px; border-radius:16px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.08); background:white; position:relative; border:1px solid #e2e8f0; z-index:1;">
+                    <div class="loader-full-width" style="margin-bottom:15px; border-radius:16px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.08); background:white; position:relative; border:1px solid #e2e8f0; z-index:1;">
                         <div style="height:110px; width:100%; background-image:url('${imgPortada}'); background-size:cover; background-position:center; position:relative;">
                             <div style="position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8));"></div>
                             <button onclick="limpiarFiltroComercio()" style="position:absolute; top:10px; right:10px; background:rgba(255,255,255,0.2); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.4); border-radius:50%; width:32px; height:32px; color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5;"><i class="ri-close-line" style="font-size:22px;"></i></button>
@@ -2053,7 +2159,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
 
         if((!dbProductos || dbProductos.length === 0) && !isLoadMore) {
             let botonVolver = comercioFiltradoId ? `<button onclick="limpiarFiltroComercio()" style="margin-top:15px; padding:10px 20px; background:#f97316; color:white; border:none; border-radius:10px; font-weight:bold;">Volver a todos</button>` : '';
-            container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay artículos. ${botonVolver}</div>`;
+            container.innerHTML = `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay artículos. ${botonVolver}</div>`;
             isLoadingMore = false; hasMoreProducts = false; return;
         }
         
@@ -2070,28 +2176,26 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
                 
+                // TARJETA COMPACTA ADAPTADA A GRILLA 2x2
                 html += `
-                <div class="card-premium" style="padding:0; border-radius:16px; display:flex; flex-direction:column; background:white; border: 1px solid #f1f5f9; box-shadow: 0 10px 20px rgba(0,0,0,0.06); overflow:hidden; position:relative;">
-                    <div style="height:140px; width:100%; position:relative; flex-shrink:0;">
+                <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
+                    <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
                         <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;">
-                        <div style="position:absolute; bottom:0; left:0; width:100%; height:50px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);"></div>
-                        <div style="position:absolute; top:10px; left:10px; background:rgba(255,255,255,0.95); padding:4px 8px; border-radius:8px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 10px rgba(0,0,0,0.1); z-index:5;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
+                        <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);"></div>
+                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:9px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
                     </div>
-                    <div style="padding:14px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
-                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.2; color:#0f172a; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
-                        ${p.referencia ? `<div style="font-size:11px; color:#64748b; font-weight:600; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;">${p.referencia}</div>` : '<div style="margin-bottom:8px;"></div>'}
+                    <div style="padding:10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
+                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:12px; line-height:1.2; color:#0f172a; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
                         
-                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:10px; background:#fff7ed; border:1px solid #ffd4b3; padding:4px 8px; border-radius:10px; width:fit-content;">
-                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:20px; height:20px; border-radius:50%; object-fit:cover; border:1.5px solid #f97316; flex-shrink:0;">
-                            <span style="font-size:11px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:110px;">${nomComercio}</span>
+                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:4px; margin-bottom:8px; background:#fff7ed; border:1px solid #ffd4b3; padding:2px 6px; border-radius:6px; width:fit-content;">
+                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:14px; height:14px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                            <span style="font-size:9px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${nomComercio}</span>
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <div style="color:#16a34a; font-weight:900; font-size:22px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
-                        </div>
+                        <div style="color:#16a34a; font-weight:900; font-size:16px; margin-bottom:8px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
                         
-                        <button class="btn-primary" style="width:100%; padding:12px; font-size:13px; font-weight:800; border-radius:10px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 6px 15px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
-                            AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:16px; vertical-align:middle; margin-left:4px;"></i>
+                        <button class="btn-primary" style="width:100%; padding:8px; font-size:11px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
+                            AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:13px; vertical-align:middle; margin-left:2px;"></i>
                         </button>
                     </div>
                 </div>`;
@@ -2105,7 +2209,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
             else { currentPage++; }
         } else { hasMoreProducts = false; }
     } catch (e) {
-        if(!isLoadMore) { container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-weight:800; color:#f97316;">Error al conectar con la base de datos.</div>`; }
+        if(!isLoadMore) { container.innerHTML = `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#f97316;">Error al conectar con la base de datos.</div>`; }
     } finally { isLoadingMore = false; }
 };
 
@@ -2333,6 +2437,7 @@ window.llamarMotoDesdeLocal = async function(idx) {
     let nombreLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Comercio Local";
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
     let viaje_id = pedidoInfo.id || Date.now();
+    let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
     
     AppStore.set('my_last_trip_id', viaje_id);
 
@@ -2343,7 +2448,8 @@ window.llamarMotoDesdeLocal = async function(idx) {
             viaje_id: viaje_id, 
             local: `${nombreLocal} (${dirLocal})`, 
             destino: pedidoInfo.destino,
-            costo: pedidoInfo.total 
+            costo: pedidoInfo.total,
+            tel_cliente: telCliente
         }
     });
 
@@ -2355,7 +2461,6 @@ window.llamarMotoDesdeLocal = async function(idx) {
 
 // === NUEVO: Lógica del Botón con Feedback Visual para Comercio ===
 window.pedirFavorCadeteWhatsApp = function(evt) {
-    // Detectar el botón que fue presionado (o buscarlo como respaldo)
     let btn = (evt && evt.currentTarget) ? evt.currentTarget : (window.event ? window.event.currentTarget : null);
     if (!btn) { 
         document.querySelectorAll('button').forEach(b => {
@@ -2363,20 +2468,17 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
         });
     }
     
-    // Guardar el estado original del botón
     let htmlOriginal = btn ? btn.innerHTML : "";
     let bgOriginal = btn ? btn.style.background : "";
     let borderOriginal = btn ? btn.style.border : "";
     let colorOriginal = btn ? btn.style.color : "";
 
-    // Cambiar a verde buscando
     if (btn) {
         btn.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO MOTO...';
         btn.style.background = '#16a34a'; 
         btn.style.color = 'white';
         btn.style.border = '2px solid #16a34a';
-        btn.style.pointerEvents = 'none'; // Evita doble clic
-        // Guardamos la referencia global para restaurarlo cuando acepten
+        btn.style.pointerEvents = 'none'; 
         window.btnFavorRef = { el: btn, html: htmlOriginal, bg: bgOriginal, border: borderOriginal, color: colorOriginal };
     }
 
@@ -2385,6 +2487,7 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
 
     let nomLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Un comercio";
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
+    let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
     let viaje_id = Date.now();
     
     AppStore.set('my_last_trip_id', viaje_id);
@@ -2396,11 +2499,11 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
             viaje_id: viaje_id, 
             local: dirLocal ? `${nomLocal} (${dirLocal})` : nomLocal,
             destino: "Encargo / Favor",
-            costo: "A conv." 
+            costo: "A conv.",
+            tel_cliente: telCliente
         }
     });
 
-    // Timeout de 45 segundos (Sistema Anti-cuelgue)
     window.timeoutFavor = setTimeout(() => {
         if (window.btnFavorRef && window.btnFavorRef.el) {
             let b = window.btnFavorRef.el;
@@ -2846,6 +2949,7 @@ window.pedirFavorDirectoCliente = function(evt) {
     let dirOrig = document.getElementById('dirOrigenEspecial') ? document.getElementById('dirOrigenEspecial').value.trim() : "Cliente";
     let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "A coordinar";
     let detalle = document.getElementById('txtPedidoEspecial') ? document.getElementById('txtPedidoEspecial').value.trim() : "";
+    let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
     let viaje_id = Date.now();
     
     AppStore.set('my_last_trip_id', viaje_id);
@@ -2857,7 +2961,8 @@ window.pedirFavorDirectoCliente = function(evt) {
             viaje_id: viaje_id, 
             local: dirOrig, 
             destino: dirDest + (detalle ? ` (${detalle})` : ''),
-            costo: "A conv." 
+            costo: "A conv.",
+            tel_cliente: telCliente
         }
     });
 
@@ -3109,6 +3214,7 @@ window.mandarViajeEspecialSoporte = async function() {
     let ciuDest = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "";
     let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
     let detalle = document.getElementById('txtPedidoEspecial') ? document.getElementById('txtPedidoEspecial').value.trim() : "Paquete genérico";
+    let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
 
     let costo = costoEnvioCalculado > 0 ? costoEnvioCalculado : 2000; 
     
@@ -3141,7 +3247,8 @@ window.mandarViajeEspecialSoporte = async function() {
             viaje_id: idViajeFinal, 
             local: dirOrig, 
             destino: `${dirDest}, ${ciuDest}`,
-            costo: costo 
+            costo: costo,
+            tel_cliente: telCliente
         }
     });
 
