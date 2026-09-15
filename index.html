@@ -1468,6 +1468,26 @@ const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co';
 const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+// ==========================================
+// COMUNICACIÓN EN TIEMPO REAL (RADAR MOTO)
+// ==========================================
+const canalRadar = supabaseClient.channel('radar-motos');
+canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
+    if (estadoRadar) {
+        if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            let msg = new SpeechSynthesisUtterance("¡Atención ServiMoto! Alerta de nuevo viaje en el radar.");
+            msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
+        }
+        let p = payload.payload;
+        mostrarToast("¡NUEVO VIAJE ENCONTRADO!", "success");
+        setTimeout(() => {
+            alert(`🚨 ALERTA DE RADAR - NUEVO VIAJE 🚨\n\n🏪 Retirar en:\n${p.local}\n\n🚩 Entregar a:\n${p.destino}\n\n¡Dirigite al comercio!`);
+        }, 500);
+    }
+}).subscribe();
+
 // Variables de Estado
 let baseProductosActivos = []; 
 let carritoGlobal = [];
@@ -2099,6 +2119,19 @@ window.llamarMotoDesdeLocal = async function(idx) {
         let msg = new SpeechSynthesisUtterance("Atención base, buscando un ServiMoto cercano para un nuevo envío.");
         msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
     }
+    
+    // === COMUNICACIÓN EN TIEMPO REAL CON EL RADAR ===
+    let pedidoInfo = pedidosComercio[idx];
+    let nombreLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Comercio Local";
+    let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
+    
+    canalRadar.send({
+        type: 'broadcast',
+        event: 'nuevo_viaje',
+        payload: { local: `${nombreLocal} (${dirLocal})`, destino: pedidoInfo.destino }
+    });
+    // ================================================
+
     setTimeout(() => { 
         mostrarToast("✅ ¡Moto asignada y en camino al local!", "success"); 
         if(btnCall) { btnCall.innerHTML = '<i class="ri-check-double-line"></i> MOTO EN CAMINO'; btnCall.style.background = '#16a34a'; }
@@ -2509,7 +2542,6 @@ window.pedirFavorDirectoCliente = function() {
 
 function initMapaMago() {
     if (!mapaMagoObj) {
-        // CORRECCIÓN: El ID correcto en el HTML es 'mapaCanvas', no 'googleMapCanvas'
         mapaMagoObj = L.map('mapaCanvas', { zoomControl: false, attributionControl: false }).setView([-26.8083, -65.2176], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapaMagoObj);
     }
@@ -2687,17 +2719,23 @@ window.mandarPedidoSoporte = async function() {
     carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
     if(txtComprobante !== "") { txt += txtComprobante; }
     
-    // Extracción limpia del celular desde la cuenta de login para evitar bugs de caché
-    let telComprador = "00000000";
+    // Extracción BLINDADA del celular desde la cuenta de login para evitar bugs de caché
+    let telComprador = "";
     if (sessionActual && sessionActual.email && sessionActual.email.includes('@')) {
-        let posibleNum = sessionActual.email.split('@')[0];
-        if (!isNaN(posibleNum)) telComprador = posibleNum;
+        telComprador = sessionActual.email.split('@')[0];
     } else {
-        telComprador = AppStore.get('cliente_celular') || "00000000";
+        telComprador = AppStore.get('cliente_celular');
     }
+    if (!telComprador || telComprador === "") telComprador = "00000000";
     
     let telLimpio = String(telComprador).replace(/[^0-9]/g, '');
-    if (telLimpio.startsWith("549")) telLimpio = telLimpio.substring(3);
+    if (telLimpio.startsWith("54")) {
+        if (telLimpio.startsWith("549")) {
+            telLimpio = telLimpio.substring(3);
+        } else {
+            telLimpio = telLimpio.substring(2);
+        }
+    }
     telLimpio = telLimpio.replace(/^0?15?/, '');
     
     txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Entrega en:* ${destClient}%0A📱 *WhatsApp del Cliente:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
@@ -2748,6 +2786,14 @@ window.mandarViajeEspecialSoporte = async function() {
             if(data && data.length > 0) pedidoCreadoId = data[0].id;
         }
     } catch (e) {}
+    
+    // === COMUNICACIÓN EN TIEMPO REAL CON EL RADAR (VIAJE ESPECIAL) ===
+    canalRadar.send({
+        type: 'broadcast',
+        event: 'nuevo_viaje',
+        payload: { local: dirOrig, destino: `${dirDest}, ${ciuDest}` }
+    });
+    // =================================================================
 
     window.dispararConfetti();
 
