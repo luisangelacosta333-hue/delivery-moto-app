@@ -686,7 +686,7 @@
                     </div>
 
                     <div style="display:flex; gap:6px;" id="cajaFiltrosFeedHTML">
-                        <select class="select-provincia" id="filtroProvincia" style="margin:0; padding:8px 12px; font-size:12px; flex:1; border-radius:8px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" onchange="filtrarFeedGlobal()"></select>
+                        <select class="select-provincia" id="filtroProvincia" style="margin:0; padding:8px 12px; font-size:12px; flex:1; border-radius:8px;" onchange="filtrarFeedGlobal()"></select>
                         <input type="text" class="input-buscar" id="filtroCiudad" placeholder="Tu Ciudad..." style="margin:0; padding:8px 12px; font-size:12px; flex:1; border-radius:8px;" onkeyup="filtrarFeedGlobal()">
                     </div>
                 </div>
@@ -720,7 +720,7 @@
                         <span style="font-weight:800; color:#1d4ed8; font-size:15px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblTextSelfieCliente">Selfie de Seguridad (Obligatoria)</span>
                         <input type="file" accept="image/*" capture="user" id="uploadSelfieCliente" style="display:none;" onchange="previewSelfieCliente(this)">
                     </label>
-                    <select class="select-provincia" id="selProvinciaCliente" style="margin:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></select>
+                    <select class="select-provincia" id="selProvinciaCliente" style="margin:0;"></select>
                     <input type="text" class="input-buscar" id="inputCiudadCliente" placeholder="Ciudad (Ej: Famaillá)" style="margin:0;">
                     <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro" style="margin:0;">
                     <button class="btn-primary" style="padding:16px; margin-top: 8px; font-size:15px; background:linear-gradient(135deg, #16a34a, #15803d); border:none; box-shadow:0 10px 25px rgba(22,163,74,0.4);" onclick="guardarPerfilCliente()">GUARDAR Y CONTINUAR COMPRA</button>
@@ -748,19 +748,16 @@
                     <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
                     <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta (Ej: 9 de Julio 120)" style="margin:0;">
                     
-                    <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                        <option value="">Categoría del Local...</option>
-                        <option value="Comida Rápida">🍔 Comida Rápida</option>
-                        <option value="Pizzería">🍕 Pizzería</option>
-                        <option value="Rotisería">🍗 Rotisería</option>
-                        <option value="Panadería">🥐 Panadería</option>
-                        <option value="Verdulería">🥬 Verdulería</option>
-                        <option value="Heladería">🍦 Heladería</option>
-                        <option value="Kiosco">🍫 Kiosco</option>
-                        <option value="Farmacia">💊 Farmacia</option>
-                        <option value="Bebidas">🍷 Bebidas</option>
-                        <option value="Ropa">👕 Tienda Ropa</option>
-                        <option value="Varios">🛍️ Varios</option>
+                    <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6;">
+                        <option value="">Rubro / Categoría de tu Local...</option>
+                        <option value="Comida Rápida">🍔 Comida Rápida / Sandwichería</option>
+                        <option value="Pizzería">🍕 Pizzería / Empanadas</option>
+                        <option value="Panadería">🥐 Panadería / Pastelería</option>
+                        <option value="Kiosco">🍫 Kiosco / Almacén / Minimarket</option>
+                        <option value="Farmacia">💊 Farmacia / Perfumería</option>
+                        <option value="Bebidas">🍷 Bebidas / Heladería</option>
+                        <option value="Ropa">👕 Tienda de Ropa / Accesorios</option>
+                        <option value="Varios">🛍️ Comercios Varios</option>
                     </select>
 
                     <div style="margin-bottom: 4px; margin-top:4px;">
@@ -781,7 +778,7 @@
                         </div>
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:14px; font-size:14px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></select>
+                        <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:14px; font-size:14px;"></select>
                         <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:14px; font-size:14px;">
                     </div>
                     <button class="btn-primary" style="padding:16px; font-size:15px; margin-top:8px;" onclick="guardarComercio()">GUARDAR DATOS DEL LOCAL</button>
@@ -1263,6 +1260,9 @@ async function mandarPedidoSoporte() {
     if (subtotalProductos > 0) { txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`; }
     txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
     
+    let idViajeFinal = pedidoCreadoId || Date.now();
+    AppStore.set('my_last_trip_id', idViajeFinal); 
+    
     cerrarMapa();
     carritoGlobal = [];
     localStorage.removeItem('moto_carrito_guardado');
@@ -1276,7 +1276,7 @@ async function mandarPedidoSoporte() {
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
-        iniciarRastreoPedidoCliente(pedidoCreadoId); 
+        window.iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500); 
 }
 
@@ -1345,10 +1345,10 @@ window.aceptarViajeRadar = async function(viaje_id) {
             if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
             if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
             
-            await supabaseClient.from('moto_cadetes').update({
+            supabaseClient.from('moto_cadetes').update({
                 viajes_realizados: viajesMotoCount,
                 deuda_acumulada: deudaMotoAcumulada
-            }).eq('id', sessionActual.id);
+            }).eq('id', sessionActual.id).then();
         }
     } catch(e) { console.log('Error sumando deuda', e); }
     
