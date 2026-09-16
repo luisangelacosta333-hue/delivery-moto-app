@@ -1826,6 +1826,11 @@ stylePremium.innerHTML = `
     .loader-full-width {
         grid-column: 1 / -1;
     }
+
+    /* ESTILOS PARA HORARIO DE LOCAL (ABIERTO/CERRADO) */
+    .badge-abierto { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+    .badge-cerrado { background: #ffedd5; color: #ea580c; border: 1px solid #fdba74; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+    .btn-desactivado { background: #cbd5e1 !important; color: #64748b !important; border: none !important; box-shadow: none !important; pointer-events: none !important; }
 `;
 document.head.appendChild(stylePremium);
 
@@ -2062,6 +2067,30 @@ let dbComerciosCache = [];
 // PWA Deferred Prompt
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+
+// ==========================================
+// NUEVO: LÓGICA DE HORARIO DEL LOCAL
+// ==========================================
+window.obtenerEstadoLocal = function(horaAbre, horaCierra) {
+    if (!horaAbre || !horaCierra || horaAbre === "" || horaCierra === "") return true; // Si no puso horario, asume abierto.
+    
+    let ahora = new Date();
+    let minActuales = ahora.getHours() * 60 + ahora.getMinutes();
+    
+    let [hA, mA] = horaAbre.split(':').map(Number);
+    let minAbre = hA * 60 + mA;
+    
+    let [hC, mC] = horaCierra.split(':').map(Number);
+    let minCierra = hC * 60 + mC;
+    
+    if (minAbre < minCierra) {
+        // Horario normal (ej: 09:00 a 23:00)
+        return minActuales >= minAbre && minActuales <= minCierra;
+    } else {
+        // Horario que cruza la medianoche (ej: 20:00 a 03:00)
+        return minActuales >= minAbre || minActuales <= minCierra;
+    }
+};
 
 // ==========================================
 // 2. AUTO-CARGA: SESIÓN Y PROVINCIAS
@@ -2434,6 +2463,20 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
                 
+                // SISTEMA ABIERTO/CERRADO
+                let estaAbierto = true;
+                if(comercioData && comercioData.hora_abre && comercioData.hora_cierra) {
+                    estaAbierto = window.obtenerEstadoLocal(comercioData.hora_abre, comercioData.hora_cierra);
+                }
+                
+                let badgeEstado = estaAbierto 
+                    ? `<span class="badge-abierto">ABIERTO</span>` 
+                    : `<span class="badge-cerrado">CERRADO</span>`;
+                
+                let btnClase = estaAbierto ? 'btn-primary' : 'btn-primary btn-desactivado';
+                let btnTexto = estaAbierto ? 'AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:14px; vertical-align:middle; margin-left:2px;"></i>' : 'CERRADO';
+                let onclickAccion = estaAbierto ? `onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
+                
                 // TARJETA COMPACTA ADAPTADA A GRILLA 2x2
                 html += `
                 <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
@@ -2441,25 +2484,28 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                         <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="verImagenCompleta('${p.img_producto}')">
                         
                         <!-- BOTÓN LUPA PARA VER IMAGEN GRANDE -->
-                        <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande">
-                            <i class="ri-zoom-in-line" style="font-size:15px;"></i>
+                        <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande">
+                            <i class="ri-zoom-in-line" style="font-size:16px;"></i>
                         </button>
 
                         <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events:none;"></div>
-                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:9px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
+                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
                     </div>
-                    <div style="padding:10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
-                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:12px; line-height:1.2; color:#0f172a; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
+                    <div style="padding:12px 10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
+                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; line-height:1.3; color:#0f172a; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
 
-                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:4px; margin-bottom:8px; background:#fff7ed; border:1px solid #ffd4b3; padding:2px 6px; border-radius:6px; width:fit-content;">
-                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:14px; height:14px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                            <span style="font-size:9px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${nomComercio}</span>
+                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:10px; background:#fff7ed; border:1px solid #ffd4b3; padding:4px 8px; border-radius:6px; width:fit-content;">
+                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:18px; height:18px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                            <span style="font-size:12px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;">${nomComercio}</span>
                         </div>
 
-                        <div style="color:#16a34a; font-weight:900; font-size:16px; margin-bottom:8px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <div style="color:#16a34a; font-weight:900; font-size:20px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+                            ${badgeEstado}
+                        </div>
                         
-                        <button class="btn-primary" style="width:100%; padding:8px; font-size:11px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
-                            AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:13px; vertical-align:middle; margin-left:2px;"></i>
+                        <button class="${btnClase}" style="width:100%; padding:10px 8px; font-size:13px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" ${onclickAccion}>
+                            ${btnTexto}
                         </button>
                     </div>
                 </div>`;
@@ -3928,32 +3974,52 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 let urlLogoComercio = (imgSelfieRaw && imgSelfieRaw !== 'null' && imgSelfieRaw.trim() !== '') ? imgSelfieRaw : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
                 
-                // NUEVO FORMATO DE TARJETA COMPACTA 2x2
+                // LÓGICA ABIERTO/CERRADO
+                let estaAbierto = true;
+                if(comercioData && comercioData.hora_abre && comercioData.hora_cierra) {
+                    estaAbierto = window.obtenerEstadoLocal(comercioData.hora_abre, comercioData.hora_cierra);
+                }
+                
+                let badgeEstado = estaAbierto 
+                    ? `<span class="badge-abierto">ABIERTO</span>` 
+                    : `<span class="badge-cerrado">CERRADO</span>`;
+                
+                let btnClase = estaAbierto ? 'btn-primary' : 'btn-primary btn-desactivado';
+                let btnTexto = estaAbierto ? 'AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:14px; vertical-align:middle; margin-left:2px;"></i>' : 'CERRADO';
+                let onclickAccion = estaAbierto ? `onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
+                
+                // TARJETA COMPACTA ADAPTADA A GRILLA 2x2 Y TIPOGRAFÍAS AGRANDADAS
                 html += `
                 <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
                     <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
                         <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="verImagenCompleta('${p.img_producto}')">
                         
                         <!-- BOTÓN LUPA PARA VER IMAGEN GRANDE -->
-                        <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande">
-                            <i class="ri-zoom-in-line" style="font-size:15px;"></i>
+                        <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande">
+                            <i class="ri-zoom-in-line" style="font-size:16px;"></i>
                         </button>
 
                         <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events:none;"></div>
-                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:9px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
+                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
                     </div>
-                    <div style="padding:10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
-                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:12px; line-height:1.2; color:#0f172a; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
+                    <div style="padding:12px 10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
+                        <!-- TITULO AGRANDADO A 15px -->
+                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; line-height:1.3; color:#0f172a; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
 
-                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:4px; margin-bottom:8px; background:#fff7ed; border:1px solid #ffd4b3; padding:2px 6px; border-radius:6px; width:fit-content;">
-                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:14px; height:14px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                            <span style="font-size:9px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${nomComercio}</span>
+                        <!-- KIOSCO AGRANDADO A 12px -->
+                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:10px; background:#fff7ed; border:1px solid #ffd4b3; padding:4px 8px; border-radius:6px; width:fit-content;">
+                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:18px; height:18px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                            <span style="font-size:12px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;">${nomComercio}</span>
                         </div>
 
-                        <div style="color:#16a34a; font-weight:900; font-size:16px; margin-bottom:8px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+                        <!-- PRECIO AGRANDADO A 20px Y ESTADO -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <div style="color:#16a34a; font-weight:900; font-size:20px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+                            ${badgeEstado}
+                        </div>
                         
-                        <button class="btn-primary" style="width:100%; padding:8px; font-size:11px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
-                            AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:13px; vertical-align:middle; margin-left:2px;"></i>
+                        <button class="${btnClase}" style="width:100%; padding:10px 8px; font-size:13px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" ${onclickAccion}>
+                            ${btnTexto}
                         </button>
                     </div>
                 </div>`;
