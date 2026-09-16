@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -1788,6 +1789,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
 </script>
 </body>
 </html>
+
 <script>
 // ==========================================
 // 1. LIBRERÍAS EXTERNAS Y CONFIGURACIÓN BASE
@@ -1879,118 +1881,134 @@ window.verImagenCompleta = function(url) {
 };
 
 // ==========================================
-// COMUNICACIÓN EN TIEMPO REAL (RADAR MOTO)
+// NUEVO: SISTEMA RADAR POR CIUDADES
 // ==========================================
-const canalRadar = supabaseClient.channel('radar-motos');
-canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
-    if (!estadoRadar) return;
+window.quitarAcentos = function(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; };
+
+let canalRadar = null;
+let nombreCanalActual = "";
+
+window.conectarRadarLocal = function(prov, ciu) {
+    if(!prov || !ciu) return;
+    let nuevoNombre = 'radar-' + window.quitarAcentos(prov).replace(/\s+/g,'') + '-' + window.quitarAcentos(ciu).replace(/\s+/g,'');
     
-    let p = payload.payload;
-    let estoyCerca = Math.random() > 0.4; 
-    let tiempoDemora = estoyCerca ? 0 : 15000; 
+    if(nombreCanalActual === nuevoNombre && canalRadar) return; 
     
-    setTimeout(() => {
-        if (document.getElementById('alertaViaje_' + p.viaje_id) || p.cancelado) return;
+    if(canalRadar) { supabaseClient.removeChannel(canalRadar); }
+    
+    nombreCanalActual = nuevoNombre;
+    canalRadar = supabaseClient.channel(nombreCanalActual);
+    
+    canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
+        if (!estadoRadar) return;
+        
+        let p = payload.payload;
+        let estoyCerca = Math.random() > 0.4; 
+        let tiempoDemora = estoyCerca ? 0 : 15000; 
+        
+        setTimeout(() => {
+            if (document.getElementById('alertaViaje_' + p.viaje_id) || p.cancelado) return;
 
-        if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            let msg = new SpeechSynthesisUtterance("¡Atención ServiMoto! Nuevo viaje en tu zona.");
-            msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
-        }
-
-        const card = document.createElement('div');
-        card.id = 'alertaViaje_' + p.viaje_id;
-        card.className = 'tarjeta-radar-premium';
-        card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                <div style="font-weight:900; font-size:17px; color:#15803d; display:flex; align-items:center; gap:6px;">
-                    <i class="ri-flashlight-fill animate-pulse-glow" style="color:#f59e0b;"></i> VIAJE EXPRESS
-                </div>
-                <div style="font-weight:900; font-size:18px; color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:8px; border:1px solid #bbf7d0;">$${p.costo || 'A conv.'}</div>
-            </div>
-            <div style="font-size:13px; color:#334155; margin-bottom:6px; line-height:1.4;">
-                <strong style="color:#1e293b;"><i class="ri-store-3-fill" style="color:#f97316;"></i> Retira en:</strong><br> ${p.local}
-            </div>
-            <div style="font-size:13px; color:#334155; margin-bottom:14px; line-height:1.4;">
-                <strong style="color:#1e293b;"><i class="ri-map-pin-user-fill" style="color:#16a34a;"></i> Entrega a:</strong><br> ${p.destino}
-            </div>
-            <button id="btnAceptar_${p.viaje_id}" onclick="aceptarViajeRadar('${p.viaje_id}')" style="width:100%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:none; padding:14px; border-radius:12px; font-weight:900; font-size:15px; cursor:pointer; box-shadow:0 6px 15px rgba(22,163,74,0.4); text-transform:uppercase; transition:all 0.2s;">ACEPTAR VIAJE</button>
-            <div class="radar-barra-tiempo"><div id="progreso_${p.viaje_id}" class="radar-progreso"></div></div>
-        `;
-        document.body.appendChild(card);
-
-        let barra = document.getElementById('progreso_' + p.viaje_id);
-        let timeLeft = 30;
-        let interval = setInterval(() => {
-            timeLeft--;
-            if(barra) barra.style.width = (timeLeft / 30 * 100) + '%';
-            if(timeLeft <= 0) {
-                clearInterval(interval);
-                let tarjeta = document.getElementById('alertaViaje_' + p.viaje_id);
-                if(tarjeta && !tarjeta.classList.contains('tomado')) tarjeta.remove();
+            if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let msg = new SpeechSynthesisUtterance("¡Atención ServiMoto! Nuevo viaje en tu zona.");
+                msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
             }
-        }, 1000);
-        
-    }, tiempoDemora);
 
-}).on('broadcast', { event: 'viaje_reclamado' }, (payload) => {
-    let p = payload.payload;
-    
-    // LÓGICA PARA LOS OTROS CADETES (TARJETA NARANJA)
-    let card = document.getElementById('alertaViaje_' + p.viaje_id);
-    if (card) {
-        card.classList.add('tomado');
-        card.innerHTML = `
-            <div style="text-align:center; padding:10px 0;">
-                <i class="ri-motorbike-fill" style="font-size:38px; color:#ea580c;"></i>
-                <div style="font-weight:900; font-size:16px; color:#c2410c; margin-top:8px;">VIAJE TOMADO</div>
-                <div style="font-size:14px; color:#ea580c; font-weight:700; margin-top:4px;">Asignado a: ${p.cadete_nombre} 🚀</div>
-                <div style="font-size:12px; color:#f97316; font-weight:600; margin-top:6px; background:#ffedd5; display:inline-block; padding:4px 10px; border-radius:20px;">¡Atento al próximo!</div>
-            </div>
-        `;
-        setTimeout(() => { if(card) card.remove(); }, 3500); 
-    }
-    
-    // LÓGICA PARA EL CLIENTE O COMERCIANTE (Actualiza el widget y habilita WhatsApp directo)
-    let miViajeId = AppStore.get('my_last_trip_id');
-    if (miViajeId && String(miViajeId) === String(p.viaje_id)) {
+            const card = document.createElement('div');
+            card.id = 'alertaViaje_' + p.viaje_id;
+            card.className = 'tarjeta-radar-premium';
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                    <div style="font-weight:900; font-size:17px; color:#15803d; display:flex; align-items:center; gap:6px;">
+                        <i class="ri-flashlight-fill animate-pulse-glow" style="color:#f59e0b;"></i> VIAJE EXPRESS
+                    </div>
+                    <div style="font-weight:900; font-size:18px; color:#16a34a; background:#f0fdf4; padding:2px 8px; border-radius:8px; border:1px solid #bbf7d0;">$${p.costo || 'A conv.'}</div>
+                </div>
+                <div style="font-size:13px; color:#334155; margin-bottom:6px; line-height:1.4;">
+                    <strong style="color:#1e293b;"><i class="ri-store-3-fill" style="color:#f97316;"></i> Retira en:</strong><br> ${p.local}
+                </div>
+                <div style="font-size:13px; color:#334155; margin-bottom:14px; line-height:1.4;">
+                    <strong style="color:#1e293b;"><i class="ri-map-pin-user-fill" style="color:#16a34a;"></i> Entrega a:</strong><br> ${p.destino}
+                </div>
+                <button id="btnAceptar_${p.viaje_id}" onclick="aceptarViajeRadar('${p.viaje_id}')" style="width:100%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:none; padding:14px; border-radius:12px; font-weight:900; font-size:15px; cursor:pointer; box-shadow:0 6px 15px rgba(22,163,74,0.4); text-transform:uppercase; transition:all 0.2s;">ACEPTAR VIAJE</button>
+                <div class="radar-barra-tiempo"><div id="progreso_${p.viaje_id}" class="radar-progreso"></div></div>
+            `;
+            document.body.appendChild(card);
+
+            let barra = document.getElementById('progreso_' + p.viaje_id);
+            let timeLeft = 30;
+            let interval = setInterval(() => {
+                timeLeft--;
+                if(barra) barra.style.width = (timeLeft / 30 * 100) + '%';
+                if(timeLeft <= 0) {
+                    clearInterval(interval);
+                    let tarjeta = document.getElementById('alertaViaje_' + p.viaje_id);
+                    if(tarjeta && !tarjeta.classList.contains('tomado')) tarjeta.remove();
+                }
+            }, 1000);
+            
+        }, tiempoDemora);
+
+    }).on('broadcast', { event: 'viaje_reclamado' }, (payload) => {
+        let p = payload.payload;
         
-        // === RESTAURAR BOTÓN DE FAVOR (VISUAL FEEDBACK PREMIUM) ===
-        if (window.btnFavorRef && window.btnFavorRef.el) {
-            clearTimeout(window.timeoutFavor);
-            let b = window.btnFavorRef.el;
-            b.innerHTML = `✅ ¡ASIGNADO A ${p.cadete_nombre.toUpperCase()}!`;
-            b.style.background = '#2563eb'; // Azul de éxito
-            b.style.border = '2px solid #2563eb';
-            b.style.color = 'white';
-            
-            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
-            
-            setTimeout(() => {
-                b.innerHTML = window.btnFavorRef.html;
-                b.style.background = window.btnFavorRef.bg;
-                b.style.color = window.btnFavorRef.color;
-                b.style.border = window.btnFavorRef.border;
-                b.style.pointerEvents = 'auto';
-                window.btnFavorRef = null;
-            }, 4000);
+        // LÓGICA PARA LOS OTROS CADETES (TARJETA NARANJA)
+        let card = document.getElementById('alertaViaje_' + p.viaje_id);
+        if (card) {
+            card.classList.add('tomado');
+            card.innerHTML = `
+                <div style="text-align:center; padding:10px 0;">
+                    <i class="ri-motorbike-fill" style="font-size:38px; color:#ea580c;"></i>
+                    <div style="font-weight:900; font-size:16px; color:#c2410c; margin-top:8px;">VIAJE TOMADO</div>
+                    <div style="font-size:14px; color:#ea580c; font-weight:700; margin-top:4px;">Asignado a: ${p.cadete_nombre} 🚀</div>
+                    <div style="font-size:12px; color:#f97316; font-weight:600; margin-top:6px; background:#ffedd5; display:inline-block; padding:4px 10px; border-radius:20px;">¡Atento al próximo!</div>
+                </div>
+            `;
+            setTimeout(() => { if(card) card.remove(); }, 3500); 
         }
         
-        let widget = document.getElementById('widgetRastreo');
-        if (widget) {
-            widget.style.borderColor = "#16a34a"; 
-            widget.innerHTML = `<i class="ri-motorbike-fill animate-pulse-glow" style="color:#16a34a; font-size:16px;"></i> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">¡${p.cadete_nombre} en camino!</span>`;
-            widget.onclick = function() { 
-                let cel = p.cadete_celular ? String(p.cadete_celular).replace(/[^0-9]/g, '') : NUMERO_SOPORTE_CENTRAL;
-                window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te espero con el pedido.', '_blank'); 
-            };
-            if(navigator.vibrate && (!window.btnFavorRef || !window.btnFavorRef.el)) navigator.vibrate([200, 100, 200]);
-            mostrarToast("¡Moto asignada! Tocá para chatear con el cadete.", "success");
+        // LÓGICA PARA EL CLIENTE O COMERCIANTE (Actualiza el widget y habilita WhatsApp directo)
+        let miViajeId = AppStore.get('my_last_trip_id');
+        if (miViajeId && String(miViajeId) === String(p.viaje_id)) {
+            
+            // === RESTAURAR BOTÓN DE FAVOR (VISUAL FEEDBACK PREMIUM) ===
+            if (window.btnFavorRef && window.btnFavorRef.el) {
+                clearTimeout(window.timeoutFavor);
+                let b = window.btnFavorRef.el;
+                b.innerHTML = `✅ ¡ASIGNADO A ${p.cadete_nombre.toUpperCase()}!`;
+                b.style.background = '#2563eb'; // Azul de éxito
+                b.style.border = '2px solid #2563eb';
+                b.style.color = 'white';
+                
+                if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                
+                setTimeout(() => {
+                    b.innerHTML = window.btnFavorRef.html;
+                    b.style.background = window.btnFavorRef.bg;
+                    b.style.color = window.btnFavorRef.color;
+                    b.style.border = window.btnFavorRef.border;
+                    b.style.pointerEvents = 'auto';
+                    window.btnFavorRef = null;
+                }, 4000);
+            }
+            
+            let widget = document.getElementById('widgetRastreo');
+            if (widget) {
+                widget.style.borderColor = "#16a34a"; 
+                widget.innerHTML = `<i class="ri-motorbike-fill animate-pulse-glow" style="color:#16a34a; font-size:16px;"></i> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">¡${p.cadete_nombre} en camino!</span>`;
+                widget.onclick = function() { 
+                    let cel = p.cadete_celular ? String(p.cadete_celular).replace(/[^0-9]/g, '') : NUMERO_SOPORTE_CENTRAL;
+                    window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te espero con el pedido.', '_blank'); 
+                };
+                if(navigator.vibrate && (!window.btnFavorRef || !window.btnFavorRef.el)) navigator.vibrate([200, 100, 200]);
+                mostrarToast("¡Moto asignada! Tocá para chatear con el cadete.", "success");
+            }
         }
-    }
-    
-}).subscribe();
+        
+    }).subscribe();
+};
 
 window.aceptarViajeRadar = function(viaje_id) {
     let btn = document.getElementById('btnAceptar_' + viaje_id);
@@ -2013,11 +2031,13 @@ window.aceptarViajeRadar = function(viaje_id) {
         }).eq('id', sessionActual.id).then(() => {});
     }
 
-    canalRadar.send({
-        type: 'broadcast',
-        event: 'viaje_reclamado',
-        payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular }
-    });
+    if(canalRadar) {
+        canalRadar.send({
+            type: 'broadcast',
+            event: 'viaje_reclamado',
+            payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular }
+        });
+    }
     
     setTimeout(() => {
         mostrarToast("¡Viaje tuyo! Se sumaron $200 a tu cuenta.", "success");
@@ -2168,6 +2188,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     AppStore.set('cliente_prov', cliDB.provincia);
                     AppStore.set('cliente_nombre', session.user.user_metadata?.full_name || ''); 
                     AppStore.set('cliente_celular', cliDB.celular || session.user.email.split('@')[0]);
+                    window.conectarRadarLocal(cliDB.provincia, cliDB.ciudad);
                 }
             } else if (ultimoTipo === 'cadete') {
                 let { data: cadDB } = await supabaseClient.from('moto_cadetes').select('*').eq('id', sessionActual.id).single();
@@ -2463,7 +2484,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
                 
-                // SISTEMA ABIERTO/CERRADO
+                // SISTEMA ABIERTO/CERRADO Y TAMAÑO DE LETRAS AJUSTADO A PEDIDO DEL USUARIO
                 let estaAbierto = true;
                 if(comercioData && comercioData.hora_abre && comercioData.hora_cierra) {
                     estaAbierto = window.obtenerEstadoLocal(comercioData.hora_abre, comercioData.hora_cierra);
@@ -2474,16 +2495,14 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                     : `<span class="badge-cerrado">CERRADO</span>`;
                 
                 let btnClase = estaAbierto ? 'btn-primary' : 'btn-primary btn-desactivado';
-                let btnTexto = estaAbierto ? 'AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:14px; vertical-align:middle; margin-left:2px;"></i>' : 'CERRADO';
+                let btnTexto = estaAbierto ? 'AGREGAR' : 'CERRADO';
                 let onclickAccion = estaAbierto ? `onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
                 
-                // TARJETA COMPACTA ADAPTADA A GRILLA 2x2
                 html += `
                 <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
                     <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
                         <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="verImagenCompleta('${p.img_producto}')">
                         
-                        <!-- BOTÓN LUPA PARA VER IMAGEN GRANDE -->
                         <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande">
                             <i class="ri-zoom-in-line" style="font-size:16px;"></i>
                         </button>
@@ -2492,20 +2511,24 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                         <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
                     </div>
                     <div style="padding:12px 10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
-                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; line-height:1.3; color:#0f172a; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
+                        
+                        <!-- TITULO DE PRODUCTO AGRANDADO -->
+                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.3; color:#0f172a; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
 
+                        <!-- NOMBRE DE COMERCIO AGRANDADO -->
                         <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:10px; background:#fff7ed; border:1px solid #ffd4b3; padding:4px 8px; border-radius:6px; width:fit-content;">
-                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:18px; height:18px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                            <span style="font-size:12px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;">${nomComercio}</span>
+                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:16px; height:16px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                            <span style="font-size:11px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;">${nomComercio}</span>
                         </div>
 
+                        <!-- PRECIO AGRANDADO Y CARTEL DE ABIERTO/CERRADO -->
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <div style="color:#16a34a; font-weight:900; font-size:20px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+                            <div style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
                             ${badgeEstado}
                         </div>
                         
                         <button class="${btnClase}" style="width:100%; padding:10px 8px; font-size:13px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" ${onclickAccion}>
-                            ${btnTexto}
+                            ${btnTexto} <i class="ri-shopping-cart-2-line" style="font-size:14px; vertical-align:middle; margin-left:2px;"></i>
                         </button>
                     </div>
                 </div>`;
@@ -2587,6 +2610,7 @@ window.validarLogin = async function() {
                     AppStore.set('cliente_ciu', cliDB.ciudad);
                     AppStore.set('cliente_prov', cliDB.provincia);
                     AppStore.set('cliente_nombre', sessionActual.user_metadata?.full_name || ''); 
+                    window.conectarRadarLocal(cliDB.provincia, cliDB.ciudad);
                     if(productoPendienteAdd) procesarAgregadoCarrito();
                     irPaso('feed-global');
                 } else { irPaso('cliente-ubicacion'); }
@@ -2606,6 +2630,8 @@ async function cargarDatosComercioExistente(id) {
             if(document.getElementById('comercioAbre')) document.getElementById('comercioAbre').value = data.hora_abre || '';
             if(document.getElementById('comercioCierra')) document.getElementById('comercioCierra').value = data.hora_cierra || '';
             if(document.getElementById('comercioAlias')) document.getElementById('comercioAlias').value = data.alias_mp || '';
+            
+            window.conectarRadarLocal(data.provincia, data.ciudad);
             
             if(data.img_selfie && document.getElementById('boxSelfieComercioModal')) {
                 document.getElementById('boxSelfieComercioModal').style.backgroundImage = `url(${data.img_selfie})`;
@@ -2670,6 +2696,7 @@ window.guardarPerfilCliente = async function() {
             id: sessionActual.id, celular: cel, provincia: prov, ciudad: ciu,
             direccion: dir, img_selfie: urlFoto || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
         });
+        window.conectarRadarLocal(prov, ciu);
     } catch(e) { console.warn('Falla de BD menor, continuamos', e); }
     
     mostrarToast('✅ Perfil guardado con éxito.', 'success');
@@ -2751,17 +2778,19 @@ window.llamarMotoDesdeLocal = async function(idx) {
     
     AppStore.set('my_last_trip_id', viaje_id);
 
-    canalRadar.send({
-        type: 'broadcast',
-        event: 'nuevo_viaje',
-        payload: { 
-            viaje_id: viaje_id, 
-            local: `${nombreLocal} (${dirLocal})`, 
-            destino: pedidoInfo.destino,
-            costo: pedidoInfo.total,
-            tel_cliente: telCliente
-        }
-    });
+    if(canalRadar) {
+        canalRadar.send({
+            type: 'broadcast',
+            event: 'nuevo_viaje',
+            payload: { 
+                viaje_id: viaje_id, 
+                local: `${nombreLocal} (${dirLocal})`, 
+                destino: pedidoInfo.destino,
+                costo: pedidoInfo.total,
+                tel_cliente: telCliente
+            }
+        });
+    }
 
     setTimeout(() => { 
         mostrarToast("✅ ¡Alerta enviada a motos cercanas!", "success"); 
@@ -2802,17 +2831,19 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
     
     AppStore.set('my_last_trip_id', viaje_id);
 
-    canalRadar.send({
-        type: 'broadcast',
-        event: 'nuevo_viaje',
-        payload: { 
-            viaje_id: viaje_id, 
-            local: dirLocal ? `${nomLocal} (${dirLocal})` : nomLocal,
-            destino: "Encargo / Favor",
-            costo: "A conv.",
-            tel_cliente: telCliente
-        }
-    });
+    if(canalRadar) {
+        canalRadar.send({
+            type: 'broadcast',
+            event: 'nuevo_viaje',
+            payload: { 
+                viaje_id: viaje_id, 
+                local: dirLocal ? `${nomLocal} (${dirLocal})` : nomLocal,
+                destino: "Encargo / Favor",
+                costo: "A conv.",
+                tel_cliente: telCliente
+            }
+        });
+    }
 
     window.timeoutFavor = setTimeout(() => {
         if (window.btnFavorRef && window.btnFavorRef.el) {
@@ -2913,6 +2944,7 @@ window.guardarComercio = async function() {
         
         if(error) throw error;
         dbComerciosCache = []; 
+        window.conectarRadarLocal(prov, ciu);
         mostrarToast(`¡Local guardado exitósamente!`, 'success');
     } catch (e) { mostrarToast('Error guardando en base de datos', 'error'); }
 };
@@ -3069,15 +3101,30 @@ window.activarRadar = function() {
     if(navigator.vibrate) navigator.vibrate(50);
     if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (ONLINE) primero', 'error');
     if (new Date().getDay() === 1 && deudaMotoAcumulada > 0) { mostrarToast("🔒 BLOQUEO LUNES: Deuda de $" + deudaMotoAcumulada, "error"); return; }
+    
+    let provR = AppStore.get('mi_provincia_radar');
+    let ciuR = AppStore.get('mi_ciudad_radar');
+    if(!estadoRadar && (!provR || !ciuR)) {
+        provR = prompt("🛵 Para sintonizar el radar de tu zona, ingresá tu PROVINCIA (Ej: Tucuman):");
+        if(!provR) return;
+        ciuR = prompt("🛵 Ingresá tu CIUDAD EXACTA (Ej: Famailla):");
+        if(!ciuR) return;
+        AppStore.set('mi_provincia_radar', provR);
+        AppStore.set('mi_ciudad_radar', ciuR);
+    }
+
     estadoRadar = !estadoRadar;
     const btn = document.getElementById('btnRadar');
+    
     if(estadoRadar) {
+        window.conectarRadarLocal(provR, ciuR);
         btn.innerHTML = `<div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div><i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#dcfce7;"></i><span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#f0fdf4; letter-spacing:1px;">BUSCANDO...</span>`;
         btn.style.background = 'radial-gradient(circle, #16a34a, #14532d)'; btn.style.borderColor = '#4ade80'; btn.style.boxShadow = '0 0 40px rgba(22,163,74,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
-        mostrarToast('Radar encendido. Buscando viajes...', 'success');
+        mostrarToast(`Radar encendido en ${ciuR}. Buscando viajes...`, 'success');
     } else {
         btn.innerHTML = `<i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i><span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>`;
         btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)'; btn.style.borderColor = '#3b82f6'; btn.style.boxShadow = '0 0 30px rgba(59,130,246,0.4)';
+        if(canalRadar) { supabaseClient.removeChannel(canalRadar); canalRadar = null; nombreCanalActual = ""; }
     }
 };
 
@@ -3262,17 +3309,19 @@ window.pedirFavorDirectoCliente = function(evt) {
     
     AppStore.set('my_last_trip_id', viaje_id);
 
-    canalRadar.send({
-        type: 'broadcast',
-        event: 'nuevo_viaje',
-        payload: { 
-            viaje_id: viaje_id, 
-            local: dirOrig, 
-            destino: dirDest + (detalle ? ` (${detalle})` : ''),
-            costo: "A conv.",
-            tel_cliente: telCliente
-        }
-    });
+    if(canalRadar) {
+        canalRadar.send({
+            type: 'broadcast',
+            event: 'nuevo_viaje',
+            payload: { 
+                viaje_id: viaje_id, 
+                local: dirOrig, 
+                destino: dirDest + (detalle ? ` (${detalle})` : ''),
+                costo: "A conv.",
+                tel_cliente: telCliente
+            }
+        });
+    }
 
     window.timeoutFavor = setTimeout(() => {
         if (window.btnFavorRef && window.btnFavorRef.el) {
@@ -3522,17 +3571,19 @@ window.mandarPedidoSoporte = async function() {
         
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
         
-        canalRadar.send({
-            type: 'broadcast',
-            event: 'nuevo_viaje',
-            payload: { 
-                viaje_id: idViajeFinal, 
-                local: direccionOrigenCalculo || "Local central", 
-                destino: destClient,
-                costo: costoEnvioCalculado,
-                tel_cliente: telComprador
-            }
-        });
+        if(canalRadar) {
+            canalRadar.send({
+                type: 'broadcast',
+                event: 'nuevo_viaje',
+                payload: { 
+                    viaje_id: idViajeFinal, 
+                    local: direccionOrigenCalculo || "Local central", 
+                    destino: destClient,
+                    costo: costoEnvioCalculado,
+                    tel_cliente: telComprador
+                }
+            });
+        }
         
         window.iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500); 
@@ -3549,7 +3600,7 @@ window.mandarViajeEspecialSoporte = async function() {
     let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
 
     mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
-    cerrarMapa();
+    window.cerrarMapa();
     esViajeEspecial = false; 
     
     let pedidoCreadoId = null;
@@ -3570,17 +3621,19 @@ window.mandarViajeEspecialSoporte = async function() {
     let idViajeFinal = pedidoCreadoId || Date.now();
     AppStore.set('my_last_trip_id', idViajeFinal);
 
-    canalRadar.send({
-        type: 'broadcast',
-        event: 'nuevo_viaje',
-        payload: { 
-            viaje_id: idViajeFinal, 
-            local: dirOrig, 
-            destino: `${dirDest}, ${ciuDest}`,
-            costo: costo,
-            tel_cliente: telCliente
-        }
-    });
+    if(canalRadar) {
+        canalRadar.send({
+            type: 'broadcast',
+            event: 'nuevo_viaje',
+            payload: { 
+                viaje_id: idViajeFinal, 
+                local: dirOrig, 
+                destino: `${dirDest}, ${ciuDest}`,
+                costo: costo,
+                tel_cliente: telCliente
+            }
+        });
+    }
 
     window.dispararConfetti();
 
@@ -3837,203 +3890,5 @@ window.mandarViajeEspecialSoporte = async function() {
         }
     };
     
-    // Función auxiliar para saber si un local está abierto
-    window.obtenerEstadoLocal = function(horaAbre, horaCierra) {
-        if (!horaAbre || !horaCierra || horaAbre === "" || horaCierra === "") return true; // Si no puso horario, asume abierto.
-        
-        let ahora = new Date();
-        let minActuales = ahora.getHours() * 60 + ahora.getMinutes();
-        
-        let [hA, mA] = horaAbre.split(':').map(Number);
-        let minAbre = hA * 60 + mA;
-        
-        let [hC, mC] = horaCierra.split(':').map(Number);
-        let minCierra = hC * 60 + mC;
-        
-        if (minAbre < minCierra) {
-            // Horario normal (ej: 09:00 a 23:00)
-            return minActuales >= minAbre && minActuales <= minCierra;
-        } else {
-            // Horario que cruza la medianoche (ej: 20:00 a 03:00)
-            return minActuales >= minAbre || minActuales <= minCierra;
-        }
-    };
 })();
-
-// Redefinimos cargarYRenderizarFeed para meter la lógica de "Abierto/Cerrado"
-window.cargarYRenderizarFeed = async function(isLoadMore = false) {
-    const container = document.getElementById('gridMercadoLibre');
-    if(!container || isLoadingMore || (!hasMoreProducts && isLoadMore)) return;
-    isLoadingMore = true;
-
-    container.classList.add('grilla-productos-compacta');
-
-    if (!isLoadMore) {
-        container.innerHTML = `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#16a34a;"><i class="ri-loader-4-line animate-ring"></i> Cargando catálogo...</div>`;
-        currentPage = 0; hasMoreProducts = true;
-    } else {
-        const loaderDiv = document.createElement('div');
-        loaderDiv.id = 'bottomLoader';
-        loaderDiv.className = 'loader-full-width';
-        loaderDiv.style.cssText = "text-align:center; padding:20px; color:#ff6b00; font-weight:bold;";
-        loaderDiv.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> Cargando más...';
-        container.appendChild(loaderDiv);
-    }
-    
-    const inputProv = document.getElementById('filtroProvincia');
-    const inputCiu = document.getElementById('filtroCiudad');
-    let provFiltro = inputProv ? quitarAcentos(inputProv.value.trim()) : "";
-    let ciuFiltro = inputCiu ? quitarAcentos(inputCiu.value.trim()) : "";
-
-    try {
-        if (dbComerciosCache.length === 0) {
-            let { data: dbComercios, error: errC } = await supabaseClient.from('moto_comercios').select('*');
-            if(errC) throw errC;
-            dbComerciosCache = dbComercios || [];
-        }
-
-        let comerciosValidos = dbComerciosCache.filter(c => {
-            let matchProv = provFiltro === "" || quitarAcentos(c.provincia).includes(provFiltro);
-            let matchCiu = ciuFiltro === "" || quitarAcentos(c.ciudad).includes(ciuFiltro);
-            let matchCat = categoriaActiva === "" || quitarAcentos(c.categoria).includes(categoriaActiva);
-            return matchProv && matchCiu && matchCat;
-        });
-
-        const idsValidos = comerciosValidos.map(c => c.id);
-        
-        if(idsValidos.length === 0 && !comercioFiltradoId) {
-            container.innerHTML = `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay locales disponibles con estos filtros.</div>`;
-            isLoadingMore = false; hasMoreProducts = false; return;
-        }
-
-        let from = currentPage * ITEMS_PER_PAGE;
-        let to = from + ITEMS_PER_PAGE - 1;
-
-        let query = supabaseClient.from('moto_productos').select('*').eq('pausado', false);
-        if (comercioFiltradoId) query = query.eq('id_comercio', comercioFiltradoId);
-        else query = query.in('id_comercio', idsValidos);
-
-        let { data: dbProductos, error: errP } = await query.order('id', { ascending: false }).range(from, to);
-        if(errP) throw errP;
-
-        let btnLimpiarFiltro = '';
-        if (!isLoadMore) {
-            container.innerHTML = '';
-            
-            if (comercioFiltradoId) {
-                let comInfo = dbComerciosCache.find(c => c.id === comercioFiltradoId);
-                if(comInfo) {
-                    let imgPortada = comInfo.img_portada || 'https://images.unsplash.com/photo-1550547660-d9450f859349';
-                    let imgSelfieRaw = comInfo.img_selfie;
-                    let imgSelfie = (imgSelfieRaw && imgSelfieRaw !== 'null' && imgSelfieRaw.trim() !== '') ? imgSelfieRaw : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
-                    
-                    btnLimpiarFiltro = `
-                    <div class="loader-full-width" style="margin-bottom:15px; border-radius:16px; overflow:hidden; box-shadow:0 8px 20px rgba(0,0,0,0.08); background:white; position:relative; border:1px solid #e2e8f0; z-index:1;">
-                        <div style="height:110px; width:100%; background-image:url('${imgPortada}'); background-size:cover; background-position:center; position:relative;">
-                            <div style="position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8));"></div>
-                            <button onclick="limpiarFiltroComercio()" style="position:absolute; top:10px; right:10px; background:rgba(255,255,255,0.2); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.4); border-radius:50%; width:32px; height:32px; color:white; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5;"><i class="ri-close-line" style="font-size:22px;"></i></button>
-                            <div style="position:absolute; bottom:2px; width:100%; height:30px; overflow:hidden; z-index:3; border-bottom: 2px dashed rgba(255,255,255,0.2);">
-                                <i class="ri-motorbike-fill" style="position:absolute; color:#f97316; font-size:24px; animation: motoRunBanner 4s linear infinite; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));"></i>
-                            </div>
-                        </div>
-                        
-                        <div style="padding:12px 16px 16px 16px; display:flex; gap:14px; position:relative; z-index:2;">
-                            <div style="margin-top:-40px;">
-                                <img src="${imgSelfie}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" style="width:75px; height:75px; border-radius:50%; border:3px solid white; object-fit:cover; box-shadow:0 0 15px rgba(255,255,255,0.9), 0 4px 10px rgba(0,0,0,0.15); background:white;">
-                            </div>
-                            <div style="flex:1; padding-top:4px;">
-                                <div style="font-weight:900; font-size:17px; color:#0f172a; line-height:1.2; margin-bottom:6px;">${comInfo.nombre}</div>
-                                <div style="font-size:12px; color:#64748b; font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:4px;"><i class="ri-map-pin-2-fill" style="color:#ef4444; font-size:14px;"></i> ${comInfo.direccion}, ${comInfo.ciudad}</div>
-                                <div style="font-size:12px; color:#64748b; font-weight:600; display:flex; align-items:center; gap:4px;"><i class="ri-whatsapp-fill" style="color:#16a34a; font-size:14px;"></i> ${comInfo.celular || 'Sin teléfono'}</div>
-                            </div>
-                        </div>
-                    </div>`;
-                }
-            }
-            if(btnLimpiarFiltro) container.innerHTML += btnLimpiarFiltro;
-        } else {
-            const bottomLoader = document.getElementById('bottomLoader');
-            if(bottomLoader) bottomLoader.remove();
-        }
-
-        if((!dbProductos || dbProductos.length === 0) && !isLoadMore) {
-            let botonVolver = comercioFiltradoId ? `<button onclick="limpiarFiltroComercio()" style="margin-top:15px; padding:10px 20px; background:#f97316; color:white; border:none; border-radius:10px; font-weight:bold;">Volver a todos</button>` : '';
-            container.innerHTML = `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay artículos. ${botonVolver}</div>`;
-            isLoadingMore = false; hasMoreProducts = false; return;
-        }
-        
-        if (dbProductos && dbProductos.length > 0) {
-            let html = '';
-            dbProductos.forEach(p => {
-                let comercioData = dbComerciosCache.find(c => c.id === p.id_comercio);
-                let nomComercio = comercioData ? comercioData.nombre : "Local";
-                let dirComercio = comercioData ? (comercioData.direccion + ", " + comercioData.ciudad + ", " + comercioData.provincia) : "";
-                let telComercio = comercioData ? comercioData.celular : NUMERO_SOPORTE_CENTRAL; 
-                let aliasComercio = (comercioData && comercioData.alias_mp) ? comercioData.alias_mp : ""; 
-                let imgSelfieRaw = comercioData ? comercioData.img_selfie : null;
-                let urlLogoComercio = (imgSelfieRaw && imgSelfieRaw !== 'null' && imgSelfieRaw.trim() !== '') ? imgSelfieRaw : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
-                let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
-                
-                // LÓGICA ABIERTO/CERRADO
-                let estaAbierto = true;
-                if(comercioData && comercioData.hora_abre && comercioData.hora_cierra) {
-                    estaAbierto = window.obtenerEstadoLocal(comercioData.hora_abre, comercioData.hora_cierra);
-                }
-                
-                let badgeEstado = estaAbierto 
-                    ? `<span class="badge-abierto">ABIERTO</span>` 
-                    : `<span class="badge-cerrado">CERRADO</span>`;
-                
-                let btnClase = estaAbierto ? 'btn-primary' : 'btn-primary btn-desactivado';
-                let btnTexto = estaAbierto ? 'AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:14px; vertical-align:middle; margin-left:2px;"></i>' : 'CERRADO';
-                let onclickAccion = estaAbierto ? `onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
-                
-                // TARJETA COMPACTA ADAPTADA A GRILLA 2x2 Y TIPOGRAFÍAS AGRANDADAS
-                html += `
-                <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
-                    <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
-                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="verImagenCompleta('${p.img_producto}')">
-                        
-                        <!-- BOTÓN LUPA PARA VER IMAGEN GRANDE -->
-                        <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande">
-                            <i class="ri-zoom-in-line" style="font-size:16px;"></i>
-                        </button>
-
-                        <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events:none;"></div>
-                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
-                    </div>
-                    <div style="padding:12px 10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
-                        <!-- TITULO AGRANDADO A 15px -->
-                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:15px; line-height:1.3; color:#0f172a; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
-
-                        <!-- KIOSCO AGRANDADO A 12px -->
-                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:10px; background:#fff7ed; border:1px solid #ffd4b3; padding:4px 8px; border-radius:6px; width:fit-content;">
-                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:18px; height:18px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                            <span style="font-size:12px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;">${nomComercio}</span>
-                        </div>
-
-                        <!-- PRECIO AGRANDADO A 20px Y ESTADO -->
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <div style="color:#16a34a; font-weight:900; font-size:20px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
-                            ${badgeEstado}
-                        </div>
-                        
-                        <button class="${btnClase}" style="width:100%; padding:10px 8px; font-size:13px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" ${onclickAccion}>
-                            ${btnTexto}
-                        </button>
-                    </div>
-                </div>`;
-            });
-            
-            container.insertAdjacentHTML('beforeend', html);
-            if (!isLoadMore) { baseProductosActivos = dbProductos; } 
-            else { baseProductosActivos = baseProductosActivos.concat(dbProductos); }
-
-            if (dbProductos.length < ITEMS_PER_PAGE) { hasMoreProducts = false; } 
-            else { currentPage++; }
-        } else { hasMoreProducts = false; }
-    } catch (e) {
-        if(!isLoadMore) { container.innerHTML = `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#f97316;">Error al conectar con la base de datos.</div>`; }
-    } finally { isLoadingMore = false; }
-};
 </script>
