@@ -1954,7 +1954,6 @@ window.conectarRadarLocal = function(prov, ciu) {
     }).on('broadcast', { event: 'viaje_reclamado' }, (payload) => {
         let p = payload.payload;
         
-        // LÓGICA PARA LOS OTROS CADETES (TARJETA NARANJA)
         let card = document.getElementById('alertaViaje_' + p.viaje_id);
         if (card) {
             card.classList.add('tomado');
@@ -1969,16 +1968,13 @@ window.conectarRadarLocal = function(prov, ciu) {
             setTimeout(() => { if(card) card.remove(); }, 3500); 
         }
         
-        // LÓGICA PARA EL CLIENTE O COMERCIANTE (Actualiza el widget y habilita WhatsApp directo)
         let miViajeId = AppStore.get('my_last_trip_id');
         if (miViajeId && String(miViajeId) === String(p.viaje_id)) {
-            
-            // === RESTAURAR BOTÓN DE FAVOR (VISUAL FEEDBACK PREMIUM) ===
             if (window.btnFavorRef && window.btnFavorRef.el) {
                 clearTimeout(window.timeoutFavor);
                 let b = window.btnFavorRef.el;
                 b.innerHTML = `✅ ¡ASIGNADO A ${p.cadete_nombre.toUpperCase()}!`;
-                b.style.background = '#2563eb'; // Azul de éxito
+                b.style.background = '#2563eb'; 
                 b.style.border = '2px solid #2563eb';
                 b.style.color = 'white';
                 
@@ -2017,7 +2013,6 @@ window.aceptarViajeRadar = function(viaje_id) {
     let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
     let miCelular = AppStore.get('cliente_celular') || '00000000';
     
-    // Sumar 200 pesos al cadete automáticamente al aceptar
     viajesMotoCount += 1;
     deudaMotoAcumulada += 200;
     
@@ -2188,7 +2183,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                     AppStore.set('cliente_prov', cliDB.provincia);
                     AppStore.set('cliente_nombre', session.user.user_metadata?.full_name || ''); 
                     AppStore.set('cliente_celular', cliDB.celular || session.user.email.split('@')[0]);
-                    window.conectarRadarLocal(cliDB.provincia, cliDB.ciudad);
                 }
             } else if (ultimoTipo === 'cadete') {
                 let { data: cadDB } = await supabaseClient.from('moto_cadetes').select('*').eq('id', sessionActual.id).single();
@@ -2484,7 +2478,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
                 
-                // SISTEMA ABIERTO/CERRADO Y TAMAÑO DE LETRAS AJUSTADO A PEDIDO DEL USUARIO
+                // SISTEMA ABIERTO/CERRADO Y TAMAÑO DE LETRAS AGRANDADO (14px, 11px, 18px)
                 let estaAbierto = true;
                 if(comercioData && comercioData.hora_abre && comercioData.hora_cierra) {
                     estaAbierto = window.obtenerEstadoLocal(comercioData.hora_abre, comercioData.hora_cierra);
@@ -2512,16 +2506,16 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                     </div>
                     <div style="padding:12px 10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
                         
-                        <!-- TITULO DE PRODUCTO AGRANDADO -->
+                        <!-- TÍTULO DE PRODUCTO A 14px -->
                         <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.3; color:#0f172a; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
 
-                        <!-- NOMBRE DE COMERCIO AGRANDADO -->
+                        <!-- NOMBRE DE COMERCIO A 11px -->
                         <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:10px; background:#fff7ed; border:1px solid #ffd4b3; padding:4px 8px; border-radius:6px; width:fit-content;">
                             <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:16px; height:16px; border-radius:50%; object-fit:cover; flex-shrink:0;">
                             <span style="font-size:11px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;">${nomComercio}</span>
                         </div>
 
-                        <!-- PRECIO AGRANDADO Y CARTEL DE ABIERTO/CERRADO -->
+                        <!-- PRECIO A 18px Y ESTADO -->
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                             <div style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
                             ${badgeEstado}
@@ -2610,7 +2604,6 @@ window.validarLogin = async function() {
                     AppStore.set('cliente_ciu', cliDB.ciudad);
                     AppStore.set('cliente_prov', cliDB.provincia);
                     AppStore.set('cliente_nombre', sessionActual.user_metadata?.full_name || ''); 
-                    window.conectarRadarLocal(cliDB.provincia, cliDB.ciudad);
                     if(productoPendienteAdd) procesarAgregadoCarrito();
                     irPaso('feed-global');
                 } else { irPaso('cliente-ubicacion'); }
@@ -2630,8 +2623,6 @@ async function cargarDatosComercioExistente(id) {
             if(document.getElementById('comercioAbre')) document.getElementById('comercioAbre').value = data.hora_abre || '';
             if(document.getElementById('comercioCierra')) document.getElementById('comercioCierra').value = data.hora_cierra || '';
             if(document.getElementById('comercioAlias')) document.getElementById('comercioAlias').value = data.alias_mp || '';
-            
-            window.conectarRadarLocal(data.provincia, data.ciudad);
             
             if(data.img_selfie && document.getElementById('boxSelfieComercioModal')) {
                 document.getElementById('boxSelfieComercioModal').style.backgroundImage = `url(${data.img_selfie})`;
@@ -2696,7 +2687,6 @@ window.guardarPerfilCliente = async function() {
             id: sessionActual.id, celular: cel, provincia: prov, ciudad: ciu,
             direccion: dir, img_selfie: urlFoto || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
         });
-        window.conectarRadarLocal(prov, ciu);
     } catch(e) { console.warn('Falla de BD menor, continuamos', e); }
     
     mostrarToast('✅ Perfil guardado con éxito.', 'success');
@@ -2745,6 +2735,12 @@ window.renderizarBandejaPedidos = function() {
                     <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
                 </div>
             </div>
+            
+            <!-- AVISO ACLARATORIO PARA EL COMERCIO -->
+            <div style="font-size:12px; color:#166534; font-weight:800; margin-bottom:10px; background:#dcfce7; padding:6px 10px; border-radius:6px; border:1px solid #86efac;">
+                💡 1. Verificá que el pago por transferencia sea correcto.<br>2. Tocá "LLAMAR MOTO" para solicitar el ServiMoto en el radar de tu zona y coordinar la entrega.
+            </div>
+
             <div style="display:flex; gap:8px;">
                 <button onclick="llamarMotoDesdeLocal(${idx})" id="btnLlamarMoto_${idx}" style="flex:1; background:#2563eb; color:white; border:none; border-radius:8px; padding:12px; font-weight:800; font-size:13px; cursor:pointer; transition:all 0.3s;"><i class="ri-radar-line"></i> LLAMAR MOTO</button>
                 <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:12px; font-size:16px; font-weight:800; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
@@ -2778,27 +2774,30 @@ window.llamarMotoDesdeLocal = async function(idx) {
     
     AppStore.set('my_last_trip_id', viaje_id);
 
-    if(canalRadar) {
-        canalRadar.send({
-            type: 'broadcast',
-            event: 'nuevo_viaje',
-            payload: { 
-                viaje_id: viaje_id, 
-                local: `${nombreLocal} (${dirLocal})`, 
-                destino: pedidoInfo.destino,
-                costo: pedidoInfo.total,
-                tel_cliente: telCliente
-            }
-        });
-    }
+    let provComercio = document.getElementById('comercioProvincia') ? document.getElementById('comercioProvincia').value : "Tucumán";
+    let ciuComercio = document.getElementById('comercioCiudad') ? document.getElementById('comercioCiudad').value.trim() : "Famaillá";
+    window.conectarRadarLocal(provComercio, ciuComercio);
 
-    setTimeout(() => { 
-        mostrarToast("✅ ¡Alerta enviada a motos cercanas!", "success"); 
+    setTimeout(() => {
+        if(canalRadar) {
+            canalRadar.send({
+                type: 'broadcast',
+                event: 'nuevo_viaje',
+                payload: { 
+                    viaje_id: viaje_id, 
+                    local: `${nombreLocal} (${dirLocal})`, 
+                    destino: pedidoInfo.destino,
+                    costo: pedidoInfo.total,
+                    tel_cliente: telCliente
+                }
+            });
+        }
+        mostrarToast("✅ ¡Alerta enviada a motos de la zona!", "success"); 
         if(btnCall) { btnCall.innerHTML = '<i class="ri-check-double-line"></i> SEÑAL ENVIADA'; btnCall.style.background = '#16a34a'; }
-    }, 3000);
+    }, 1000);
 };
 
-// === NUEVO: Lógica del Botón con Feedback Visual para Comercio ===
+// === Lógica del Botón con Feedback Visual para Comercio ===
 window.pedirFavorCadeteWhatsApp = function(evt) {
     let btn = (evt && evt.currentTarget) ? evt.currentTarget : (window.event ? window.event.currentTarget : null);
     if (!btn) { 
@@ -2831,19 +2830,25 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
     
     AppStore.set('my_last_trip_id', viaje_id);
 
-    if(canalRadar) {
-        canalRadar.send({
-            type: 'broadcast',
-            event: 'nuevo_viaje',
-            payload: { 
-                viaje_id: viaje_id, 
-                local: dirLocal ? `${nomLocal} (${dirLocal})` : nomLocal,
-                destino: "Encargo / Favor",
-                costo: "A conv.",
-                tel_cliente: telCliente
-            }
-        });
-    }
+    let provComercio = document.getElementById('comercioProvincia') ? document.getElementById('comercioProvincia').value : "Tucumán";
+    let ciuComercio = document.getElementById('comercioCiudad') ? document.getElementById('comercioCiudad').value.trim() : "Famaillá";
+    window.conectarRadarLocal(provComercio, ciuComercio);
+
+    setTimeout(() => {
+        if(canalRadar) {
+            canalRadar.send({
+                type: 'broadcast',
+                event: 'nuevo_viaje',
+                payload: { 
+                    viaje_id: viaje_id, 
+                    local: dirLocal ? `${nomLocal} (${dirLocal})` : nomLocal,
+                    destino: "Encargo / Favor",
+                    costo: "A conv.",
+                    tel_cliente: telCliente
+                }
+            });
+        }
+    }, 1000);
 
     window.timeoutFavor = setTimeout(() => {
         if (window.btnFavorRef && window.btnFavorRef.el) {
@@ -2944,7 +2949,6 @@ window.guardarComercio = async function() {
         
         if(error) throw error;
         dbComerciosCache = []; 
-        window.conectarRadarLocal(prov, ciu);
         mostrarToast(`¡Local guardado exitósamente!`, 'success');
     } catch (e) { mostrarToast('Error guardando en base de datos', 'error'); }
 };
@@ -3097,37 +3101,6 @@ window.toggleEstadoTrabajo = async function() {
     } catch(e) { mostrarToast('Error al actualizar estado', 'error'); }
 };
 
-window.activarRadar = function() {
-    if(navigator.vibrate) navigator.vibrate(50);
-    if(!estadoTrabajoServimoto) return mostrarToast('Activá el Turno (ONLINE) primero', 'error');
-    if (new Date().getDay() === 1 && deudaMotoAcumulada > 0) { mostrarToast("🔒 BLOQUEO LUNES: Deuda de $" + deudaMotoAcumulada, "error"); return; }
-    
-    let provR = AppStore.get('mi_provincia_radar');
-    let ciuR = AppStore.get('mi_ciudad_radar');
-    if(!estadoRadar && (!provR || !ciuR)) {
-        provR = prompt("🛵 Para sintonizar el radar de tu zona, ingresá tu PROVINCIA (Ej: Tucuman):");
-        if(!provR) return;
-        ciuR = prompt("🛵 Ingresá tu CIUDAD EXACTA (Ej: Famailla):");
-        if(!ciuR) return;
-        AppStore.set('mi_provincia_radar', provR);
-        AppStore.set('mi_ciudad_radar', ciuR);
-    }
-
-    estadoRadar = !estadoRadar;
-    const btn = document.getElementById('btnRadar');
-    
-    if(estadoRadar) {
-        window.conectarRadarLocal(provR, ciuR);
-        btn.innerHTML = `<div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div><i class="ri-radar-fill animate-ring" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative; color:#dcfce7;"></i><span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; color:#f0fdf4; letter-spacing:1px;">BUSCANDO...</span>`;
-        btn.style.background = 'radial-gradient(circle, #16a34a, #14532d)'; btn.style.borderColor = '#4ade80'; btn.style.boxShadow = '0 0 40px rgba(22,163,74,0.8), inset 0 0 20px rgba(255,255,255,0.2)';
-        mostrarToast(`Radar encendido en ${ciuR}. Buscando viajes...`, 'success');
-    } else {
-        btn.innerHTML = `<i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i><span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>`;
-        btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)'; btn.style.borderColor = '#3b82f6'; btn.style.boxShadow = '0 0 30px rgba(59,130,246,0.4)';
-        if(canalRadar) { supabaseClient.removeChannel(canalRadar); canalRadar = null; nombreCanalActual = ""; }
-    }
-};
-
 window.procesarLiquidacionIA = async function(input) {
     if(input.files && input.files.length > 0) {
         mostrarToast('🤖 Verificando comprobante de transferencia...', 'success');
@@ -3275,7 +3248,7 @@ window.procesarEnvioMapa = function() {
     if(esViajeEspecial) { window.mandarViajeEspecialSoporte(); } else { window.mandarPedidoSoporte(); }
 };
 
-// === NUEVO: Lógica del Botón con Feedback Visual para el Cliente también ===
+// === Lógica del Botón para el Cliente (Viaje Especial / Remis) ===
 window.pedirFavorDirectoCliente = function(evt) {
     let btn = (evt && evt.currentTarget) ? evt.currentTarget : (window.event ? window.event.currentTarget : null);
     if (!btn) {
@@ -3309,19 +3282,25 @@ window.pedirFavorDirectoCliente = function(evt) {
     
     AppStore.set('my_last_trip_id', viaje_id);
 
-    if(canalRadar) {
-        canalRadar.send({
-            type: 'broadcast',
-            event: 'nuevo_viaje',
-            payload: { 
-                viaje_id: viaje_id, 
-                local: dirOrig, 
-                destino: dirDest + (detalle ? ` (${detalle})` : ''),
-                costo: "A conv.",
-                tel_cliente: telCliente
-            }
-        });
-    }
+    let provEspecial = document.getElementById('selProvinciaEspecial') ? document.getElementById('selProvinciaEspecial').value : "Tucumán";
+    let ciuEspecial = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "Famaillá";
+    window.conectarRadarLocal(provEspecial, ciuEspecial);
+
+    setTimeout(() => {
+        if(canalRadar) {
+            canalRadar.send({
+                type: 'broadcast',
+                event: 'nuevo_viaje',
+                payload: { 
+                    viaje_id: viaje_id, 
+                    local: dirOrig, 
+                    destino: dirDest + (detalle ? ` (${detalle})` : ''),
+                    costo: "A conv.",
+                    tel_cliente: telCliente
+                }
+            });
+        }
+    }, 1000);
 
     window.timeoutFavor = setTimeout(() => {
         if (window.btnFavorRef && window.btnFavorRef.el) {
@@ -3470,14 +3449,23 @@ window.calcularMatematicaEnvio = function(distancia) {
     
     let celCliente = AppStore.get('cliente_celular') || "Sin teléfono";
     let pInfo = document.querySelector("#modalMapaGrande p");
-    
-    if(pInfo) pInfo.innerHTML = `💡 <b>Importante:</b> Al solicitar el viaje, buscaremos un ServiMoto en el radar. <b>Deberán pre-coordinar los detalles por WhatsApp</b> antes de confirmar el viaje.<br><span style="font-weight:600; color:#0f172a; margin-top:4px; display:inline-block;">(Tu celular para este viaje: ${celCliente})</span>`;
-    
     let btnConfirmarMapa = document.querySelector('#modalMapaGrande button[onclick="procesarEnvioMapa()"]');
-    if(btnConfirmarMapa) {
-        btnConfirmarMapa.innerHTML = '<i class="ri-whatsapp-fill" style="font-size:16px; vertical-align:middle; margin-right:4px;"></i> PRE-COORDINAR VIAJE';
-        btnConfirmarMapa.style.background = '#25D366';
-        btnConfirmarMapa.style.boxShadow = '0 4px 10px rgba(37,211,102,0.3)';
+    
+    // === SEPARACIÓN DE MENSAJES SEGÚN SI ES COMPRA O VIAJE ESPECIAL ===
+    if (esViajeEspecial) {
+        if(pInfo) pInfo.innerHTML = `💡 <b>Importante:</b> Al solicitar el viaje, buscaremos un ServiMoto en el radar. <b>Deberán pre-coordinar los detalles por WhatsApp</b> antes de confirmar el viaje.<br><span style="font-weight:600; color:#0f172a; margin-top:4px; display:inline-block;">(Tu celular para este viaje: ${celCliente})</span>`;
+        if(btnConfirmarMapa) {
+            btnConfirmarMapa.innerHTML = '<i class="ri-whatsapp-fill" style="font-size:16px; vertical-align:middle; margin-right:4px;"></i> PRE-COORDINAR VIAJE';
+            btnConfirmarMapa.style.background = '#25D366';
+            btnConfirmarMapa.style.boxShadow = '0 4px 10px rgba(37,211,102,0.3)';
+        }
+    } else {
+        if(pInfo) pInfo.innerHTML = `💡 <b>Importante:</b> El envío se paga por separado directamente al ServiMoto.<br><span style="font-weight:600; color:#16a34a; margin-top:4px; display:inline-block;">(El comercio recibirá tu comprobante y llamará a la moto cuando esté listo)</span>`;
+        if(btnConfirmarMapa) {
+            btnConfirmarMapa.innerHTML = 'ENVIAR PEDIDO AL LOCAL <i class="ri-checkbox-circle-fill" style="font-size:18px; vertical-align:middle; margin-left:4px;"></i>';
+            btnConfirmarMapa.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+            btnConfirmarMapa.style.boxShadow = '0 4px 10px rgba(22,163,74,0.3)';
+        }
     }
     
     let subtotalProductos = 0;
@@ -3524,6 +3512,7 @@ window.mandarPedidoSoporte = async function() {
         }
     } catch (e) {}
 
+    // El pedido cae en la bandeja del comercio PERO NO DISPARA EL RADAR AUTOMÁTICAMENTE
     if(subtotalProductos > 0) { window.agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal); }
 
     let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
@@ -3571,20 +3560,7 @@ window.mandarPedidoSoporte = async function() {
         
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
         
-        if(canalRadar) {
-            canalRadar.send({
-                type: 'broadcast',
-                event: 'nuevo_viaje',
-                payload: { 
-                    viaje_id: idViajeFinal, 
-                    local: direccionOrigenCalculo || "Local central", 
-                    destino: destClient,
-                    costo: costoEnvioCalculado,
-                    tel_cliente: telComprador
-                }
-            });
-        }
-        
+        // NOTA: EL RADAR NO SE DISPARA ACÁ. El comercio lo disparará manualmente desde su panel con "LLAMAR MOTO".
         window.iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500); 
 };
@@ -3890,5 +3866,23 @@ window.mandarViajeEspecialSoporte = async function() {
         }
     };
     
+    window.obtenerEstadoLocal = function(horaAbre, horaCierra) {
+        if (!horaAbre || !horaCierra || horaAbre === "" || horaCierra === "") return true; 
+        
+        let ahora = new Date();
+        let minActuales = ahora.getHours() * 60 + ahora.getMinutes();
+        
+        let [hA, mA] = horaAbre.split(':').map(Number);
+        let minAbre = hA * 60 + mA;
+        
+        let [hC, mC] = horaCierra.split(':').map(Number);
+        let minCierra = hC * 60 + mC;
+        
+        if (minAbre < minCierra) {
+            return minActuales >= minAbre && minActuales <= minCierra;
+        } else {
+            return minActuales >= minAbre || minActuales <= minCierra;
+        }
+    };
 })();
 </script>
