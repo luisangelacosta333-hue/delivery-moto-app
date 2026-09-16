@@ -1,92 +1,68 @@
-window.procesarPagoIA = async function() {
-    var fileInput = document.getElementById('file-comprobante');
-    var file = fileInput.files[0];
+// /api/pago.js
+export default async function handler(req, res) {
+  // 1. Cabeceras CORS de seguridad (Obligatorio para Vercel)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*'); 
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Solo se aceptan peticiones POST' });
+  }
+
+  try {
+    const { comprobante_url, monto_esperado } = req.body;
     
-    if(!file) {
-        mostrarToast("Por favor adjuntá el comprobante primero.", "info");
-        return;
+    if (!comprobante_url || monto_esperado === undefined) {
+      return res.status(400).json({ error: "Faltan datos del comprobante o el monto esperado." });
     }
+    
+    const apiKey = process.env.OPENAI_API_KEY;
 
-    cerrarModal('modal-pago');
-    abrirModal('modal-ia');
-    var txt = document.getElementById('texto-ia');
-    var barra = document.getElementById('barra-ia');
+    // Orden estricta para la IA
+    const promptPago = `Sos un auditor contable automatizado de 'Delivery Moto'. Tu trabajo es leer el comprobante de transferencia (Mercado Pago o Banco) en la imagen.
+Reglas:
+1. Verificá si la imagen es realmente un comprobante de pago exitoso.
+2. Buscá el MONTO TOTAL transferido.
+3. El cadete debe exactamente $${monto_esperado}. Verificá si el monto del comprobante es igual o mayor a esta deuda.
+Respondé ÚNICAMENTE en formato JSON puro con esta estructura (sin texto extra):
+{"pago_valido": true, "monto_leido": 600, "motivo": "Transferencia exitosa detectada por el monto correcto"}`;
 
-    try {
-        txt.innerText = "Subiendo comprobante al servidor...";
-        barra.style.width = '30%';
-        
-        const { data: session } = await supabase.auth.getSession();
-        if(!session || !session.session) throw new Error("Debes iniciar sesión");
-        const userId = session.session.user.id;
+    const openAiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        response_format: { type: "json_object" },
+        messages: [{
+          role: "user",
+          content: [
+            { type: "text", text: promptPago },
+            { type: "image_url", image_url: { url: comprobante_url } }
+          ]
+        }]
+      })
+    });
 
-        // 1. Subimos la foto del comprobante a Supabase
-        const fileName = `pago_${userId}_${Date.now()}.jpg`;
-        await supabase.storage.from('archivos_cadetes').upload(fileName, file);
-        const compUrl = supabase.storage.from('archivos_cadetes').getPublicUrl(fileName).data.publicUrl;
+    if (!openAiResponse.ok) throw new Error("Fallo la comunicación con OpenAI");
 
-        txt.innerText = "IA: Analizando transferencia...";
-        barra.style.width = '60%';
+    const data = await openAiResponse.json();
+    const veredicto = JSON.parse(data.choices[0].message.content);
 
-        // Calculamos cuánto debe (ej: 3 viajes = $600)
-        const deudaActual = window.viajesTotales * 200;
+    return res.status(200).json(veredicto);
 
-        // 2. Llamamos a nuestra API de Vercel para que la IA lo lea
-        const aiReq = await fetch('/api/pago', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                comprobante_url: compUrl,
-                monto_esperado: deudaActual
-            })
-        });
-
-        const aiRes = await aiReq.json();
-
-        // 3. Si la IA da el OK
-        if(aiRes.pago_valido) {
-            txt.innerText = "IA: ¡Pago exitoso y validado!";
-            barra.style.width = '90%';
-
-            // Guardamos el registro en la base de datos
-            await supabase.from('pagos_cadetes').insert([{
-                cadete_id: userId,
-                monto: aiRes.monto_leido,
-                comprobante_url: compUrl,
-                estado_ia: 'aprobado'
-            }]);
-
-            // Reseteamos los viajes en la base de datos a 0
-            await supabase.from('cadetes').update({ viajes_totales: 0 }).eq('id', userId);
-
-            barra.style.width = '100%'; 
-
-            setTimeout(function(){
-                cerrarModal('modal-ia');
-                
-                // Ponemos los marcadores de la pantalla en CERO
-                var elemDeuda = document.getElementById('deuda-texto');
-                if(elemDeuda){
-                    elemDeuda.style.color = 'var(--verde)';
-                    elemDeuda.innerText = '$ 0';
-                }
-                window.viajesTotales = 0;
-                document.getElementById('contador-viajes').innerText = '0';
-                document.getElementById('card-viajes').innerText = '0';
-                
-                mostrarToast("Pago validado por IA. Deuda en $0","success");
-                barra.style.width = '0%';
-                fileInput.value = ''; 
-            }, 1500);
-
-        } else {
-            // Si la IA detecta que pagó de menos o es falso
-            throw new Error(aiRes.motivo);
-        }
-
-    } catch (error) {
-        cerrarModal('modal-ia');
-        mostrarToast("Pago Rechazado: " + error.message, "info");
-        barra.style.width = '0%';
-    }
-};
+  } catch (error) {
+    console.error("Error en Pago:", error);
+    return res.status(500).json({ pago_valido: false, motivo: "Error interno procesando el comprobante." });
+  }
+}
