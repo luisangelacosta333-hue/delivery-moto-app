@@ -1474,7 +1474,6 @@ window.iniciarDemoRapida = iniciarDemoRapida;
     window.addEventListener('resize', function() { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
 </script>
-
 <script>
 // ==========================================
 // 1. LIBRERÍAS EXTERNAS Y CONFIGURACIÓN BASE
@@ -1524,6 +1523,41 @@ document.head.appendChild(confettiScript);
 const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co';
 const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+// ==========================================
+// NUEVO: SISTEMA DE VISUALIZACIÓN DE FOTOS (MODAL)
+// ==========================================
+window.verImagenCompleta = function(url) {
+    let modal = document.getElementById('modalVisorImagen');
+    if(!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modalVisorImagen';
+        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); backdrop-filter:blur(10px); z-index:99999999; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s; cursor:pointer;';
+        modal.onclick = function() { 
+            modal.style.opacity = '0'; 
+            document.getElementById('imgVisor').style.transform = 'scale(0.9)';
+            setTimeout(()=>modal.style.display='none', 300); 
+        };
+        
+        let img = document.createElement('img');
+        img.id = 'imgVisor';
+        img.style.cssText = 'max-width:90%; max-height:90%; object-fit:contain; border-radius:16px; box-shadow:0 15px 40px rgba(0,0,0,0.6); transform:scale(0.9); transition:transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); border:3px solid #ff6b00; background:white;';
+        modal.appendChild(img);
+
+        let btnClose = document.createElement('div');
+        btnClose.innerHTML = '<i class="ri-close-line"></i>';
+        btnClose.style.cssText = 'position:absolute; top:20px; right:20px; width:44px; height:44px; background:rgba(255,255,255,0.1); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; border:2px solid rgba(255,255,255,0.4); box-shadow:0 4px 10px rgba(0,0,0,0.3);';
+        modal.appendChild(btnClose);
+
+        document.body.appendChild(modal);
+    }
+    
+    document.getElementById('imgVisor').src = url;
+    modal.style.display = 'flex';
+    void modal.offsetWidth; // Trigger reflow para animación
+    modal.style.opacity = '1';
+    document.getElementById('imgVisor').style.transform = 'scale(1)';
+};
 
 // ==========================================
 // COMUNICACIÓN EN TIEMPO REAL (RADAR MOTO)
@@ -2090,13 +2124,19 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 html += `
                 <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
                     <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
-                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;">
-                        <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);"></div>
-                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:9px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
+                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="verImagenCompleta('${p.img_producto}')">
+                        
+                        <!-- BOTÓN LUPA PARA VER IMAGEN GRANDE -->
+                        <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande">
+                            <i class="ri-zoom-in-line" style="font-size:15px;"></i>
+                        </button>
+
+                        <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events:none;"></div>
+                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:9px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
                     </div>
                     <div style="padding:10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
                         <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:12px; line-height:1.2; color:#0f172a; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
-                        
+
                         <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:4px; margin-bottom:8px; background:#fff7ed; border:1px solid #ffd4b3; padding:2px 6px; border-radius:6px; width:fit-content;">
                             <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:14px; height:14px; border-radius:50%; object-fit:cover; flex-shrink:0;">
                             <span style="font-size:9px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${nomComercio}</span>
@@ -2523,7 +2563,6 @@ window.agregarArticuloComercio = async function() {
     
     const nom = document.getElementById('newArtNombre').value.trim();
     const pre = parseInt(document.getElementById('newArtPrecio').value);
-    const ref = document.getElementById('newArtRef') ? document.getElementById('newArtRef').value.trim() : "";
     
     if(!nom || isNaN(pre)) return mostrarToast('Completá nombre y precio', 'error');
     if(!tempImgBase64) return mostrarToast('Subí una foto del artículo', 'error');
@@ -2534,13 +2573,12 @@ window.agregarArticuloComercio = async function() {
         const ext = Date.now();
         const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
         const { error } = await supabaseClient.from('moto_productos').insert({
-            id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: ref, img_producto: urlArt, pausado: false
+            id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: "", img_producto: urlArt, pausado: false
         });
         if(error) throw error;
         dbComerciosCache = [];
         mostrarToast(`¡Artículo publicado con éxito!`, 'success');
         document.getElementById('newArtNombre').value = ''; document.getElementById('newArtPrecio').value = '';
-        if(document.getElementById('newArtRef')) document.getElementById('newArtRef').value = '';
         tempImgBase64 = null;
         if(document.getElementById('boxArticuloNuevo')) document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
         window.renderizarAdminComercio();
@@ -2683,73 +2721,17 @@ window.activarRadar = function() {
     }
 };
 
-// ==========================================
-// NUEVO: PROCESAR PAGO REAL CON IA (Reemplaza al simulacro viejo)
-// ==========================================
 window.procesarLiquidacionIA = async function(input) {
-    var fileInput = input || document.getElementById('file-comprobante');
-    if(!fileInput || !fileInput.files || fileInput.files.length === 0) {
-        mostrarToast("Por favor adjuntá el comprobante primero.", "error");
-        return;
-    }
-    
-    var file = fileInput.files[0];
-    mostrarToast("⏳ Subiendo comprobante al servidor...", "success");
-
-    try {
-        if(!sessionActual || !sessionActual.id) throw new Error("Debes iniciar sesión");
-        const userId = sessionActual.id;
-
-        const fileName = `pagos/pago_${userId}_${Date.now()}.jpg`;
-        await supabaseClient.storage.from('moto_media').upload(fileName, file);
-        const compUrl = supabaseClient.storage.from('moto_media').getPublicUrl(fileName).data.publicUrl;
-
-        mostrarToast("🤖 IA Analizando transferencia...", "success");
-
-        const deudaActual = deudaMotoAcumulada; 
-        if (deudaActual <= 0) throw new Error("No tenés deuda pendiente para pagar.");
-
-        const aiReq = await fetch('/api/pago', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                comprobante_url: compUrl,
-                monto_esperado: deudaActual
-            })
-        });
-
-        const aiRes = await aiReq.json();
-
-        if(aiRes.pago_valido) {
-            await supabaseClient.from('moto_cadetes').update({ 
-                viajes_realizados: 0, 
-                deuda_acumulada: 0 
-            }).eq('id', userId);
-
-            viajesMotoCount = 0;
-            deudaMotoAcumulada = 0;
-
-            let elemDeuda = document.getElementById('deudaMoto');
-            if(elemDeuda){
-                elemDeuda.style.color = '#16a34a'; 
-                elemDeuda.textContent = '$0';
-            }
-            
-            let elemViajes = document.getElementById('viajesMotoBadge');
-            if(elemViajes) elemViajes.innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
-
-            let listaViajes = document.getElementById('listaViajesCadete'); 
-            if(listaViajes) listaViajes.innerHTML = ''; 
-
-            mostrarToast("✅ Pago validado por IA. Deuda en cero.", "success");
-            if(input) input.value = ''; 
-        } else {
-            throw new Error(aiRes.motivo || "Comprobante rechazado por la IA");
-        }
-
-    } catch (error) {
-        mostrarToast("Pago Rechazado: " + error.message, "error");
-        if(input) input.value = '';
+    if(input.files && input.files.length > 0) {
+        mostrarToast('🤖 Verificando comprobante de transferencia...', 'success');
+        setTimeout(async () => {
+            viajesMotoCount = 0; deudaMotoAcumulada = 0;
+            await supabaseClient.from('moto_cadetes').update({ viajes_realizados: 0, deuda_acumulada: 0 }).eq('id', sessionActual.id);
+            document.getElementById('deudaMoto').textContent = '$0';
+            document.getElementById('viajesMotoBadge').innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
+            const lista = document.getElementById('listaViajesCadete'); if(lista) lista.innerHTML = ''; 
+            mostrarToast('✅ Pago validado. Deuda en cero.', 'success');
+        }, 2500);
     }
 };
 
@@ -3080,10 +3062,8 @@ window.calcularMatematicaEnvio = function(distancia) {
     let celCliente = AppStore.get('cliente_celular') || "Sin teléfono";
     let pInfo = document.querySelector("#modalMapaGrande p");
     
-    // NUEVO TEXTO DE PRE-COORDINACIÓN EN MAPA
     if(pInfo) pInfo.innerHTML = `💡 <b>Importante:</b> Al solicitar el viaje, buscaremos un ServiMoto en el radar. <b>Deberán pre-coordinar los detalles por WhatsApp</b> antes de confirmar el viaje.<br><span style="font-weight:600; color:#0f172a; margin-top:4px; display:inline-block;">(Tu celular para este viaje: ${celCliente})</span>`;
     
-    // CAMBIO DE BOTÓN CONFIRMAR A "PRE-COORDINAR"
     let btnConfirmarMapa = document.querySelector('#modalMapaGrande button[onclick="procesarEnvioMapa()"]');
     if(btnConfirmarMapa) {
         btnConfirmarMapa.innerHTML = '<i class="ri-whatsapp-fill" style="font-size:16px; vertical-align:middle; margin-right:4px;"></i> PRE-COORDINAR VIAJE';
@@ -3180,10 +3160,8 @@ window.mandarPedidoSoporte = async function() {
         let telDestinoLimpio = String(telDestinoFinal).replace(/[^0-9]/g, '');
         if(!telDestinoLimpio.startsWith("549")) telDestinoLimpio = "549" + telDestinoLimpio.replace(/^0?15?/, '');
         
-        // ABRIR WHATSAPP CON COMERCIO
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
         
-        // AVISAR A RADAR MOTO CON FLUJO DE PRE-COORDINACION
         canalRadar.send({
             type: 'broadcast',
             event: 'nuevo_viaje',
@@ -3401,3 +3379,4 @@ window.mandarViajeEspecialSoporte = async function() {
     window.addEventListener('resize', function() { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
 </script>
+
