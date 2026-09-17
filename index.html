@@ -2185,8 +2185,16 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
             const imgSrc = img ? img.src : "";
             const nombreEl = tarjeta.querySelector('div[style*="font-family"]');
             const nombre = nombreEl ? nombreEl.textContent.trim() : "Producto";
-            const precioEl = tarjeta.querySelector('div[style*="color:#16a34a"]');
-            const precioTexto = precioEl ? precioEl.textContent.trim().replace(/[$.]/g, '') : "0";
+            // Buscar específicamente el precio (el que tiene símbolo $)
+            const precioCandidatos = tarjeta.querySelectorAll('div[style*="color:#16a34a"]');
+            let precioTexto = "0";
+            for (let el of precioCandidatos) {
+                const txt = el.textContent.trim();
+                if (txt.includes('$')) {
+                    precioTexto = txt.replace(/[$.]/g, '');
+                    break;
+                }
+            }
             const precio = parseFloat(precioTexto) || 0;
             const localEl = tarjeta.querySelector('div[onclick*="filtrarFeedPorComercio"] span');
             const local = localEl ? localEl.textContent.trim() : "Local";
