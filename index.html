@@ -431,7 +431,7 @@
             position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
             background: linear-gradient(to top, #ffffff, transparent); pointer-events: none;
         }
-        .product-expanded-card .expanded-content { padding: 20px 20px 80px; }
+        .product-expanded-card .expanded-content { padding: 20px 20px 100px; }
         .product-expanded-card .expanded-category {
             display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
             border-radius: 999px; background: #fff7ed; color: #ea580c;
@@ -2063,7 +2063,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 let btnTexto = estaAbierto ? 'AGREGAR' : 'CERRADO';
                 
                 html += `
-                <div class="card-premium" style="padding:0; border-radius:14px; display:flex; flex-direction:column; background:linear-gradient(145deg,#ffffff,#fefcf9); border: 1px solid rgba(255,140,66,0.12); box-shadow: 0 2px 12px rgba(15,23,42,0.06), 0 1px 3px rgba(255,107,0,0.04); overflow:hidden; position:relative;">
+                <div class="card-premium" data-descripcion="${p.descripcion || ''}" data-precio="${p.precio}" data-nombre="${p.nombre}" style="padding:0; border-radius:14px; display:flex; flex-direction:column; background:linear-gradient(145deg,#ffffff,#fefcf9); border: 1px solid rgba(255,140,66,0.12); box-shadow: 0 2px 12px rgba(15,23,42,0.06), 0 1px 3px rgba(255,107,0,0.04); overflow:hidden; position:relative;">
                     <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
                         <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;">
 
@@ -2246,18 +2246,24 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 }
             }
             
-            // Buscar descripción en demo
+            // Buscar descripción: primero en el atributo data-descripcion de la tarjeta
+            const descripcionData = tarjeta.getAttribute('data-descripcion') || '';
+            
+            // Buscar en demo como respaldo
             const demo = productosDemo.find(p => 
                 p.nombre.toLowerCase() === nombre.toLowerCase() ||
                 (imgSrc && imgSrc.includes(p.img.split('?')[0].split('/').pop()))
             );
+            
+            // Usar descripción real si existe, sino demo, sino texto por defecto
+            const descripcionFinal = descripcionData.trim() || (demo ? demo.descripcion : "") || "Delicioso producto fresco preparado con ingredientes de primera calidad.";
             
             const datos = {
                 id: datosCompra.id || String(Date.now() + Math.random()),
                 nombre: nombre,
                 precio: precio,
                 categoria: demo ? demo.categoria : "General",
-                descripcion: demo ? demo.descripcion : "Delicioso producto fresco preparado con ingredientes de primera calidad.",
+                descripcion: descripcionFinal,
                 tiempo: tiempo,
                 img: imgSrc,
                 local: local,
@@ -3068,7 +3074,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 let onclickAccion = estaAbierto ? `onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
                 
                 html += `
-                <div class="card-premium" style="padding:0; border-radius:14px; display:flex; flex-direction:column; background:linear-gradient(145deg,#ffffff,#fefcf9); border: 1px solid rgba(255,140,66,0.12); box-shadow: 0 2px 12px rgba(15,23,42,0.06), 0 1px 3px rgba(255,107,0,0.04); overflow:hidden; position:relative;">
+                <div class="card-premium" data-descripcion="${p.descripcion || ''}" data-precio="${p.precio}" data-nombre="${p.nombre}" style="padding:0; border-radius:14px; display:flex; flex-direction:column; background:linear-gradient(145deg,#ffffff,#fefcf9); border: 1px solid rgba(255,140,66,0.12); box-shadow: 0 2px 12px rgba(15,23,42,0.06), 0 1px 3px rgba(255,107,0,0.04); overflow:hidden; position:relative;">
                     <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
                         <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;">
 
