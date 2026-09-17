@@ -1225,7 +1225,7 @@ window.obtenerEstadoLocal = function(horaAbre, horaCierra) {
 };
 
 // ==========================================
-// 3. EXPANSIÓN DE PRODUCTOS (EL FIX PRINCIPAL)
+// 3. EXPANSIÓN DE PRODUCTOS
 // ==========================================
 window.expandirProducto = function(productoId) {
   const datos = _datosTarjetas[String(productoId)];
@@ -1426,8 +1426,11 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
           estaAbierto = window.obtenerEstadoLocal(comercioData.hora_abre, comercioData.hora_cierra);
         }
 
+        // LEER DESCRIPCIÓN (FALLBACK A REFERENCIA SI LA COLUMNA DESCRIPCIÓN NO EXISTÍA)
+        let descBd = p.descripcion || p.referencia;
+        let descTexto = descBd && descBd.trim() !== "" ? descBd : "Este local no incluyó una descripción detallada.";
+        
         // CARGAMOS LA INFO REAL AL DICCIONARIO PARA EL MODAL
-        let descTexto = p.descripcion && p.descripcion.trim() !== "" ? p.descripcion : "Delicioso producto fresco preparado con ingredientes de primera calidad.";
         _datosTarjetas[String(p.id)] = {
           id: p.id,
           nombre: p.nombre,
@@ -1762,11 +1765,14 @@ window.agregarArticuloComercio = async function() {
     const ext = Date.now();
     const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
     
+    // USAMOS LA COLUMNA 'REFERENCIA' PARA LA DESCRIPCIÓN COMO FALLBACK SEGURO
     let { error } = await supabaseClient.from('moto_productos').insert({
-      id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: "", img_producto: urlArt, pausado: false, descripcion: desc
+      id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: desc, img_producto: urlArt, pausado: false, descripcion: desc
     });
-    if(error) { // Fallback si la columna no existe en la db vieja
-      const result = await supabaseClient.from('moto_productos').insert({ id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: "", img_producto: urlArt, pausado: false });
+    if(error) { 
+      const result = await supabaseClient.from('moto_productos').insert({ 
+        id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: desc, img_producto: urlArt, pausado: false 
+      });
       error = result.error;
     }
     if(error) throw error;
@@ -2037,7 +2043,6 @@ window.procesarLiquidacionIA = async function(input) {
     const deudaActual = deudaMotoAcumulada;
     if (deudaActual <= 0) throw new Error("No tenés deuda pendiente para pagar.");
     
-    // Simulación de respuesta IA (reemplazar por llamada a tu API real)
     setTimeout(async () => {
       await supabaseClient.from('moto_cadetes').update({ viajes_realizados: 0, deuda_acumulada: 0 }).eq('id', sessionActual.id);
       viajesMotoCount = 0; deudaMotoAcumulada = 0;
@@ -2266,6 +2271,20 @@ window.pedirNuevaDireccionEnvio = function() {
   }
 };
 
+window.previewComprobanteCarrito = async function(input) {
+  if(input.files && input.files[0]) {
+    mostrarToast("Comprimiendo comprobante...", "success");
+    const b64 = await comprimirImagen(input.files[0]);
+    AppStore.set('comprobante_tmp', b64);
+    let lbl = document.getElementById('lblComprobanteOk');
+    if(lbl) {
+      lbl.style.display = 'block';
+      lbl.innerHTML = '✅ Foto adjuntada lista para enviar';
+    }
+    mostrarToast("Comprobante listo", "success");
+  }
+};
+
 window.renderizarCarritoDOM = function() {
   const cont = document.getElementById('contenidoCarrito');
   const totalUI = document.getElementById('totalFinalCarrito');
@@ -2291,6 +2310,19 @@ window.renderizarCarritoDOM = function() {
           <input type="number" id="inputCelularCarrito" value="${AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || ''}" style="width:100%; border:none; outline:none; background:transparent; font-weight:800; color:#0f172a; font-size:15px;" readonly>
         </div>
       </div>
+    </div>`;
+
+  listHTML += `
+    <div style="background:#f0fdf4; border:2px dashed #16a34a; border-radius:12px; padding:12px; margin-bottom:12px; text-align:center;">
+      <div style="font-weight:800; color:#15803d; font-size:14px; margin-bottom:4px;">💳 Pagá la comida por Transferencia</div>
+      <div style="color:#0f172a; font-size:13px; margin-bottom:8px;">Alias del local: <span style="font-weight:900; color:#2563eb; user-select:all;">${aliasOrigenCalculo || 'Consultar al local'}</span></div>
+      <div style="position:relative; display:inline-block; overflow:hidden;">
+        <button style="background:#16a34a; color:white; padding:10px 20px; border:none; border-radius:8px; font-weight:800; font-size:13px; box-shadow:0 4px 10px rgba(22,163,74,0.3); pointer-events:none;">
+          <i class="ri-camera-fill" style="margin-right:4px; vertical-align:middle;"></i> <span style="vertical-align:middle;">Subir Comprobante</span>
+        </button>
+        <input type="file" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;" accept="image/*" onchange="previewComprobanteCarrito(this)">
+      </div>
+      <div id="lblComprobanteOk" style="font-size:12px; color:#15803d; font-weight:800; margin-top:6px; display:none;">✅ Comprobante Adjuntado</div>
     </div>`;
 
   listHTML += carritoGlobal.map((item, idx) => {
@@ -2461,12 +2493,26 @@ window.mandarPedidoSoporte = async function() {
   let destClient = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu');
   let nomComprador = AppStore.get('cliente_nombre') || "No registrado";
   let pedidoCreadoId = Date.now();
+  let txtComprobante = "";
+
+  if(AppStore.get('comprobante_tmp')) {
+    mostrarToast("⏳ Procesando comprobante...", "success");
+    try {
+      let urlComp = await subirImagenBucket(AppStore.get('comprobante_tmp'), `comprobantes/pago_${Date.now()}.jpg`);
+      if(urlComp) {
+        txtComprobante = `%0A📎 *VER COMPROBANTE DE PAGO:* ${urlComp}%0A`;
+        AppStore.set('comprobante_tmp', null);
+      }
+    } catch(e) {}
+  }
 
   if(subtotalProductos > 0) window.agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal);
   
   let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
   carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
   
+  if(txtComprobante !== "") txt += txtComprobante;
+
   let telInput = document.getElementById('inputCelularCarrito');
   let telComprador = telInput && telInput.value.trim() !== "" ? telInput.value.trim() : (AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000");
   AppStore.set('cliente_celular_real', telComprador);
