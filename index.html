@@ -115,9 +115,35 @@
         .btn-apk { background: linear-gradient(135deg, #16a34a, #15803d); color: white; font-weight: 800; border-radius: 1rem; border: 2.5px solid rgba(255,255,255,.25); cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all .3s; display: inline-flex; align-items: center; justify-content: center; gap: .55rem; box-shadow: 0 12px 30px rgba(22,163,74,.45), inset 0 1px 0 rgba(255,255,255,.3); }
         .btn-apk:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 42px rgba(22,163,74,.6); }
 
-        .card-premium { background: white; border-radius: 1.5rem; border: 2px solid #ffe4cc; box-shadow: 0 6px 25px rgba(255,107,0,.08); transition: all .4s cubic-bezier(.16,1,.3,1); position: relative; overflow: hidden; width: 100%; }
-        .card-premium:hover { transform: translateY(-7px); box-shadow: 0 22px 55px rgba(255,107,0,.22); border-color: #ff6b00; }
-        .card-premium::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #ff8c00, #ff6b00, #cc4400); }
+        .card-premium { 
+            background: linear-gradient(145deg, #ffffff, #fefcf9); 
+            border-radius: 16px; 
+            border: 1px solid rgba(255, 140, 66, 0.15); 
+            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(255, 107, 0, 0.04); 
+            transition: all .45s cubic-bezier(.22,1,.36,1); 
+            position: relative; 
+            overflow: hidden; 
+            width: 100%; 
+        }
+        .card-premium:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(255, 107, 0, 0.1); 
+            border-color: rgba(255, 107, 0, 0.35); 
+        }
+        .card-premium::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; left: 0; right: 0; 
+            height: 3px; 
+            background: linear-gradient(90deg, #ffb088, #ff8c42, #ff6b00, #ff8c42, #ffb088);
+            background-size: 200% 100%;
+            animation: shimmerLine 4s ease infinite;
+            opacity: 0.85;
+        }
+        @keyframes shimmerLine {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
 
         .feature-icon { width: 62px; height: 62px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #ff6b00; transition: all .4s; border: 2px solid #ffd4b3; }
         .card-premium:hover .feature-icon { transform: scale(1.12) rotate(-5deg); background: linear-gradient(135deg, #ff8c00, #cc4400); color: white; border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.45); }
@@ -470,12 +496,18 @@
         .product-expanded-card .expanded-add-btn {
             position: absolute; bottom: 0; left: 0; right: 0;
             width: 100%; padding: 16px 20px;
-            background: linear-gradient(135deg, #f97316, #ea580c); color: white;
+            background: linear-gradient(135deg, #ff8c42, #f97316, #ea580c); 
+            background-size: 200% 200%;
+            color: white;
             border: none; border-radius: 0 0 28px 28px; font-family: 'Quicksand', sans-serif; font-weight: 900;
             font-size: 16px; cursor: pointer; display: flex; align-items: center;
             justify-content: center; gap: 10px;
-            box-shadow: 0 -6px 20px rgba(249, 115, 22, 0.25);
-            z-index: 10; transition: all 0.2s;
+            box-shadow: 0 -4px 16px rgba(249, 115, 22, 0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+            z-index: 10; transition: all 0.25s;
+        }
+        .product-expanded-card .expanded-add-btn:hover {
+            background-position: 100% 50%;
+            box-shadow: 0 -6px 24px rgba(249, 115, 22, 0.35), inset 0 1px 0 rgba(255,255,255,0.25);
         }
         @media (min-width: 768px) {
             .product-expanded-card .expanded-add-btn {
@@ -2031,11 +2063,11 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 let btnTexto = estaAbierto ? 'AGREGAR' : 'CERRADO';
                 
                 html += `
-                <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
+                <div class="card-premium" style="padding:0; border-radius:14px; display:flex; flex-direction:column; background:linear-gradient(145deg,#ffffff,#fefcf9); border: 1px solid rgba(255,140,66,0.12); box-shadow: 0 2px 12px rgba(15,23,42,0.06), 0 1px 3px rgba(255,107,0,0.04); overflow:hidden; position:relative;">
                     <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
                         <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;">
 
-                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:9px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
+                        <div style="position:absolute; top:8px; left:8px; background:rgba(255,255,255,0.92); backdrop-filter:blur(8px); padding:4px 8px; border-radius:999px; font-size:10px; font-weight:700; color:#059669; box-shadow:0 2px 8px rgba(0,0,0,0.08); border:1px solid rgba(22,163,74,0.2); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill" style="margin-right:3px;"></i>${tiempoEstimado} min</div>
                     </div>
                     <div style="padding:10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
                         <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.2; color:#0f172a; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
@@ -3036,11 +3068,11 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 let onclickAccion = estaAbierto ? `onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
                 
                 html += `
-                <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
+                <div class="card-premium" style="padding:0; border-radius:14px; display:flex; flex-direction:column; background:linear-gradient(145deg,#ffffff,#fefcf9); border: 1px solid rgba(255,140,66,0.12); box-shadow: 0 2px 12px rgba(15,23,42,0.06), 0 1px 3px rgba(255,107,0,0.04); overflow:hidden; position:relative;">
                     <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
                         <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;">
 
-                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
+                        <div style="position:absolute; top:8px; left:8px; background:rgba(255,255,255,0.92); backdrop-filter:blur(8px); padding:4px 8px; border-radius:999px; font-size:10px; font-weight:700; color:#059669; box-shadow:0 2px 8px rgba(0,0,0,0.08); border:1px solid rgba(22,163,74,0.2); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill" style="margin-right:3px;"></i>${tiempoEstimado} min</div>
                     </div>
                     <div style="padding:12px 10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
                         <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.3; color:#0f172a; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
@@ -3512,9 +3544,20 @@ window.agregarArticuloComercio = async function() {
     try {
         const ext = Date.now();
         const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
-        const { error } = await supabaseClient.from('moto_productos').insert({
+        
+        // Intentar primero CON descripción
+        let { error } = await supabaseClient.from('moto_productos').insert({
             id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: "", img_producto: urlArt, pausado: false, descripcion: desc
         });
+        
+        // Si falla, intentar SIN descripción (compatibilidad con tablas antiguas)
+        if(error) {
+            const result = await supabaseClient.from('moto_productos').insert({
+                id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: "", img_producto: urlArt, pausado: false
+            });
+            error = result.error;
+        }
+        
         if(error) throw error;
         dbComerciosCache = [];
         mostrarToast(`¡Artículo publicado con éxito!`, 'success');
@@ -3522,7 +3565,10 @@ window.agregarArticuloComercio = async function() {
         tempImgBase64 = null;
         if(document.getElementById('boxArticuloNuevo')) document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
         window.renderizarAdminComercio();
-    } catch (e) { mostrarToast('Error al publicar artículo', 'error'); }
+    } catch (e) { 
+        console.error('Error publicar:', e);
+        mostrarToast('Error al publicar: ' + (e.message || 'reintentá'), 'error'); 
+    }
 };
 
 window.renderizarAdminComercio = async function() {
