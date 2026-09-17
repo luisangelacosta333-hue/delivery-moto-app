@@ -1099,7 +1099,102 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 // ==========================================
-// 2. UTILIDADES PREMIUM (Voz, Confeti, GPS)
+// 2. AUTO-ARRANQUE: PROVINCIAS, GPS Y SESIÓN
+// ==========================================
+window.addEventListener('DOMContentLoaded', async () => {
+  // 2.1 Inyectar Provincias en los Selects
+  const PROVINCIAS_ARG = [
+    "Buenos Aires", "Ciudad Autónoma de Buenos Aires", "Catamarca", "Chaco", "Chubut",
+    "Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja",
+    "Mendoza", "Misiones", "Neuquén", "Río Negro", "Salta", "San Juan", "San Luis",
+    "Santa Cruz", "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán"
+  ];
+  
+  const configSelects = [
+    { id: 'filtroProvincia', textoDefault: 'Todas las Provincias...' },
+    { id: 'selProvinciaCliente', textoDefault: 'Seleccioná tu Provincia...' },
+    { id: 'comercioProvincia', textoDefault: 'Provincia del Local...' },
+    { id: 'selProvinciaEspecial', textoDefault: 'Provincia Destino...' }
+  ];
+  
+  configSelects.forEach(obj => {
+    const el = document.getElementById(obj.id);
+    if (el) {
+      el.innerHTML = `<option value="">${obj.textoDefault}</option>`;
+      PROVINCIAS_ARG.forEach(prov => {
+        let opt = document.createElement('option');
+        let val = prov === "Ciudad Autónoma de Buenos Aires" ? "CABA" : prov;
+        opt.value = val;
+        opt.text = prov;
+        if (val === "Tucumán") opt.selected = true; // Valor por defecto
+        el.appendChild(opt);
+      });
+    }
+  });
+
+  // 2.2 Botones de Auto-Ubicación GPS
+  const inyectarBtnGPS = (inputId) => {
+    const inputObj = document.getElementById(inputId);
+    if(inputObj && !document.getElementById('btnGPS_'+inputId)) {
+      inputObj.insertAdjacentHTML('beforebegin', `
+        <button id="btnGPS_${inputId}" type="button" onclick="autocompletarConGPS('${inputId}')" style="margin-bottom:8px; padding:10px; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; border-radius:10px; width:100%; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 10px rgba(59,130,246,0.15);">
+          <i class="ri-gps-fill" style="font-size:16px;"></i> Usar mi ubicación actual
+        </button>
+      `);
+    }
+  };
+  inyectarBtnGPS('inputDireccionCliente');
+  inyectarBtnGPS('dirOrigenEspecial');
+
+  // 2.3 Recuperar Carrito Guardado
+  let carritoGuardado = localStorage.getItem('moto_carrito_guardado');
+  if(carritoGuardado) {
+    carritoGlobal = JSON.parse(carritoGuardado);
+    if(carritoGlobal.length > 0) {
+      const floatBtn = document.getElementById('btnFloatingCart');
+      const badge = document.getElementById('badgeCarrito');
+      if(floatBtn) floatBtn.style.display = 'flex';
+      if(badge) badge.textContent = carritoGlobal.length;
+    }
+  }
+
+  // 2.4 Recuperar Sesión de Usuario (Auto-Login)
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session && session.user) {
+      sessionActual = session.user;
+      let ultimoTipo = localStorage.getItem('ultimo_login_tipo');
+      
+      if (ultimoTipo === 'comercio') {
+        miComercioLogueadoId = session.user.id;
+        setTimeout(() => cargarDatosComercioExistente(miComercioLogueadoId), 500);
+      } else if (ultimoTipo === 'cliente') {
+        let { data: cliDB } = await supabaseClient.from('moto_clientes').select('*').eq('id', session.user.id).single();
+        if(cliDB) {
+          AppStore.set('cliente_dir', cliDB.direccion);
+          AppStore.set('cliente_ciu', cliDB.ciudad);
+          AppStore.set('cliente_prov', cliDB.provincia);
+          AppStore.set('cliente_nombre', session.user.user_metadata?.full_name || '');
+          AppStore.set('cliente_celular', cliDB.celular || session.user.email.split('@')[0]);
+          AppStore.set('mi_foto_perfil', cliDB.img_selfie);
+          window.conectarRadarLocal(cliDB.provincia, cliDB.ciudad);
+        }
+      } else if (ultimoTipo === 'cadete') {
+        let { data: cadDB } = await supabaseClient.from('moto_cadetes').select('*').eq('id', sessionActual.id).single();
+        if(cadDB) {
+          viajesMotoCount = cadDB.viajes_realizados || 0;
+          deudaMotoAcumulada = cadDB.deuda_acumulada || 0;
+          AppStore.set('mi_foto_perfil', cadDB.img_selfie);
+          if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
+          if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
+        }
+      }
+    }
+  } catch(err) {}
+});
+
+// ==========================================
+// 3. UTILIDADES PREMIUM (Voz, Confeti, GPS)
 // ==========================================
 window.quitarAcentos = function(str) {
   return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
@@ -1225,7 +1320,7 @@ window.obtenerEstadoLocal = function(horaAbre, horaCierra) {
 };
 
 // ==========================================
-// 3. EXPANSIÓN DE PRODUCTOS
+// 4. EXPANSIÓN DE PRODUCTOS
 // ==========================================
 window.expandirProducto = function(productoId) {
   const datos = _datosTarjetas[String(productoId)];
@@ -1277,7 +1372,7 @@ window.agregarDesdeExpandido = function(id) {
 };
 
 // ==========================================
-// 4. RENDERIZADO DEL CATÁLOGO Y FILTROS
+// 5. RENDERIZADO DEL CATÁLOGO Y FILTROS
 // ==========================================
 window.resetPagination = function() {
   currentPage = 0;
@@ -1489,7 +1584,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
 };
 
 // ==========================================
-// 5. NAVEGACIÓN Y LOGIN
+// 6. NAVEGACIÓN Y LOGIN
 // ==========================================
 window.abrirModalMarketplace = function() {
   document.getElementById('modalMarketplace').classList.add('show');
@@ -1620,7 +1715,7 @@ async function cargarDatosComercioExistente(id) {
 }
 
 // ==========================================
-// 6. PANEL DE USUARIO (CLIENTE)
+// 7. PANEL DE USUARIO (CLIENTE)
 // ==========================================
 window.previewSelfieCliente = async function(input) {
   if(input.files && input.files[0]) {
@@ -1666,7 +1761,7 @@ window.guardarPerfilCliente = async function() {
 };
 
 // ==========================================
-// 7. PANEL DE COMERCIO (CRUD PRODUCTOS)
+// 8. PANEL DE COMERCIO (CRUD PRODUCTOS)
 // ==========================================
 window.previewSelfieComercioModal = async function(input) {
   if(input.files && input.files[0]) {
@@ -1765,7 +1860,6 @@ window.agregarArticuloComercio = async function() {
     const ext = Date.now();
     const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
     
-    // USAMOS LA COLUMNA 'REFERENCIA' PARA LA DESCRIPCIÓN COMO FALLBACK SEGURO
     let { error } = await supabaseClient.from('moto_productos').insert({
       id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: desc, img_producto: urlArt, pausado: false, descripcion: desc
     });
@@ -1958,7 +2052,7 @@ window.llamarMotoDesdeLocal = async function(idx) {
 };
 
 // ==========================================
-// 8. PANEL CADETES
+// 9. PANEL CADETES
 // ==========================================
 window.previewSelfieCadete = async function(input) {
   if(input.files && input.files[0]) {
@@ -2059,7 +2153,7 @@ window.procesarLiquidacionIA = async function(input) {
 };
 
 // ==========================================
-// 9. RADAR EN TIEMPO REAL
+// 10. RADAR EN TIEMPO REAL
 // ==========================================
 let nombreCanalActual = "";
 let canalRadar = null;
@@ -2211,7 +2305,7 @@ window.aceptarViajeRadar = function(viaje_id) {
 };
 
 // ==========================================
-// 10. CARRITO Y CHECKOUT
+// 11. CARRITO Y CHECKOUT
 // ==========================================
 window.intentarComprar = async function(idProducto, nombre, precio, direccionComercio, aliasComercio, telefonoComercio) {
   if(navigator.vibrate) navigator.vibrate(50);
@@ -2348,7 +2442,7 @@ window.borrarItemCarrito = function(idx) {
 };
 
 // ==========================================
-// 11. MAPA MAGO (GPS Y ENVÍO CENTRAL)
+// 12. MAPA MAGO (GPS Y ENVÍO CENTRAL)
 // ==========================================
 function initMapaMago() {
   if (!mapaMagoObj) {
@@ -2639,7 +2733,7 @@ window.iniciarRastreoPedidoCliente = function(pedidoId) {
 };
 
 // ==========================================
-// 12. MAPA DEMO INTERACTIVO DE LA LANDING PAGE
+// 13. MAPA DEMO INTERACTIVO DE LA LANDING PAGE
 // ==========================================
 (function() {
   let mapaDemo = null, marcadorOrigen = null, marcadorDestino = null, capaRuta = null;
