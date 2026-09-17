@@ -252,8 +252,13 @@
         
         /* Botón de zoom nuevo */
         .product-zoom-btn {
-            display: none !important;
+            position: absolute; top: 8px; right: 8px; width: 28px; height: 28px;
+            border-radius: 8px; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px);
+            border: none; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 10; color: #64748b; font-size: 14px;
+            transition: all 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
+        .product-zoom-btn:hover { background: #ffffff; color: #f97316; transform: scale(1.1); }
         
         /* Badge de tiempo */
         .product-time-badge {
@@ -360,7 +365,7 @@
         
         /* --- MODAL DE EXPANSIÓN DE PRODUCTO --- */
         .product-expanded-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.15);
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.12);
             backdrop-filter: blur(2px); z-index: 9999998; display: flex;
             align-items: flex-end; justify-content: center; opacity: 0;
             pointer-events: none; transition: opacity 0.3s ease;
@@ -368,14 +373,14 @@
         .product-expanded-overlay.show { opacity: 1; pointer-events: none; }
         .product-expanded-overlay.show .product-expanded-card { pointer-events: auto; }
         .product-expanded-card {
-            background: #ffffff; width: 100%; max-width: 480px; max-height: 75vh;
+            background: #ffffff; width: 100%; max-width: 480px; max-height: 92vh;
             border-radius: 28px 28px 0 0; overflow-y: auto; transform: translateY(100%);
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative; box-shadow: 0 -20px 60px rgba(0,0,0,0.2);
         }
         @media (min-width: 768px) {
             .product-expanded-overlay { align-items: center; padding: 20px; }
-            .product-expanded-card { border-radius: 28px; max-height: 75vh; transform: scale(0.95); }
+            .product-expanded-card { border-radius: 28px; max-height: 85vh; transform: scale(0.95); }
             .product-expanded-overlay.show .product-expanded-card { transform: scale(1) !important; }
         }
         .product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
@@ -400,7 +405,7 @@
             position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
             background: linear-gradient(to top, #ffffff, transparent); pointer-events: none;
         }
-        .product-expanded-card .expanded-content { padding: 20px 20px 100px; }
+        .product-expanded-card .expanded-content { padding: 20px 20px 24px; }
         .product-expanded-card .expanded-category {
             display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
             border-radius: 999px; background: #fff7ed; color: #ea580c;
@@ -463,23 +468,22 @@
             color: #ea580c; line-height: 1;
         }
         .product-expanded-card .expanded-add-btn {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 480px; padding: 16px 20px;
+            position: relative; width: 100%; padding: 16px 20px; margin-top: 8px;
             background: linear-gradient(135deg, #f97316, #ea580c); color: white;
-            border: none; font-family: 'Quicksand', sans-serif; font-weight: 900;
+            border: none; border-radius: 14px; font-family: 'Quicksand', sans-serif; font-weight: 900;
             font-size: 16px; cursor: pointer; display: flex; align-items: center;
             justify-content: center; gap: 10px;
-            box-shadow: 0 -8px 30px rgba(249, 115, 22, 0.35);
-            z-index: 9999999; transition: all 0.2s;
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+            transition: all 0.2s;
         }
         @media (min-width: 768px) {
             .product-expanded-card .expanded-add-btn {
-                position: absolute; bottom: 0; border-radius: 0 0 28px 28px;
+                border-radius: 14px;
             }
         }
         .product-expanded-card .expanded-add-btn:hover {
             background: linear-gradient(135deg, #ea580c, #c2410c);
-            transform: translateX(-50%) scale(1.01);
+            transform: scale(1.01);
         }
 
     </style>
@@ -1095,6 +1099,7 @@
                     <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
                         <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre del Artículo (Ej: Lomo Completo)" style="margin:0; padding:16px; font-size:16px;">
                         <input type="number" class="input-buscar" id="newArtPrecio" placeholder="Precio Final ($)" style="margin:0; padding:16px; font-size:16px; font-weight:800; color:#16a34a;">
+                        <textarea class="input-buscar" id="newArtDescripcion" placeholder="Descripción del artículo (ingredientes, detalles, recomendaciones...)" style="margin:0; padding:16px; font-size:15px; min-height:100px; resize:vertical; font-family:inherit;"></textarea>
                         
                     </div>
                     <label id="boxArticuloNuevo" style="background:white; border:3px dashed #94a3b8; padding:32px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:16px; background-size: cover; background-position: center; min-height: 180px; position: relative; overflow:hidden; transition:all 0.3s;">
@@ -2029,8 +2034,11 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 html += `
                 <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
                     <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
-                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
-
+                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="verImagenCompleta('${p.img_producto}')">
+                        
+                        <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande">
+                            <i class="ri-zoom-in-line" style="font-size:15px;"></i>
+                        </button>
 
                         <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events:none;"></div>
                         <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:9px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
@@ -2226,19 +2234,27 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
             
             _datosTarjetas[String(datos.id)] = datos;
             
-            // Hacer toda la tarjeta clickeable
-            // Si toca la IMAGEN → comprar directo al carrito
-            // Si toca el resto → expandir producto
+            // Agregar badge de tiempo
+            const primerDiv = tarjeta.querySelector('div');
+            if (primerDiv && !primerDiv.querySelector('.product-time-badge')) {
+                const timeBadge = document.createElement('div');
+                timeBadge.className = 'product-time-badge';
+                timeBadge.innerHTML = `<i class="ri-timer-flash-line" style="color:#f97316;"></i> ${tiempo}`;
+                primerDiv.appendChild(timeBadge);
+                
+                // Agregar botón zoom
+                const zoomBtn = document.createElement('button');
+                zoomBtn.className = 'product-zoom-btn';
+                zoomBtn.innerHTML = '<i class="ri-zoom-in-line"></i>';
+                zoomBtn.title = 'Ver detalles';
+                zoomBtn.onclick = function(e) { e.stopPropagation(); window.expandirProducto(datos.id); };
+                primerDiv.appendChild(zoomBtn);
+            }
+            
+            // Hacer toda la tarjeta clickeable para expandir
             tarjeta.onclick = function(e) {
                 if (e.target.closest('div[onclick*="filtrarFeedPorComercio"]')) return;
-                // Si el clic fue en la imagen del producto
-                if (e.target.tagName === 'IMG' && e.target.closest('div:first-child')) {
-                    if (btnComprar && !btnComprar.classList.contains('btn-desactivado')) {
-                        e.stopPropagation();
-                        btnComprar.click();
-                        return;
-                    }
-                }
+                if (e.target.closest('.product-zoom-btn')) return;
                 window.expandirProducto(datos.id);
             };
             tarjeta.style.cursor = 'pointer';
@@ -3029,8 +3045,8 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 html += `
                 <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
                     <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
-                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
-                        
+                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="verImagenCompleta('${p.img_producto}')">
+                        <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande"><i class="ri-zoom-in-line" style="font-size:16px;"></i></button>
                         <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events:none;"></div>
                         <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
                     </div>
@@ -3494,6 +3510,7 @@ window.agregarArticuloComercio = async function() {
     
     const nom = document.getElementById('newArtNombre').value.trim();
     const pre = parseInt(document.getElementById('newArtPrecio').value);
+    const desc = document.getElementById('newArtDescripcion').value.trim();
     
     if(!nom || isNaN(pre)) return mostrarToast('Completá nombre y precio', 'error');
     if(!tempImgBase64) return mostrarToast('Subí una foto del artículo', 'error');
@@ -3504,12 +3521,12 @@ window.agregarArticuloComercio = async function() {
         const ext = Date.now();
         const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
         const { error } = await supabaseClient.from('moto_productos').insert({
-            id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: "", img_producto: urlArt, pausado: false
+            id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: "", img_producto: urlArt, pausado: false, descripcion: desc
         });
         if(error) throw error;
         dbComerciosCache = [];
         mostrarToast(`¡Artículo publicado con éxito!`, 'success');
-        document.getElementById('newArtNombre').value = ''; document.getElementById('newArtPrecio').value = '';
+        document.getElementById('newArtNombre').value = ''; document.getElementById('newArtPrecio').value = ''; document.getElementById('newArtDescripcion').value = '';
         tempImgBase64 = null;
         if(document.getElementById('boxArticuloNuevo')) document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
         window.renderizarAdminComercio();
