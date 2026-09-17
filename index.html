@@ -1881,7 +1881,7 @@ window.verImagenCompleta = function(url) {
 };
 
 // ==========================================
-// NUEVO: SISTEMA RADAR POR CIUDADES
+// NUEVO: SISTEMA RADAR POR CIUDADES Y CRUCE DE FOTOS
 // ==========================================
 window.quitarAcentos = function(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; };
 
@@ -1916,6 +1916,8 @@ window.conectarRadarLocal = function(prov, ciu) {
                 msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
             }
 
+            let fotoCliente = p.foto_cliente || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
+
             const card = document.createElement('div');
             card.id = 'alertaViaje_' + p.viaje_id;
             card.className = 'tarjeta-radar-premium';
@@ -1929,8 +1931,11 @@ window.conectarRadarLocal = function(prov, ciu) {
                 <div style="font-size:13px; color:#334155; margin-bottom:6px; line-height:1.4;">
                     <strong style="color:#1e293b;"><i class="ri-store-3-fill" style="color:#f97316;"></i> Retira en:</strong><br> ${p.local}
                 </div>
-                <div style="font-size:13px; color:#334155; margin-bottom:14px; line-height:1.4;">
-                    <strong style="color:#1e293b;"><i class="ri-map-pin-user-fill" style="color:#16a34a;"></i> Entrega a:</strong><br> ${p.destino}
+                <div style="font-size:13px; color:#334155; margin-bottom:14px; line-height:1.4; display:flex; align-items:center; gap:10px; background:#f8fafc; padding:8px; border-radius:8px; border:1px solid #e2e8f0;">
+                    <img src="${fotoCliente}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid #16a34a; flex-shrink:0;">
+                    <div>
+                        <strong style="color:#1e293b;"><i class="ri-map-pin-user-fill" style="color:#16a34a;"></i> Entrega a:</strong><br> ${p.destino}
+                    </div>
                 </div>
                 <button id="btnAceptar_${p.viaje_id}" onclick="aceptarViajeRadar('${p.viaje_id}')" style="width:100%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:none; padding:14px; border-radius:12px; font-weight:900; font-size:15px; cursor:pointer; box-shadow:0 6px 15px rgba(22,163,74,0.4); text-transform:uppercase; transition:all 0.2s;">ACEPTAR VIAJE</button>
                 <div class="radar-barra-tiempo"><div id="progreso_${p.viaje_id}" class="radar-progreso"></div></div>
@@ -1954,7 +1959,6 @@ window.conectarRadarLocal = function(prov, ciu) {
     }).on('broadcast', { event: 'viaje_reclamado' }, (payload) => {
         let p = payload.payload;
         
-        // LÓGICA PARA LOS OTROS CADETES (TARJETA NARANJA)
         let card = document.getElementById('alertaViaje_' + p.viaje_id);
         if (card) {
             card.classList.add('tomado');
@@ -1969,16 +1973,14 @@ window.conectarRadarLocal = function(prov, ciu) {
             setTimeout(() => { if(card) card.remove(); }, 3500); 
         }
         
-        // LÓGICA PARA EL CLIENTE O COMERCIANTE (Actualiza el widget y habilita WhatsApp directo)
         let miViajeId = AppStore.get('my_last_trip_id');
         if (miViajeId && String(miViajeId) === String(p.viaje_id)) {
             
-            // === RESTAURAR BOTÓN DE FAVOR (VISUAL FEEDBACK PREMIUM) ===
             if (window.btnFavorRef && window.btnFavorRef.el) {
                 clearTimeout(window.timeoutFavor);
                 let b = window.btnFavorRef.el;
                 b.innerHTML = `✅ ¡ASIGNADO A ${p.cadete_nombre.toUpperCase()}!`;
-                b.style.background = '#2563eb'; // Azul de éxito
+                b.style.background = '#2563eb'; 
                 b.style.border = '2px solid #2563eb';
                 b.style.color = 'white';
                 
@@ -1996,8 +1998,9 @@ window.conectarRadarLocal = function(prov, ciu) {
             
             let widget = document.getElementById('widgetRastreo');
             if (widget) {
+                let fotoCad = p.foto_cadete || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
                 widget.style.borderColor = "#16a34a"; 
-                widget.innerHTML = `<i class="ri-motorbike-fill animate-pulse-glow" style="color:#16a34a; font-size:16px;"></i> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">¡${p.cadete_nombre} en camino!</span>`;
+                widget.innerHTML = `<img src="${fotoCad}" style="width:26px; height:26px; border-radius:50%; object-fit:cover; border:2px solid #16a34a;"> <span style="font-size:11px; font-weight:800; color:#15803d; line-height:1.2;">¡${p.cadete_nombre} en camino!</span>`;
                 widget.onclick = function() { 
                     let cel = p.cadete_celular ? String(p.cadete_celular).replace(/[^0-9]/g, '') : NUMERO_SOPORTE_CENTRAL;
                     window.open('https://wa.me/' + cel + '?text=Hola ' + p.cadete_nombre + ', te espero con el pedido.', '_blank'); 
@@ -2016,6 +2019,7 @@ window.aceptarViajeRadar = function(viaje_id) {
     
     let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
     let miCelular = AppStore.get('cliente_celular') || '00000000';
+    let miFoto = AppStore.get('mi_foto_perfil') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
     
     // Sumar 200 pesos al cadete automáticamente al aceptar
     viajesMotoCount += 1;
@@ -2035,7 +2039,7 @@ window.aceptarViajeRadar = function(viaje_id) {
         canalRadar.send({
             type: 'broadcast',
             event: 'viaje_reclamado',
-            payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular }
+            payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular, foto_cadete: miFoto }
         });
     }
     
@@ -2188,6 +2192,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     AppStore.set('cliente_prov', cliDB.provincia);
                     AppStore.set('cliente_nombre', session.user.user_metadata?.full_name || ''); 
                     AppStore.set('cliente_celular', cliDB.celular || session.user.email.split('@')[0]);
+                    AppStore.set('mi_foto_perfil', cliDB.img_selfie);
                     window.conectarRadarLocal(cliDB.provincia, cliDB.ciudad);
                 }
             } else if (ultimoTipo === 'cadete') {
@@ -2195,6 +2200,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 if(cadDB) {
                     viajesMotoCount = cadDB.viajes_realizados || 0;
                     deudaMotoAcumulada = cadDB.deuda_acumulada || 0;
+                    AppStore.set('mi_foto_perfil', cadDB.img_selfie);
                     if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
                     if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
                 }
@@ -2460,7 +2466,6 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                     </div>`;
                 }
             }
-            
             if(btnLimpiarFiltro) container.innerHTML += btnLimpiarFiltro;
         } else {
             const bottomLoader = document.getElementById('bottomLoader');
@@ -2483,7 +2488,6 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 let aliasComercio = (comercioData && comercioData.alias_mp) ? comercioData.alias_mp : ""; 
                 let imgSelfieRaw = comercioData ? comercioData.img_selfie : null;
                 let urlLogoComercio = (imgSelfieRaw && imgSelfieRaw !== 'null' && imgSelfieRaw.trim() !== '') ? imgSelfieRaw : "https://cdn-icons-png.flaticon.com/512/3112/3112618.png";
-                
                 let tiempoEstimado = Math.floor(Math.random() * (25 - 10 + 1) + 10);
                 
                 let estaAbierto = true;
@@ -2578,6 +2582,7 @@ window.validarLogin = async function() {
                 if(cadDB) {
                     viajesMotoCount = cadDB.viajes_realizados || 0;
                     deudaMotoAcumulada = cadDB.deuda_acumulada || 0;
+                    AppStore.set('mi_foto_perfil', cadDB.img_selfie); // GUARDAMOS FOTO CADETE
                     if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
                     if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
                     irPaso('servimoto'); 
@@ -2589,6 +2594,7 @@ window.validarLogin = async function() {
                     AppStore.set('cliente_ciu', cliDB.ciudad);
                     AppStore.set('cliente_prov', cliDB.provincia);
                     AppStore.set('cliente_nombre', sessionActual.user_metadata?.full_name || ''); 
+                    AppStore.set('mi_foto_perfil', cliDB.img_selfie); // GUARDAMOS FOTO CLIENTE
                     window.conectarRadarLocal(cliDB.provincia, cliDB.ciudad);
                     if(productoPendienteAdd) procesarAgregadoCarrito();
                     irPaso('feed-global');
@@ -2675,6 +2681,7 @@ window.guardarPerfilCliente = async function() {
             id: sessionActual.id, celular: cel, provincia: prov, ciudad: ciu,
             direccion: dir, img_selfie: urlFoto || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"
         });
+        AppStore.set('mi_foto_perfil', urlFoto); // GUARDAMOS FOTO CLIENTE NUEVO
         window.conectarRadarLocal(prov, ciu);
     } catch(e) { console.warn('Falla de BD menor, continuamos', e); }
     
@@ -2700,9 +2707,6 @@ window.agregarPedidoBandejaComercio = function(total, destino, nombreCliente, ca
     window.renderizarBandejaPedidos();
 };
 
-// ==========================================
-// CORRECCIÓN 3: TARJETAS DE BANDEJA ACOMODADAS
-// ==========================================
 window.renderizarBandejaPedidos = function() {
     const bandeja = document.getElementById('bandejaPedidosComercio');
     if(!bandeja) return;
@@ -2737,6 +2741,7 @@ window.renderizarBandejaPedidos = function() {
                 </div>
             </div>
             
+            <!-- AVISO ACLARATORIO PARA EL COMERCIO -->
             <div style="font-size:12px; color:#166534; font-weight:800; margin-bottom:10px; background:#dcfce7; padding:6px 10px; border-radius:6px; border:1px solid #86efac;">
                 💡 1. Verificá que el pago por transferencia sea correcto.<br>2. Tocá "LLAMAR MOTO" para solicitar el ServiMoto en el radar de tu zona y coordinar la entrega.
             </div>
@@ -2771,7 +2776,8 @@ window.llamarMotoDesdeLocal = async function(idx) {
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
     let viaje_id = pedidoInfo.id || Date.now();
     let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
-    
+    let fotoComercio = AppStore.get('selfie_com_tmp') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png'; // FOTO COMERCIO AL RADAR
+
     AppStore.set('my_last_trip_id', viaje_id);
 
     let provComercio = document.getElementById('comercioProvincia') ? document.getElementById('comercioProvincia').value : "Tucumán";
@@ -2788,7 +2794,8 @@ window.llamarMotoDesdeLocal = async function(idx) {
                     local: `${nombreLocal} (${dirLocal})`, 
                     destino: pedidoInfo.destino,
                     costo: pedidoInfo.total,
-                    tel_cliente: telCliente
+                    tel_cliente: telCliente,
+                    foto_cliente: fotoComercio
                 }
             });
         }
@@ -2825,6 +2832,7 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
     let nomLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Un comercio";
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
     let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
+    let fotoComercio = AppStore.get('selfie_com_tmp') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png'; // FOTO AL RADAR
     let viaje_id = Date.now();
     
     AppStore.set('my_last_trip_id', viaje_id);
@@ -2843,7 +2851,8 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
                     local: dirLocal ? `${nomLocal} (${dirLocal})` : nomLocal,
                     destino: "Encargo / Favor",
                     costo: "A conv.",
-                    tel_cliente: telCliente
+                    tel_cliente: telCliente,
+                    foto_cliente: fotoComercio
                 }
             });
         }
@@ -3080,6 +3089,7 @@ window.auditarDocumentosIA = async function() {
         const cel = AppStore.get('cliente_celular');
         await supabaseClient.auth.updateUser({ data: { full_name: nomCadete } });
         const { error } = await supabaseClient.from('moto_cadetes').upsert({ id: sessionActual.id, celular: cel, img_selfie: urlSelfieCad, aprobado_ia: true });
+        AppStore.set('mi_foto_perfil', urlSelfieCad); // GUARDAMOS FOTO CADETE NUEVO
         if(error) throw error;
         setTimeout(() => { mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); irPaso('servimoto'); }, 2000);
     } catch(e) { mostrarToast('Error al auditar en DB.', 'error'); }
@@ -3472,22 +3482,11 @@ window.calcularMatematicaEnvio = function(distancia) {
     
     let celCliente = AppStore.get('cliente_celular') || "Sin teléfono";
     let pInfo = document.querySelector("#modalMapaGrande p");
-    let btnConfirmarMapa = document.querySelector('#modalMapaGrande button[onclick="procesarEnvioMapa()"]');
     
     if (esViajeEspecial) {
         if(pInfo) pInfo.innerHTML = `💡 <b>Importante:</b> Al solicitar el viaje, buscaremos un ServiMoto en el radar. <b>Deberán pre-coordinar los detalles por WhatsApp</b> antes de confirmar el viaje.<br><span style="font-weight:600; color:#0f172a; margin-top:4px; display:inline-block;">(Tu celular para este viaje: ${celCliente})</span>`;
-        if(btnConfirmarMapa) {
-            btnConfirmarMapa.innerHTML = '<i class="ri-whatsapp-fill" style="font-size:16px; vertical-align:middle; margin-right:4px;"></i> PRE-COORDINAR VIAJE';
-            btnConfirmarMapa.style.background = '#25D366';
-            btnConfirmarMapa.style.boxShadow = '0 4px 10px rgba(37,211,102,0.3)';
-        }
     } else {
         if(pInfo) pInfo.innerHTML = `💡 <b>Importante:</b> El envío se paga por separado directamente al ServiMoto.<br><span style="font-weight:600; color:#16a34a; margin-top:4px; display:inline-block;">(El comercio recibirá tu comprobante y llamará a la moto cuando esté listo)</span>`;
-        if(btnConfirmarMapa) {
-            btnConfirmarMapa.innerHTML = 'ENVIAR PEDIDO AL LOCAL <i class="ri-checkbox-circle-fill" style="font-size:18px; vertical-align:middle; margin-left:4px;"></i>';
-            btnConfirmarMapa.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
-            btnConfirmarMapa.style.boxShadow = '0 4px 10px rgba(22,163,74,0.3)';
-        }
     }
     
     let subtotalProductos = 0;
@@ -3534,7 +3533,6 @@ window.mandarPedidoSoporte = async function() {
         }
     } catch (e) {}
 
-    // El pedido cae en la bandeja del comercio PERO NO DISPARA EL RADAR AUTOMÁTICAMENTE
     if(subtotalProductos > 0) { window.agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal); }
 
     let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
@@ -3582,7 +3580,6 @@ window.mandarPedidoSoporte = async function() {
         
         window.open(`https://wa.me/${telDestinoLimpio}?text=${txt}`, '_blank');
         
-        // NOTA: EL RADAR NO SE DISPARA ACÁ. El comercio lo disparará manualmente desde su panel con "LLAMAR MOTO".
         window.iniciarRastreoPedidoCliente(idViajeFinal); 
     }, 2500); 
 };
@@ -3620,6 +3617,7 @@ window.mandarViajeEspecialSoporte = async function() {
     AppStore.set('my_last_trip_id', idViajeFinal);
 
     if(canalRadar) {
+        let fotoCliente = AppStore.get('mi_foto_perfil') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
         canalRadar.send({
             type: 'broadcast',
             event: 'nuevo_viaje',
@@ -3628,7 +3626,8 @@ window.mandarViajeEspecialSoporte = async function() {
                 local: dirOrig, 
                 destino: `${dirDest}, ${ciuDest}`,
                 costo: costo,
-                tel_cliente: telCliente
+                tel_cliente: telCliente,
+                foto_cliente: fotoCliente
             }
         });
     }
