@@ -236,14 +236,15 @@
         
         /* Imagen del producto */
         #gridMercadoLibre .card-premium > div:first-child {
-            height: 90px !important;
+            height: 140px !important;
             position: relative !important;
             flex-shrink: 0 !important;
         }
         #gridMercadoLibre .card-premium > div:first-child img {
             width: 100% !important;
-            height: 90px !important;
+            height: 140px !important;
             object-fit: cover !important;
+            cursor: pointer !important;
         }
         #gridMercadoLibre .card-premium > div:first-child > div:nth-child(3) {
             display: none !important; /* ocultar gradiente negro antiguo */
@@ -359,21 +360,22 @@
         
         /* --- MODAL DE EXPANSIÓN DE PRODUCTO --- */
         .product-expanded-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px); z-index: 9999998; display: flex;
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.15);
+            backdrop-filter: blur(2px); z-index: 9999998; display: flex;
             align-items: flex-end; justify-content: center; opacity: 0;
             pointer-events: none; transition: opacity 0.3s ease;
         }
-        .product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
+        .product-expanded-overlay.show { opacity: 1; pointer-events: none; }
+        .product-expanded-overlay.show .product-expanded-card { pointer-events: auto; }
         .product-expanded-card {
-            background: #ffffff; width: 100%; max-width: 480px; max-height: 92vh;
+            background: #ffffff; width: 100%; max-width: 480px; max-height: 75vh;
             border-radius: 28px 28px 0 0; overflow-y: auto; transform: translateY(100%);
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative; box-shadow: 0 -20px 60px rgba(0,0,0,0.2);
         }
         @media (min-width: 768px) {
             .product-expanded-overlay { align-items: center; padding: 20px; }
-            .product-expanded-card { border-radius: 28px; max-height: 85vh; transform: scale(0.95); }
+            .product-expanded-card { border-radius: 28px; max-height: 75vh; transform: scale(0.95); }
             .product-expanded-overlay.show .product-expanded-card { transform: scale(1) !important; }
         }
         .product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
@@ -515,7 +517,7 @@
 
 <button id="btnFloatingCart" onclick="abrirCarritoFinal()" style="display:none; position:fixed; bottom:24px; right:24px; width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg, #16a34a, #15803d); color:white; border:3px solid #bbf7d0;  z-index:9999999; font-size:26px; cursor:pointer; align-items:center; justify-content:center; transition:transform 0.2s;">
     <i class="ri-shopping-cart-2-fill"></i>
-    <div id="badgeCarrito" style="position:absolute; top:-5px; right:-5px; background:white; color:#15803d; font-size:13px; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #16a34a; ">0</div>
+    <div id="badgeCarrito" style="position:absolute; top:-5px; right:-5px; background:white; color:#15803d; font-size:13px; font-weight:900; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #16a34a; box-shadow:0 4px 10px rgba(0,0,0,0.3);">0</div>
 </button>
 
 <div style="height:90px;"></div>
@@ -2025,23 +2027,30 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 let btnTexto = estaAbierto ? 'AGREGAR' : 'CERRADO';
                 
                 html += `
-                <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
-                    <div style="height:80px; width:100%; position:relative; flex-shrink:0;">
-                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;">
+                <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
+                    <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
+                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
+
+
+                        <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events:none;"></div>
                         <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:9px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
                     </div>
-                    <div style="padding:8px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
-                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:13px; line-height:1.2; color:#0f172a; margin-bottom:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
+                    <div style="padding:10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
+                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.2; color:#0f172a; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
 
-                        <div onclick="event.stopPropagation(); filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:4px; margin-bottom:6px; background:#fff7ed; border:1px solid #ffd4b3; padding:2px 6px; border-radius:6px; width:fit-content;">
-                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:14px; height:14px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                            <span style="font-size:10px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70px;">${nomComercio}</span>
+                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:4px; margin-bottom:8px; background:#fff7ed; border:1px solid #ffd4b3; padding:2px 6px; border-radius:6px; width:fit-content;">
+                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:16px; height:16px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                            <span style="font-size:11px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${nomComercio}</span>
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="color:#16a34a; font-weight:900; font-size:17px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <div style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
                             ${badgeEstado}
                         </div>
+                        
+                        <button class="${btnClase}" style="width:100%; padding:8px; font-size:11px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
+                            ${btnTexto} <i class="ri-shopping-cart-2-line" style="font-size:13px; vertical-align:middle; margin-left:2px;"></i>
+                        </button>
                     </div>
                 </div>`;
             });
@@ -2217,12 +2226,20 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
             
             _datosTarjetas[String(datos.id)] = datos;
             
-            // Hacer toda la tarjeta clickeable para COMPRAR DIRECTAMENTE
+            // Hacer toda la tarjeta clickeable
+            // Si toca la IMAGEN → comprar directo al carrito
+            // Si toca el resto → expandir producto
             tarjeta.onclick = function(e) {
                 if (e.target.closest('div[onclick*="filtrarFeedPorComercio"]')) return;
-                if (btnComprar && !btnComprar.classList.contains('btn-desactivado')) {
-                    btnComprar.click();
+                // Si el clic fue en la imagen del producto
+                if (e.target.tagName === 'IMG' && e.target.closest('div:first-child')) {
+                    if (btnComprar && !btnComprar.classList.contains('btn-desactivado')) {
+                        e.stopPropagation();
+                        btnComprar.click();
+                        return;
+                    }
                 }
+                window.expandirProducto(datos.id);
             };
             tarjeta.style.cursor = 'pointer';
         });
@@ -3010,21 +3027,26 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 let onclickAccion = estaAbierto ? `onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
                 
                 html += `
-                <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative; cursor:pointer;" ${onclickAccion}>
-                    <div style="height:80px; width:100%; position:relative; flex-shrink:0;">
-                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;">
+                <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
+                    <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
+                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')">
+                        
+                        <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events:none;"></div>
                         <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
                     </div>
-                    <div style="padding:8px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
-                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:13px; line-height:1.2; color:#0f172a; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
-                        <div onclick="event.stopPropagation(); filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:4px; margin-bottom:6px; background:#fff7ed; border:1px solid #ffd4b3; padding:3px 6px; border-radius:6px; width:fit-content;">
-                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:14px; height:14px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                            <span style="font-size:10px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:80px;">${nomComercio}</span>
+                    <div style="padding:12px 10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
+                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.3; color:#0f172a; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
+                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:10px; background:#fff7ed; border:1px solid #ffd4b3; padding:4px 8px; border-radius:6px; width:fit-content;">
+                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:16px; height:16px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                            <span style="font-size:11px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;">${nomComercio}</span>
                         </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="color:#16a34a; font-weight:900; font-size:17px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <div style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
                             ${badgeEstado}
                         </div>
+                        <button class="${btnClase}" style="width:100%; padding:10px 8px; font-size:13px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" ${onclickAccion}>
+                            ${btnTexto}
+                        </button>
                     </div>
                 </div>`;
             });
