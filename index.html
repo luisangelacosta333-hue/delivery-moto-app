@@ -1833,6 +1833,130 @@ stylePremium.innerHTML = `
     .badge-abierto { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
     .badge-cerrado { background: #ffedd5; color: #ea580c; border: 1px solid #fdba74; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
     .btn-desactivado { background: #cbd5e1 !important; color: #64748b !important; border: none !important; box-shadow: none !important; pointer-events: none !important; }
+
+    /* ========================================== */
+    /* NUEVO: ESTILOS PARA MODAL DE PRODUCTO PREMIUM */
+    /* ========================================== */
+    #modalProductoPremium {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: white;
+        z-index: 999999999;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow-y: auto;
+        font-family: 'Sora', sans-serif;
+    }
+    #modalProductoPremium.show {
+        transform: translateY(0);
+    }
+    .btn-back-modal {
+        position: absolute;
+        top: 20px; left: 20px;
+        width: 40px; height: 40px;
+        background: white;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        font-size: 24px; color: #0f172a;
+        cursor: pointer;
+        z-index: 10;
+        border: none;
+    }
+    .modal-foto-container {
+        width: 100%;
+        height: 40vh;
+        background: #f8fafc;
+        display: flex; align-items: center; justify-content: center;
+        position: relative;
+    }
+    .modal-foto-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .modal-info-container {
+        padding: 20px;
+        padding-bottom: 100px; /* Espacio para la barra flotante */
+        background: white;
+        flex: 1;
+    }
+    .modal-titulo {
+        font-weight: 900;
+        font-size: 24px;
+        color: #0f172a;
+        line-height: 1.2;
+        margin-bottom: 10px;
+    }
+    .modal-precio {
+        font-weight: 900;
+        font-size: 28px;
+        color: #16a34a;
+        margin-bottom: 15px;
+    }
+    .modal-descripcion {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+    .modal-comercio-info {
+        display: flex; align-items: center; gap: 10px;
+        background: #fff7ed; border: 1px solid #ffd4b3; padding: 10px; border-radius: 12px;
+        margin-bottom: 20px;
+    }
+    .modal-comercio-info img {
+        width: 30px; height: 30px; border-radius: 50%; object-fit: cover;
+    }
+    /* Barra Sticky Inferior */
+    .modal-bottom-bar {
+        position: fixed;
+        bottom: 0; left: 0; width: 100%;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+        z-index: 10;
+        gap: 15px;
+    }
+    .selector-cantidad {
+        display: flex; align-items: center;
+        background: #f1f5f9;
+        border-radius: 30px;
+        padding: 5px;
+    }
+    .selector-cantidad button {
+        width: 35px; height: 35px;
+        border: none; background: white; border-radius: 50%;
+        font-size: 18px; font-weight: bold; color: #0f172a;
+        cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .selector-cantidad span {
+        width: 40px; text-align: center;
+        font-weight: 800; font-size: 16px;
+    }
+    .btn-agregar-premium {
+        flex: 1;
+        background: #f97316;
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 30px;
+        font-weight: 900;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 6px 15px rgba(249, 115, 22, 0.3);
+        text-align: center;
+        transition: transform 0.1s;
+    }
+    .btn-agregar-premium:active {
+        transform: scale(0.98);
+    }
 `;
 document.head.appendChild(stylePremium);
 
@@ -1846,38 +1970,141 @@ const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
-// NUEVO: SISTEMA DE VISUALIZACIÓN DE FOTOS (MODAL)
+// NUEVO: SISTEMA DE PRODUCTO PREMIUM (Estilo PedidosYa)
 // ==========================================
-window.verImagenCompleta = function(url) {
-    let modal = document.getElementById('modalVisorImagen');
-    if(!modal) {
-        modal = document.createElement('div');
-        modal.id = 'modalVisorImagen';
-        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); backdrop-filter:blur(10px); z-index:99999999; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s; cursor:pointer;';
-        modal.onclick = function() { 
-            modal.style.opacity = '0'; 
-            document.getElementById('imgVisor').style.transform = 'scale(0.9)';
-            setTimeout(()=>modal.style.display='none', 300); 
-        };
+let modalProductoGlobal = null;
+let cantidadProductoActual = 1;
+let precioProductoActual = 0;
+
+window.abrirModalProductoPremium = function(idProducto, nombre, precio, imgUrl, idComercio, nomComercio, logoComercio, dirComercio, aliasComercio, telComercio) {
+    cantidadProductoActual = 1;
+    precioProductoActual = parseFloat(precio);
+    
+    // Guardamos los datos temporalmente para la función de agregar
+    productoPendienteAdd = { 
+        id: idProducto, 
+        nombre: nombre, 
+        precio: precioProductoActual, 
+        direccion: dirComercio, 
+        alias: aliasComercio 
+    };
+    telefonoComercioCalculo = telComercio || NUMERO_SOPORTE_CENTRAL;
+
+    if (!modalProductoGlobal) {
+        modalProductoGlobal = document.createElement('div');
+        modalProductoGlobal.id = 'modalProductoPremium';
+        document.body.appendChild(modalProductoGlobal);
+    }
+
+    modalProductoGlobal.innerHTML = `
+        <button class="btn-back-modal" onclick="cerrarModalProductoPremium()"><i class="ri-arrow-left-line"></i></button>
         
-        let img = document.createElement('img');
-        img.id = 'imgVisor';
-        img.style.cssText = 'max-width:90%; max-height:90%; object-fit:contain; border-radius:16px; box-shadow:0 15px 40px rgba(0,0,0,0.6); transform:scale(0.9); transition:transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); border:3px solid #ff6b00; background:white;';
-        modal.appendChild(img);
+        <div class="modal-foto-container">
+            <img src="${imgUrl}" alt="${nombre}">
+        </div>
+        
+        <div class="modal-info-container">
+            <div class="modal-titulo">${nombre}</div>
+            <div class="modal-precio">$${precioProductoActual.toLocaleString('es-AR')}</div>
+            
+            <div class="modal-comercio-info">
+                <img src="${logoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'">
+                <div>
+                    <div style="font-weight: 800; font-size: 13px; color: #0f172a;">${nomComercio}</div>
+                    <div style="font-size: 11px; color: #64748b;">${dirComercio}</div>
+                </div>
+            </div>
+            
+            <div class="modal-descripcion">
+                Detalles del producto no especificados. Consulta con el local para más información.
+            </div>
+        </div>
 
-        let btnClose = document.createElement('div');
-        btnClose.innerHTML = '<i class="ri-close-line"></i>';
-        btnClose.style.cssText = 'position:absolute; top:20px; right:20px; width:44px; height:44px; background:rgba(255,255,255,0.1); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; border:2px solid rgba(255,255,255,0.4); box-shadow:0 4px 10px rgba(0,0,0,0.3);';
-        modal.appendChild(btnClose);
+        <div class="modal-bottom-bar">
+            <div class="selector-cantidad">
+                <button onclick="cambiarCantidadProducto(-1)">-</button>
+                <span id="txtCantidadProducto">1</span>
+                <button onclick="cambiarCantidadProducto(1)">+</button>
+            </div>
+            <button class="btn-agregar-premium" onclick="ejecutarCompraPremium()">
+                Agregar $<span id="lblPrecioBoton">${precioProductoActual.toLocaleString('es-AR')}</span>
+            </button>
+        </div>
+    `;
 
-        document.body.appendChild(modal);
+    // Trigger para la animación CSS
+    setTimeout(() => {
+        modalProductoGlobal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Bloquear scroll de fondo
+    }, 10);
+};
+
+window.cerrarModalProductoPremium = function() {
+    if (modalProductoGlobal) {
+        modalProductoGlobal.classList.remove('show');
+        document.body.style.overflow = '';
+        productoPendienteAdd = null; // Limpiamos si cierra sin comprar
+    }
+};
+
+window.cambiarCantidadProducto = function(cambio) {
+    let nuevaCantidad = cantidadProductoActual + cambio;
+    if (nuevaCantidad < 1) nuevaCantidad = 1;
+    if (nuevaCantidad > 20) nuevaCantidad = 20; // Límite razonable
+    
+    cantidadProductoActual = nuevaCantidad;
+    document.getElementById('txtCantidadProducto').textContent = cantidadProductoActual;
+    
+    let nuevoPrecioTotal = precioProductoActual * cantidadProductoActual;
+    document.getElementById('lblPrecioBoton').textContent = nuevoPrecioTotal.toLocaleString('es-AR');
+    
+    // Actualizamos el precio total en el objeto pendiente
+    if(productoPendienteAdd) {
+        productoPendienteAdd.precio = nuevoPrecioTotal;
+        // Opcional: podríamos agregar la cantidad al objeto si el backend lo soportara
+        productoPendienteAdd.nombre = `${cantidadProductoActual}x ${productoPendienteAdd.nombre.replace(/^\d+x\s/, '')}`;
+    }
+};
+
+window.ejecutarCompraPremium = function() {
+    if(navigator.vibrate) navigator.vibrate(50);
+    
+    if(!sessionActual) { 
+        cerrarModalProductoPremium();
+        mostrarToast('¡Iniciá sesión para armar tu pedido!', 'error'); 
+        iniciarLogin('cliente'); 
+        return; 
     }
     
-    document.getElementById('imgVisor').src = url;
-    modal.style.display = 'flex';
-    void modal.offsetWidth; // Trigger reflow para animación
-    modal.style.opacity = '1';
-    document.getElementById('imgVisor').style.transform = 'scale(1)';
+    if(!AppStore.get('cliente_dir')) { 
+        mostrarToast('Buscando tu perfil...', 'success');
+        // Usamos una IIFE asíncrona para no bloquear
+        (async () => {
+            try {
+                let { data: cliDB } = await supabaseClient.from('moto_clientes').select('*').eq('id', sessionActual.id).single();
+                if(cliDB && cliDB.direccion) {
+                    AppStore.set('cliente_dir', cliDB.direccion);
+                    AppStore.set('cliente_ciu', cliDB.ciudad);
+                    AppStore.set('cliente_prov', cliDB.provincia);
+                    AppStore.set('cliente_celular', cliDB.celular || sessionActual.email.split('@')[0]);
+                    AppStore.set('cliente_nombre', sessionActual.user_metadata?.full_name || '');
+                    window.conectarRadarLocal(cliDB.provincia, cliDB.ciudad);
+                    
+                    window.procesarAgregadoCarrito();
+                    cerrarModalProductoPremium();
+                    return;
+                }
+            } catch(e) {}
+            
+            cerrarModalProductoPremium();
+            mostrarToast('Falta configurar tu dirección de entrega', 'error'); 
+            irPaso('cliente-ubicacion'); 
+        })();
+        return; 
+    }
+    
+    window.procesarAgregadoCarrito();
+    cerrarModalProductoPremium();
 };
 
 // ==========================================
@@ -2496,31 +2723,32 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 }
                 
                 let badgeEstado = estaAbierto ? `<span class="badge-abierto">ABIERTO</span>` : `<span class="badge-cerrado">CERRADO</span>`;
-                let btnClase = estaAbierto ? 'btn-primary' : 'btn-primary btn-desactivado';
-                let btnTexto = estaAbierto ? 'AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:14px; vertical-align:middle; margin-left:2px;"></i>' : 'CERRADO';
-                let onclickAccion = estaAbierto ? `onclick="intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
                 
+                // === NUEVO: LLAMADO AL MODAL PREMIUM ===
+                let onclickAccion = estaAbierto 
+                    ? `onclick="abrirModalProductoPremium('${p.id}', '${p.nombre.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', ${p.precio}, '${p.img_producto}', '${p.id_comercio}', '${nomComercio.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', '${urlLogoComercio}', '${dirComercio.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', '${aliasComercio}', '${telComercio}')"` 
+                    : '';
+                
+                // ESTILO DE TARJETA LIMPIO (SIN SOMBRAS PESADAS, CLICK EN TODA LA TARJETA)
                 html += `
-                <div class="card-premium" style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.04); overflow:hidden; position:relative;">
-                    <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
-                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:pointer;" onclick="verImagenCompleta('${p.img_producto}')">
-                        <button onclick="verImagenCompleta('${p.img_producto}')" style="position:absolute; top:6px; right:6px; background:rgba(255,255,255,0.95); border:none; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.15); color:#ff6b00;" title="Ver foto en grande"><i class="ri-zoom-in-line" style="font-size:16px;"></i></button>
-                        <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events:none;"></div>
-                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5; pointer-events:none;"><i class="ri-timer-flash-fill"></i> Aprox ${tiempoEstimado} min</div>
+                <div class="card-premium" ${onclickAccion} style="padding:0; border-radius:12px; display:flex; flex-direction:column; background:white; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.03); overflow:hidden; position:relative; cursor:${estaAbierto ? 'pointer' : 'not-allowed'};">
+                    <div style="height:110px; width:100%; position:relative; flex-shrink:0;">
+                        <img src="${p.img_producto}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;">
+                        <div style="position:absolute; bottom:0; left:0; width:100%; height:30px; background:linear-gradient(to top, rgba(0,0,0,0.4), transparent); pointer-events:none;"></div>
+                        <div style="position:absolute; top:6px; left:6px; background:rgba(255,255,255,0.95); padding:2px 6px; border-radius:6px; font-size:10px; font-weight:800; color:#16a34a; box-shadow:0 2px 6px rgba(0,0,0,0.1); z-index:5;"><i class="ri-timer-flash-fill"></i> ~${tiempoEstimado} min</div>
                     </div>
-                    <div style="padding:12px 10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
-                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.3; color:#0f172a; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
-                        <div onclick="filtrarFeedPorComercio('${p.id_comercio}')" style="cursor:pointer; display:flex; align-items:center; gap:6px; margin-bottom:10px; background:#fff7ed; border:1px solid #ffd4b3; padding:4px 8px; border-radius:6px; width:fit-content;">
-                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:16px; height:16px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-                            <span style="font-size:11px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;">${nomComercio}</span>
+                    <div style="padding:10px; display:flex; flex-direction:column; flex:1; justify-content:space-between; background:white;">
+                        <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:14px; line-height:1.3; color:#0f172a; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.nombre}</div>
+                        
+                        <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px; opacity:0.8;">
+                            <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:14px; height:14px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+                            <span style="font-size:11px; font-weight:700; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100px;">${nomComercio}</span>
                         </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <div style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
-                            ${badgeEstado}
+
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="color:#0f172a; font-weight:900; font-size:16px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+                            ${estaAbierto ? '<i class="ri-add-circle-fill" style="color:#f97316; font-size:22px;"></i>' : badgeEstado}
                         </div>
-                        <button class="${btnClase}" style="width:100%; padding:10px 8px; font-size:13px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" ${onclickAccion}>
-                            ${btnTexto}
-                        </button>
                     </div>
                 </div>`;
             });
@@ -2528,6 +2756,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
             container.insertAdjacentHTML('beforeend', html);
             if (!isLoadMore) { baseProductosActivos = dbProductos; } 
             else { baseProductosActivos = baseProductosActivos.concat(dbProductos); }
+
             if (dbProductos.length < ITEMS_PER_PAGE) { hasMoreProducts = false; } 
             else { currentPage++; }
         } else { hasMoreProducts = false; }
@@ -2741,7 +2970,6 @@ window.renderizarBandejaPedidos = function() {
                 </div>
             </div>
             
-            <!-- AVISO ACLARATORIO PARA EL COMERCIO -->
             <div style="font-size:12px; color:#166534; font-weight:800; margin-bottom:10px; background:#dcfce7; padding:6px 10px; border-radius:6px; border:1px solid #86efac;">
                 💡 1. Verificá que el pago por transferencia sea correcto.<br>2. Tocá "LLAMAR MOTO" para solicitar el ServiMoto en el radar de tu zona y coordinar la entrega.
             </div>
@@ -2776,7 +3004,7 @@ window.llamarMotoDesdeLocal = async function(idx) {
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
     let viaje_id = pedidoInfo.id || Date.now();
     let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
-    let fotoComercio = AppStore.get('selfie_com_tmp') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png'; // FOTO COMERCIO AL RADAR
+    let fotoComercio = AppStore.get('selfie_com_tmp') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
 
     AppStore.set('my_last_trip_id', viaje_id);
 
@@ -2832,7 +3060,7 @@ window.pedirFavorCadeteWhatsApp = function(evt) {
     let nomLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Un comercio";
     let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
     let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
-    let fotoComercio = AppStore.get('selfie_com_tmp') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png'; // FOTO AL RADAR
+    let fotoComercio = AppStore.get('selfie_com_tmp') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png'; 
     let viaje_id = Date.now();
     
     AppStore.set('my_last_trip_id', viaje_id);
@@ -3089,7 +3317,7 @@ window.auditarDocumentosIA = async function() {
         const cel = AppStore.get('cliente_celular');
         await supabaseClient.auth.updateUser({ data: { full_name: nomCadete } });
         const { error } = await supabaseClient.from('moto_cadetes').upsert({ id: sessionActual.id, celular: cel, img_selfie: urlSelfieCad, aprobado_ia: true });
-        AppStore.set('mi_foto_perfil', urlSelfieCad); // GUARDAMOS FOTO CADETE NUEVO
+        AppStore.set('mi_foto_perfil', urlSelfieCad); 
         if(error) throw error;
         setTimeout(() => { mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); irPaso('servimoto'); }, 2000);
     } catch(e) { mostrarToast('Error al auditar en DB.', 'error'); }
@@ -3126,47 +3354,30 @@ window.procesarLiquidacionIA = async function(input) {
 };
 
 // ==========================================
-// CORRECCIÓN 1: SALTO INTELIGENTE DEL PERFIL (AGREGAR AL CARRITO)
+// 8. CARRITO Y CHECKOUT
 // ==========================================
-window.intentarComprar = async function(idProducto, nombre, precio, direccionComercio, aliasComercio, telefonoComercio) {
-    if(navigator.vibrate) navigator.vibrate(50);
-    telefonoComercioCalculo = telefonoComercio || NUMERO_SOPORTE_CENTRAL;
-    productoPendienteAdd = { id: idProducto, nombre: nombre, precio: parseFloat(precio), direccion: direccionComercio, alias: aliasComercio };
-    
-    if(!sessionActual) { mostrarToast('¡Iniciá sesión para armar tu pedido!', 'error'); iniciarLogin('cliente'); return; }
-    
-    if(!AppStore.get('cliente_dir')) { 
-        mostrarToast('Buscando tu perfil...', 'success');
-        try {
-            let { data: cliDB } = await supabaseClient.from('moto_clientes').select('*').eq('id', sessionActual.id).single();
-            if(cliDB && cliDB.direccion) {
-                AppStore.set('cliente_dir', cliDB.direccion);
-                AppStore.set('cliente_ciu', cliDB.ciudad);
-                AppStore.set('cliente_prov', cliDB.provincia);
-                AppStore.set('cliente_celular', cliDB.celular || sessionActual.email.split('@')[0]);
-                AppStore.set('cliente_nombre', sessionActual.user_metadata?.full_name || '');
-                window.conectarRadarLocal(cliDB.provincia, cliDB.ciudad);
-                window.procesarAgregadoCarrito();
-                return;
-            }
-        } catch(e) {}
-        
-        mostrarToast('Falta configurar tu dirección de entrega', 'error'); 
-        irPaso('cliente-ubicacion'); 
-        return; 
-    }
-    window.procesarAgregadoCarrito();
-};
-
 window.procesarAgregadoCarrito = function() {
     if(!productoPendienteAdd) return;
-    carritoGlobal.push({ nombre: productoPendienteAdd.nombre, precio: productoPendienteAdd.precio, cantidad: 1 });
+    
+    carritoGlobal.push({ 
+        nombre: productoPendienteAdd.nombre, 
+        precio: productoPendienteAdd.precio, 
+        cantidad: cantidadProductoActual 
+    });
+    
     localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal)); 
-    direccionOrigenCalculo = productoPendienteAdd.direccion; aliasOrigenCalculo = productoPendienteAdd.alias;
-    mostrarToast(`✅ Agregaste: ${productoPendienteAdd.nombre}`, 'success');
-    const floatBtn = document.getElementById('btnFloatingCart'); const badge = document.getElementById('badgeCarrito');
+    direccionOrigenCalculo = productoPendienteAdd.direccion; 
+    aliasOrigenCalculo = productoPendienteAdd.alias;
+    
+    mostrarToast(`✅ Agregaste al carrito`, 'success');
+    const floatBtn = document.getElementById('btnFloatingCart'); 
+    const badge = document.getElementById('badgeCarrito');
     if(floatBtn) floatBtn.style.display = 'flex';
-    if(badge) { badge.textContent = carritoGlobal.length; badge.style.transform = 'scale(1.3)'; setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200); }
+    if(badge) { 
+        badge.textContent = carritoGlobal.length; 
+        badge.style.transform = 'scale(1.3)'; 
+        setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200); 
+    }
     productoPendienteAdd = null; 
 };
 
@@ -3196,9 +3407,6 @@ window.previewComprobanteCarrito = async function(input) {
     }
 };
 
-// ==========================================
-// CORRECCIÓN 2: CELULAR BLOQUEADO EN CARRITO
-// ==========================================
 window.renderizarCarritoDOM = function() {
     const cont = document.getElementById('contenidoCarrito'); const totalUI = document.getElementById('totalFinalCarrito');
     if(!cont || !totalUI) return;
@@ -3321,6 +3529,7 @@ window.pedirFavorDirectoCliente = function(evt) {
 
     setTimeout(() => {
         if(canalRadar) {
+            let fotoCliente = AppStore.get('mi_foto_perfil') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
             canalRadar.send({
                 type: 'broadcast',
                 event: 'nuevo_viaje',
@@ -3329,7 +3538,8 @@ window.pedirFavorDirectoCliente = function(evt) {
                     local: dirOrig, 
                     destino: dirDest + (detalle ? ` (${detalle})` : ''),
                     costo: "A conv.",
-                    tel_cliente: telCliente
+                    tel_cliente: telCliente,
+                    foto_cliente: fotoCliente
                 }
             });
         }
@@ -3482,11 +3692,22 @@ window.calcularMatematicaEnvio = function(distancia) {
     
     let celCliente = AppStore.get('cliente_celular') || "Sin teléfono";
     let pInfo = document.querySelector("#modalMapaGrande p");
+    let btnConfirmarMapa = document.querySelector('#modalMapaGrande button[onclick="procesarEnvioMapa()"]');
     
     if (esViajeEspecial) {
         if(pInfo) pInfo.innerHTML = `💡 <b>Importante:</b> Al solicitar el viaje, buscaremos un ServiMoto en el radar. <b>Deberán pre-coordinar los detalles por WhatsApp</b> antes de confirmar el viaje.<br><span style="font-weight:600; color:#0f172a; margin-top:4px; display:inline-block;">(Tu celular para este viaje: ${celCliente})</span>`;
+        if(btnConfirmarMapa) {
+            btnConfirmarMapa.innerHTML = '<i class="ri-whatsapp-fill" style="font-size:16px; vertical-align:middle; margin-right:4px;"></i> PRE-COORDINAR VIAJE';
+            btnConfirmarMapa.style.background = '#25D366';
+            btnConfirmarMapa.style.boxShadow = '0 4px 10px rgba(37,211,102,0.3)';
+        }
     } else {
         if(pInfo) pInfo.innerHTML = `💡 <b>Importante:</b> El envío se paga por separado directamente al ServiMoto.<br><span style="font-weight:600; color:#16a34a; margin-top:4px; display:inline-block;">(El comercio recibirá tu comprobante y llamará a la moto cuando esté listo)</span>`;
+        if(btnConfirmarMapa) {
+            btnConfirmarMapa.innerHTML = 'ENVIAR PEDIDO AL LOCAL <i class="ri-checkbox-circle-fill" style="font-size:18px; vertical-align:middle; margin-left:4px;"></i>';
+            btnConfirmarMapa.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+            btnConfirmarMapa.style.boxShadow = '0 4px 10px rgba(22,163,74,0.3)';
+        }
     }
     
     let subtotalProductos = 0;
@@ -3533,6 +3754,7 @@ window.mandarPedidoSoporte = async function() {
         }
     } catch (e) {}
 
+    // El pedido cae en la bandeja del comercio PERO NO DISPARA EL RADAR AUTOMÁTICAMENTE
     if(subtotalProductos > 0) { window.agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal); }
 
     let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
