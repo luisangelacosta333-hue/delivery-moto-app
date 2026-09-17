@@ -116,37 +116,57 @@
         .btn-apk:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 42px rgba(22,163,74,.6); }
 
         .card-premium { 
-            background: linear-gradient(145deg, #ffffff, #fefcf9); 
-            border-radius: 16px; 
-            border: 1px solid rgba(255, 140, 66, 0.15); 
-            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(255, 107, 0, 0.04); 
+            background: rgba(255, 255, 255, 0.55); 
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.75); 
+            box-shadow: 
+                0 8px 32px rgba(31, 38, 135, 0.12),
+                0 2px 8px rgba(255, 107, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9); 
             transition: all .45s cubic-bezier(.22,1,.36,1); 
             position: relative; 
             overflow: hidden; 
             width: 100%; 
         }
         .card-premium:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(255, 107, 0, 0.1); 
-            border-color: rgba(255, 107, 0, 0.35); 
+            transform: translateY(-6px) scale(1.01); 
+            box-shadow: 
+                0 16px 48px rgba(31, 38, 135, 0.18),
+                0 4px 16px rgba(255, 107, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 1); 
+            border-color: rgba(255, 255, 255, 0.95); 
+            background: rgba(255, 255, 255, 0.7);
         }
         .card-premium::before { 
             content: ''; 
             position: absolute; 
             top: 0; left: 0; right: 0; 
-            height: 3px; 
-            background: linear-gradient(90deg, #ffb088, #ff8c42, #ff6b00, #ff8c42, #ffb088);
-            background-size: 200% 100%;
-            animation: shimmerLine 4s ease infinite;
-            opacity: 0.85;
-        }
-        @keyframes shimmerLine {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            height: 1px; 
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+            opacity: 1;
         }
 
-        .feature-icon { width: 62px; height: 62px; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #ff6b00; transition: all .4s; border: 2px solid #ffd4b3; }
-        .card-premium:hover .feature-icon { transform: scale(1.12) rotate(-5deg); background: linear-gradient(135deg, #ff8c00, #cc4400); color: white; border-color: #ff6b00; box-shadow: 0 12px 30px rgba(255,107,0,.45); }
+        .feature-icon { 
+            width: 62px; height: 62px; border-radius: 1.2rem; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 28px; 
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ff6b00; 
+            transition: all .4s cubic-bezier(.22,1,.36,1); 
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 16px rgba(255, 107, 0, 0.12), inset 0 1px 0 rgba(255,255,255,1);
+        }
+        .card-premium:hover .feature-icon { 
+            transform: scale(1.12) rotate(-5deg); 
+            background: linear-gradient(135deg, #ff8c42, #ea580c); 
+            color: white; 
+            border-color: rgba(255,255,255,0.5); 
+            box-shadow: 0 12px 32px rgba(255,107,0,.45), inset 0 1px 0 rgba(255,255,255,0.3); 
+        }
 
         .badge-naranja { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; background: linear-gradient(135deg, #fff7ed, #ffe4cc); color: #cc4400; border: 1.5px solid #ffb380; cursor: pointer; transition: all 0.2s;}
         .badge-naranja:hover { background: #ff6b00; color: white; }
@@ -729,7 +749,7 @@
     </div>
 </section>
 
-<section id="comercios" style="padding:70px 22px;background:linear-gradient(180deg,#fff7ed 0%,#ffffff 100%);position:relative;">
+<section id="comercios" style="padding:70px 22px;background:linear-gradient(135deg,#fff7ed 0%,#ffe4cc 30%,#ffedd8 60%,#ffffff 100%);position:relative;">
     <div style="max-width:1150px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:44px;align-items:center;" class="lg:grid-cols-2">
         <div>
             <span class="badge-naranja" style="margin-bottom:18px;"><i class="ri-store-3-fill"></i> PARA COMERCIOS</span>
@@ -2217,17 +2237,24 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
             const imgSrc = img ? img.src : "";
             const nombreEl = tarjeta.querySelector('div[style*="font-family"]');
             const nombre = nombreEl ? nombreEl.textContent.trim() : "Producto";
-            // Buscar específicamente el precio (el que tiene símbolo $)
-            const precioCandidatos = tarjeta.querySelectorAll('div[style*="color:#16a34a"]');
-            let precioTexto = "0";
-            for (let el of precioCandidatos) {
-                const txt = el.textContent.trim();
-                if (txt.includes('$')) {
-                    precioTexto = txt.replace(/[$.]/g, '');
-                    break;
+            // Buscar precio: PRIMERO en data-precio (exacto de la BD), luego en el DOM
+            let precio = 0;
+            const precioData = tarjeta.getAttribute('data-precio');
+            if (precioData && !isNaN(parseFloat(precioData))) {
+                precio = parseFloat(precioData);
+            } else {
+                // Respaldo: buscar en el DOM
+                const precioCandidatos = tarjeta.querySelectorAll('div[style*="color:#16a34a"]');
+                let precioTexto = "0";
+                for (let el of precioCandidatos) {
+                    const txt = el.textContent.trim();
+                    if (txt.includes('$')) {
+                        precioTexto = txt.replace(/[$.]/g, '');
+                        break;
+                    }
                 }
+                precio = parseFloat(precioTexto) || 0;
             }
-            const precio = parseFloat(precioTexto) || 0;
             const localEl = tarjeta.querySelector('div[onclick*="filtrarFeedPorComercio"] span');
             const local = localEl ? localEl.textContent.trim() : "Local";
             const tiempoEl = tarjeta.querySelector('div[style*="color:#16a34a"][style*="font-size:9px"], div[style*="Aprox"]');
@@ -2246,17 +2273,19 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 }
             }
             
-            // Buscar descripción: primero en el atributo data-descripcion de la tarjeta
+            // Buscar descripción: PRIMERO Y PRINCIPAL en el atributo data-descripcion
             const descripcionData = tarjeta.getAttribute('data-descripcion') || '';
             
-            // Buscar en demo como respaldo
+            // Buscar en demo como respaldo SOLAMENTE si no hay descripción real
             const demo = productosDemo.find(p => 
                 p.nombre.toLowerCase() === nombre.toLowerCase() ||
                 (imgSrc && imgSrc.includes(p.img.split('?')[0].split('/').pop()))
             );
             
-            // Usar descripción real si existe, sino demo, sino texto por defecto
-            const descripcionFinal = descripcionData.trim() || (demo ? demo.descripcion : "") || "Delicioso producto fresco preparado con ingredientes de primera calidad.";
+            // PRIORIDAD: 1) data-descripcion de la BD, 2) demo, 3) texto genérico
+            let descripcionFinal = descripcionData.trim();
+            if (!descripcionFinal && demo) descripcionFinal = demo.descripcion;
+            if (!descripcionFinal) descripcionFinal = "Delicioso producto fresco preparado con ingredientes de primera calidad.";
             
             const datos = {
                 id: datosCompra.id || String(Date.now() + Math.random()),
@@ -3762,10 +3791,23 @@ window.abrirCarritoFinal = function() {
     if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
     cerrarModalMarketplace();
     const modalCarrito = document.getElementById('modalCarritoFinal');
-    if(modalCarrito) { try { window.renderizarCarritoDOM(); modalCarrito.classList.add('show'); } catch(e) { mostrarToast('Error al cargar', 'error'); } }
+    if(modalCarrito) { 
+        try { 
+            window.renderizarCarritoDOM(); 
+            modalCarrito.classList.add('show'); 
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+        } catch(e) { mostrarToast('Error al cargar', 'error'); } 
+    }
 };
 
-window.cerrarCarrito = function() { document.getElementById('modalCarritoFinal').classList.remove('show'); };
+window.cerrarCarrito = function() { 
+    document.getElementById('modalCarritoFinal').classList.remove('show'); 
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+};
 
 window.pedirNuevaDireccionEnvio = function() {
     let dirActual = AppStore.get('cliente_dir') || "";
