@@ -1052,6 +1052,10 @@ const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co';
 const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+// Aseguramos que las variables del radar sean 100% globales para evitar errores de DB
+window.nombreCanalActual = "";
+window.canalRadar = null;
+
 let baseProductosActivos = [];
 let carritoGlobal = [];
 let pedidosComercio = [];
@@ -1200,6 +1204,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (session && session.user) {
       sessionActual = session.user;
       let ultimoTipo = localStorage.getItem('ultimo_login_tipo');
+      
       if (ultimoTipo === 'comercio') {
         miComercioLogueadoId = session.user.id;
         setTimeout(() => cargarDatosComercioExistente(miComercioLogueadoId), 500);
@@ -1322,30 +1327,45 @@ window.obtenerEstadoLocal = function(hA, hC) {
   return (minAbre < minCierra) ? (minA >= minAbre && minA <= minCierra) : (minA >= minAbre || minA <= minCierra);
 };
 
-// FIX PANEL COMERCIO UI (Transforma cajas en un Banner Premium)
+// FIX PANEL COMERCIO UI (Transforma cajas en un Banner Premium + Select de Categoría de Producto)
 window.arreglarPanelComercioUI = () => {
   const portada = document.getElementById('boxPortadaComercio');
   const selfie = document.getElementById('boxSelfieComercioModal');
+  const descInput = document.getElementById('newArtDescripcion');
+  
   if(portada && selfie && !portada.dataset.fixed) {
     portada.dataset.fixed = "true";
-    selfie.parentNode.insertBefore(portada, selfie); // Movemos Portada Arriba
-    
+    selfie.parentNode.insertBefore(portada, selfie); 
     portada.style.minHeight = '150px'; portada.style.width = '100%'; 
     portada.style.borderRadius = '1.5rem 1.5rem 0 0'; portada.style.margin = '0';
     portada.style.border = '2px dashed #cbd5e1'; portada.style.borderBottom = 'none';
-    
     selfie.style.minHeight = '110px'; selfie.style.width = '110px'; 
     selfie.style.borderRadius = '50%'; selfie.style.margin = '-55px auto 20px auto';
     selfie.style.border = '4px solid #fff7ed'; selfie.style.zIndex = '10';
     selfie.style.boxShadow = '0 6px 15px rgba(0,0,0,0.15)'; selfie.style.padding = '0';
     selfie.style.backgroundColor = '#dcfce7';
-
     const lblSelfie = document.getElementById('lblTextSelfieComercio'); if(lblSelfie) lblSelfie.style.display = 'none'; 
     const iconSelfie = document.getElementById('iconSelfieComercioContenedor'); if(iconSelfie) iconSelfie.style.transform = 'scale(0.8)';
   }
+
+  // INYECTOR DE SELECTOR DE CATEGORÍA PARA EL PRODUCTO
+  if (descInput && !document.getElementById('newArtCategoria')) {
+    descInput.insertAdjacentHTML('beforebegin', `
+      <select id="newArtCategoria" class="input-buscar" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6;">
+        <option value="General">Categoría del Artículo (Opcional)</option>
+        <option value="Bebidas">🍷 Bebidas (Con/Sin Alcohol)</option>
+        <option value="Golosinas">🍫 Golosinas y Dulces</option>
+        <option value="Snacks">🥔 Snacks y Picadas</option>
+        <option value="Cigarrillos">🚬 Cigarrillos / Tabaquería</option>
+        <option value="Comida Rápida">🍔 Comida Rápida / Sandwichería</option>
+        <option value="Pizzería">🍕 Pizzas y Empanadas</option>
+        <option value="Farmacia">💊 Farmacia / Perfumería</option>
+      </select>
+    `);
+  }
 };
 
-// FIX PANEL CLIENTE UI (Inyecta el input del celular antes del botón guardar)
+// FIX PANEL CLIENTE UI
 window.arreglarPanelClienteUI = () => {
   const btnGuardar = document.querySelector('#modal-step-cliente-ubicacion .btn-primary');
   if(btnGuardar && !document.getElementById('inputCelularCliente')) {
@@ -1421,7 +1441,6 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
   isLoadingMore = true;
   container.classList.add('grilla-productos-compacta');
 
-  // INYECCIÓN SKELETON LOADERS
   if (!isLoadMore) {
     let skeletons = '';
     for(let i=0; i<6; i++) {
@@ -1528,9 +1547,10 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
         
         let descBd = p.descripcion || p.referencia;
         let descTexto = descBd && descBd.trim() !== "" ? descBd : "Este local no incluyó una descripción detallada.";
+        let catItemFinal = p.categoria || (comercioData ? comercioData.categoria : "General");
         
         _datosTarjetas[String(p.id)] = {
-          id: p.id, nombre: p.nombre, precio: parseFloat(p.precio), categoria: comercioData ? comercioData.categoria : "General",
+          id: p.id, nombre: p.nombre, precio: parseFloat(p.precio), categoria: catItemFinal,
           descripcion: descTexto, tiempo: tiempoEstimado + " min", img: p.img_producto, local: nomComercio,
           dirLocal: dirComercio, alias: aliasComercio, tel: telComercio
         };
@@ -1700,6 +1720,8 @@ window.previewSelfieCliente = async function(input) {
     const caja = document.getElementById('boxSelfieClienteModal');
     const icono = document.getElementById('iconSelfieClienteContenedor');
     if(caja) caja.style.backgroundImage = `url(${b64})`; if(icono) icono.style.display = 'none';
+    const txt1 = document.getElementById('lblTextSelfieCliente');
+    if(txt1) txt1.innerHTML = '<span style="color:#15803d;">✅ Selfie Capturada</span>';
     AppStore.set('selfie_cliente_tmp', b64);
   }
 };
@@ -1731,8 +1753,10 @@ window.guardarPerfilCliente = async function() {
     AppStore.set('mi_foto_perfil', urlFoto);
     window.conectarRadarLocal(prov, ciu);
   } catch(e) {
+    if(e.message && e.message.includes('duplicate key') && e.message.includes('celular')) {
+      return mostrarToast('Ese WhatsApp ya pertenece a otro usuario.', 'error');
+    }
     mostrarToast('Error BD: ' + (e.message || 'Error guardando datos'), 'error');
-    console.error(e);
     return;
   }
 
@@ -1751,6 +1775,8 @@ window.previewSelfieComercioModal = async function(input) {
     const caja = document.getElementById('boxSelfieComercioModal');
     const icono = document.getElementById('iconSelfieComercioContenedor');
     if(caja) caja.style.backgroundImage = `url(${b64})`; if(icono) icono.style.display = 'none';
+    const texto1 = document.getElementById('lblTextSelfieComercio');
+    if(texto1) texto1.innerHTML = '<span style="color:#15803d;">✅ Selfie Verificada</span>';
     AppStore.set('selfie_com_tmp', b64);
   }
 };
@@ -1762,6 +1788,8 @@ window.previewPortada = async function(input) {
     const caja = document.getElementById('boxPortadaComercio');
     const icon = document.getElementById('iconPortadaContenedor');
     if(caja) caja.style.backgroundImage = `url(${b64})`; if(icon) icon.style.display = 'none';
+    const lbl = document.getElementById('lblPortadaComercio');
+    if(lbl) lbl.textContent = '✅ Portada Lista';
     AppStore.set('portada_com_tmp', b64);
   }
 };
@@ -1774,6 +1802,8 @@ window.previewArtFoto = async function(input) {
     const caja = document.getElementById('boxArticuloNuevo');
     const icon = document.getElementById('iconPlatoContenedor');
     if(caja) caja.style.backgroundImage = `url(${b64})`; if(icon) icon.style.display = 'none';
+    const lbl = document.getElementById('lblArtFoto');
+    if(lbl) lbl.textContent = '✅ Foto Lista';
   }
 };
 
@@ -1823,7 +1853,9 @@ window.guardarComercio = async function() {
     window.conectarRadarLocal(prov, ciu);
     mostrarToast(`¡Local guardado exitósamente!`, 'success');
   } catch (e) { 
-    console.log(e);
+    if(e.message && e.message.includes('duplicate key') && e.message.includes('celular')) {
+      return mostrarToast('Ese WhatsApp ya pertenece a otra cuenta.', 'error');
+    }
     mostrarToast('Error BD: ' + (e.message || 'Verificá permisos'), 'error'); 
   }
 };
@@ -1835,6 +1867,7 @@ window.agregarArticuloComercio = async function() {
   const nom = document.getElementById('newArtNombre').value.trim();
   const pre = parseInt(document.getElementById('newArtPrecio').value);
   const desc = document.getElementById('newArtDescripcion').value.trim();
+  const catArt = document.getElementById('newArtCategoria') ? document.getElementById('newArtCategoria').value : "General";
   
   if(!nom || isNaN(pre)) return mostrarToast('Completá nombre y precio', 'error');
   if(!tempImgBase64) return mostrarToast('Subí una foto del artículo', 'error');
@@ -1844,13 +1877,17 @@ window.agregarArticuloComercio = async function() {
     const ext = Date.now();
     const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
     
-    let { error } = await supabaseClient.from('moto_productos').insert({
-      id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: desc, img_producto: urlArt, pausado: false, descripcion: desc
-    });
-    if(error) { 
-      const result = await supabaseClient.from('moto_productos').insert({ 
-        id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: desc, img_producto: urlArt, pausado: false 
-      });
+    let payload = {
+      id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: desc, img_producto: urlArt, pausado: false, descripcion: desc, categoria: catArt
+    };
+
+    let { error } = await supabaseClient.from('moto_productos').insert(payload);
+    
+    // FALLBACK PLAN B: Si la columna descripcion o categoria no existen en DB
+    if(error && error.message.includes('column')) { 
+      delete payload.categoria;
+      delete payload.descripcion;
+      let result = await supabaseClient.from('moto_productos').insert(payload);
       error = result.error;
     }
     if(error) throw error;
@@ -1981,8 +2018,15 @@ window.eliminarPedidoComercio = function(idx) {
 window.llamarMotoDesdeLocal = async function(idx) {
   mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
   const btnCall = document.getElementById(`btnLlamarMoto_${idx}`);
-  if(btnCall) { btnCall.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO CADETE...'; btnCall.style.background = '#f59e0b'; }
-  if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); let msg = new SpeechSynthesisUtterance("Atención base, buscando un ServiMoto cercano para un nuevo envío."); msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg); }
+  if(btnCall) {
+    btnCall.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO CADETE...';
+    btnCall.style.background = '#f59e0b';
+  }
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    let msg = new SpeechSynthesisUtterance("Atención base, buscando un ServiMoto cercano para un nuevo envío.");
+    msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
+  }
   
   let pedidoInfo = pedidosComercio[idx];
   let nombreLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Comercio Local";
@@ -1997,31 +2041,39 @@ window.llamarMotoDesdeLocal = async function(idx) {
   window.conectarRadarLocal(provComercio, ciuComercio);
   
   setTimeout(() => {
-    if(canalRadar) { canalRadar.send({ type: 'broadcast', event: 'nuevo_viaje', payload: { viaje_id: viaje_id, local: `${nombreLocal} (${dirLocal})`, destino: pedidoInfo.destino, costo: pedidoInfo.total, tel_cliente: telCliente, foto_cliente: fotoComercio } }); }
+    if(canalRadar) {
+      canalRadar.send({ type: 'broadcast', event: 'nuevo_viaje', payload: { viaje_id: viaje_id, local: `${nombreLocal} (${dirLocal})`, destino: pedidoInfo.destino, costo: pedidoInfo.total, tel_cliente: telCliente, foto_cliente: fotoComercio } });
+    }
     mostrarToast("✅ ¡Alerta enviada a motos de la zona!", "success");
     if(btnCall) { btnCall.innerHTML = '<i class="ri-check-double-line"></i> SEÑAL ENVIADA'; btnCall.style.background = '#16a34a'; }
   }, 1000);
 };
 
 // ==========================================
-// 9. PANEL CADETES
+// 11. PANEL CADETES
 // ==========================================
 window.previewSelfieCadete = async function(input) {
   if(input.files && input.files[0]) {
-    mostrarToast("Comprimiendo selfie...", "success"); const b64 = await comprimirImagen(input.files[0]);
+    mostrarToast("Comprimiendo selfie...", "success");
+    const b64 = await comprimirImagen(input.files[0]);
     const caja = document.getElementById('cajaDoc1');
     if(caja) { caja.style.backgroundImage = `url(${b64})`; caja.style.backgroundSize = 'cover'; caja.style.backgroundPosition = 'center'; }
-    const icon = document.getElementById('iconoSelfieContenedorCadete'); if(icon) icon.style.display = 'none';
-    const txt = document.getElementById('txtDoc1'); if(txt) txt.innerHTML = '<span style="background:rgba(255,255,255,0.95); padding:6px 14px; border-radius:8px; color:#15803d;">✅ Selfie Lista</span>';
+    const icon = document.getElementById('iconoSelfieContenedorCadete');
+    if(icon) icon.style.display = 'none';
+    const txt = document.getElementById('txtDoc1');
+    if(txt) txt.innerHTML = '<span style="background:rgba(255,255,255,0.95); padding:6px 14px; border-radius:8px; color:#15803d;">✅ Selfie Lista</span>';
     AppStore.set('cad_selfie', b64);
   }
 };
 
 window.docCargado = function(input, idLabel, idCaja, idIcon) {
   if(input.files && input.files[0]) {
-    document.getElementById(idLabel).textContent = '✅ Subido Exitosamente'; document.getElementById(idCaja).style.backgroundColor = '#f0fdf4';
-    document.getElementById(idCaja).style.borderColor = '#4ade80'; document.getElementById(idIcon).className = 'ri-checkbox-circle-fill';
-    document.getElementById(idIcon).style.color = '#16a34a'; document.getElementById(idLabel).style.color = '#15803d';
+    document.getElementById(idLabel).textContent = '✅ Subido Exitosamente';
+    document.getElementById(idCaja).style.backgroundColor = '#f0fdf4';
+    document.getElementById(idCaja).style.borderColor = '#4ade80';
+    document.getElementById(idIcon).className = 'ri-checkbox-circle-fill';
+    document.getElementById(idIcon).style.color = '#16a34a';
+    document.getElementById(idLabel).style.color = '#15803d';
   }
 };
 
@@ -2036,10 +2088,17 @@ window.auditarDocumentosIA = async function() {
     const cel = AppStore.get('cliente_celular');
     await supabaseClient.auth.updateUser({ data: { full_name: nomCadete } });
     const { error } = await supabaseClient.from('moto_cadetes').upsert({ id: sessionActual.id, celular: cel, img_selfie: urlSelfieCad, aprobado_ia: true });
-    AppStore.set('mi_foto_perfil', urlSelfieCad);
+    
     if(error) throw error;
+    
+    AppStore.set('mi_foto_perfil', urlSelfieCad);
     setTimeout(() => { mostrarToast('✅ IA: Identidad Verificada. Aprobado.', 'success'); irPaso('servimoto'); }, 2000);
-  } catch(e) { mostrarToast('Error al auditar en DB.', 'error'); }
+  } catch(e) { 
+    if(e.message && e.message.includes('duplicate key') && e.message.includes('celular')) {
+      return mostrarToast('Ese WhatsApp ya pertenece a otra cuenta.', 'error');
+    }
+    mostrarToast('Error al auditar en DB.', 'error'); 
+  }
 };
 
 window.toggleEstadoTrabajo = async function() {
@@ -2055,7 +2114,7 @@ window.toggleEstadoTrabajo = async function() {
     } else {
       btn.style.background = '#f97316'; btn.style.boxShadow = '0 4px 12px rgba(249,115,22,0.4)';
       btn.innerHTML = '<i class="ri-close-circle-fill"></i> INACTIVO';
-      if(estadoRadar) window.activarRadar(); // Apaga el radar si lo tenía prendido
+      if(estadoRadar) window.activarRadar();
     }
   } catch(e) { mostrarToast('Error al actualizar estado', 'error'); }
 };
@@ -2077,23 +2136,25 @@ window.procesarLiquidacionIA = async function(input) {
       viajesMotoCount = 0; deudaMotoAcumulada = 0;
       let elemDeuda = document.getElementById('deudaMoto'); if(elemDeuda) { elemDeuda.style.color = '#16a34a'; elemDeuda.textContent = '$0'; }
       let elemViajes = document.getElementById('viajesMotoBadge'); if(elemViajes) elemViajes.innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
+      let listaViajes = document.getElementById('listaViajesCadete'); if(listaViajes) listaViajes.innerHTML = '';
       mostrarToast("✅ Pago validado por IA. Deuda en cero.", "success");
+      if(input) input.value = '';
     }, 2000);
-  } catch (error) { mostrarToast("Pago Rechazado: " + error.message, "error"); }
+  } catch (error) { mostrarToast("Pago Rechazado: " + error.message, "error"); if(input) input.value = ''; }
 };
 
 // ==========================================
-// 10. RADAR EN TIEMPO REAL (Tracking GPS de la Moto)
+// 12. RADAR EN TIEMPO REAL (Tracking GPS de la Moto)
 // ==========================================
 window.conectarRadarLocal = function(prov, ciu) {
   if(!prov || !ciu) return;
   let nuevoNombre = 'radar-' + window.quitarAcentos(prov).replace(/\s+/g,'') + '-' + window.quitarAcentos(ciu).replace(/\s+/g,'');
-  if(nombreCanalActual === nuevoNombre && canalRadar) return;
-  if(canalRadar) supabaseClient.removeChannel(canalRadar);
-  nombreCanalActual = nuevoNombre;
+  if(window.nombreCanalActual === nuevoNombre && window.canalRadar) return;
+  if(window.canalRadar) supabaseClient.removeChannel(window.canalRadar);
+  window.nombreCanalActual = nuevoNombre;
   
-  canalRadar = supabaseClient.channel(nombreCanalActual);
-  canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
+  window.canalRadar = supabaseClient.channel(window.nombreCanalActual);
+  window.canalRadar.on('broadcast', { event: 'nuevo_viaje' }, (payload) => {
     if (!estadoRadar) return;
     let p = payload.payload; let tiempoDemora = (Math.random() > 0.4) ? 0 : 15000;
     setTimeout(() => {
@@ -2191,12 +2252,12 @@ window.aceptarViajeRadar = function(viaje_id) {
   if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
   if(sessionActual) supabaseClient.from('moto_cadetes').update({ viajes_realizados: viajesMotoCount, deuda_acumulada: deudaMotoAcumulada }).eq('id', sessionActual.id).then(() => {});
   
-  if(canalRadar) {
-    canalRadar.send({ type: 'broadcast', event: 'viaje_reclamado', payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular, foto_cadete: miFoto } });
+  if(window.canalRadar) {
+    window.canalRadar.send({ type: 'broadcast', event: 'viaje_reclamado', payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular, foto_cadete: miFoto } });
     // TRANSMITIR LA POSICIÓN DEL CADETE
     if(navigator.geolocation) {
        motoGeoWatchId = navigator.geolocation.watchPosition((pos) => {
-           canalRadar.send({ type: 'broadcast', event: 'moto_position', payload: { viaje_id: viaje_id, lat: pos.coords.latitude, lng: pos.coords.longitude } });
+           window.canalRadar.send({ type: 'broadcast', event: 'moto_position', payload: { viaje_id: viaje_id, lat: pos.coords.latitude, lng: pos.coords.longitude } });
        }, (err) => console.log("GPS Error:", err), { enableHighAccuracy: true });
     }
   }
@@ -2208,7 +2269,7 @@ window.aceptarViajeRadar = function(viaje_id) {
 };
 
 // ==========================================
-// 11. CARRITO Y CHECKOUT
+// 13. CARRITO Y CHECKOUT
 // ==========================================
 window.intentarComprar = async function(idProducto, nombre, precio, direccionComercio, aliasComercio, telefonoComercio) {
   if(navigator.vibrate) navigator.vibrate(50);
@@ -2304,7 +2365,7 @@ window.borrarItemCarrito = function(idx) {
 };
 
 // ==========================================
-// 12. MAPA MAGO (GPS Y ENVÍO CENTRAL)
+// 14. MAPA MAGO (GPS Y ENVÍO CENTRAL)
 // ==========================================
 function initMapaMago() {
   if (!mapaMagoObj) {
@@ -2498,9 +2559,9 @@ window.mandarViajeEspecialSoporte = async function() {
   mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
   window.cerrarMapa(); esViajeEspecial = false; let idViajeFinal = Date.now(); AppStore.set('my_last_trip_id', idViajeFinal);
   
-  if(canalRadar) {
+  if(window.canalRadar) {
     let fotoCliente = AppStore.get('mi_foto_perfil') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
-    canalRadar.send({ type: 'broadcast', event: 'nuevo_viaje', payload: { viaje_id: idViajeFinal, local: dirOrig, destino: `${dirDest}, ${ciuDest}`, costo: costo, tel_cliente: telCliente, foto_cliente: fotoCliente } });
+    window.canalRadar.send({ type: 'broadcast', event: 'nuevo_viaje', payload: { viaje_id: idViajeFinal, local: dirOrig, destino: `${dirDest}, ${ciuDest}`, costo: costo, tel_cliente: telCliente, foto_cliente: fotoCliente } });
   }
   
   window.dispararConfetti();
@@ -2532,8 +2593,8 @@ window.pedirFavorDirectoCliente = function(evt) {
   window.conectarRadarLocal(provEspecial, ciuEspecial);
   
   setTimeout(() => {
-    if(canalRadar) {
-      canalRadar.send({ type: 'broadcast', event: 'nuevo_viaje', payload: { viaje_id: viaje_id, local: dirOrig, destino: dirDest + (detalle ? ` (${detalle})` : ''), costo: "A conv.", tel_cliente: telCliente } });
+    if(window.canalRadar) {
+      window.canalRadar.send({ type: 'broadcast', event: 'nuevo_viaje', payload: { viaje_id: viaje_id, local: dirOrig, destino: dirDest + (detalle ? ` (${detalle})` : ''), costo: "A conv.", tel_cliente: telCliente } });
     }
   }, 1000);
   
