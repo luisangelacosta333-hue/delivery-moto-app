@@ -1068,7 +1068,7 @@ let telefonoComercioCalculo = "";
 let tipoLoginActual = "";
 let categoriaActiva = "";
 let comercioFiltradoId = null;
-window.categoriaActivaLocal = ""; // Filtro interno del comercio para bebidas, snacks, etc.
+window.categoriaActivaLocal = ""; // Filtro interno del comercio
 let sessionActual = null;
 let miComercioLogueadoId = null;
 let productoPendienteAdd = null;
@@ -1082,7 +1082,7 @@ const NUMERO_SOPORTE_CENTRAL = "5493816092676";
 // GPS de la Moto
 let motoGeoWatchId = null;
 
-// Variables Leaflet (Mapa Mago / Checkout Libre)
+// Variables Leaflet
 let mapaMagoObj = null;
 let capaRutaMago = null;
 let motoMarkerMago = null;
@@ -1101,23 +1101,35 @@ let dbComerciosCache = [];
 let tempImgBase64 = null;
 let tempImgPortada = null;
 
-// PWA Deferred Prompt
-let deferredPrompt;
+// ==========================================
+// 2. GESTIÓN PWA / APK (NUEVO FIX)
+// ==========================================
+window.deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
-  deferredPrompt = e;
+  window.deferredPrompt = e;
 });
 
+window.descargarAPK = function() {
+  if (window.deferredPrompt) {
+    window.deferredPrompt.prompt();
+    window.deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') mostrarToast('¡Instalando la App!', 'success');
+      window.deferredPrompt = null;
+    });
+  } else {
+    // Fallback amigable si el navegador bloquea el auto-prompt
+    alert('📲 PARA INSTALAR LA APP:\n\n1. En tu navegador (Chrome o Safari), tocá el menú de opciones (los 3 puntitos ⋮ o el ícono de Compartir).\n2. Seleccioná "Agregar a la pantalla principal" o "Instalar App".\n3. ¡Listo! Ya tenés el acceso directo en tu celular.');
+  }
+};
+
 // ==========================================
-// 2. INYECCIÓN DE ESTILOS PREMIUM DESDE JS
+// 3. INYECCIÓN DE ESTILOS PREMIUM DESDE JS
 // ==========================================
 const inyectarEstilosPremium = () => {
   const style = document.createElement('style');
   style.innerHTML = `
-    /* Forzar Banner del local al ancho completo en la grilla 2x2 */
     .loader-full-width { grid-column: 1 / -1 !important; width: 100% !important; display: block; }
-
-    /* Skeleton Loaders (Estilo MercadoLibre) */
     @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
     .skeleton-card { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid #e2e8f0; height: 260px; display: flex; flex-direction: column; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .skeleton-img { height: 120px; background: #f1f5f9; background-image: linear-gradient(90deg, #f1f5f9 0px, #e2e8f0 40px, #f1f5f9 80px); background-size: 1000px 100%; animation: shimmer 2s infinite linear; }
@@ -1125,7 +1137,6 @@ const inyectarEstilosPremium = () => {
     .skeleton-line { height: 14px; background: #f1f5f9; background-image: linear-gradient(90deg, #f1f5f9 0px, #e2e8f0 40px, #f1f5f9 80px); background-size: 1000px 100%; animation: shimmer 2s infinite linear; border-radius: 4px; }
     .skeleton-btn { height: 36px; margin-top: auto; border-radius: 8px; background: #f1f5f9; background-image: linear-gradient(90deg, #f1f5f9 0px, #e2e8f0 40px, #f1f5f9 80px); background-size: 1000px 100%; animation: shimmer 2s infinite linear; }
     
-    /* Stepper Widget del Cliente */
     #widgetRastreo { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; }
     .step-item { display: flex; align-items: center; gap: 12px; color: #94a3b8; font-size: 13px; font-weight: 700; transition: all 0.3s; padding: 4px 0; }
     .step-item.active { color: #16a34a; font-weight: 900; }
@@ -1138,7 +1149,7 @@ const inyectarEstilosPremium = () => {
 };
 
 // ==========================================
-// 3. AUTO-ARRANQUE: PROVINCIAS, GPS, SESIÓN Y UI
+// 4. AUTO-ARRANQUE: PROVINCIAS, GPS Y SESIÓN
 // ==========================================
 window.addEventListener('DOMContentLoaded', async () => {
   inyectarEstilosPremium(); 
@@ -1237,7 +1248,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ==========================================
-// 4. UTILIDADES Y FIX UI DINÁMICOS
+// 5. UTILIDADES (Voz, Confeti, GPS)
 // ==========================================
 window.quitarAcentos = function(str) { return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : ""; };
 
@@ -1270,7 +1281,8 @@ window.activarMicrofono = function() {
   if(btn) { btn.classList.remove('ri-mic-fill'); btn.classList.add('ri-mic-2-fill', 'animate-pulse-glow'); }
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
-    const mensaje = "¡Bienvenido a Delivery Moto! La súper app de tu ciudad. Ahora contamos con tres servicios: Delivery Moto para comida; Encargos Moto para cadetería; y Viajes Moto, para moverte al estilo Uber. Si sos comerciante, publicá gratis. Si buscás trabajo, postulate como cadete. ¡Sumate a la nueva era!";
+    // TEXTO DE VOZ ACTUALIZADO
+    const mensaje = "¡Bienvenido a Delivery Moto! La súper app de tu ciudad. Contamos con tres servicios: Delivery Moto, Encargos Moto y Viajes Moto al estilo Uber. Si sos comerciante, publicá gratis. Si buscás trabajo, postulate como cadete. Nuestros ServiMotos están calificados con certificado de buena conducta y deben presentar papel de inscripción de AFIP para ser aprobados. ¡Sumate a la nueva era!";
     const speech = new SpeechSynthesisUtterance(mensaje);
     speech.lang = 'es-AR'; speech.rate = 1.05;
     speech.onend = () => { if(btn) { btn.classList.remove('ri-mic-2-fill', 'animate-pulse-glow'); btn.classList.add('ri-mic-fill'); } };
@@ -1333,7 +1345,7 @@ window.obtenerEstadoLocal = function(hA, hC) {
   return (minAbre < minCierra) ? (minA >= minAbre && minA <= minCierra) : (minA >= minAbre || minA <= minCierra);
 };
 
-// FIX PANEL COMERCIO UI (Transforma cajas en un Banner Premium + Select de Categoría de Producto)
+// FIX PANEL COMERCIO UI 
 window.arreglarPanelComercioUI = () => {
   const portada = document.getElementById('boxPortadaComercio');
   const selfie = document.getElementById('boxSelfieComercioModal');
@@ -1354,7 +1366,6 @@ window.arreglarPanelComercioUI = () => {
     const iconSelfie = document.getElementById('iconSelfieComercioContenedor'); if(iconSelfie) iconSelfie.style.transform = 'scale(0.8)';
   }
 
-  // INYECTOR DE SELECTOR DE CATEGORÍA PARA EL PRODUCTO
   if (descInput && !document.getElementById('newArtCategoria')) {
     descInput.insertAdjacentHTML('beforebegin', `
       <select id="newArtCategoria" class="input-buscar" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6;">
@@ -1386,7 +1397,7 @@ window.arreglarPanelClienteUI = () => {
 };
 
 // ==========================================
-// 5. EXPANSIÓN Y CATÁLOGO
+// 6. EXPANSIÓN DE PRODUCTOS
 // ==========================================
 window.expandirProducto = function(productoId) {
   const datos = _datosTarjetas[String(productoId)];
@@ -1435,32 +1446,19 @@ window.agregarDesdeExpandido = function(id) {
   window.cerrarProductoExpandido();
 };
 
+// ==========================================
+// 7. RENDERIZADO DEL CATÁLOGO Y FILTROS
+// ==========================================
 window.resetPagination = function() { currentPage = 0; hasMoreProducts = true; isLoadingMore = false; };
 window.filtrarFeedGlobal = function(cat) { if(cat !== undefined) categoriaActiva = quitarAcentos(cat); comercioFiltradoId = null; window.categoriaActivaLocal = ""; resetPagination(); cargarYRenderizarFeed(); };
 
 window.filtrarFeedPorComercio = function(id) { 
-  comercioFiltradoId = id; 
-  window.categoriaActivaLocal = ""; // Reset filtro local
-  resetPagination(); 
-  cargarYRenderizarFeed(); 
-  mostrarToast("Filtrando local", "success"); 
+  comercioFiltradoId = id; window.categoriaActivaLocal = ""; resetPagination(); cargarYRenderizarFeed(); mostrarToast("Filtrando local", "success"); 
   setTimeout(() => { const grid = document.getElementById('gridMercadoLibre'); if (grid) window.scrollTo({ top: grid.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }); }, 300); 
 };
 
-window.limpiarFiltroComercio = function() { 
-  comercioFiltradoId = null; 
-  window.categoriaActivaLocal = ""; // Reset filtro local
-  resetPagination(); 
-  cargarYRenderizarFeed(); 
-};
-
-window.filtrarFeedPorCategoriaLocal = function(cat) {
-  window.categoriaActivaLocal = cat;
-  resetPagination();
-  cargarYRenderizarFeed();
-  mostrarToast("Filtrando catálogo...", "success");
-};
-
+window.limpiarFiltroComercio = function() { comercioFiltradoId = null; window.categoriaActivaLocal = ""; resetPagination(); cargarYRenderizarFeed(); };
+window.filtrarFeedPorCategoriaLocal = function(cat) { window.categoriaActivaLocal = cat; resetPagination(); cargarYRenderizarFeed(); mostrarToast("Filtrando catálogo...", "success"); };
 window.handleScrollFeed = function(el) { if (el.scrollHeight - el.scrollTop <= el.clientHeight + 150) { if (!isLoadingMore && hasMoreProducts) cargarYRenderizarFeed(true); } };
 
 window.cargarYRenderizarFeed = async function(isLoadMore = false) {
@@ -1518,8 +1516,9 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
        if (window.categoriaActivaLocal && window.categoriaActivaLocal !== "") {
            query = query.eq('categoria', window.categoriaActivaLocal);
        }
+    } else {
+       query = query.in('id_comercio', idsValidos);
     }
-    else query = query.in('id_comercio', idsValidos);
 
     let { data: dbProductos, error: errP } = await query.order('id', { ascending: false }).range(from, to);
     if(errP) throw errP;
@@ -1528,7 +1527,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
     let catSelectValue = window.categoriaActivaLocal || "";
 
     if (!isLoadMore) {
-      container.innerHTML = ''; // Limpiamos los Skeletons
+      container.innerHTML = '';
       if (comercioFiltradoId) {
         let comInfo = dbComerciosCache.find(c => c.id === comercioFiltradoId);
         if(comInfo) {
@@ -1576,8 +1575,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
     if((!dbProductos || dbProductos.length === 0) && !isLoadMore) {
       let botonVolver = comercioFiltradoId ? `<button onclick="limpiarFiltroComercio()" style="margin-top:15px; padding:10px 20px; background:#f97316; color:white; border:none; border-radius:10px; font-weight:bold;">Volver a todos</button>` : '';
       container.innerHTML += `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#f97316;">No hay artículos en esta categoría. ${botonVolver}</div>`;
-      isLoadingMore = false; hasMoreProducts = false;
-      return;
+      isLoadingMore = false; hasMoreProducts = false; return;
     }
 
     if (dbProductos && dbProductos.length > 0) {
@@ -1649,10 +1647,11 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
 };
 
 // ==========================================
-// 6. NAVEGACIÓN Y LOGIN
+// 8. NAVEGACIÓN Y LOGIN
 // ==========================================
 window.abrirModalMarketplace = function() { document.getElementById('modalMarketplace').classList.add('show'); document.body.style.overflow = 'hidden'; irPaso(1); };
 window.cerrarModalMarketplace = function() { document.getElementById('modalMarketplace').classList.remove('show'); document.body.style.overflow = ''; };
+
 window.irPaso = function(paso) {
   document.querySelectorAll('.sub-step').forEach(e => e.classList.remove('active'));
   const el = document.getElementById(`modal-step-${paso}`);
@@ -1668,6 +1667,10 @@ window.irPaso = function(paso) {
 };
 
 window.iniciarLogin = function(tipo) {
+  // ABRIMOS EL MODAL SI LO LLAMARON DESDE LA LANDING
+  document.getElementById('modalMarketplace').classList.add('show'); 
+  document.body.style.overflow = 'hidden';
+
   tipoLoginActual = tipo;
   let tituloLogin = "Acceso a Cuenta"; let descLogin = "Ingresá al panel";
   if(tipo === 'comercio') tituloLogin = '<i class="ri-store-2-fill"></i> Acceso Comercio';
@@ -1759,7 +1762,7 @@ async function cargarDatosComercioExistente(id) {
 }
 
 // ==========================================
-// 7. CLIENTE: REGISTRO Y PERFIL
+// 9. PANEL DE USUARIO (CLIENTE)
 // ==========================================
 window.previewSelfieCliente = async function(input) {
   if(input.files && input.files[0]) {
@@ -1767,8 +1770,9 @@ window.previewSelfieCliente = async function(input) {
     const b64 = await comprimirImagen(input.files[0]);
     const caja = document.getElementById('boxSelfieClienteModal');
     const icono = document.getElementById('iconSelfieClienteContenedor');
-    if(caja) caja.style.backgroundImage = `url(${b64})`; if(icono) icono.style.display = 'none';
     const txt1 = document.getElementById('lblTextSelfieCliente');
+    if(caja) caja.style.backgroundImage = `url(${b64})`;
+    if(icono) icono.style.display = 'none';
     if(txt1) txt1.innerHTML = '<span style="color:#15803d;">✅ Selfie Capturada</span>';
     AppStore.set('selfie_cliente_tmp', b64);
   }
@@ -1814,7 +1818,7 @@ window.guardarPerfilCliente = async function() {
 };
 
 // ==========================================
-// 8. COMERCIO: PANEL Y PRODUCTOS
+// 10. PANEL DE COMERCIO (CRUD PRODUCTOS)
 // ==========================================
 window.previewSelfieComercioModal = async function(input) {
   if(input.files && input.files[0]) {
@@ -1884,11 +1888,13 @@ window.guardarComercio = async function() {
 
     let { error } = await supabaseClient.from('moto_comercios').upsert(payload);
     
+    // FALLBACK PLAN B: Si la DB rechaza las columnas nuevas, mandamos los datos básicos.
     if(error && error.message.includes('column')) {
        delete payload.hora_abre; delete payload.hora_cierra; delete payload.alias_mp;
        let res2 = await supabaseClient.from('moto_comercios').upsert(payload);
        error = res2.error;
     }
+
     if(error) throw error;
     
     dbComerciosCache = [];
@@ -1979,6 +1985,7 @@ window.pausarArticuloAdmin = async function(idProd, estadoActual) {
   try { await supabaseClient.from('moto_productos').update({ pausado: !estadoActual }).eq('id', idProd); mostrarToast(!estadoActual ? 'Artículo pausado' : 'Artículo activo', 'success'); window.renderizarAdminComercio(); } catch (e) {}
 };
 
+// SE QUITA EL BOTÓN NARANJA GIGANTE AL MINIMIZAR/MAXIMIZAR (PEDIDO DEL USUARIO)
 window.togglePantallaCompletaArticulos = function() {
   const contenedor = document.getElementById('contenedorListaArticulos');
   const lista = document.getElementById('listaAdminComercio');
@@ -2085,7 +2092,7 @@ window.llamarMotoDesdeLocal = async function(idx) {
 };
 
 // ==========================================
-// 9. PANEL CADETES
+// 11. PANEL CADETES
 // ==========================================
 window.previewSelfieCadete = async function(input) {
   if(input.files && input.files[0]) {
@@ -2179,7 +2186,7 @@ window.procesarLiquidacionIA = async function(input) {
 };
 
 // ==========================================
-// 10. RADAR EN TIEMPO REAL (Tracking GPS de la Moto)
+// 12. RADAR EN TIEMPO REAL (Tracking GPS de la Moto)
 // ==========================================
 window.conectarRadarLocal = function(prov, ciu) {
   if(!prov || !ciu) return;
