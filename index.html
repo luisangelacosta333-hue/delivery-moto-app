@@ -1054,7 +1054,6 @@ const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co';
 const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-// Variables del radar globales para evitar errores de DB
 window.nombreCanalActual = "";
 window.canalRadar = null;
 
@@ -1068,7 +1067,7 @@ let telefonoComercioCalculo = "";
 let tipoLoginActual = "";
 let categoriaActiva = "";
 let comercioFiltradoId = null;
-window.categoriaActivaLocal = ""; // Filtro interno del comercio
+window.categoriaActivaLocal = "";
 let sessionActual = null;
 let miComercioLogueadoId = null;
 let productoPendienteAdd = null;
@@ -1079,10 +1078,7 @@ let estadoRadar = false;
 let _datosTarjetas = {}; 
 const NUMERO_SOPORTE_CENTRAL = "5493816092676";
 
-// GPS de la Moto
 let motoGeoWatchId = null;
-
-// Variables Leaflet (Mapa Mago / Checkout Libre)
 let mapaMagoObj = null;
 let capaRutaMago = null;
 let motoMarkerMago = null;
@@ -1090,18 +1086,15 @@ let animacionIntervalMago = null;
 let magoLayerGroup = null;
 let esViajeEspecial = false;
 
-// Variables Paginación
 let currentPage = 0;
 const ITEMS_PER_PAGE = 20;
 let isLoadingMore = false;
 let hasMoreProducts = true;
 let dbComerciosCache = [];
 
-// Variables Multimedia Temporales
 let tempImgBase64 = null;
 let tempImgPortada = null;
 
-// PWA Deferred Prompt
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -1129,6 +1122,19 @@ const inyectarEstilosPremium = () => {
     .step-icon { width: 26px; height: 26px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid #cbd5e1; transition: all 0.3s; flex-shrink:0; }
     .step-item.active .step-icon { background: #dcfce7; color: #16a34a; border-color: #16a34a; box-shadow: 0 0 10px rgba(22,163,74,0.3); }
     .step-item.done .step-icon { background: #16a34a; color: white; border-color: #16a34a; }
+    
+    /* FIX PORTADA COMERCIO */
+    #boxPortadaComercio {
+      min-height: 150px !important;
+      width: 100% !important;
+      border-radius: 1.5rem !important;
+      margin: 0 0 20px 0 !important;
+      background-size: cover !important;
+      background-position: center !important;
+      border: 2px dashed #cbd5e1 !important;
+      position: relative;
+      overflow: hidden;
+    }
   `;
   document.head.appendChild(style);
 };
@@ -1329,7 +1335,7 @@ window.obtenerEstadoLocal = function(hA, hC) {
   return (minAbre < minCierra) ? (minA >= minAbre && minA <= minCierra) : (minA >= minAbre || minA <= minCierra);
 };
 
-// FIX PANEL COMERCIO UI 
+// FIX PANEL COMERCIO UI (Banner, Selfie y Descuentos)
 window.arreglarPanelComercioUI = () => {
   const portada = document.getElementById('boxPortadaComercio');
   const selfie = document.getElementById('boxSelfieComercioModal');
@@ -1337,19 +1343,22 @@ window.arreglarPanelComercioUI = () => {
   
   if(portada && selfie && !portada.dataset.fixed) {
     portada.dataset.fixed = "true";
+    
+    // Convertimos la portada en banner ancho
     selfie.parentNode.insertBefore(portada, selfie); 
-    portada.style.minHeight = '150px'; portada.style.width = '100%'; 
-    portada.style.borderRadius = '1.5rem 1.5rem 0 0'; portada.style.margin = '0';
-    portada.style.border = '2px dashed #cbd5e1'; portada.style.borderBottom = 'none';
+    
+    // Selfie flotante y redonda
     selfie.style.minHeight = '110px'; selfie.style.width = '110px'; 
     selfie.style.borderRadius = '50%'; selfie.style.margin = '-55px auto 20px auto';
     selfie.style.border = '4px solid #fff7ed'; selfie.style.zIndex = '10';
     selfie.style.boxShadow = '0 6px 15px rgba(0,0,0,0.15)'; selfie.style.padding = '0';
     selfie.style.backgroundColor = '#dcfce7';
+    
     const lblSelfie = document.getElementById('lblTextSelfieComercio'); if(lblSelfie) lblSelfie.style.display = 'none'; 
     const iconSelfie = document.getElementById('iconSelfieComercioContenedor'); if(iconSelfie) iconSelfie.style.transform = 'scale(0.8)';
   }
 
+  // INYECTORES DE CATEGORÍA Y PRECIO DESCUENTO
   if (descInput && !document.getElementById('newArtCategoria')) {
     descInput.insertAdjacentHTML('beforebegin', `
       <select id="newArtCategoria" class="input-buscar" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6;">
@@ -1363,6 +1372,24 @@ window.arreglarPanelComercioUI = () => {
         <option value="Farmacia">💊 Farmacia / Perfumería</option>
       </select>
     `);
+    
+    // Agregamos input para el precio viejo (para simular el descuento tachado)
+    document.getElementById('newArtPrecio').insertAdjacentHTML('beforebegin', `
+       <input type="number" class="input-buscar" id="newArtPrecioViejo" placeholder="Precio Original (Tachado, Opcional)" style="margin:0; padding:16px; font-size:14px; color:#ef4444;">
+    `);
+  }
+  
+  // INYECTAMOS BOTONES DE CERRAR SESIÓN Y MINIMIZAR ARRIBA DE TODO EN EL PANEL DEL COMERCIO
+  const btnCerrarComercio = document.querySelector('#modal-step-comercio .btn-volver');
+  if(btnCerrarComercio && !document.getElementById('btnMinimizarComercio')) {
+      btnCerrarComercio.outerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <button class="btn-volver" style="margin-bottom:0;" onclick="cerrarSesionCompleta()"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
+              <button id="btnMinimizarComercio" class="btn-volver" onclick="irPaso(1)" style="margin-bottom:0; background:#eff6ff; color:#2563eb; border-color:#bfdbfe;">
+                  <i class="ri-arrow-down-s-line"></i> Minimizar
+              </button>
+          </div>
+      `;
   }
 };
 
@@ -1377,6 +1404,16 @@ window.arreglarPanelClienteUI = () => {
           </div>
       `);
       document.getElementById('inputCelularCliente').value = AppStore.get('cliente_celular') || "";
+  }
+  
+  // Agregamos botón Minimizar también al perfil del cliente
+  const stepIndic = document.querySelector('#modal-step-cliente-ubicacion .step-indicator');
+  if(stepIndic && !document.getElementById('btnMinimizarCliente')) {
+      stepIndic.insertAdjacentHTML('afterend', `
+          <button id="btnMinimizarCliente" class="btn-volver" onclick="irPaso(1)" style="float:right; margin-bottom:0; background:#eff6ff; color:#2563eb; border-color:#bfdbfe; font-size:11px; padding:6px 12px;">
+              <i class="ri-arrow-down-s-line"></i> Minimizar
+          </button>
+      `);
   }
 };
 
@@ -1399,8 +1436,8 @@ window.arreglarPanelCadeteUI = () => {
       const datosLiquidacion = panelServimoto.querySelector('div[style*="DATOS PARA LIQUIDAR DEUDA"]');
       if(datosLiquidacion) {
           datosLiquidacion.insertAdjacentHTML('afterend', `
-              <div style="font-size:11.5px; color:#991b1b; background:#fef2f2; padding:10px; border-radius:8px; margin-bottom:16px; border:1px solid #fca5a5; text-align:left; line-height:1.4;">
-                  ⚠️ <b>INFO IMPORTANTE:</b> Comisión de <b>$100 por viaje</b>. Todos los <b>LUNES</b> se debe abonar el total acumulado de la semana. De no registrarse el pago, el sistema inhabilitará tu acceso al radar.
+              <div style="font-size:12px; color:#166534; background:#dcfce7; padding:12px; border-radius:8px; margin-bottom:16px; border:2px solid #16a34a; text-align:center; font-weight:800;">
+                  ⚠️ IMPORTANTE<br><span style="font-weight:600; color:#15803d; display:block; margin-top:4px;">Comisión de $100 por viaje. Todos los LUNES se debe abonar el total. De lo contrario, el radar se inhabilitará.</span>
               </div>
           `);
       }
@@ -1426,6 +1463,16 @@ window.expandirProducto = function(productoId) {
   const logoLocal = "https://ui-avatars.com/api/?name=" + encodeURIComponent((datos.local || "LC").substring(0,2)) + "&background=ff6b00&color=fff&size=128&bold=true";
   const card = document.getElementById('productExpandedCard');
   if (!card) return;
+  
+  // Renderizamos precio tachado si existe
+  let htmlPrecio = `<div class="expanded-price-value">$${Number(datos.precio || 0).toLocaleString('es-AR')}</div>`;
+  if(datos.precio_viejo && parseFloat(datos.precio_viejo) > parseFloat(datos.precio)) {
+      htmlPrecio = `
+         <div style="font-size:14px; text-decoration:line-through; color:#94a3b8; font-weight:700;">$${Number(datos.precio_viejo).toLocaleString('es-AR')}</div>
+         <div class="expanded-price-value" style="color:#16a34a;">$${Number(datos.precio || 0).toLocaleString('es-AR')}</div>
+      `;
+  }
+  
   card.innerHTML = `
     <div class="expanded-image-container">
       <button class="expanded-back" onclick="window.cerrarProductoExpandido()"><i class="ri-arrow-left-line"></i></button>
@@ -1446,7 +1493,7 @@ window.expandirProducto = function(productoId) {
         <div class="expanded-time-info"><i class="ri-timer-flash-line"></i> ${datos.tiempo || "20 min"}</div>
       </div>
       <div class="expanded-price-section">
-        <div><div class="expanded-price-label">Precio por unidad</div><div class="expanded-price-value">$${Number(datos.precio || 0).toLocaleString('es-AR')}</div></div>
+        <div><div class="expanded-price-label">Precio por unidad</div>${htmlPrecio}</div>
         <span style="background:#dcfce7;color:#16a34a;border:1px solid #86efac;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:800;text-transform:uppercase;">ABIERTO</span>
       </div>
     </div>
@@ -1471,7 +1518,7 @@ window.resetPagination = function() { currentPage = 0; hasMoreProducts = true; i
 window.filtrarFeedGlobal = function(cat) { 
   if(cat !== undefined) categoriaActiva = quitarAcentos(cat); 
   const inputBuscador = document.getElementById('filtroNombreComercio');
-  if(inputBuscador && cat !== undefined) inputBuscador.value = ''; // Reset búsqueda si cambia categoría principal
+  if(inputBuscador && cat !== undefined) inputBuscador.value = ''; 
   comercioFiltradoId = null; window.categoriaActivaLocal = ""; resetPagination(); cargarYRenderizarFeed(); 
 };
 
@@ -1490,7 +1537,6 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
   isLoadingMore = true;
   container.classList.add('grilla-productos-compacta');
 
-  // INYECCIÓN SKELETON LOADERS & BUSCADOR
   if (!isLoadMore) {
     const cajaFiltros = document.getElementById('cajaFiltrosFeedHTML');
     if (cajaFiltros && !document.getElementById('filtroNombreComercio')) {
@@ -1562,7 +1608,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
     let catSelectValue = window.categoriaActivaLocal || "";
 
     if (!isLoadMore) {
-      container.innerHTML = ''; // Limpiamos los Skeletons
+      container.innerHTML = ''; 
       if (comercioFiltradoId) {
         let comInfo = dbComerciosCache.find(c => c.id === comercioFiltradoId);
         if(comInfo) {
@@ -1633,7 +1679,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
         let catItemFinal = p.categoria || (comercioData ? comercioData.categoria : "General");
         
         _datosTarjetas[String(p.id)] = {
-          id: p.id, nombre: p.nombre, precio: parseFloat(p.precio), categoria: catItemFinal,
+          id: p.id, nombre: p.nombre, precio: parseFloat(p.precio), precio_viejo: p.precio_viejo, categoria: catItemFinal,
           descripcion: descTexto, tiempo: tiempoEstimado + " min", img: p.img_producto, local: nomComercio,
           dirLocal: dirComercio, alias: aliasComercio, tel: telComercio
         };
@@ -1643,7 +1689,16 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
         let btnTexto = estaAbierto ? 'AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:14px; vertical-align:middle; margin-left:2px;"></i>' : 'CERRADO';
         let onclickAccion = estaAbierto ? `onclick="event.stopPropagation(); intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
 
-        // FIX de UI: Aumentado el max-width a 140px en el span del nomComercio
+        // TACHADO DE PRECIOS SI HAY DESCUENTO
+        let htmlPrecioCard = `<div style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>`;
+        if (p.precio_viejo && parseFloat(p.precio_viejo) > parseFloat(p.precio)) {
+            htmlPrecioCard = `
+               <div style="display:flex; flex-direction:column;">
+                  <span style="font-size:11px; text-decoration:line-through; color:#94a3b8; font-weight:700;">$${parseFloat(p.precio_viejo).toLocaleString('es-AR')}</span>
+                  <span style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</span>
+               </div>`;
+        }
+
         html += `
           <div class="card-premium" style="padding:0; border-radius:14px; display:flex; flex-direction:column; background:linear-gradient(145deg,#ffffff,#fefcf9); border: 1px solid rgba(255,140,66,0.12); box-shadow: 0 2px 12px rgba(15,23,42,0.06), 0 1px 3px rgba(255,107,0,0.04); overflow:hidden; position:relative;" onclick="window.expandirProducto('${p.id}')">
             <div style="height:100px; width:100%; position:relative; flex-shrink:0;">
@@ -1656,8 +1711,8 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 <img src="${urlLogoComercio}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3112/3112618.png'" loading="lazy" style="width:16px; height:16px; border-radius:50%; object-fit:cover; flex-shrink:0;">
                 <span style="font-size:11px; font-weight:800; color:#cc4400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px;">${nomComercio}</span>
               </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <div style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+                ${htmlPrecioCard}
                 ${badgeEstado}
               </div>
               <button class="${btnClase}" style="width:100%; padding:10px 8px; font-size:13px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" ${onclickAccion}>
@@ -1954,6 +2009,11 @@ window.agregarArticuloComercio = async function() {
   
   const nom = document.getElementById('newArtNombre').value.trim();
   const pre = parseInt(document.getElementById('newArtPrecio').value);
+  
+  // LEER EL NUEVO CAMPO DE PRECIO VIEJO (DESCUENTO)
+  const inputPreViejo = document.getElementById('newArtPrecioViejo');
+  const preViejo = inputPreViejo && inputPreViejo.value ? parseInt(inputPreViejo.value) : null;
+  
   const desc = document.getElementById('newArtDescripcion').value.trim();
   const catArt = document.getElementById('newArtCategoria') ? document.getElementById('newArtCategoria').value : "General";
   
@@ -1966,13 +2026,14 @@ window.agregarArticuloComercio = async function() {
     const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
     
     let payload = {
-      id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: desc, img_producto: urlArt, pausado: false, descripcion: desc, categoria: catArt
+      id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, precio_viejo: preViejo, referencia: desc, img_producto: urlArt, pausado: false, descripcion: desc, categoria: catArt
     };
 
     let { error } = await supabaseClient.from('moto_productos').insert(payload);
     
+    // Fallback: Si no tiene creadas las columnas de precio_viejo, categoria, etc
     if(error && error.message.includes('column')) { 
-      delete payload.categoria; delete payload.descripcion;
+      delete payload.categoria; delete payload.descripcion; delete payload.precio_viejo;
       let result = await supabaseClient.from('moto_productos').insert(payload);
       error = result.error;
     }
@@ -1982,6 +2043,7 @@ window.agregarArticuloComercio = async function() {
     mostrarToast(`¡Artículo publicado con éxito!`, 'success');
     document.getElementById('newArtNombre').value = '';
     document.getElementById('newArtPrecio').value = '';
+    if(inputPreViejo) inputPreViejo.value = '';
     document.getElementById('newArtDescripcion').value = '';
     tempImgBase64 = null;
     if(document.getElementById('boxArticuloNuevo')) document.getElementById('boxArticuloNuevo').style.backgroundImage = 'none';
@@ -2033,44 +2095,106 @@ window.pausarArticuloAdmin = async function(idProd, estadoActual) {
   } catch (e) {}
 };
 
-// ==========================================
-// 11. PANEL CADETES Y RADAR
-// ==========================================
-window.arreglarPanelCadeteUI = () => {
-  const panelServimoto = document.getElementById('modal-step-servimoto');
-  if(panelServimoto && !document.getElementById('btnMinimizarRadar')) {
-      const btnCerrarSesion = panelServimoto.querySelector('.btn-volver');
-      if(btnCerrarSesion) {
-          btnCerrarSesion.outerHTML = `
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                  <button class="btn-volver" style="margin-bottom:0;" onclick="cerrarSesionCompleta()"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
-                  <button id="btnMinimizarRadar" class="btn-volver" onclick="irPaso(1)" style="margin-bottom:0; background:#eff6ff; color:#2563eb; border-color:#bfdbfe;">
-                      <i class="ri-arrow-down-s-line"></i> Minimizar
-                  </button>
-              </div>
-          `;
-      }
-      
-      const datosLiquidacion = panelServimoto.querySelector('div[style*="DATOS PARA LIQUIDAR DEUDA"]');
-      if(datosLiquidacion) {
-          datosLiquidacion.insertAdjacentHTML('afterend', `
-              <div style="font-size:11.5px; color:#991b1b; background:#fef2f2; padding:10px; border-radius:8px; margin-bottom:16px; border:1px solid #fca5a5; text-align:left; line-height:1.4;">
-                  ⚠️ <b>INFO IMPORTANTE:</b> Comisión de <b>$100 por viaje</b>. Todos los <b>LUNES</b> se debe abonar el total acumulado de la semana. De no registrarse el pago, el sistema inhabilitará tu acceso al radar.
-              </div>
-          `);
-      }
+window.agregarPedidoBandejaComercio = function(total, destino, nombreCliente, carritoJSON) {
+  let horaExacta = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  let detalleHTML = carritoJSON && carritoJSON.length > 0 ? carritoJSON.map(item => `▪️ ${item.nombre}`).join('<br>') : "Detalle no disponible";
+  pedidosComercio.unshift({ total: total, destino: destino, cliente: nombreCliente || "Cliente sin registrar", hora: horaExacta, detalle: detalleHTML, id: Date.now() });
+  
+  if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
+  if('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    let msg = new SpeechSynthesisUtterance("Tin. Ingresó un nuevo pedido al panel del comercio.");
+    msg.lang = 'es-AR'; msg.rate = 1.1;
+    window.speechSynthesis.speak(msg);
   }
+  window.renderizarBandejaPedidos();
 };
 
-window.cerrarSesionCompleta = async function() {
-  await supabaseClient.auth.signOut();
-  sessionActual = null; AppStore.clear(); localStorage.removeItem('ultimo_login_tipo');
-  if(window.canalRadar) supabaseClient.removeChannel(window.canalRadar);
-  if(motoGeoWatchId) navigator.geolocation.clearWatch(motoGeoWatchId);
-  estadoRadar = false; estadoTrabajoServimoto = false;
-  irPaso(1); mostrarToast('Sesión cerrada correctamente', 'success');
+window.renderizarBandejaPedidos = function() {
+  const bandeja = document.getElementById('bandejaPedidosComercio');
+  if(!bandeja) return;
+  bandeja.style.display = 'flex'; bandeja.style.flexDirection = 'column'; bandeja.style.gap = '16px';
+  bandeja.style.overflowY = 'auto'; bandeja.style.maxHeight = '650px'; bandeja.style.padding = '4px';
+  
+  if(pedidosComercio.length === 0) {
+    bandeja.innerHTML = '<div style="color:#64748b; font-size:13px; text-align:center; padding:15px; border:2px dashed #cbd5e1; border-radius:12px; font-weight:700;">Tu bandeja de notificaciones está vacía.</div>';
+    return;
+  }
+  
+  bandeja.innerHTML = pedidosComercio.map((p, idx) => `
+    <div id="pedido-${p.id}" style="background:#f0fdf4; border:2px solid #4ade80; padding:16px; border-radius:12px; margin-bottom:0; box-shadow:0 6px 15px rgba(74,222,128,0.2);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+        <div style="width: 100%;">
+          <div style="color:#15803d; font-weight:800; font-size:16px; display:flex; justify-content:space-between;">
+            <span>🛒 Pedido</span> <span style="font-size:12px; color:#166534; background:#bbf7d0; padding:2px 6px; border-radius:4px;">${p.hora}</span>
+          </div>
+          <div style="background:white; border-radius:8px; padding:8px; margin-top:8px; border:1px solid #bbf7d0;">
+            <div style="font-size:12px; color:#475569; font-weight:700; margin-bottom:4px;">Detalle de Comida:</div>
+            <div style="font-size:13px; color:#0f172a; font-weight:600; line-height:1.4;">${p.detalle}</div>
+            <div style="color:#16a34a; font-weight:800; font-size:15px; margin-top:6px; border-top:1px dashed #cbd5e1; padding-top:6px;">Total Comida: $${p.total.toLocaleString('es-AR')}</div>
+          </div>
+          <div style="color:#0f172a; font-size:13px; font-weight:800; margin-top:8px;">👤 Cliente: ${p.cliente}</div>
+          <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
+        </div>
+      </div>
+      <div style="font-size:12px; color:#166534; font-weight:800; margin-bottom:10px; background:#dcfce7; padding:6px 10px; border-radius:6px; border:1px solid #86efac;">
+        💡 1. Verificá que el pago por transferencia sea correcto.<br>2. Tocá "LLAMAR MOTO" para solicitar el ServiMoto en el radar de tu zona y coordinar la entrega.
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button onclick="llamarMotoDesdeLocal(${idx})" id="btnLlamarMoto_${idx}" style="flex:1; background:#2563eb; color:white; border:none; border-radius:8px; padding:12px; font-weight:800; font-size:13px; cursor:pointer; transition:all 0.3s;"><i class="ri-radar-line"></i> LLAMAR MOTO</button>
+        <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:12px; font-size:16px; font-weight:800; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
+      </div>
+    </div>
+  `).join('');
 };
 
+window.eliminarPedidoComercio = function(idx) {
+  pedidosComercio.splice(idx, 1);
+  mostrarToast('Notificación archivada', 'success');
+  window.renderizarBandejaPedidos();
+};
+
+window.llamarMotoDesdeLocal = async function(idx) {
+  mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
+  const btnCall = document.getElementById(`btnLlamarMoto_${idx}`);
+  if(btnCall) {
+    btnCall.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO CADETE...';
+    btnCall.style.background = '#f59e0b';
+  }
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    let msg = new SpeechSynthesisUtterance("Atención base, buscando un ServiMoto cercano para un nuevo envío.");
+    msg.lang = 'es-AR'; msg.rate = 1.1;
+    window.speechSynthesis.speak(msg);
+  }
+  
+  let pedidoInfo = pedidosComercio[idx];
+  let nombreLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Comercio Local";
+  let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
+  let viaje_id = pedidoInfo.id || Date.now();
+  let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
+  let fotoComercio = AppStore.get('selfie_com_tmp') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
+  AppStore.set('my_last_trip_id', viaje_id);
+  
+  let provComercio = document.getElementById('comercioProvincia') ? document.getElementById('comercioProvincia').value : "Tucumán";
+  let ciuComercio = document.getElementById('comercioCiudad') ? document.getElementById('comercioCiudad').value.trim() : "Famaillá";
+  window.conectarRadarLocal(provComercio, ciuComercio);
+  
+  setTimeout(() => {
+    if(window.canalRadar) {
+      window.canalRadar.send({ type: 'broadcast', event: 'nuevo_viaje', payload: { viaje_id: viaje_id, local: `${nombreLocal} (${dirLocal})`, destino: pedidoInfo.destino, costo: pedidoInfo.total, tel_cliente: telCliente, foto_cliente: fotoComercio } });
+    }
+    mostrarToast("✅ ¡Alerta enviada a motos de la zona!", "success");
+    if(btnCall) {
+      btnCall.innerHTML = '<i class="ri-check-double-line"></i> SEÑAL ENVIADA';
+      btnCall.style.background = '#16a34a';
+    }
+  }, 1000);
+};
+
+// ==========================================
+// 11. PANEL CADETES
+// ==========================================
 window.previewSelfieCadete = async function(input) {
   if(input.files && input.files[0]) {
     mostrarToast("Comprimiendo selfie...", "success");
@@ -2218,7 +2342,12 @@ window.conectarRadarLocal = function(prov, ciu) {
     let p = payload.payload; let card = document.getElementById('alertaViaje_' + p.viaje_id);
     if (card) {
       card.classList.add('tomado');
-      card.innerHTML = `<div style="text-align:center; padding:10px 0;"><i class="ri-motorbike-fill" style="font-size:38px; color:#ea580c;"></i><div style="font-weight:900; font-size:16px; color:#c2410c; margin-top:8px;">VIAJE TOMADO</div><div style="font-size:14px; color:#ea580c; font-weight:700; margin-top:4px;">Asignado a: ${p.cadete_nombre} 🚀</div></div>`;
+      card.innerHTML = `
+        <div style="text-align:center; padding:10px 0;">
+          <i class="ri-motorbike-fill" style="font-size:38px; color:#ea580c;"></i>
+          <div style="font-weight:900; font-size:16px; color:#c2410c; margin-top:8px;">VIAJE TOMADO</div>
+          <div style="font-size:14px; color:#ea580c; font-weight:700; margin-top:4px;">Asignado a: ${p.cadete_nombre} 🚀</div>
+        </div>`;
       setTimeout(() => { if(card) card.remove(); }, 3500);
     }
     let miViajeId = AppStore.get('my_last_trip_id');
@@ -2261,11 +2390,15 @@ window.activarRadar = function() {
   if(estadoRadar) {
     if(!estadoTrabajoServimoto) return mostrarToast('Primero debés ponerte ONLINE', 'error');
     btn.innerHTML = '<i class="ri-radar-fill animate-pulse-glow" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i><span style="font-weight: 800; font-size: 15px; font-family:\'Sora\', sans-serif; z-index:2; position:relative; letter-spacing:1px;">BUSCANDO...</span>';
-    btn.style.borderColor = '#16a34a'; btn.style.background = 'radial-gradient(circle, #14532d, #0f172a)'; btn.style.boxShadow = '0 0 30px rgba(22,163,74,0.6)';
+    btn.style.borderColor = '#16a34a';
+    btn.style.background = 'radial-gradient(circle, #14532d, #0f172a)';
+    btn.style.boxShadow = '0 0 30px rgba(22,163,74,0.6)';
     mostrarToast("Radar de viajes ACTIVADO 📡", "success");
   } else {
     btn.innerHTML = '<i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i><span style="font-weight: 800; font-size: 15px; font-family:\'Sora\', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>';
-    btn.style.borderColor = '#3b82f6'; btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)'; btn.style.boxShadow = '0 0 30px rgba(59,130,246,0.4)';
+    btn.style.borderColor = '#3b82f6';
+    btn.style.background = 'radial-gradient(circle, #1e3a8a, #0f172a)';
+    btn.style.boxShadow = '0 0 30px rgba(59,130,246,0.4)';
     mostrarToast("Radar desactivado", "error");
     if(motoGeoWatchId) { navigator.geolocation.clearWatch(motoGeoWatchId); motoGeoWatchId = null; } 
   }
@@ -2273,16 +2406,26 @@ window.activarRadar = function() {
 
 window.aceptarViajeRadar = function(viaje_id) {
   let btn = document.getElementById('btnAceptar_' + viaje_id);
-  if(btn) { btn.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> BLOQUEANDO...'; btn.style.background = '#f59e0b'; btn.style.pointerEvents = 'none'; }
-  let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete'; let miCelular = AppStore.get('cliente_celular') || '00000000'; let miFoto = AppStore.get('mi_foto_perfil') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
+  if(btn) {
+    btn.innerHTML = '<i class="ri-loader-4-line animate-ring"></i> BLOQUEANDO...';
+    btn.style.background = '#f59e0b'; btn.style.pointerEvents = 'none';
+  }
+  let miNombre = AppStore.get('cliente_nombre') || 'Un Cadete';
+  let miCelular = AppStore.get('cliente_celular') || '00000000';
+  let miFoto = AppStore.get('mi_foto_perfil') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
   
-  viajesMotoCount += 1; deudaMotoAcumulada += 100;
+  viajesMotoCount += 1;
+  deudaMotoAcumulada += 100; // Deuda automática por viaje actualizada a $100
   if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
   if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
-  if(sessionActual) supabaseClient.from('moto_cadetes').update({ viajes_realizados: viajesMotoCount, deuda_acumulada: deudaMotoAcumulada }).eq('id', sessionActual.id).then(() => {});
+  
+  if(sessionActual) {
+    supabaseClient.from('moto_cadetes').update({ viajes_realizados: viajesMotoCount, deuda_acumulada: deudaMotoAcumulada }).eq('id', sessionActual.id).then(() => {});
+  }
   
   if(window.canalRadar) {
     window.canalRadar.send({ type: 'broadcast', event: 'viaje_reclamado', payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular, foto_cadete: miFoto } });
+    // TRANSMITIR LA POSICIÓN DEL CADETE
     if(navigator.geolocation) {
        motoGeoWatchId = navigator.geolocation.watchPosition((pos) => {
            window.canalRadar.send({ type: 'broadcast', event: 'moto_position', payload: { viaje_id: viaje_id, lat: pos.coords.latitude, lng: pos.coords.longitude } });
@@ -2291,7 +2434,8 @@ window.aceptarViajeRadar = function(viaje_id) {
   }
   setTimeout(() => {
     mostrarToast("¡Viaje tuyo! Se sumaron $100 a tu cuenta.", "success");
-    let card = document.getElementById('alertaViaje_' + viaje_id); if(card) card.remove();
+    let card = document.getElementById('alertaViaje_' + viaje_id);
+    if(card) card.remove();
     if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
   }, 800);
 };
@@ -2303,8 +2447,15 @@ window.intentarComprar = async function(idProducto, nombre, precio, direccionCom
   if(navigator.vibrate) navigator.vibrate(50);
   telefonoComercioCalculo = telefonoComercio || NUMERO_SOPORTE_CENTRAL;
   productoPendienteAdd = { id: idProducto, nombre: nombre, precio: parseFloat(precio), direccion: direccionComercio, alias: aliasComercio };
-  if(!sessionActual) { mostrarToast('¡Iniciá sesión para armar tu pedido!', 'error'); iniciarLogin('cliente'); return; }
-  if(!AppStore.get('cliente_dir')) { mostrarToast('Falta configurar tu dirección de entrega', 'error'); irPaso('cliente-ubicacion'); return; }
+  
+  if(!sessionActual) {
+    mostrarToast('¡Iniciá sesión para armar tu pedido!', 'error');
+    iniciarLogin('cliente'); return;
+  }
+  if(!AppStore.get('cliente_dir')) {
+    mostrarToast('Falta configurar tu dirección de entrega', 'error');
+    irPaso('cliente-ubicacion'); return;
+  }
   window.procesarAgregadoCarrito();
 };
 
@@ -2312,11 +2463,18 @@ window.procesarAgregadoCarrito = function() {
   if(!productoPendienteAdd) return;
   carritoGlobal.push({ nombre: productoPendienteAdd.nombre, precio: productoPendienteAdd.precio, cantidad: 1 });
   localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal));
-  direccionOrigenCalculo = productoPendienteAdd.direccion; aliasOrigenCalculo = productoPendienteAdd.alias;
+  direccionOrigenCalculo = productoPendienteAdd.direccion;
+  aliasOrigenCalculo = productoPendienteAdd.alias;
+  
   mostrarToast(`✅ Agregaste: ${productoPendienteAdd.nombre}`, 'success');
-  const floatBtn = document.getElementById('btnFloatingCart'); const badge = document.getElementById('badgeCarrito');
+  const floatBtn = document.getElementById('btnFloatingCart');
+  const badge = document.getElementById('badgeCarrito');
   if(floatBtn) floatBtn.style.display = 'flex';
-  if(badge) { badge.textContent = carritoGlobal.length; badge.style.transform = 'scale(1.3)'; setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200); }
+  if(badge) {
+    badge.textContent = carritoGlobal.length;
+    badge.style.transform = 'scale(1.3)';
+    setTimeout(() => { badge.style.transform = 'scale(1)'; }, 200);
+  }
   productoPendienteAdd = null;
 };
 
@@ -2325,7 +2483,10 @@ window.abrirCarritoFinal = function() {
   if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
   cerrarModalMarketplace();
   const modalCarrito = document.getElementById('modalCarritoFinal');
-  if(modalCarrito) { window.renderizarCarritoDOM(); modalCarrito.classList.add('show'); }
+  if(modalCarrito) {
+    window.renderizarCarritoDOM();
+    modalCarrito.classList.add('show');
+  }
 };
 
 window.cerrarCarrito = function() { document.getElementById('modalCarritoFinal').classList.remove('show'); };
@@ -2333,22 +2494,36 @@ window.cerrarCarrito = function() { document.getElementById('modalCarritoFinal')
 window.pedirNuevaDireccionEnvio = function() {
   let dirActual = AppStore.get('cliente_dir') || "";
   let nuevaDir = prompt("🛵 Ingresá la dirección exacta donde estás ahora (Ej: San Martín 850):", dirActual);
-  if(nuevaDir && nuevaDir.trim() !== "") { AppStore.set('cliente_dir', nuevaDir.trim()); window.renderizarCarritoDOM(); mostrarToast("✅ Dirección actualizada", "success"); }
+  if(nuevaDir && nuevaDir.trim() !== "") {
+    AppStore.set('cliente_dir', nuevaDir.trim());
+    window.renderizarCarritoDOM();
+    mostrarToast("✅ Dirección actualizada", "success");
+  }
 };
 
 window.previewComprobanteCarrito = async function(input) {
   if(input.files && input.files[0]) {
-    mostrarToast("Comprimiendo comprobante...", "success"); const b64 = await comprimirImagen(input.files[0]); AppStore.set('comprobante_tmp', b64);
-    let lbl = document.getElementById('lblComprobanteOk'); if(lbl) { lbl.style.display = 'block'; lbl.innerHTML = '✅ Foto adjuntada lista para enviar'; }
+    mostrarToast("Comprimiendo comprobante...", "success");
+    const b64 = await comprimirImagen(input.files[0]);
+    AppStore.set('comprobante_tmp', b64);
+    let lbl = document.getElementById('lblComprobanteOk');
+    if(lbl) {
+      lbl.style.display = 'block';
+      lbl.innerHTML = '✅ Foto adjuntada lista para enviar';
+    }
     mostrarToast("Comprobante listo", "success");
   }
 };
 
 window.renderizarCarritoDOM = function() {
-  const cont = document.getElementById('contenidoCarrito'); const totalUI = document.getElementById('totalFinalCarrito');
+  const cont = document.getElementById('contenidoCarrito');
+  const totalUI = document.getElementById('totalFinalCarrito');
   if(!cont || !totalUI) return;
-  let subtotal = 0; let listHTML = "";
-  let nomComprador = AppStore.get('cliente_nombre') || "Cliente sin registrar"; let dirComprador = AppStore.get('cliente_dir') || "Dirección no configurada"; let ciuComprador = AppStore.get('cliente_ciu') || "";
+  let subtotal = 0;
+  let listHTML = "";
+  let nomComprador = AppStore.get('cliente_nombre') || "Cliente sin registrar";
+  let dirComprador = AppStore.get('cliente_dir') || "Dirección no configurada";
+  let ciuComprador = AppStore.get('cliente_ciu') || "";
   
   listHTML += `
     <div style="background:white; padding:14px; border-radius:12px; margin-bottom:14px; border:2px solid #e2e8f0; font-size:13px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
@@ -2383,102 +2558,21 @@ window.renderizarCarritoDOM = function() {
     return `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:8px;"><div><div style="font-weight:800; font-size:14px; color:#0f172a;">${item.nombre}</div><div style="color:#16a34a; font-weight:800; font-size:13px;">$${item.precio.toLocaleString('es-AR')}</div></div><button onclick="window.borrarItemCarrito(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; width:32px; height:32px; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button></div>`;
   }).join('');
   
-  cont.innerHTML = listHTML; totalUI.textContent = '$' + subtotal.toLocaleString('es-AR');
+  cont.innerHTML = listHTML;
+  totalUI.textContent = '$' + subtotal.toLocaleString('es-AR');
 };
 
 window.borrarItemCarrito = function(idx) {
-  carritoGlobal.splice(idx, 1); localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal));
-  const badge = document.getElementById('badgeCarrito'); if(badge) badge.textContent = carritoGlobal.length;
-  if(carritoGlobal.length === 0) { costoEnvioCalculado = 0; const floatBtn = document.getElementById('btnFloatingCart'); if(floatBtn) floatBtn.style.display = 'none'; cerrarCarrito(); } else { window.renderizarCarritoDOM(); }
-};
-
-window.agregarPedidoBandejaComercio = function(total, destino, nombreCliente, carritoJSON) {
-  let horaExacta = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-  let detalleHTML = carritoJSON && carritoJSON.length > 0 ? carritoJSON.map(item => `▪️ ${item.nombre}`).join('<br>') : "Detalle no disponible";
-  pedidosComercio.unshift({ total: total, destino: destino, cliente: nombreCliente || "Cliente sin registrar", hora: horaExacta, detalle: detalleHTML, id: Date.now() });
-  
-  if(navigator.vibrate) navigator.vibrate([500, 250, 500]);
-  if('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    let msg = new SpeechSynthesisUtterance("Tin. Ingresó un nuevo pedido al panel del comercio.");
-    msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
-  }
-  window.renderizarBandejaPedidos();
-};
-
-window.renderizarBandejaPedidos = function() {
-  const bandeja = document.getElementById('bandejaPedidosComercio');
-  if(!bandeja) return;
-  bandeja.style.display = 'flex'; bandeja.style.flexDirection = 'column'; bandeja.style.gap = '16px';
-  bandeja.style.overflowY = 'auto'; bandeja.style.maxHeight = '650px'; bandeja.style.padding = '4px';
-  
-  if(pedidosComercio.length === 0) {
-    bandeja.innerHTML = '<div style="color:#64748b; font-size:13px; text-align:center; padding:15px; border:2px dashed #cbd5e1; border-radius:12px; font-weight:700;">Tu bandeja de notificaciones está vacía.</div>'; return;
-  }
-  
-  bandeja.innerHTML = pedidosComercio.map((p, idx) => `
-    <div id="pedido-${p.id}" style="background:#f0fdf4; border:2px solid #4ade80; padding:16px; border-radius:12px; margin-bottom:0; box-shadow:0 6px 15px rgba(74,222,128,0.2);">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-        <div style="width: 100%;">
-          <div style="color:#15803d; font-weight:800; font-size:16px; display:flex; justify-content:space-between;">
-            <span>🛒 Pedido</span> <span style="font-size:12px; color:#166534; background:#bbf7d0; padding:2px 6px; border-radius:4px;">${p.hora}</span>
-          </div>
-          <div style="background:white; border-radius:8px; padding:8px; margin-top:8px; border:1px solid #bbf7d0;">
-            <div style="font-size:12px; color:#475569; font-weight:700; margin-bottom:4px;">Detalle de Comida:</div>
-            <div style="font-size:13px; color:#0f172a; font-weight:600; line-height:1.4;">${p.detalle}</div>
-            <div style="color:#16a34a; font-weight:800; font-size:15px; margin-top:6px; border-top:1px dashed #cbd5e1; padding-top:6px;">Total Comida: $${p.total.toLocaleString('es-AR')}</div>
-          </div>
-          <div style="color:#0f172a; font-size:13px; font-weight:800; margin-top:8px;">👤 Cliente: ${p.cliente}</div>
-          <div style="color:#166534; font-size:12px; font-weight:700; margin-top:2px;"><i class="ri-map-pin-user-fill"></i> ${p.destino}</div>
-        </div>
-      </div>
-      <div style="font-size:12px; color:#166534; font-weight:800; margin-bottom:10px; background:#dcfce7; padding:6px 10px; border-radius:6px; border:1px solid #86efac;">
-        💡 1. Verificá que el pago por transferencia sea correcto.<br>2. Tocá "LLAMAR MOTO" para solicitar el ServiMoto en el radar de tu zona y coordinar la entrega.
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button onclick="llamarMotoDesdeLocal(${idx})" id="btnLlamarMoto_${idx}" style="flex:1; background:#2563eb; color:white; border:none; border-radius:8px; padding:12px; font-weight:800; font-size:13px; cursor:pointer; transition:all 0.3s;"><i class="ri-radar-line"></i> LLAMAR MOTO</button>
-        <button onclick="eliminarPedidoComercio(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; padding:12px; font-size:16px; font-weight:800; cursor:pointer;"><i class="ri-delete-bin-fill"></i></button>
-      </div>
-    </div>
-  `).join('');
-};
-
-window.eliminarPedidoComercio = function(idx) {
-  pedidosComercio.splice(idx, 1); mostrarToast('Notificación archivada', 'success'); window.renderizarBandejaPedidos();
-};
-
-window.llamarMotoDesdeLocal = async function(idx) {
-  mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
-  const btnCall = document.getElementById(`btnLlamarMoto_${idx}`);
-  if(btnCall) {
-    btnCall.innerHTML = '<i class="ri-radar-line animate-ring"></i> RASTREANDO CADETE...';
-    btnCall.style.background = '#f59e0b';
-  }
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    let msg = new SpeechSynthesisUtterance("Atención base, buscando un ServiMoto cercano para un nuevo envío.");
-    msg.lang = 'es-AR'; msg.rate = 1.1; window.speechSynthesis.speak(msg);
-  }
-  
-  let pedidoInfo = pedidosComercio[idx];
-  let nombreLocal = document.getElementById('comercioNombre') ? document.getElementById('comercioNombre').value.trim() : "Comercio Local";
-  let dirLocal = document.getElementById('comercioDireccionExacta') ? document.getElementById('comercioDireccionExacta').value.trim() : "Local";
-  let viaje_id = pedidoInfo.id || Date.now();
-  let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
-  let fotoComercio = AppStore.get('selfie_com_tmp') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
-  AppStore.set('my_last_trip_id', viaje_id);
-  
-  let provComercio = document.getElementById('comercioProvincia') ? document.getElementById('comercioProvincia').value : "Tucumán";
-  let ciuComercio = document.getElementById('comercioCiudad') ? document.getElementById('comercioCiudad').value.trim() : "Famaillá";
-  window.conectarRadarLocal(provComercio, ciuComercio);
-  
-  setTimeout(() => {
-    if(window.canalRadar) {
-      window.canalRadar.send({ type: 'broadcast', event: 'nuevo_viaje', payload: { viaje_id: viaje_id, local: `${nombreLocal} (${dirLocal})`, destino: pedidoInfo.destino, costo: pedidoInfo.total, tel_cliente: telCliente, foto_cliente: fotoComercio } });
-    }
-    mostrarToast("✅ ¡Alerta enviada a motos de la zona!", "success");
-    if(btnCall) { btnCall.innerHTML = '<i class="ri-check-double-line"></i> SEÑAL ENVIADA'; btnCall.style.background = '#16a34a'; }
-  }, 1000);
+  carritoGlobal.splice(idx, 1);
+  localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal));
+  const badge = document.getElementById('badgeCarrito');
+  if(badge) badge.textContent = carritoGlobal.length;
+  if(carritoGlobal.length === 0) {
+    costoEnvioCalculado = 0;
+    const floatBtn = document.getElementById('btnFloatingCart');
+    if(floatBtn) floatBtn.style.display = 'none';
+    cerrarCarrito();
+  } else { window.renderizarCarritoDOM(); }
 };
 
 // ==========================================
@@ -2507,25 +2601,35 @@ async function calcularRutaOSRMMago(origen, destino) {
     const res = await fetch(url);
     const datos = await res.json();
     if (datos.code === 'Ok' && datos.routes && datos.routes.length > 0) {
-      const ruta = datos.routes[0]; return { distancia: ruta.distance, duracion: ruta.duration, coordenadas: ruta.geometry.coordinates.map(c => [c[1], c[0]]) };
-    } return null;
+      const ruta = datos.routes[0];
+      return { distancia: ruta.distance, duracion: ruta.duration, coordenadas: ruta.geometry.coordinates.map(c => [c[1], c[0]]) };
+    }
+    return null;
   } catch (e) { return null; }
 }
 
 function calcularDistanciaHaversine(lat1, lng1, lat2, lng2) {
   const R = 6371000;
-  const dLat = (lat2 - lat1) * Math.PI / 180; const dLng = (lng2 - lng1) * Math.PI / 180;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
   const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
 }
 
 window.abrirMapaMago = function() {
-  cerrarCarrito(); const modalMapa = document.getElementById('modalMapaGrande'); if(!modalMapa) return;
-  modalMapa.classList.add('show'); const fallbackText = document.getElementById('mapFallbackText'); if(fallbackText) fallbackText.style.display = 'none';
+  cerrarCarrito();
+  const modalMapa = document.getElementById('modalMapaGrande');
+  if(!modalMapa) return;
+  modalMapa.classList.add('show');
+  const fallbackText = document.getElementById('mapFallbackText');
+  if(fallbackText) fallbackText.style.display = 'none';
 
   setTimeout(async () => {
-    const box = document.getElementById('mapaBox'); if(box) { box.style.opacity = '1'; box.style.transform = 'scale(1)'; }
-    initMapaMago(); setTimeout(() => { if(mapaMagoObj) mapaMagoObj.invalidateSize(); }, 300);
+    const box = document.getElementById('mapaBox');
+    if(box) { box.style.opacity = '1'; box.style.transform = 'scale(1)'; }
+    initMapaMago();
+    setTimeout(() => { if(mapaMagoObj) mapaMagoObj.invalidateSize(); }, 300);
 
     let strOrigen = "", strDestino = "";
     if (esViajeEspecial) {
@@ -2536,17 +2640,21 @@ window.abrirMapaMago = function() {
       let dD = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
       strDestino = `${dD}, ${cD}, ${pD}, Argentina`;
     } else {
-      let pC = AppStore.get('cliente_prov') || 'Tucumán'; let cC = AppStore.get('cliente_ciu') || 'Famaillá'; let dC = AppStore.get('cliente_dir');
+      let pC = AppStore.get('cliente_prov') || 'Tucumán';
+      let cC = AppStore.get('cliente_ciu') || 'Famaillá';
+      let dC = AppStore.get('cliente_dir');
       strDestino = `${dC}, ${cC}, ${pC}, Argentina`;
       let dL = direccionOrigenCalculo ? direccionOrigenCalculo : "Plaza Principal";
       strOrigen = `${dL}, ${cC}, ${pC}, Argentina`;
     }
 
     try {
-      const origen = await geocodificarDireccionMago(strOrigen); const destino = await geocodificarDireccionMago(strDestino);
+      const origen = await geocodificarDireccionMago(strOrigen);
+      const destino = await geocodificarDireccionMago(strDestino);
       if(!origen || !destino) { window.calcularMatematicaEnvio("1.0"); return; }
       
-      if(magoLayerGroup) magoLayerGroup.clearLayers(); else magoLayerGroup = L.featureGroup().addTo(mapaMagoObj);
+      if(magoLayerGroup) magoLayerGroup.clearLayers();
+      else magoLayerGroup = L.featureGroup().addTo(mapaMagoObj);
       if (animacionIntervalMago) clearInterval(animacionIntervalMago);
       
       const icoOri = L.divIcon({ className: 'custom-marker', html: '<div class="custom-marker-origen"><i class="ri-store-fill"></i></div>', iconSize: [32, 32], iconAnchor: [16, 32] });
@@ -2612,7 +2720,8 @@ window.procesarEnvioMapa = function() {
 
 window.mandarPedidoSoporte = async function() {
   if(carritoGlobal.length === 0) return mostrarToast('El carrito está vacío', 'error');
-  let subtotalProductos = 0; carritoGlobal.forEach(i => subtotalProductos += i.precio);
+  let subtotalProductos = 0;
+  carritoGlobal.forEach(i => subtotalProductos += i.precio);
   let destClient = AppStore.get('cliente_dir') + ", " + AppStore.get('cliente_ciu');
   let nomComprador = AppStore.get('cliente_nombre') || "No registrado";
   let pedidoCreadoId = Date.now();
@@ -2622,7 +2731,10 @@ window.mandarPedidoSoporte = async function() {
     mostrarToast("⏳ Procesando comprobante...", "success");
     try {
       let urlComp = await subirImagenBucket(AppStore.get('comprobante_tmp'), `comprobantes/pago_${Date.now()}.jpg`);
-      if(urlComp) { txtComprobante = `%0A📎 *VER COMPROBANTE DE PAGO:* ${urlComp}%0A`; AppStore.set('comprobante_tmp', null); }
+      if(urlComp) {
+        txtComprobante = `%0A📎 *VER COMPROBANTE DE PAGO:* ${urlComp}%0A`;
+        AppStore.set('comprobante_tmp', null);
+      }
     } catch(e) {}
   }
 
@@ -2630,6 +2742,7 @@ window.mandarPedidoSoporte = async function() {
   
   let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
   carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
+  
   if(txtComprobante !== "") txt += txtComprobante;
 
   let telInput = document.getElementById('inputCelularCarrito');
@@ -2644,8 +2757,11 @@ window.mandarPedidoSoporte = async function() {
   txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
   
   AppStore.set('my_last_trip_id', pedidoCreadoId);
-  window.cerrarMapa(); carritoGlobal = []; localStorage.removeItem('moto_carrito_guardado');
-  const floatBtn = document.getElementById('btnFloatingCart'); if(floatBtn) floatBtn.style.display = 'none';
+  window.cerrarMapa();
+  carritoGlobal = [];
+  localStorage.removeItem('moto_carrito_guardado');
+  const floatBtn = document.getElementById('btnFloatingCart');
+  if(floatBtn) floatBtn.style.display = 'none';
   window.dispararConfetti();
   
   setTimeout(() => {
@@ -2662,7 +2778,8 @@ window.enviarPedidoEspecial = function() {
   let ciuDest = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "";
   let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "";
   if(!dirOrig || !dirDest || !ciuDest) return mostrarToast('Completá las dos calles y la ciudad.', 'error');
-  esViajeEspecial = true; window.abrirMapaMago();
+  esViajeEspecial = true;
+  window.abrirMapaMago();
 };
 
 window.mandarViajeEspecialSoporte = async function() {
@@ -2674,7 +2791,10 @@ window.mandarViajeEspecialSoporte = async function() {
   let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
   
   mostrarToast("📡 Emitiendo señal al radar de cadetes...", "success");
-  window.cerrarMapa(); esViajeEspecial = false; let idViajeFinal = Date.now(); AppStore.set('my_last_trip_id', idViajeFinal);
+  window.cerrarMapa();
+  esViajeEspecial = false;
+  let idViajeFinal = Date.now();
+  AppStore.set('my_last_trip_id', idViajeFinal);
   
   if(window.canalRadar) {
     let fotoCliente = AppStore.get('mi_foto_perfil') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
@@ -2703,7 +2823,8 @@ window.pedirFavorDirectoCliente = function(evt) {
   let dirDest = document.getElementById('dirDestinoEspecial') ? document.getElementById('dirDestinoEspecial').value.trim() : "A coordinar";
   let detalle = document.getElementById('txtPedidoEspecial') ? document.getElementById('txtPedidoEspecial').value.trim() : "";
   let telCliente = AppStore.get('cliente_celular_real') || AppStore.get('cliente_celular') || "00000000";
-  let viaje_id = Date.now(); AppStore.set('my_last_trip_id', viaje_id);
+  let viaje_id = Date.now();
+  AppStore.set('my_last_trip_id', viaje_id);
   
   let provEspecial = document.getElementById('selProvinciaEspecial') ? document.getElementById('selProvinciaEspecial').value : "Tucumán";
   let ciuEspecial = document.getElementById('ciuDestinoEspecial') ? document.getElementById('ciuDestinoEspecial').value.trim() : "Famaillá";
@@ -2718,7 +2839,8 @@ window.pedirFavorDirectoCliente = function(evt) {
   window.timeoutFavor = setTimeout(() => {
     if (window.btnFavorRef && window.btnFavorRef.el) {
       let b = window.btnFavorRef.el;
-      b.innerHTML = '<i class="ri-error-warning-line"></i> SIN MOTOS, REINTENTAR'; b.style.background = '#f97316'; b.style.border = '2px solid #f97316';
+      b.innerHTML = '<i class="ri-error-warning-line"></i> SIN MOTOS, REINTENTAR';
+      b.style.background = '#f97316'; b.style.border = '2px solid #f97316';
       mostrarToast("No hay motos disponibles ahora. Reintentá en unos minutos.", "error");
       setTimeout(() => {
         b.innerHTML = window.btnFavorRef.html; b.style.background = window.btnFavorRef.bg;
