@@ -1054,6 +1054,7 @@ const supabaseUrl = 'https://drpjcmznauposqlhaveo.supabase.co';
 const supabaseKey = 'sb_publishable_xo7-uUQqtWvEWoLGqqlrsg_rxdroLx4';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+// Variables del radar globales para evitar errores de DB
 window.nombreCanalActual = "";
 window.canalRadar = null;
 
@@ -1067,7 +1068,7 @@ let telefonoComercioCalculo = "";
 let tipoLoginActual = "";
 let categoriaActiva = "";
 let comercioFiltradoId = null;
-window.categoriaActivaLocal = "";
+window.categoriaActivaLocal = ""; // Filtro interno del comercio
 let sessionActual = null;
 let miComercioLogueadoId = null;
 let productoPendienteAdd = null;
@@ -1078,7 +1079,10 @@ let estadoRadar = false;
 let _datosTarjetas = {}; 
 const NUMERO_SOPORTE_CENTRAL = "5493816092676";
 
+// GPS de la Moto
 let motoGeoWatchId = null;
+
+// Variables Leaflet (Mapa Mago / Checkout Libre)
 let mapaMagoObj = null;
 let capaRutaMago = null;
 let motoMarkerMago = null;
@@ -1086,15 +1090,18 @@ let animacionIntervalMago = null;
 let magoLayerGroup = null;
 let esViajeEspecial = false;
 
+// Variables Paginación
 let currentPage = 0;
 const ITEMS_PER_PAGE = 20;
 let isLoadingMore = false;
 let hasMoreProducts = true;
 let dbComerciosCache = [];
 
+// Variables Multimedia Temporales
 let tempImgBase64 = null;
 let tempImgPortada = null;
 
+// PWA Deferred Prompt
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -1123,18 +1130,9 @@ const inyectarEstilosPremium = () => {
     .step-item.active .step-icon { background: #dcfce7; color: #16a34a; border-color: #16a34a; box-shadow: 0 0 10px rgba(22,163,74,0.3); }
     .step-item.done .step-icon { background: #16a34a; color: white; border-color: #16a34a; }
     
-    /* FIX PORTADA COMERCIO */
-    #boxPortadaComercio {
-      min-height: 150px !important;
-      width: 100% !important;
-      border-radius: 1.5rem !important;
-      margin: 0 0 20px 0 !important;
-      background-size: cover !important;
-      background-position: center !important;
-      border: 2px dashed #cbd5e1 !important;
-      position: relative;
-      overflow: hidden;
-    }
+    /* FIX DE PANTALLA COMPLETA ARTICULOS */
+    .expanded-container { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999999 !important; border-radius: 0 !important; border: none !important; margin: 0 !important; display: flex; flex-direction: column; background:#fff7ed; padding: 20px !important; box-sizing: border-box; }
+    .expanded-list-content { max-height: calc(100vh - 80px) !important; flex: 1; overflow-y:auto; padding-bottom: 20px; }
   `;
   document.head.appendChild(style);
 };
@@ -1335,25 +1333,24 @@ window.obtenerEstadoLocal = function(hA, hC) {
   return (minAbre < minCierra) ? (minA >= minAbre && minA <= minCierra) : (minA >= minAbre || minA <= minCierra);
 };
 
-// FIX PANEL COMERCIO UI (Banner, Selfie y Descuentos)
+// FIX PANEL COMERCIO UI 
 window.arreglarPanelComercioUI = () => {
   const portada = document.getElementById('boxPortadaComercio');
   const selfie = document.getElementById('boxSelfieComercioModal');
   const descInput = document.getElementById('newArtDescripcion');
+  const preInput = document.getElementById('newArtPrecio');
   
   if(portada && selfie && !portada.dataset.fixed) {
     portada.dataset.fixed = "true";
-    
-    // Convertimos la portada en banner ancho
     selfie.parentNode.insertBefore(portada, selfie); 
-    
-    // Selfie flotante y redonda
+    portada.style.minHeight = '150px'; portada.style.width = '100%'; 
+    portada.style.borderRadius = '1.5rem 1.5rem 0 0'; portada.style.margin = '0';
+    portada.style.border = '2px dashed #cbd5e1'; portada.style.borderBottom = 'none';
     selfie.style.minHeight = '110px'; selfie.style.width = '110px'; 
     selfie.style.borderRadius = '50%'; selfie.style.margin = '-55px auto 20px auto';
     selfie.style.border = '4px solid #fff7ed'; selfie.style.zIndex = '10';
     selfie.style.boxShadow = '0 6px 15px rgba(0,0,0,0.15)'; selfie.style.padding = '0';
     selfie.style.backgroundColor = '#dcfce7';
-    
     const lblSelfie = document.getElementById('lblTextSelfieComercio'); if(lblSelfie) lblSelfie.style.display = 'none'; 
     const iconSelfie = document.getElementById('iconSelfieComercioContenedor'); if(iconSelfie) iconSelfie.style.transform = 'scale(0.8)';
   }
@@ -1372,14 +1369,14 @@ window.arreglarPanelComercioUI = () => {
         <option value="Farmacia">💊 Farmacia / Perfumería</option>
       </select>
     `);
-    
-    // Agregamos input para el precio viejo (para simular el descuento tachado)
-    document.getElementById('newArtPrecio').insertAdjacentHTML('beforebegin', `
-       <input type="number" class="input-buscar" id="newArtPrecioViejo" placeholder="Precio Original (Tachado, Opcional)" style="margin:0; padding:16px; font-size:14px; color:#ef4444;">
-    `);
   }
   
-  // INYECTAMOS BOTONES DE CERRAR SESIÓN Y MINIMIZAR ARRIBA DE TODO EN EL PANEL DEL COMERCIO
+  if (preInput && !document.getElementById('newArtPrecioViejo')) {
+      preInput.insertAdjacentHTML('beforebegin', `
+         <input type="number" class="input-buscar" id="newArtPrecioViejo" placeholder="Precio Original (Tachado, Opcional)" style="margin:0; padding:16px; font-size:14px; color:#ef4444; border-color:#fca5a5;">
+      `);
+  }
+  
   const btnCerrarComercio = document.querySelector('#modal-step-comercio .btn-volver');
   if(btnCerrarComercio && !document.getElementById('btnMinimizarComercio')) {
       btnCerrarComercio.outerHTML = `
@@ -1406,7 +1403,6 @@ window.arreglarPanelClienteUI = () => {
       document.getElementById('inputCelularCliente').value = AppStore.get('cliente_celular') || "";
   }
   
-  // Agregamos botón Minimizar también al perfil del cliente
   const stepIndic = document.querySelector('#modal-step-cliente-ubicacion .step-indicator');
   if(stepIndic && !document.getElementById('btnMinimizarCliente')) {
       stepIndic.insertAdjacentHTML('afterend', `
@@ -1417,7 +1413,7 @@ window.arreglarPanelClienteUI = () => {
   }
 };
 
-// FIX PANEL CADETE UI (MINIMIZAR Y ALERTA LUNES)
+// FIX PANEL CADETE UI (MINIMIZAR Y ALERTA VERDE DEL LUNES)
 window.arreglarPanelCadeteUI = () => {
   const panelServimoto = document.getElementById('modal-step-servimoto');
   if(panelServimoto && !document.getElementById('btnMinimizarRadar')) {
@@ -1433,11 +1429,11 @@ window.arreglarPanelCadeteUI = () => {
           `;
       }
       
-      const datosLiquidacion = panelServimoto.querySelector('div[style*="DATOS PARA LIQUIDAR DEUDA"]');
-      if(datosLiquidacion) {
-          datosLiquidacion.insertAdjacentHTML('afterend', `
-              <div style="font-size:12px; color:#166534; background:#dcfce7; padding:12px; border-radius:8px; margin-bottom:16px; border:2px solid #16a34a; text-align:center; font-weight:800;">
-                  ⚠️ IMPORTANTE<br><span style="font-weight:600; color:#15803d; display:block; margin-top:4px;">Comisión de $100 por viaje. Todos los LUNES se debe abonar el total. De lo contrario, el radar se inhabilitará.</span>
+      const listaViajes = document.getElementById('listaViajesCadete');
+      if(listaViajes && !document.getElementById('avisoLunes')) {
+          listaViajes.insertAdjacentHTML('afterend', `
+              <div id="avisoLunes" style="font-size:13px; color:#15803d; background:#dcfce7; padding:14px; border-radius:10px; margin-bottom:16px; border:2px solid #16a34a; text-align:center; font-weight:800; box-shadow:0 4px 10px rgba(22,163,74,0.15);">
+                  ⚠️ INFO IMPORTANTE<br><span style="font-weight:700; color:#166534; display:block; margin-top:6px; font-size:11.5px;">Comisión: $100 por viaje. Todos los LUNES se debe abonar el total. De lo contrario, el radar se inhabilitará automáticamente.</span>
               </div>
           `);
       }
@@ -1464,7 +1460,6 @@ window.expandirProducto = function(productoId) {
   const card = document.getElementById('productExpandedCard');
   if (!card) return;
   
-  // Renderizamos precio tachado si existe
   let htmlPrecio = `<div class="expanded-price-value">$${Number(datos.precio || 0).toLocaleString('es-AR')}</div>`;
   if(datos.precio_viejo && parseFloat(datos.precio_viejo) > parseFloat(datos.precio)) {
       htmlPrecio = `
@@ -1918,8 +1913,6 @@ window.previewSelfieComercioModal = async function(input) {
     const caja = document.getElementById('boxSelfieComercioModal');
     const icono = document.getElementById('iconSelfieComercioContenedor');
     if(caja) caja.style.backgroundImage = `url(${b64})`; if(icono) icono.style.display = 'none';
-    const texto1 = document.getElementById('lblTextSelfieComercio');
-    if(texto1) texto1.innerHTML = '<span style="color:#15803d;">✅ Selfie Verificada</span>';
     AppStore.set('selfie_com_tmp', b64);
   }
 };
@@ -1931,8 +1924,6 @@ window.previewPortada = async function(input) {
     const caja = document.getElementById('boxPortadaComercio');
     const icon = document.getElementById('iconPortadaContenedor');
     if(caja) caja.style.backgroundImage = `url(${b64})`; if(icon) icon.style.display = 'none';
-    const lbl = document.getElementById('lblPortadaComercio');
-    if(lbl) lbl.textContent = '✅ Portada Lista';
     AppStore.set('portada_com_tmp', b64);
   }
 };
@@ -1984,6 +1975,7 @@ window.guardarComercio = async function() {
 
     let { error } = await supabaseClient.from('moto_comercios').upsert(payload);
     
+    // FALLBACK PLAN B
     if(error && error.message.includes('column')) {
        delete payload.hora_abre; delete payload.hora_cierra; delete payload.alias_mp;
        let res2 = await supabaseClient.from('moto_comercios').upsert(payload);
@@ -2010,7 +2002,6 @@ window.agregarArticuloComercio = async function() {
   const nom = document.getElementById('newArtNombre').value.trim();
   const pre = parseInt(document.getElementById('newArtPrecio').value);
   
-  // LEER EL NUEVO CAMPO DE PRECIO VIEJO (DESCUENTO)
   const inputPreViejo = document.getElementById('newArtPrecioViejo');
   const preViejo = inputPreViejo && inputPreViejo.value ? parseInt(inputPreViejo.value) : null;
   
@@ -2274,6 +2265,7 @@ window.procesarLiquidacionIA = async function(input) {
     if(!sessionActual || !sessionActual.id) throw new Error("Debes iniciar sesión");
     const fileName = `pagos/pago_${sessionActual.id}_${Date.now()}.jpg`;
     await supabaseClient.storage.from('moto_media').upload(fileName, file);
+    const compUrl = supabaseClient.storage.from('moto_media').getPublicUrl(fileName).data.publicUrl;
     mostrarToast("🤖 IA Analizando transferencia...", "success");
     if (deudaMotoAcumulada <= 0) throw new Error("No tenés deuda pendiente para pagar.");
     
@@ -2356,7 +2348,11 @@ window.conectarRadarLocal = function(prov, ciu) {
         clearTimeout(window.timeoutFavor); let b = window.btnFavorRef.el;
         b.innerHTML = `✅ ¡ASIGNADO A ${p.cadete_nombre.toUpperCase()}!`; b.style.background = '#2563eb'; b.style.border = '2px solid #2563eb'; b.style.color = 'white';
         if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        setTimeout(() => { b.innerHTML = window.btnFavorRef.html; b.style.background = window.btnFavorRef.bg; b.style.color = window.btnFavorRef.color; b.style.border = window.btnFavorRef.border; b.style.pointerEvents = 'auto'; window.btnFavorRef = null; }, 4000);
+        setTimeout(() => {
+          b.innerHTML = window.btnFavorRef.html; b.style.background = window.btnFavorRef.bg;
+          b.style.color = window.btnFavorRef.color; b.style.border = window.btnFavorRef.border;
+          b.style.pointerEvents = 'auto'; window.btnFavorRef = null;
+        }, 4000);
       }
       
       let widget = document.getElementById('widgetRastreo');
