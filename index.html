@@ -1062,6 +1062,7 @@ let baseProductosActivos = [];
 let carritoGlobal = [];
 let pedidosComercio = [];
 let costoEnvioCalculado = 0;
+let costoEnvioOriginalCadete = 0; // Para saber cuánto hay que pagarle al cadete si el envío es gratis
 let direccionOrigenCalculo = "";
 let aliasOrigenCalculo = "";
 let telefonoComercioCalculo = "";
@@ -1141,7 +1142,7 @@ const inyectarEstilosPremium = () => {
     .product-expanded-overlay.show .product-expanded-card { transform: scale(1); opacity:1; }
     
     /* Prevenir salto de scroll al ocultar el body */
-    body.modal-open { overflow: hidden; padding-right: 0px; } /* Ajuste fino si hay scrollbar */
+    body.modal-open { overflow: hidden; padding-right: 0px; }
   `;
   document.head.appendChild(style);
 };
@@ -1342,7 +1343,7 @@ window.obtenerEstadoLocal = function(hA, hC) {
   return (minAbre < minCierra) ? (minA >= minAbre && minA <= minCierra) : (minA >= minAbre || minA <= minCierra);
 };
 
-// FIX PANEL COMERCIO UI 
+// FIX PANEL COMERCIO UI (INYECCIÓN ENVÍO GRATIS)
 window.arreglarPanelComercioUI = () => {
   const portada = document.getElementById('boxPortadaComercio');
   const selfie = document.getElementById('boxSelfieComercioModal');
@@ -1364,7 +1365,7 @@ window.arreglarPanelComercioUI = () => {
     const iconSelfie = document.getElementById('iconSelfieComercioContenedor'); if(iconSelfie) iconSelfie.style.transform = 'scale(0.8)';
   }
 
-  // INYECTORES DE CATEGORÍA Y PRECIO DESCUENTO
+  // INYECTORES DE CATEGORÍA, PRECIO VIEJO Y ENVÍO GRATIS
   if (descInput && !document.getElementById('newArtCategoria')) {
     descInput.insertAdjacentHTML('beforebegin', `
       <select id="newArtCategoria" class="input-buscar" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6;">
@@ -1384,6 +1385,20 @@ window.arreglarPanelComercioUI = () => {
       preInput.insertAdjacentHTML('beforebegin', `
          <input type="number" class="input-buscar" id="newArtPrecioViejo" placeholder="Precio Original (Tachado, Opcional)" style="margin:0; padding:16px; font-size:14px; color:#ef4444; border-color:#fca5a5;">
       `);
+      
+      // INYECCIÓN SELECTOR ENVÍO GRATIS JUSTO ANTES DE PUBLICAR
+      const btnPublicar = document.querySelector('#modal-step-comercio button[onclick="agregarArticuloComercio()"]');
+      if (btnPublicar && !document.getElementById('newArtEnvioGratis')) {
+          btnPublicar.insertAdjacentHTML('beforebegin', `
+              <div style="background:#f0fdf4; border:2px solid #bbf7d0; border-radius:12px; padding:16px; margin-bottom:16px;">
+                  <label style="font-weight:800; font-size:14px; color:#166534; display:block; margin-bottom:8px;"><i class="ri-motorbike-fill"></i> Promoción de Envío:</label>
+                  <select id="newArtEnvioGratis" style="width:100%; padding:12px; border-radius:8px; border:1px solid #86efac; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; color:#15803d; outline:none; background:white;">
+                      <option value="false">Envío Normal (Paga el Comprador)</option>
+                      <option value="true">🚀 Envío Gratis (Paga el Comercio)</option>
+                  </select>
+              </div>
+          `);
+      }
   }
   
   const btnCerrarComercio = document.querySelector('#modal-step-comercio .btn-volver');
@@ -1422,7 +1437,7 @@ window.arreglarPanelClienteUI = () => {
   }
 };
 
-// FIX PANEL CADETE UI (MINIMIZAR Y ALERTA VERDE DEL LUNES)
+// FIX PANEL CADETE UI
 window.arreglarPanelCadeteUI = () => {
   const panelServimoto = document.getElementById('modal-step-servimoto');
   if(panelServimoto && !document.getElementById('btnMinimizarRadar')) {
@@ -1469,26 +1484,40 @@ window.expandirProducto = function(productoId) {
   const card = document.getElementById('productExpandedCard');
   if (!card) return;
   
-  // FIX: Ajuste estético del precio en el modal
   let htmlPrecio = `<div class="expanded-price-value">$${Number(datos.precio || 0).toLocaleString('es-AR')}</div>`;
   if(datos.precio_viejo && parseFloat(datos.precio_viejo) > parseFloat(datos.precio)) {
       htmlPrecio = `
-         <div style="font-size:16px; text-decoration:line-through; text-decoration-color:#94a3b8; text-decoration-thickness:2px; color:#94a3b8; font-weight:800; margin-bottom: 4px;">$${Number(datos.precio_viejo).toLocaleString('es-AR')}</div>
+         <div style="font-size:18px; text-decoration:line-through; text-decoration-color:#94a3b8; text-decoration-thickness:2.5px; color:#94a3b8; font-weight:800; margin-bottom: 4px;">$${Number(datos.precio_viejo).toLocaleString('es-AR')}</div>
          <div class="expanded-price-value" style="color:#16a34a;">$${Number(datos.precio || 0).toLocaleString('es-AR')}</div>
+      `;
+  }
+
+  // ETIQUETA ENVÍO GRATIS EN MODAL
+  let htmlEnvioGratisModal = '';
+  if(datos.envio_gratis) {
+      htmlEnvioGratisModal = `
+          <div style="display:flex; align-items:center; gap:6px; justify-content:center; background:#ecfdf5; border:1px solid #6ee7b7; border-radius:8px; padding:8px; margin-bottom:12px;">
+              <i class="ri-motorbike-fill" style="color:#059669; font-size:18px;"></i>
+              <div style="display:flex; flex-direction:column; text-align:left;">
+                  <span style="color:#059669; font-weight:900; font-size:12px; line-height:1;">ENVÍO GRATIS</span>
+                  <span style="color:#10b981; font-weight:700; font-size:9px; letter-spacing:0.5px;">A CARGO DEL LOCAL</span>
+              </div>
+          </div>
       `;
   }
   
   card.innerHTML = `
-    <div class="expanded-image-container" style="height:250px;">
+    <div class="expanded-image-container" style="height:45vh; min-height:280px; flex-shrink:0; position:relative; width:100%;">
       <button class="expanded-back" onclick="window.cerrarProductoExpandido()" style="background:rgba(255,255,255,0.9);"><i class="ri-arrow-left-line"></i></button>
       <button class="expanded-close" onclick="window.cerrarProductoExpandido()" style="background:rgba(255,255,255,0.9);"><i class="ri-close-line"></i></button>
-      <img src="${datos.img}" alt="${datos.nombre}" class="expanded-image">
-      <div class="expanded-gradient"></div>
+      <img src="${datos.img}" alt="${datos.nombre}" class="expanded-image" style="width:100%; height:100%; object-fit:cover;">
+      <div class="expanded-gradient" style="position:absolute; bottom:0; left:0; right:0; height:100px; background:linear-gradient(to top, #ffffff, transparent); pointer-events:none;"></div>
     </div>
-    <div class="expanded-content" style="flex:1;">
+    <div class="expanded-content" style="flex:1; padding: 20px 20px 30px;">
       <div class="expanded-category"><i class="ri-price-tag-3-line"></i> ${datos.categoria || "General"}</div>
       <h1 class="expanded-name">${datos.nombre}</h1>
       <p class="expanded-description">${datos.descripcion}</p>
+      ${htmlEnvioGratisModal}
       <div class="expanded-local-info">
         <img src="${logoLocal}" alt="${datos.local}">
         <div class="expanded-local-details">
@@ -1502,16 +1531,14 @@ window.expandirProducto = function(productoId) {
         <span style="background:#dcfce7;color:#16a34a;border:1px solid #86efac;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;">ABIERTO</span>
       </div>
     </div>
-    <div style="padding:15px; border-top:1px solid #e2e8f0; background:#f8fafc; border-radius:0 0 24px 24px;">
+    <div style="padding:15px; border-top:1px solid #e2e8f0; background:#f8fafc; border-radius:0 0 24px 24px; flex-shrink:0;">
        <button class="expanded-add-btn" style="position:relative; width:100%; border-radius:14px; box-shadow:0 6px 15px rgba(249, 115, 22, 0.3);" onclick="window.agregarDesdeExpandido('${datos.id}')"><i class="ri-shopping-cart-2-fill" style="font-size:20px;"></i> AÑADIR AL CARRITO</button>
     </div>`;
   
-  // FIX UX: Mostrar el overlay sin alterar el scroll del body
   const overlay = document.getElementById('productExpandedOverlay');
   overlay.style.display = 'flex';
-  document.body.classList.add('modal-open'); // Clase CSS inyectada para evitar saltos
+  document.body.classList.add('modal-open');
   
-  // Pequeño timeout para la transición fluida
   setTimeout(() => {
     overlay.classList.add('show');
   }, 10);
@@ -1524,16 +1551,16 @@ window.cerrarProductoExpandido = function() {
     setTimeout(() => { 
         overlay.style.display = 'none';
         document.body.classList.remove('modal-open');
-    }, 250); // Mismo tiempo que la transición CSS
+    }, 250);
   }
 };
 
 window.agregarDesdeExpandido = function(id) {
   const p = _datosTarjetas[id];
+  // Modificado para pasar el parámetro envio_gratis
   if (p && window.intentarComprar) {
-      window.intentarComprar(p.id, p.nombre, p.precio, p.dirLocal || "", p.alias || "", p.tel || "");
+      window.intentarComprar(p.id, p.nombre, p.precio, p.dirLocal || "", p.alias || "", p.tel || "", p.envio_gratis);
   }
-  // Se cierra fluido, sin saltos
   window.cerrarProductoExpandido();
 };
 
@@ -1565,7 +1592,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
     if (cajaFiltros && !document.getElementById('filtroNombreComercio')) {
         cajaFiltros.style.flexWrap = 'wrap';
         cajaFiltros.insertAdjacentHTML('beforeend', `
-            <input type="text" class="input-buscar" id="filtroNombreComercio" placeholder="🔍 Buscar nombre de un comercio..." style="margin:0; padding:10px 14px; font-size:13px; width:100%; border-radius:10px; border-color:#3b82f6;" onkeyup="filtrarFeedGlobal()">
+            <input type="text" class="input-buscar" id="filtroNombreComercio" placeholder="🔍 Buscar nombre de un comercio o producto..." style="margin:0; padding:10px 14px; font-size:13px; width:100%; border-radius:10px; border-color:#3b82f6;" onkeyup="filtrarFeedGlobal()">
         `);
     }
 
@@ -1601,15 +1628,10 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
       let matchProv = provFiltro === "" || quitarAcentos(c.provincia).includes(provFiltro);
       let matchCiu = ciuFiltro === "" || quitarAcentos(c.ciudad).includes(ciuFiltro);
       let matchCat = categoriaActiva === "" || quitarAcentos(c.categoria).includes(categoriaActiva);
-      let matchNom = nomComFiltro === "" || quitarAcentos(c.nombre).includes(nomComFiltro);
-      return matchProv && matchCiu && matchCat && matchNom;
+      return matchProv && matchCiu && matchCat;
     });
 
     const idsValidos = comerciosValidos.map(c => c.id);
-    if(idsValidos.length === 0 && !comercioFiltradoId) {
-      container.innerHTML = `<div class="loader-full-width" style="text-align:center; padding:30px; font-weight:800; color:#f97316;">No encontramos comercios con esos filtros.</div>`;
-      isLoadingMore = false; hasMoreProducts = false; return;
-    }
 
     let from = currentPage * ITEMS_PER_PAGE;
     let to = from + ITEMS_PER_PAGE - 1;
@@ -1623,9 +1645,28 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
     } else {
        query = query.in('id_comercio', idsValidos);
     }
+    
+    // Filtrado por barra de búsqueda (Busca en nombre del comercio o en el producto)
+    if (nomComFiltro !== "" && !comercioFiltradoId) {
+        // En Supabase, para buscar por OR en distintas tablas desde JS es complejo, 
+        // lo hacemos trayendo más y filtrando en JS local si es búsqueda.
+        query = supabaseClient.from('moto_productos').select('*').eq('pausado', false).in('id_comercio', idsValidos).limit(100);
+    }
 
-    let { data: dbProductos, error: errP } = await query.order('id', { ascending: false }).range(from, to);
+    let { data: dbProductosRaw, error: errP } = await query.order('id', { ascending: false }).range(from, to);
     if(errP) throw errP;
+    
+    let dbProductos = dbProductosRaw;
+    
+    if (nomComFiltro !== "" && !comercioFiltradoId) {
+        dbProductos = dbProductosRaw.filter(p => {
+             let com = dbComerciosCache.find(c => c.id === p.id_comercio);
+             let nombreComercio = com ? quitarAcentos(com.nombre) : "";
+             let nombreProd = quitarAcentos(p.nombre);
+             return nombreComercio.includes(nomComFiltro) || nombreProd.includes(nomComFiltro);
+        });
+        hasMoreProducts = false; // Paramos paginado local
+    }
 
     let btnLimpiarFiltro = '';
     let catSelectValue = window.categoriaActivaLocal || "";
@@ -1700,19 +1741,19 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
         let descBd = p.descripcion || p.referencia;
         let descTexto = descBd && descBd.trim() !== "" ? descBd : "Este local no incluyó una descripción detallada.";
         let catItemFinal = p.categoria || (comercioData ? comercioData.categoria : "General");
+        let envioGr = p.envio_gratis === true; // LECTURA DE ENVÍO GRATIS DB
         
         _datosTarjetas[String(p.id)] = {
           id: p.id, nombre: p.nombre, precio: parseFloat(p.precio), precio_viejo: p.precio_viejo, categoria: catItemFinal,
           descripcion: descTexto, tiempo: tiempoEstimado + " min", img: p.img_producto, local: nomComercio,
-          dirLocal: dirComercio, alias: aliasComercio, tel: telComercio
+          dirLocal: dirComercio, alias: aliasComercio, tel: telComercio, envio_gratis: envioGr
         };
 
         let badgeEstado = estaAbierto ? `<span class="badge-abierto">ABIERTO</span>` : `<span class="badge-cerrado">CERRADO</span>`;
         let btnClase = estaAbierto ? 'btn-primary' : 'btn-primary btn-desactivado';
         let btnTexto = estaAbierto ? 'AGREGAR <i class="ri-shopping-cart-2-line" style="font-size:14px; vertical-align:middle; margin-left:2px;"></i>' : 'CERRADO';
-        let onclickAccion = estaAbierto ? `onclick="event.stopPropagation(); intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}')"` : '';
+        let onclickAccion = estaAbierto ? `onclick="event.stopPropagation(); intentarComprar('${p.id}', '${p.nombre}', ${p.precio}, '${dirComercio}', '${aliasComercio}', '${telComercio}', ${envioGr})"` : '';
 
-        // FIX ESTÉTICO: TACHADO DE PRECIOS SI HAY DESCUENTO MÁS GRANDE Y CLARO
         let htmlPrecioCard = `<div style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</div>`;
         if (p.precio_viejo && parseFloat(p.precio_viejo) > parseFloat(p.precio)) {
             htmlPrecioCard = `
@@ -1720,6 +1761,21 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                   <span style="font-size:14.5px; text-decoration:line-through; text-decoration-color:#94a3b8; text-decoration-thickness:2px; color:#94a3b8; font-weight:800; margin-bottom:2px;">$${parseFloat(p.precio_viejo).toLocaleString('es-AR')}</span>
                   <span style="color:#16a34a; font-weight:900; font-size:18px;">$${parseFloat(p.precio).toLocaleString('es-AR')}</span>
                </div>`;
+        }
+
+        // ETIQUETA ENVIO GRATIS EN GRILLA
+        let htmlEnvioGratis = '';
+        if(envioGr) {
+            htmlEnvioGratis = `
+            <div style="display:flex; justify-content:center; margin-bottom:8px;">
+              <div style="display:inline-flex; align-items:center; gap:4px; border:1px solid #6ee7b7; border-radius:6px; padding:4px 8px; background:#ecfdf5;">
+                 <i class="ri-motorbike-fill" style="color:#059669; font-size:13px;"></i>
+                 <div style="display:flex; flex-direction:column; text-align:left;">
+                    <span style="color:#059669; font-weight:800; font-size:9px; line-height:1;">ENVÍO GRATIS</span>
+                    <span style="color:#10b981; font-weight:700; font-size:7px;">COORDINADO</span>
+                 </div>
+              </div>
+            </div>`;
         }
 
         html += `
@@ -1738,6 +1794,7 @@ window.cargarYRenderizarFeed = async function(isLoadMore = false) {
                 ${htmlPrecioCard}
                 ${badgeEstado}
               </div>
+              ${htmlEnvioGratis}
               <button class="${btnClase}" style="width:100%; padding:10px 8px; font-size:13px; font-weight:900; border-radius:8px; background:linear-gradient(135deg, #f97316, #ea580c); box-shadow:0 4px 10px rgba(234,88,12,0.3); border:none; color:white; cursor:pointer;" ${onclickAccion}>
                 ${btnTexto}
               </button>
@@ -2033,30 +2090,34 @@ window.agregarArticuloComercio = async function() {
   
   const nom = document.getElementById('newArtNombre').value.trim();
   const pre = parseInt(document.getElementById('newArtPrecio').value);
-  
   const inputPreViejo = document.getElementById('newArtPrecioViejo');
   const preViejo = inputPreViejo && inputPreViejo.value ? parseInt(inputPreViejo.value) : null;
-  
   const desc = document.getElementById('newArtDescripcion').value.trim();
   const catArt = document.getElementById('newArtCategoria') ? document.getElementById('newArtCategoria').value : "General";
+  
+  // LEER ESTADO DE ENVÍO GRATIS
+  const comboEnvio = document.getElementById('newArtEnvioGratis');
+  const esEnvioGratis = comboEnvio ? (comboEnvio.value === "true") : false;
   
   if(!nom || isNaN(pre)) return mostrarToast('Completá nombre y precio', 'error');
   if(!tempImgBase64) return mostrarToast('Subí una foto del artículo', 'error');
   
-  mostrarToast('⏳ Subiendo plato a la red...', 'success');
+  mostrarToast('⏳ Subiendo producto a la red...', 'success');
   try {
     const ext = Date.now();
     const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
     
     let payload = {
-      id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, precio_viejo: preViejo, referencia: desc, img_producto: urlArt, pausado: false, descripcion: desc, categoria: catArt
+      id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, precio_viejo: preViejo, 
+      referencia: desc, img_producto: urlArt, pausado: false, descripcion: desc, 
+      categoria: catArt, envio_gratis: esEnvioGratis
     };
 
     let { error } = await supabaseClient.from('moto_productos').insert(payload);
     
-    // Fallback: Si no tiene creadas las columnas de precio_viejo, categoria, etc
+    // Fallbacks si faltan columnas nuevas en DB
     if(error && error.message.includes('column')) { 
-      delete payload.categoria; delete payload.descripcion; delete payload.precio_viejo;
+      delete payload.categoria; delete payload.descripcion; delete payload.precio_viejo; delete payload.envio_gratis;
       let result = await supabaseClient.from('moto_productos').insert(payload);
       error = result.error;
     }
@@ -2514,10 +2575,10 @@ window.aceptarViajeRadar = function(viaje_id) {
 // ==========================================
 // 13. CARRITO Y CHECKOUT
 // ==========================================
-window.intentarComprar = async function(idProducto, nombre, precio, direccionComercio, aliasComercio, telefonoComercio) {
+window.intentarComprar = async function(idProducto, nombre, precio, direccionComercio, aliasComercio, telefonoComercio, envioGratis = false) {
   if(navigator.vibrate) navigator.vibrate(50);
   telefonoComercioCalculo = telefonoComercio || NUMERO_SOPORTE_CENTRAL;
-  productoPendienteAdd = { id: idProducto, nombre: nombre, precio: parseFloat(precio), direccion: direccionComercio, alias: aliasComercio };
+  productoPendienteAdd = { id: idProducto, nombre: nombre, precio: parseFloat(precio), direccion: direccionComercio, alias: aliasComercio, envio_gratis: envioGratis };
   
   if(!sessionActual) {
     mostrarToast('¡Iniciá sesión para armar tu pedido!', 'error');
@@ -2532,7 +2593,7 @@ window.intentarComprar = async function(idProducto, nombre, precio, direccionCom
 
 window.procesarAgregadoCarrito = function() {
   if(!productoPendienteAdd) return;
-  carritoGlobal.push({ nombre: productoPendienteAdd.nombre, precio: productoPendienteAdd.precio, cantidad: 1 });
+  carritoGlobal.push({ nombre: productoPendienteAdd.nombre, precio: productoPendienteAdd.precio, cantidad: 1, envio_gratis: productoPendienteAdd.envio_gratis });
   localStorage.setItem('moto_carrito_guardado', JSON.stringify(carritoGlobal));
   direccionOrigenCalculo = productoPendienteAdd.direccion;
   aliasOrigenCalculo = productoPendienteAdd.alias;
@@ -2626,7 +2687,9 @@ window.renderizarCarritoDOM = function() {
 
   listHTML += carritoGlobal.map((item, idx) => {
     subtotal += item.precio;
-    return `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:8px;"><div><div style="font-weight:800; font-size:14px; color:#0f172a;">${item.nombre}</div><div style="color:#16a34a; font-weight:800; font-size:13px;">$${item.precio.toLocaleString('es-AR')}</div></div><button onclick="window.borrarItemCarrito(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; width:32px; height:32px; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button></div>`;
+    // Etiqueta de envío gratis en el carrito si aplica
+    let htmlEnvioG = item.envio_gratis ? `<span style="background:#ecfdf5; color:#059669; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:800; border:1px solid #6ee7b7; margin-top:4px; display:inline-block;"><i class="ri-motorbike-fill"></i> ENVÍO GRATIS</span>` : '';
+    return `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:8px;"><div><div style="font-weight:800; font-size:14px; color:#0f172a;">${item.nombre}</div><div style="color:#16a34a; font-weight:800; font-size:13px;">$${item.precio.toLocaleString('es-AR')}</div>${htmlEnvioG}</div><button onclick="window.borrarItemCarrito(${idx})" style="background:#f97316; color:white; border:none; border-radius:8px; width:32px; height:32px; cursor:pointer; box-shadow:0 4px 10px rgba(249,115,22,0.3);"><i class="ri-delete-bin-fill"></i></button></div>`;
   }).join('');
   
   cont.innerHTML = listHTML;
@@ -2762,20 +2825,42 @@ window.calcularMatematicaEnvio = function(distancia) {
   const horaActual = new Date().getHours();
   const esNoche = (horaActual >= 20 || horaActual < 6);
   const tarifaBase = esNoche ? 1900 : 1500;
-  if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Costo Envío Noche' : 'Costo Envío Día';
+  
+  // VERIFICAR SI HAY ENVÍO GRATIS EN EL CARRITO
+  let hayEnvioGratis = carritoGlobal.some(item => item.envio_gratis === true);
+  
   let costoExtra = 0;
   if(cuadrasTotales > 15) costoExtra = (cuadrasTotales - 15) * 100;
-  costoEnvioCalculado = tarifaBase + costoExtra;
+  
+  costoEnvioOriginalCadete = tarifaBase + costoExtra; // Lo que cobra el cadete siempre
+  
+  if(hayEnvioGratis) {
+      costoEnvioCalculado = 0; // Para el cliente es gratis
+      if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').innerHTML = '<i class="ri-motorbike-fill"></i> Costo de Envío';
+      if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').innerHTML = '<span style="color:#16a34a; font-size:24px;">$0 <span style="font-size:12px; font-weight:700;">(Bonificado)</span></span>';
+      
+      let pInfo = document.querySelector("#modalMapaGrande p");
+      if (pInfo) {
+        pInfo.innerHTML = `💡 <b>Importante:</b> ¡Tenés un producto con <b>Envío Gratis</b> en tu carrito! El comercio abonará el viaje al ServiMoto.`;
+        pInfo.style.background = '#ecfdf5'; pInfo.style.color = '#059669'; pInfo.style.border = '1px solid #6ee7b7';
+      }
+  } else {
+      costoEnvioCalculado = costoEnvioOriginalCadete;
+      if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Costo Envío Noche' : 'Costo Envío Día';
+      if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
+      
+      let pInfo = document.querySelector("#modalMapaGrande p");
+      if (esViajeEspecial && pInfo) {
+        pInfo.innerHTML = `💡 <b>Importante:</b> Al solicitar el viaje, buscaremos un ServiMoto en el radar. <b>Deberán pre-coordinar los detalles por WhatsApp</b> antes de confirmar el viaje.`;
+        pInfo.style.background = '#f0fdf4'; pInfo.style.color = '#166534'; pInfo.style.border = 'none';
+      } else if (pInfo) {
+        pInfo.innerHTML = `💡 <b>Importante:</b> El envío se paga por separado directamente al ServiMoto.<br><span style="font-weight:600; color:#16a34a; margin-top:4px; display:inline-block;">(El comercio recibirá tu comprobante y llamará a la moto cuando esté listo)</span>`;
+        pInfo.style.background = '#f0fdf4'; pInfo.style.color = '#166534'; pInfo.style.border = 'none';
+      }
+  }
+
   let kmFormato = (metrosReales / 1000).toFixed(2);
   if(document.getElementById('mapaKm')) document.getElementById('mapaKm').textContent = `${kmFormato} km (${cuadrasTotales} cuadras)`;
-  if(document.getElementById('mapaCosto')) document.getElementById('mapaCosto').textContent = '$' + costoEnvioCalculado.toLocaleString('es-AR');
-  
-  let pInfo = document.querySelector("#modalMapaGrande p");
-  if (esViajeEspecial && pInfo) {
-    pInfo.innerHTML = `💡 <b>Importante:</b> Al solicitar el viaje, buscaremos un ServiMoto en el radar. <b>Deberán pre-coordinar los detalles por WhatsApp</b> antes de confirmar el viaje.`;
-  } else if (pInfo) {
-    pInfo.innerHTML = `💡 <b>Importante:</b> El envío se paga por separado directamente al ServiMoto.<br><span style="font-weight:600; color:#16a34a; margin-top:4px; display:inline-block;">(El comercio recibirá tu comprobante y llamará a la moto cuando esté listo)</span>`;
-  }
 };
 
 window.cerrarMapa = function() {
@@ -2809,10 +2894,11 @@ window.mandarPedidoSoporte = async function() {
     } catch(e) {}
   }
 
+  // NOTIFICACIÓN AL PANEL DEL COMERCIO
   if(subtotalProductos > 0) window.agregarPedidoBandejaComercio(subtotalProductos, destClient, nomComprador, carritoGlobal);
   
   let txt = "🔥 *NUEVO PEDIDO DE COMIDA* 🔥%0A%0A";
-  carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}%0A`; });
+  carritoGlobal.forEach(i => { txt += `▪️ 1x ${i.nombre} - $${i.precio.toLocaleString('es-AR')}${i.envio_gratis ? ' (Envío Gratis)' : ''}%0A`; });
   
   if(txtComprobante !== "") txt += txtComprobante;
 
@@ -2823,9 +2909,17 @@ window.mandarPedidoSoporte = async function() {
   if (telLimpio.startsWith("54")) telLimpio = telLimpio.startsWith("549") ? telLimpio.substring(3) : telLimpio.substring(2);
   telLimpio = telLimpio.replace(/^0?15?/, '');
   
+  let hayEnvioGratis = carritoGlobal.some(item => item.envio_gratis === true);
+
   txt += `%0A👤 *Cliente:* ${nomComprador}%0A📍 *Entrega en:* ${destClient}%0A📱 *WhatsApp:* https://wa.me/549${telLimpio}%0A---------------------------%0A`;
   txt += `🍔 *Total Comida (Pagada al Local):* $${subtotalProductos.toLocaleString('es-AR')}%0A`;
-  txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
+  
+  // LÓGICA WHATSAPP ENVÍO GRATIS
+  if(hayEnvioGratis) {
+      txt += `🚀 *Costo Envío Cliente:* $0 (Bonificado)%0A⚠️ *Costo Envío al Cadete:* $${costoEnvioOriginalCadete.toLocaleString('es-AR')} (A cargo del comercio)%0A`;
+  } else {
+      txt += `🛣️ *Envío GPS (Pago al Cadete):* $${costoEnvioCalculado.toLocaleString('es-AR')}%0A`;
+  }
   
   AppStore.set('my_last_trip_id', pedidoCreadoId);
   window.cerrarMapa();
