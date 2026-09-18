@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -1044,6 +1045,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 
 </body>
 </html>
+
 <script>
 // ==========================================
 // 1. INICIALIZACIÓN Y VARIABLES GLOBALES
@@ -1099,7 +1101,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 // ==========================================
-// 2. AUTO-ARRANQUE: PROVINCIAS, GPS Y SESIÓN
+// 2. AUTO-ARRANQUE: PROVINCIAS, GPS, SESIÓN Y UI
 // ==========================================
 window.addEventListener('DOMContentLoaded', async () => {
   // 2.1 Inyectar Provincias en los Selects
@@ -1146,7 +1148,23 @@ window.addEventListener('DOMContentLoaded', async () => {
   inyectarBtnGPS('inputDireccionCliente');
   inyectarBtnGPS('dirOrigenEspecial');
 
-  // 2.3 Recuperar Carrito Guardado
+  // 2.3 Actualización de Textos UI (Encargos y Viajes Moto)
+  const modalEspecial = document.getElementById('modal-step-pedido-especial');
+  if (modalEspecial) {
+    const titulo = modalEspecial.querySelector('.step-indicator');
+    if (titulo) titulo.innerHTML = '<i class="ri-map-pin-user-fill"></i> Encargos y Viajes Moto';
+    
+    const btnWhatsapp = modalEspecial.querySelector('button[onclick="pedirFavorDirectoCliente()"]');
+    if (btnWhatsapp) btnWhatsapp.innerHTML = '<i class="ri-whatsapp-fill" style="font-size:22px; margin-right:8px; vertical-align:middle;"></i> <span style="vertical-align:middle;">PEDIR ENCARGO O VIAJE MOTO</span>';
+    
+    const btnLlamar = modalEspecial.querySelector('button[onclick="enviarPedidoEspecial()"]');
+    if (btnLlamar) btnLlamar.innerHTML = 'PEDIR VIAJE / ENCARGO AL RADAR';
+    
+    const txtArea = document.getElementById('txtPedidoEspecial');
+    if (txtArea) txtArea.placeholder = "Detalle (Ej: Encomienda, paquete o viaje pasajero tipo Uber)";
+  }
+
+  // 2.4 Recuperar Carrito Guardado
   let carritoGuardado = localStorage.getItem('moto_carrito_guardado');
   if(carritoGuardado) {
     carritoGlobal = JSON.parse(carritoGuardado);
@@ -1158,7 +1176,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // 2.4 Recuperar Sesión de Usuario (Auto-Login)
+  // 2.5 Recuperar Sesión de Usuario (Auto-Login)
   try {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (session && session.user) {
@@ -1239,7 +1257,7 @@ window.activarMicrofono = function() {
   if(btn) { btn.classList.remove('ri-mic-fill'); btn.classList.add('ri-mic-2-fill', 'animate-pulse-glow'); }
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
-    const mensaje = "Energy Software presenta Delivery Moto, la plataforma ideal para tu ciudad. Si sos comerciante, podés publicar tus productos y potenciar tus ventas rápidamente. Si sos cliente, comprás con tranquilidad total. ¡Descargá, publicá, y empezá a mover tu economía con Delivery Moto!";
+    const mensaje = "¡Bienvenido a Delivery Moto! La súper app de tu ciudad. Ahora contamos con tres servicios para vos: Delivery Moto para pedir comida a tus locales favoritos; Encargos Moto para cadetería rápida; y Viajes Moto, para moverte por la ciudad al estilo Uber. Si sos comerciante, publicá tus productos gratis. Si buscás trabajo, postulate como cadete y generá ingresos. ¡Descargá la app, pedí o trabajá con Delivery Moto y sumate a la nueva era!";
     const speech = new SpeechSynthesisUtterance(mensaje);
     speech.lang = 'es-AR';
     speech.rate = 1.05;
@@ -1860,6 +1878,7 @@ window.agregarArticuloComercio = async function() {
     const ext = Date.now();
     const urlArt = await subirImagenBucket(tempImgBase64, `productos/${miComercioLogueadoId}_art_${ext}.jpg`);
     
+    // USAMOS LA COLUMNA 'REFERENCIA' PARA LA DESCRIPCIÓN COMO FALLBACK SEGURO
     let { error } = await supabaseClient.from('moto_productos').insert({
       id_comercio: miComercioLogueadoId, nombre: nom, precio: pre, referencia: desc, img_producto: urlArt, pausado: false, descripcion: desc
     });
@@ -2285,7 +2304,7 @@ window.aceptarViajeRadar = function(viaje_id) {
   let miFoto = AppStore.get('mi_foto_perfil') || 'https://cdn-icons-png.flaticon.com/512/3112/3112618.png';
   
   viajesMotoCount += 1;
-  deudaMotoAcumulada += 200; // Deuda automática por viaje (Ajustar valor real)
+  deudaMotoAcumulada += 100; // Deuda automática por viaje actualizada a $100
   if(document.getElementById('viajesMotoBadge')) document.getElementById('viajesMotoBadge').textContent = viajesMotoCount + ' Viajes Confirmados';
   if(document.getElementById('deudaMoto')) document.getElementById('deudaMoto').textContent = '$' + deudaMotoAcumulada.toLocaleString('es-AR');
   
@@ -2297,7 +2316,7 @@ window.aceptarViajeRadar = function(viaje_id) {
     canalRadar.send({ type: 'broadcast', event: 'viaje_reclamado', payload: { viaje_id: viaje_id, cadete_nombre: miNombre, cadete_celular: miCelular, foto_cadete: miFoto } });
   }
   setTimeout(() => {
-    mostrarToast("¡Viaje tuyo! Se sumaron $200 a tu cuenta.", "success");
+    mostrarToast("¡Viaje tuyo! Se sumaron $100 a tu cuenta.", "success");
     let card = document.getElementById('alertaViaje_' + viaje_id);
     if(card) card.remove();
     if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
@@ -2552,10 +2571,10 @@ window.calcularMatematicaEnvio = function(distancia) {
   let cuadrasTotales = Math.round(metrosReales / 100);
   const horaActual = new Date().getHours();
   const esNoche = (horaActual >= 20 || horaActual < 6);
-  const tarifaBase = esNoche ? 3000 : 2000;
+  const tarifaBase = esNoche ? 1900 : 1500;
   if(document.getElementById('lblTarifaBase')) document.getElementById('lblTarifaBase').textContent = esNoche ? 'Costo Envío Noche' : 'Costo Envío Día';
   let costoExtra = 0;
-  if(cuadrasTotales > 10) costoExtra = (cuadrasTotales - 10) * 100;
+  if(cuadrasTotales > 15) costoExtra = (cuadrasTotales - 15) * 100;
   costoEnvioCalculado = tarifaBase + costoExtra;
   let kmFormato = (metrosReales / 1000).toFixed(2);
   if(document.getElementById('mapaKm')) document.getElementById('mapaKm').textContent = `${kmFormato} km (${cuadrasTotales} cuadras)`;
@@ -2673,7 +2692,7 @@ window.mandarViajeEspecialSoporte = async function() {
 
 window.pedirFavorDirectoCliente = function(evt) {
   let btn = (evt && evt.currentTarget) ? evt.currentTarget : null;
-  if (!btn) { document.querySelectorAll('button').forEach(b => { if(b.innerText.includes('PEDIR ENCARGO')) btn = b; }); }
+  if (!btn) { document.querySelectorAll('button').forEach(b => { if(b.innerText.includes('PEDIR ENCARGO') || b.innerText.includes('VIAJE MOTO')) btn = b; }); }
   if (btn) {
     window.btnFavorRef = { el: btn, html: btn.innerHTML, bg: btn.style.background, border: btn.style.border, color: btn.style.color };
     btn.innerHTML = '<i class="ri-radar-line animate-ring"></i> BUSCANDO PARA COORDINAR...';
@@ -2798,8 +2817,9 @@ window.iniciarRastreoPedidoCliente = function(pedidoId) {
       const duracionMin = Math.round(ruta.duracion / 60);
       const cuadras = Math.round(ruta.distancia / 100);
       const esNoche = (new Date().getHours() >= 20 || new Date().getHours() < 6);
-      const tarifaBase = esNoche ? 3000 : 2000;
-      let costoTotal = tarifaBase + (cuadras > 10 ? (cuadras - 10) * 100 : 0);
+      
+      const tarifaBase = esNoche ? 1900 : 1500;
+      let costoTotal = tarifaBase + (cuadras > 15 ? (cuadras - 15) * 100 : 0);
       
       document.getElementById('demoDistancia').textContent = distanciaKm + ' km';
       document.getElementById('demoTiempo').textContent = duracionMin + ' min';
@@ -2810,6 +2830,21 @@ window.iniciarRastreoPedidoCliente = function(pedidoId) {
     } else {
       capaRuta = L.polyline([[origen.lat, origen.lng], [destino.lat, destino.lng]], { color: '#ea580c', weight: 5, dashArray: '10, 10' }).addTo(mapaDemo);
       mapaDemo.fitBounds(L.latLngBounds([[origen.lat, origen.lng], [destino.lat, destino.lng]]), { padding: [60, 60] });
+      
+      const distMetros = calcularDistanciaHaversine(origen.lat, origen.lng, destino.lat, destino.lng);
+      const distanciaKm = (distMetros / 1000).toFixed(2);
+      const duracionMin = Math.round((distMetros / 1000) / 0.025);
+      const cuadras = Math.round(distMetros / 100);
+      const esNoche = (new Date().getHours() >= 20 || new Date().getHours() < 6);
+      
+      const tarifaBase = esNoche ? 1900 : 1500;
+      let costoTotal = tarifaBase + (cuadras > 15 ? (cuadras - 15) * 100 : 0);
+      
+      document.getElementById('demoDistancia').textContent = distanciaKm + ' km (aprox)';
+      document.getElementById('demoTiempo').textContent = '~' + duracionMin + ' min';
+      document.getElementById('demoCosto').textContent = '$' + costoTotal.toLocaleString('es-AR');
+      document.getElementById('demoResultados').style.display = 'flex';
+      
       infoBox.innerHTML = '<i class="ri-information-fill" style="color:#f59e0b;"></i> Ruta aproximada trazada.';
       infoBox.style.borderColor = '#f59e0b';
     }
