@@ -192,7 +192,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 .badge-cerrado { background: #ffedd5; color: #ea580c; border: 1px solid #fdba74; padding: 2px 6px; border-radius: 6px; font-size: 9px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
 .btn-desactivado { background: #e2e8f0 !important; color: #94a3b8 !important; border: none !important; box-shadow: none !important; pointer-events: none !important; }
 
-/* DISEÑO PREMIUM BLANCO - GRILLA DEL MARKETPLACE */
+/* DISEÑO PREMIUM BLANCO - NUEVO SISTEMA DE COMPRA */
 #gridMercadoLibre .card-premium { background: #ffffff !important; border-radius: 20px !important; border: 1px solid #f1f5f9 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06) !important; padding: 0 !important; overflow: hidden !important; cursor: pointer !important; transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important; position: relative !important; display: flex !important; flex-direction: column !important; }
 #gridMercadoLibre .card-premium::before { display: none !important; }
 #gridMercadoLibre .card-premium:hover { transform: translateY(-4px) !important; box-shadow: 0 12px 32px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05) !important; border-color: #e2e8f0 !important; }
@@ -200,6 +200,8 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #gridMercadoLibre .card-premium > div:first-child { height: 140px !important; position: relative !important; flex-shrink: 0 !important; }
 #gridMercadoLibre .card-premium > div:first-child img { width: 100% !important; height: 140px !important; object-fit: cover !important; cursor: pointer !important; }
 #gridMercadoLibre .card-premium > div:first-child > div:nth-child(3) { display: none !important; }
+.product-zoom-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; color: #64748b; font-size: 14px; transition: all 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.product-zoom-btn:hover { background: #ffffff; color: #f97316; transform: scale(1.1); }
 .product-time-badge { position: absolute; top: 8px; left: 8px; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 3px; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 #gridMercadoLibre .card-premium > div:last-child { padding: 12px !important; display: flex !important; flex-direction: column !important; flex: 1 !important; justify-content: space-between !important; background: #ffffff !important; }
 #gridMercadoLibre .card-premium > div:last-child > div:first-child { font-family: 'Sora', sans-serif !important; font-weight: 700 !important; font-size: 14px !important; color: #0f172a !important; line-height: 1.3 !important; margin-bottom: 6px !important; }
@@ -215,65 +217,55 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"]:hover { border-color: #f97316 !important; color: #ea580c !important; background: #fff7ed !important; }
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"].chip-activo { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: white !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important; }
 
+
 /* ==========================================
-   MODAL DE PRODUCTO EXPANDIDO (ESTÁTICA, 100% SIN SCROLL, SUPER PREMIUM)
+   NUEVO SISTEMA: MODAL DE PRODUCTO ESTÁTICO (NO SCROLL)
    ========================================== */
-.product-expanded-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 9999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
-.product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
-
-.product-expanded-card {
-  background: #ffffff;
-  width: 100%;
-  height: 86vh; /* ALTURA FIJA ESTRICTA */
-  max-height: 800px;
-  max-width: 500px;
-  border-radius: 1.8rem 1.8rem 0 0;
-  position: relative;
-  overflow: hidden !important; /* BLOQUEA TOTALMENTE EL SCROLL */
-  display: flex;
-  flex-direction: column;
-  transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+.pex-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999999;
+  display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
 }
-.product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
+.pex-overlay.show { opacity: 1; pointer-events: auto; }
 
-/* MITAD SUPERIOR: FOTO (42%) */
-.premium-modal-image { width: 100%; height: 42%; position: relative; background: #f8fafc; flex-shrink: 0; }
-.premium-modal-image img { width: 100%; height: 100%; object-fit: cover; }
-.premium-modal-close { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #0f172a; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10; transition: transform 0.2s; }
-.premium-modal-close:hover { transform: scale(1.1); background: #ff6b00; color: white; }
+.pex-card {
+  width: 100%; height: 86vh; background: #ffffff; border-radius: 24px 24px 0 0;
+  display: flex; flex-direction: column; overflow: hidden; /* ESTRICTAMENTE SIN SCROLL */
+  transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pex-overlay.show .pex-card { transform: translateY(0); }
 
-/* MITAD INFERIOR: INFORMACIÓN (58%) MATEMÁTICAMENTE DISTRIBUIDA */
-.premium-modal-body { height: 58%; padding: 18px 22px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
+/* FOTO (45% ARRIBA) */
+.pex-img-box { width: 100%; height: 45%; position: relative; flex-shrink: 0; background: #f8fafc; }
+.pex-img-box img { width: 100%; height: 100%; object-fit: cover; }
+.pex-close-btn { position: absolute; top: 16px; left: 16px; width: 38px; height: 38px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #0f172a; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 10; transition: transform 0.2s; }
+.pex-close-btn:hover { transform: scale(1.1); background: #ff6b00; color: white; }
 
-.premium-modal-header { display: flex; flex-direction: column; gap: 4px; }
-.premium-modal-header .tag { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 4px; }
-.premium-modal-header h2 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.2; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.premium-modal-header p { font-size: 13.5px; color: #64748b; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+/* INFORMACIÓN (55% ABAJO) */
+.pex-info-box { flex: 1; display: flex; flex-direction: column; padding: 22px; overflow: hidden; justify-content: space-between; }
+.pex-header { display: flex; flex-direction: column; gap: 4px; }
+.pex-tag { font-size: 12px; font-weight: 800; color: #64748b; display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 1px;}
+.pex-title { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #0f172a; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; }
+.pex-desc { font-size: 14.5px; color: #64748b; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
 
-/* CAJA DEL COMERCIO PREMIUM (CON LOGO CHIQUITO) */
-.premium-modal-commerce { display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 1rem; border: 1px solid #e2e8f0; margin: 4px 0; }
-.premium-modal-commerce img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1.5px solid #cbd5e1; flex-shrink: 0; background: white; }
-.premium-modal-commerce-info { flex: 1; overflow: hidden; }
-.premium-modal-commerce-info h4 { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 800; color: #0f172a; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.premium-modal-commerce-info div { font-size: 11px; color: #64748b; font-weight: 700; display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* COMERCIO (REEMPLAZA AL CUADRO KI GIGANTE) */
+.pex-commerce { display: flex; align-items: center; gap: 12px; margin-top: auto; background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:1rem; }
+.pex-commerce img { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; border: 1.5px solid #cbd5e1; flex-shrink: 0; background:white;}
+.pex-commerce-details { flex: 1; overflow: hidden; }
+.pex-commerce-details h4 { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 800; color: #0f172a; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pex-commerce-details p { font-size: 12px; font-weight: 700; color: #64748b; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display:flex; align-items:center; gap:4px;}
 
-/* PRECIOS Y BADGE */
-.premium-modal-pricing { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 6px; }
-.premium-modal-pricing .prices { display: flex; flex-direction: column; }
-.premium-modal-pricing .old-price { font-size: 14px; color: #94a3b8; text-decoration: line-through; font-weight: 700; margin-bottom: -2px; }
-.premium-modal-pricing .new-price { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: #16a34a; line-height: 1; }
-.premium-modal-pricing .badge-abierto { background: #dcfce7; color: #16a34a; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; border: 1.5px solid #86efac; box-shadow: 0 2px 6px rgba(22,163,74,0.1); }
+/* PRECIO Y BOTON (FONDO) */
+.pex-footer-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; margin-top: 16px; }
+.pex-price-box { display: flex; flex-direction: column; }
+.pex-price-label { font-size: 12px; font-weight: 700; color: #94a3b8; text-decoration: line-through; margin-bottom: -2px; }
+.pex-price-value { font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 800; color: #16a34a; line-height: 1; }
 
-/* BOTÓN GIGANTE ANARANJADO */
-.premium-modal-button { width: 100%; padding: 18px; background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400); color: white; border: none; border-radius: 1.2rem; font-size: 16px; font-weight: 800; text-transform: uppercase; box-shadow: 0 8px 25px rgba(255,107,0,0.35); display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: transform 0.2s; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2); }
-.premium-modal-button:active { transform: scale(0.96); }
+.pex-add-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400); color: white; border: none; border-radius: 1.2rem; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 25px rgba(255,107,0,0.35); flex-shrink: 0; cursor: pointer; text-transform:uppercase; transition: transform 0.2s;}
+.pex-add-btn:active { transform: scale(0.96); }
 
 @media (min-width: 768px) {
-  .product-expanded-overlay { align-items: center; padding: 20px; }
-  .product-expanded-card { height: 80vh; max-height: 700px; border-radius: 1.5rem; transform: scale(0.95); }
-  .product-expanded-overlay.show .product-expanded-card { transform: scale(1); }
+  .pex-overlay { align-items: center; }
+  .pex-card { max-width: 450px; height: 80vh; max-height: 700px; border-radius: 1.5rem; }
 }
 </style>
 </head>
@@ -282,9 +274,9 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <nav class="nav-fixed">
   <div class="nav-container">
     <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <!-- LOGO 1: NAV (Puro, sin recortes) -->
-      <div style="position:relative;width:55px;height:55px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="max-width:100%;max-height:100%;object-fit:contain;" alt="Logo Delivery Moto">
+      <!-- LOGO 1: NAV (Original con borde redondeado) -->
+      <div style="position:relative;width:46px;height:46px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(255,107,0,.6);border:2px solid #ffd700;">
+        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo Delivery Moto">
       </div>
       <div style="display:flex;flex-direction:column;">
         <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:white;line-height:1;">DELIVERY MOTO</span>
@@ -343,9 +335,10 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
       <div style="position:absolute;inset:-22px;border-radius:50%;border:2px dashed rgba(255,215,0,.38);" class="animate-ring"></div>
       <div style="position:absolute;inset:-42px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);" class="animate-ring-slow"></div>
       <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.55),transparent 70%);filter:blur(28px);"></div>
-      <!-- LOGO 2: HERO (Puro, Grande, Sin cortes) -->
-      <div class="animate-float" style="position:relative;width:220px;height:220px;margin:0 auto;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 15px 35px rgba(255,107,0,.6));">
-        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:contain;position:relative;z-index:1;" alt="Logo Delivery Moto">
+      
+      <!-- LOGO 2: HERO (Original con la redondela perfecta) -->
+      <div class="animate-float" style="position:relative;width:150px;height:150px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7),inset 0 0 25px rgba(0,0,0,.25);">
+        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);position:relative;z-index:1;" alt="Logo Delivery Moto">
       </div>
     </div>
     
@@ -654,9 +647,9 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
     <div style="display:grid;grid-template-columns:1fr;gap:32px;margin-bottom:32px;" class="md:grid-cols-3">
       <div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-          <!-- LOGO 3: FOOTER (Puro) -->
-          <div style="width:60px;height:60px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-            <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="max-width:100%;max-height:100%;object-fit:contain;" alt="Logo" onerror="this.style.display='none'">
+          <!-- LOGO 3: FOOTER (Original con bordes redondeados) -->
+          <div style="width:50px;height:50px;border-radius:1rem;overflow:hidden;flex-shrink:0;box-shadow:0 4px 16px rgba(255,107,0,.55);border:2.5px solid #ffd700;">
+            <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo" onerror="this.style.display='none'">
           </div>
           <div>
             <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:white;letter-spacing:-.5px;line-height:1;">DELIVERY MOTO</div>
@@ -691,8 +684,9 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <!-- MODALES DEL MARKETPLACE -->
 <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9999999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
 
-<div id="productExpandedOverlay" class="product-expanded-overlay" onclick="if(event.target===this && window.cerrarProductoExpandido)window.cerrarProductoExpandido()">
-  <div class="product-expanded-card" id="productExpandedCard"></div>
+<!-- EL NUEVO OVERLAY PREMIUM DEL PRODUCTO SE LLAMA ACÁ -->
+<div id="pex-overlay" class="pex-overlay" onclick="if(event.target===this && window.cerrarProductoExpandido)window.cerrarProductoExpandido()">
+  <div class="pex-card" id="productExpandedCard"></div>
 </div>
 
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
@@ -701,9 +695,9 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
     <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:15px 20px; position:relative; overflow:hidden; flex-shrink:0;">
       <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
       <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
-        <!-- LOGO 4: CABECERA MODAL (Puro) -->
-        <div style="width:50px; height:50px; flex-shrink:0; display:flex;align-items:center;justify-content:center;">
-          <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="max-width:100%;max-height:100%;object-fit:contain;" alt="Logo" onerror="this.style.display='none'">
+        <!-- LOGO 4: CABECERA MODAL (Original) -->
+        <div style="width:40px; height:40px; border-radius:1rem; overflow:hidden; flex-shrink:0; border:2px solid #ffd700;">
+          <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo" onerror="this.style.display='none'">
         </div>
         <div style="text-align:left; flex:1;">
           <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:white; line-height:1;">MARKETPLACE</div>
@@ -1056,10 +1050,10 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 </div>
 
 <!-- ========================================================
-     SCRIPT OFICIAL: INTEGRACIÓN DE APIS CON IA (OpenAI) Y RENDER DE TARJETA PREMIUM
+     SCRIPT OFICIAL: INTEGRACIÓN DE APIS CON IA Y TARJETA ESTÁTICA
      ======================================================== -->
 <script>
-// Función auxiliar para convertir las fotos del celular en Base64 (Data URI)
+// Función auxiliar para convertir fotos a Base64
 const fileToBase64 = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -1171,65 +1165,59 @@ async function procesarLiquidacionIA(inputElement) {
     }
 }
 
-// 3. GENERADOR DE TARJETA ESTÁTICA SUPER PREMIUM (No Scroll)
-// Esta es la función que debés llamar cuando el usuario toca un producto en la grilla.
+// 3. GENERADOR DE TARJETA ESTÁTICA SUPER PREMIUM (JavaScript)
+// Esta estructura respeta el Flexbox, no permite scrollear y fija el botón abajo.
 window.renderizarTarjetaPremium = function(imgSrc, nombre, descripcion, logoComercio, nombreComercio, direccion, tiempoMin, precioOriginal, precioFinal) {
     const card = document.getElementById('productExpandedCard');
     
-    // Inyectamos la estructura matemáticamente dividida para que NUNCA scrollee
+    // Inyección de HTML 100% estático
     card.innerHTML = `
-        <button class="premium-modal-close" onclick="window.cerrarProductoExpandido()">
-            <i class="ri-close-line"></i>
-        </button>
-        
-        <div class="premium-modal-image">
-            <img src="${imgSrc}" alt="${nombre}">
+        <div class="pex-img-box">
+            <button class="pex-close-btn" onclick="window.cerrarProductoExpandido()">
+                <i class="ri-close-line"></i>
+            </button>
+            <img src="${imgSrc}" alt="Producto">
         </div>
         
-        <div class="premium-modal-body">
-            <div class="premium-modal-header">
-                <div class="tag"><i class="ri-price-tag-3-line"></i> General</div>
-                <h2>${nombre}</h2>
-                <p>${descripcion || 'Este local no incluyó una descripción detallada.'}</p>
+        <div class="pex-info-box">
+            <div class="pex-header">
+                <div class="pex-tag"><i class="ri-price-tag-3-line"></i> General</div>
+                <h2 class="pex-title">${nombre}</h2>
+                <p class="pex-desc">${descripcion || 'Este local no incluyó una descripción detallada.'}</p>
             </div>
             
-            <div class="premium-modal-commerce">
-                <img src="${logoComercio || 'https://via.placeholder.com/100?text=Local'}" alt="Logo Local">
-                <div class="premium-modal-commerce-info">
+            <div class="pex-commerce">
+                <img src="${logoComercio || 'https://via.placeholder.com/100?text=Logo'}" alt="Logo Local">
+                <div class="pex-commerce-details">
                     <h4>${nombreComercio}</h4>
-                    <div><i class="ri-map-pin-2-fill" style="color:#ef4444;font-size:14px;"></i> ${direccion}</div>
-                    <div style="margin-top:2px;"><i class="ri-time-fill" style="color:#0f172a;font-size:14px;"></i> ${tiempoMin} min</div>
+                    <p><i class="ri-map-pin-2-fill" style="color:#ef4444;font-size:14px;"></i> ${direccion}</p>
+                    <p style="margin-top:2px;"><i class="ri-time-fill" style="color:#0f172a;font-size:14px;"></i> ${tiempoMin} min de preparación</p>
                 </div>
             </div>
             
-            <div class="premium-modal-pricing">
-                <div class="prices">
-                    <span class="old-price">$${precioOriginal}</span>
-                    <span class="new-price">$${precioFinal}</span>
+            <div class="pex-footer-row">
+                <div class="pex-price-box">
+                    <span class="pex-price-label">Precio original $${precioOriginal}</span>
+                    <span class="pex-price-value">$${precioFinal}</span>
                 </div>
-                <span class="badge-abierto">ABIERTO</span>
             </div>
             
-            <button class="premium-modal-button" onclick="agregarAlCarritoAnimado()">
+            <button class="pex-add-btn" onclick="agregarAlCarritoAnimado()">
                 <i class="ri-shopping-cart-2-fill" style="font-size:22px;"></i> AÑADIR AL CARRITO
             </button>
         </div>
     `;
     
-    // Mostramos la ventana
-    document.getElementById('productExpandedOverlay').classList.add('show');
+    document.getElementById('pex-overlay').classList.add('show');
 };
 
-// Cierra la tarjeta vuelve a la grilla
 window.cerrarProductoExpandido = function() {
-    document.getElementById('productExpandedOverlay').classList.remove('show');
+    document.getElementById('pex-overlay').classList.remove('show');
 };
 
-// Añadir al carrito, cerrar y mostrar notificacion
 window.agregarAlCarritoAnimado = function() {
     window.cerrarProductoExpandido();
     
-    // Mostramos el carrito flotante y sumamos 1
     const badge = document.getElementById('badgeCarrito');
     badge.innerText = parseInt(badge.innerText) + 1;
     
@@ -1240,9 +1228,9 @@ window.agregarAlCarritoAnimado = function() {
 };
 
 // ==========================================
-// TEST RÁPIDO PARA VER QUE FUNCIONA PERFECTO 
-// (Borrá esto si no lo necesitas, es para probar la tarjeta desde la consola o con un botón)
-// renderizarTarjetaPremium("https://via.placeholder.com/600x600/e2e8f0/0f172a?text=Foto+Producto", "Fernet Branca 1 litro", "La mejor calidad en fernet clásico.", "https://via.placeholder.com/100/ff6b00/fff?text=KI", "Kiosco Mamolita", "Azcuénaga 474, FAMAILLÁ", "21", "15.000", "12.000");
+// TEST RÁPIDO PARA VER LA TARJETA PREMIUM
+// Descomentá la línea de abajo para ver la tarjeta en acción:
+// renderizarTarjetaPremium("https://via.placeholder.com/600x600/e2e8f0/0f172a?text=Foto", "Babuchas Hindú Premium", "Tela poliéster 3/4 de largo, con cintura elástica y ajuste perfecto.", "https://via.placeholder.com/100/ff6b00/fff?text=Logo", "Kiosco Mamolita", "Azcuénaga 474, FAMAILLÁ", "21", "250.000", "150.000");
 // ==========================================
 </script>
 </body>
