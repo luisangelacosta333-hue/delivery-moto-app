@@ -1086,6 +1086,56 @@ async function comprimirYConvertirABase64(file) {
   });
 }
 
+// 3. SISTEMA TOAST (Notificaciones Flotantes)
+function mostrarToast(mensaje, tipo = 'exito') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  const isError = tipo === 'error';
+  const bgColor = isError ? 'linear-gradient(135deg, #ef4444, #b91c1c)' : 'linear-gradient(135deg, #16a34a, #15803d)';
+  const borderColor = isError ? '#fca5a5' : '#86efac';
+  const icon = isError ? '<i class="ri-error-warning-fill" style="font-size:22px;"></i>' : '<i class="ri-checkbox-circle-fill" style="font-size:22px;"></i>';
+
+  toast.style.cssText = `
+    background: ${bgColor};
+    color: white;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 2px solid ${borderColor};
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: auto;
+    line-height: 1.4;
+    max-width: 90vw;
+  `;
+
+  // Soporte para saltos de línea automáticos (reemplaza \n por <br>)
+  toast.innerHTML = `${icon} <span style="flex:1;">${mensaje.replace(/\n/g, '<br>')}</span>`;
+  container.appendChild(toast);
+
+  // Animación de entrada
+  requestAnimationFrame(() => {
+    toast.style.transform = 'translateY(0)';
+    toast.style.opacity = '1';
+  });
+
+  // Animación de salida y limpieza
+  setTimeout(() => {
+    toast.style.transform = 'translateY(20px)';
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 4500);
+}
+
 // ==========================================
 // API 1: AUDITORÍA DE CADETES (ONBOARDING)
 // ==========================================
@@ -1095,7 +1145,7 @@ async function auditarDocumentosIA() {
   const fileAFIP = document.getElementById('uploadDoc4')?.files[0];
 
   if (!fileSelfie || !fileConducta || !fileAFIP) {
-    alert("⚠️ Faltan documentos. Asegurate de cargar tu Selfie, Buena Conducta y Constancia AFIP.");
+    mostrarToast("⚠️ Faltan documentos. Asegurate de cargar tu Selfie, Buena Conducta y Constancia AFIP.", "error");
     return;
   }
 
@@ -1122,15 +1172,15 @@ async function auditarDocumentosIA() {
     const data = await respuesta.json();
 
     if (respuesta.ok && data.aprobado) {
-      alert(`✅ ¡Perfil Aprobado!\nBienvenido/a ${data.nombre_real}.\nCUIT Registrado: ${data.cuit}`);
+      mostrarToast(`✅ ¡Perfil Aprobado!\nBienvenido/a ${data.nombre_real}.\nCUIT Registrado: ${data.cuit}`, "exito");
       // Aquí agregás tu lógica para avanzar: Ej: irPaso('modal-step-servimoto');
     } else {
-      alert(`❌ Perfil Rechazado\nMotivo de la IA: ${data.motivo || data.error}`);
+      mostrarToast(`❌ Perfil Rechazado\nMotivo de la IA: ${data.motivo || data.error}`, "error");
     }
 
   } catch (error) {
     console.error("Error en auditoría:", error);
-    alert("⚠️ Ocurrió un error al conectar con la central de IA. Intentá nuevamente.");
+    mostrarToast("⚠️ Ocurrió un error al conectar con la central de IA. Intentá nuevamente.", "error");
   } finally {
     // Restauramos botón
     if(btn) {
@@ -1154,7 +1204,7 @@ async function procesarLiquidacionIA(input) {
   const monto_esperado = parseFloat(deudaTexto.replace(/[^0-9.-]+/g, "")) || 0;
 
   if (monto_esperado <= 0) {
-    alert("✅ No tenés deudas acumuladas por el momento.");
+    mostrarToast("✅ No tenés deudas acumuladas por el momento.", "exito");
     input.value = ""; // Limpiar input
     return;
   }
@@ -1180,17 +1230,17 @@ async function procesarLiquidacionIA(input) {
     const data = await respuesta.json();
 
     if (respuesta.ok && data.pago_valido) {
-      alert(`✅ Transferencia Aprobada.\nMonto detectado: $${data.monto_leido}.\nHas liquidado tu deuda con éxito.`);
+      mostrarToast(`✅ Transferencia Aprobada.\nMonto detectado: $${data.monto_leido}.\nHas liquidado tu deuda con éxito.`, "exito");
       // Limpiamos la deuda en la interfaz
       if(deudaElemento) deudaElemento.innerText = "$0";
       // Opcional: Actualizar tu base de datos de Supabase aquí
     } else {
-      alert(`❌ Comprobante Rechazado.\nAuditoría: ${data.motivo || data.error}`);
+      mostrarToast(`❌ Comprobante Rechazado.\nAuditoría: ${data.motivo || data.error}`, "error");
     }
 
   } catch (error) {
     console.error("Error validando pago:", error);
-    alert("⚠️ Falló la validación del comprobante. Revisá tu conexión a internet.");
+    mostrarToast("⚠️ Falló la validación del comprobante. Revisá tu conexión a internet.", "error");
   } finally {
     // Restauramos el botón
     labelPadre.innerHTML = htmlOriginal;
