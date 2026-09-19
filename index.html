@@ -217,55 +217,124 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"]:hover { border-color: #f97316 !important; color: #ea580c !important; background: #fff7ed !important; }
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"].chip-activo { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: white !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important; }
 
-
 /* ==========================================
-   NUEVO SISTEMA: MODAL DE PRODUCTO ESTÁTICO (NO SCROLL)
+   TARJETA MODAL ESTÁTICA (CERO SCROLL, BOTÓN FIJO, LOGO CHICO)
    ========================================== */
-.pex-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 9999999;
-  display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+.product-expanded-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 9999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
+.product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
+
+.product-expanded-card {
+  background: #ffffff;
+  width: 100%;
+  height: 88vh !important; /* ALTURA FIJA ESTRICTA PARA CELULAR */
+  max-height: 800px;
+  max-width: 500px;
+  border-radius: 1.8rem 1.8rem 0 0;
+  position: relative;
+  overflow: hidden !important; /* CORTA EL SCROLL GLOBAL */
+  display: flex !important;
+  flex-direction: column !important;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
 }
-.pex-overlay.show { opacity: 1; pointer-events: auto; }
+.product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
 
-.pex-card {
-  width: 100%; height: 86vh; background: #ffffff; border-radius: 24px 24px 0 0;
-  display: flex; flex-direction: column; overflow: hidden; /* ESTRICTAMENTE SIN SCROLL */
-  transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+/* MITAD SUPERIOR: LA FOTO */
+#productExpandedCard > div:first-child {
+  height: 45% !important;
+  width: 100% !important;
+  background: #f8fafc !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
 }
-.pex-overlay.show .pex-card { transform: translateY(0); }
+#productExpandedCard > div:first-child img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
 
-/* FOTO (45% ARRIBA) */
-.pex-img-box { width: 100%; height: 45%; position: relative; flex-shrink: 0; background: #f8fafc; }
-.pex-img-box img { width: 100%; height: 100%; object-fit: cover; }
-.pex-close-btn { position: absolute; top: 16px; left: 16px; width: 38px; height: 38px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #0f172a; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 10; transition: transform 0.2s; }
-.pex-close-btn:hover { transform: scale(1.1); background: #ff6b00; color: white; }
+/* MITAD INFERIOR: LA INFORMACIÓN */
+#productExpandedCard > div:nth-child(2),
+#productExpandedCard > div:last-child {
+  height: 55% !important;
+  flex: 1 !important;
+  padding: 16px 20px 85px 20px !important; /* El padding inferior hace hueco para el botón */
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important; /* Evita desbordes si el texto es muy largo */
+  position: relative !important;
+  background: #ffffff !important;
+}
 
-/* INFORMACIÓN (55% ABAJO) */
-.pex-info-box { flex: 1; display: flex; flex-direction: column; padding: 22px; overflow: hidden; justify-content: space-between; }
-.pex-header { display: flex; flex-direction: column; gap: 4px; }
-.pex-tag { font-size: 12px; font-weight: 800; color: #64748b; display: flex; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 1px;}
-.pex-title { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #0f172a; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; }
-.pex-desc { font-size: 14.5px; color: #64748b; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+/* LIMITAR LOS TEXTOS LARGOS A 2 LÍNEAS PARA QUE NADA SE ROMPA */
+#productExpandedCard h2 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  font-size: 20px !important;
+  line-height: 1.2 !important;
+  margin: 4px 0 !important;
+}
+#productExpandedCard p {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  font-size: 13.5px !important;
+  color: #64748b !important;
+  line-height: 1.3 !important;
+}
 
-/* COMERCIO (REEMPLAZA AL CUADRO KI GIGANTE) */
-.pex-commerce { display: flex; align-items: center; gap: 12px; margin-top: auto; background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:1rem; }
-.pex-commerce img { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; border: 1.5px solid #cbd5e1; flex-shrink: 0; background:white;}
-.pex-commerce-details { flex: 1; overflow: hidden; }
-.pex-commerce-details h4 { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 800; color: #0f172a; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pex-commerce-details p { font-size: 12px; font-weight: 700; color: #64748b; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display:flex; align-items:center; gap:4px;}
+/* MAGIA: MINIATURIZAR AUTOMÁTICAMENTE EL LOGO DEL KIOSCO (CUADRO NARANJA GIGANTE) */
+#productExpandedCard > div:nth-child(2) div[style*="background-color"], 
+#productExpandedCard > div:nth-child(2) img[src*="ui-avatars"],
+#productExpandedCard > div:nth-child(2) img[alt*="logo"] {
+  width: 50px !important;
+  height: 50px !important;
+  min-width: 50px !important;
+  min-height: 50px !important;
+  border-radius: 12px !important;
+  object-fit: cover !important;
+  font-size: 20px !important; /* Por si usan las letras KI */
+  line-height: 50px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  float: left !important;
+  margin-right: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+}
 
-/* PRECIO Y BOTON (FONDO) */
-.pex-footer-row { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; margin-top: 16px; }
-.pex-price-box { display: flex; flex-direction: column; }
-.pex-price-label { font-size: 12px; font-weight: 700; color: #94a3b8; text-decoration: line-through; margin-bottom: -2px; }
-.pex-price-value { font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 800; color: #16a34a; line-height: 1; }
-
-.pex-add-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400); color: white; border: none; border-radius: 1.2rem; font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 25px rgba(255,107,0,0.35); flex-shrink: 0; cursor: pointer; text-transform:uppercase; transition: transform 0.2s;}
-.pex-add-btn:active { transform: scale(0.96); }
+/* CLAVAR EL BOTÓN DE AÑADIR AL CARRITO EN EL FONDO */
+#productExpandedCard button:last-of-type,
+#productExpandedCard .btn-primary,
+#productExpandedCard button[onclick*="Añadir"] {
+  position: absolute !important;
+  bottom: 16px !important;
+  left: 20px !important;
+  width: calc(100% - 40px) !important;
+  background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400) !important;
+  padding: 16px !important;
+  border-radius: 1.2rem !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  color: white !important;
+  text-transform: uppercase !important;
+  box-shadow: 0 8px 25px rgba(255,107,0,0.35) !important;
+  z-index: 100 !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+}
 
 @media (min-width: 768px) {
-  .pex-overlay { align-items: center; }
-  .pex-card { max-width: 450px; height: 80vh; max-height: 700px; border-radius: 1.5rem; }
+  .product-expanded-overlay { align-items: center; padding: 20px; }
+  .product-expanded-card { height: 80vh !important; max-height: 700px; border-radius: 1.5rem; transform: scale(0.95); }
+  .product-expanded-overlay.show .product-expanded-card { transform: scale(1); }
 }
 </style>
 </head>
@@ -274,7 +343,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <nav class="nav-fixed">
   <div class="nav-container">
     <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <!-- LOGO 1: NAV (Original con borde redondeado) -->
+      <!-- LOGO 1: NAV (Redondela Restaurada) -->
       <div style="position:relative;width:46px;height:46px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(255,107,0,.6);border:2px solid #ffd700;">
         <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo Delivery Moto">
       </div>
@@ -332,13 +401,13 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   
   <div style="max-width:1000px;margin:0 auto;position:relative;z-index:2;text-align:center;">
     <div style="position:relative;display:inline-block;margin-bottom:22px;z-index:10;">
-      <div style="position:absolute;inset:-22px;border-radius:50%;border:2px dashed rgba(255,215,0,.38);" class="animate-ring"></div>
-      <div style="position:absolute;inset:-42px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);" class="animate-ring-slow"></div>
+      <!-- LOS AROS AMARILLOS MÁS GRANDES (2mm extra) -->
+      <div style="position:absolute;inset:-26px;border-radius:50%;border:2px dashed rgba(255,215,0,.38);" class="animate-ring"></div>
+      <div style="position:absolute;inset:-46px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);" class="animate-ring-slow"></div>
       <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.55),transparent 70%);filter:blur(28px);"></div>
-      
-      <!-- LOGO 2: HERO (Original con la redondela perfecta) -->
-      <div class="animate-float" style="position:relative;width:150px;height:150px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7),inset 0 0 25px rgba(0,0,0,.25);">
-        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);position:relative;z-index:1;" alt="Logo Delivery Moto">
+      <!-- LOGO 2: HERO (160px con scale 1.1 para que se vea la moto entera) -->
+      <div class="animate-float" style="position:relative;width:160px;height:160px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7),inset 0 0 25px rgba(0,0,0,.25);">
+        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.1);position:relative;z-index:1;" alt="Logo Delivery Moto">
       </div>
     </div>
     
@@ -647,7 +716,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
     <div style="display:grid;grid-template-columns:1fr;gap:32px;margin-bottom:32px;" class="md:grid-cols-3">
       <div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-          <!-- LOGO 3: FOOTER (Original con bordes redondeados) -->
+          <!-- LOGO 3: FOOTER (Redondela Restaurada) -->
           <div style="width:50px;height:50px;border-radius:1rem;overflow:hidden;flex-shrink:0;box-shadow:0 4px 16px rgba(255,107,0,.55);border:2.5px solid #ffd700;">
             <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo" onerror="this.style.display='none'">
           </div>
@@ -684,9 +753,9 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <!-- MODALES DEL MARKETPLACE -->
 <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9999999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
 
-<!-- EL NUEVO OVERLAY PREMIUM DEL PRODUCTO SE LLAMA ACÁ -->
-<div id="pex-overlay" class="pex-overlay" onclick="if(event.target===this && window.cerrarProductoExpandido)window.cerrarProductoExpandido()">
-  <div class="pex-card" id="productExpandedCard"></div>
+<!-- EL OVERLAY DEL PRODUCTO VUELVE AL ID ORIGINAL PARA QUE LA GRILLA JS FUNCIONE -->
+<div id="productExpandedOverlay" class="product-expanded-overlay" onclick="if(event.target===this && window.cerrarProductoExpandido)window.cerrarProductoExpandido()">
+  <div class="product-expanded-card" id="productExpandedCard"></div>
 </div>
 
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
@@ -695,7 +764,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
     <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:15px 20px; position:relative; overflow:hidden; flex-shrink:0;">
       <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
       <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
-        <!-- LOGO 4: CABECERA MODAL (Original) -->
+        <!-- LOGO 4: CABECERA MODAL (Redondela Restaurada) -->
         <div style="width:40px; height:40px; border-radius:1rem; overflow:hidden; flex-shrink:0; border:2px solid #ffd700;">
           <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo" onerror="this.style.display='none'">
         </div>
@@ -1050,7 +1119,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 </div>
 
 <!-- ========================================================
-     SCRIPT OFICIAL: INTEGRACIÓN DE APIS CON IA Y TARJETA ESTÁTICA
+     SCRIPT OFICIAL: INTEGRACIÓN DE APIS CON IA (OpenAI)
      ======================================================== -->
 <script>
 // Función auxiliar para convertir fotos a Base64
@@ -1164,74 +1233,6 @@ async function procesarLiquidacionIA(inputElement) {
         labelBtn.style.opacity = '1';
     }
 }
-
-// 3. GENERADOR DE TARJETA ESTÁTICA SUPER PREMIUM (JavaScript)
-// Esta estructura respeta el Flexbox, no permite scrollear y fija el botón abajo.
-window.renderizarTarjetaPremium = function(imgSrc, nombre, descripcion, logoComercio, nombreComercio, direccion, tiempoMin, precioOriginal, precioFinal) {
-    const card = document.getElementById('productExpandedCard');
-    
-    // Inyección de HTML 100% estático
-    card.innerHTML = `
-        <div class="pex-img-box">
-            <button class="pex-close-btn" onclick="window.cerrarProductoExpandido()">
-                <i class="ri-close-line"></i>
-            </button>
-            <img src="${imgSrc}" alt="Producto">
-        </div>
-        
-        <div class="pex-info-box">
-            <div class="pex-header">
-                <div class="pex-tag"><i class="ri-price-tag-3-line"></i> General</div>
-                <h2 class="pex-title">${nombre}</h2>
-                <p class="pex-desc">${descripcion || 'Este local no incluyó una descripción detallada.'}</p>
-            </div>
-            
-            <div class="pex-commerce">
-                <img src="${logoComercio || 'https://via.placeholder.com/100?text=Logo'}" alt="Logo Local">
-                <div class="pex-commerce-details">
-                    <h4>${nombreComercio}</h4>
-                    <p><i class="ri-map-pin-2-fill" style="color:#ef4444;font-size:14px;"></i> ${direccion}</p>
-                    <p style="margin-top:2px;"><i class="ri-time-fill" style="color:#0f172a;font-size:14px;"></i> ${tiempoMin} min de preparación</p>
-                </div>
-            </div>
-            
-            <div class="pex-footer-row">
-                <div class="pex-price-box">
-                    <span class="pex-price-label">Precio original $${precioOriginal}</span>
-                    <span class="pex-price-value">$${precioFinal}</span>
-                </div>
-            </div>
-            
-            <button class="pex-add-btn" onclick="agregarAlCarritoAnimado()">
-                <i class="ri-shopping-cart-2-fill" style="font-size:22px;"></i> AÑADIR AL CARRITO
-            </button>
-        </div>
-    `;
-    
-    document.getElementById('pex-overlay').classList.add('show');
-};
-
-window.cerrarProductoExpandido = function() {
-    document.getElementById('pex-overlay').classList.remove('show');
-};
-
-window.agregarAlCarritoAnimado = function() {
-    window.cerrarProductoExpandido();
-    
-    const badge = document.getElementById('badgeCarrito');
-    badge.innerText = parseInt(badge.innerText) + 1;
-    
-    const btnFloat = document.getElementById('btnFloatingCart');
-    btnFloat.style.display = 'flex';
-    btnFloat.style.transform = 'scale(1.2)';
-    setTimeout(() => { btnFloat.style.transform = 'scale(1)'; }, 200);
-};
-
-// ==========================================
-// TEST RÁPIDO PARA VER LA TARJETA PREMIUM
-// Descomentá la línea de abajo para ver la tarjeta en acción:
-// renderizarTarjetaPremium("https://via.placeholder.com/600x600/e2e8f0/0f172a?text=Foto", "Babuchas Hindú Premium", "Tela poliéster 3/4 de largo, con cintura elástica y ajuste perfecto.", "https://via.placeholder.com/100/ff6b00/fff?text=Logo", "Kiosco Mamolita", "Azcuénaga 474, FAMAILLÁ", "21", "250.000", "150.000");
-// ==========================================
 </script>
 </body>
 </html>
