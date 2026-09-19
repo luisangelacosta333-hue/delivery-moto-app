@@ -218,17 +218,15 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"].chip-activo { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: white !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important; }
 
 /* ==========================================
-   ESTILOS ORIGINALES DE TU TARJETA MODAL + FIX DE ESTRUCTURA PREMIUM 
-   (ESTO CONGELA LA TARJETA Y LA HACE VER COMO LA IMAGEN 965016.jpg)
+   ESTILOS ORIGINALES DE TU TARJETA MODAL + FIX PREMIUM BLINDADO
    ========================================== */
 .product-expanded-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 9999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
 .product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
 
-/* LA TARJETA OCUPA EL 90% DEL ALTO, SCROLLEA SUAVEMENTE */
 .product-expanded-card {
   background: #ffffff;
   width: 100%;
-  height: 90vh; /* Altura controlada, ocupa casi todo el celular */
+  height: 90vh; /* Altura controlada, 90% del celular */
   max-height: 850px;
   max-width: 500px;
   border-radius: 1.5rem 1.5rem 0 0;
@@ -238,26 +236,27 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
-  overflow-y: auto !important; 
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 0 !important; /* Importante para que el botón pegue abajo */
+  padding-bottom: 0 !important; /* Para que el botón pegue perfecto abajo */
 }
 .product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
 
-/* 1. IMAGEN PRINCIPAL: Ocupa casi el 50% de la pantalla sin achicarse */
-#productExpandedCard > img:first-child,
-#productExpandedCard > div:first-child > img {
-  height: 45vh !important; /* 45% del alto de la pantalla */
-  min-height: 45vh !important;
+/* ESTOS ESTILOS LOS APLICA EL SCRIPT AUTOMÁTICO DE ABAJO */
+.img-producto-modal {
+  order: 1 !important;
+  height: 48vh !important; /* Ocupa casi la mitad exacta de la pantalla */
+  min-height: 48vh !important;
   width: 100% !important;
   object-fit: cover !important;
   border-radius: 1.5rem 1.5rem 0 0 !important;
-  flex-shrink: 0 !important; /* Evita que el texto empuje y aplaste la foto */
+  flex-shrink: 0 !important;
   display: block !important;
+  margin: 0 !important;
 }
 
-/* 2. BOTÓN DE CERRAR ("X"): Flotando arriba a la derecha */
-#productExpandedCard button:first-of-type {
+.btn-cerrar-flotante {
   position: absolute !important;
   top: 15px !important;
   right: 15px !important;
@@ -267,7 +266,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(4px) !important;
   color: #0f172a !important;
-  z-index: 100 !important;
+  z-index: 1000 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -276,7 +275,33 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   border: none !important;
 }
 
-/* 3. LOGO DEL KIOSCO: Alineado a la izquierda */
+.btn-comprar-flotante {
+  order: 999 !important; /* Lo empuja obligatoriamente al fondo de la tarjeta */
+  position: sticky !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  margin: auto 0 0 0 !important; 
+  background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400) !important;
+  color: white !important;
+  padding: 18px !important;
+  border-radius: 0 !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 -6px 20px rgba(0,0,0,0.15) !important;
+  z-index: 100 !important;
+}
+
+/* EL CONTENEDOR DE TEXTOS AL MEDIO */
+.contenedor-textos-modal {
+  order: 2 !important;
+  flex: 1 !important;
+}
+
+/* Arreglar el Logo Gigante del Kiosco ("KI") */
 #productExpandedCard img[src*="ui-avatars"],
 #productExpandedCard div[style*="background-color: rgb(249, 115, 22)"] {
   width: 50px !important;
@@ -291,31 +316,11 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   float: left !important;
 }
 
-/* 4. BOTÓN "AÑADIR AL CARRITO": Pegado al fondo, al 100% de ancho */
-#productExpandedCard button:last-of-type {
-  position: sticky !important;
-  bottom: 0 !important;
-  width: 100% !important;
-  margin: auto 0 0 0 !important; /* Lo empuja abajo si hay poco texto */
-  background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400) !important;
-  color: white !important;
-  padding: 18px !important;
-  border-radius: 0 !important; /* Borde recto para anclarse perfecto al margen inferior */
-  font-size: 16px !important;
-  font-weight: 800 !important;
-  border: none !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-shadow: 0 -6px 20px rgba(0,0,0,0.15) !important; /* Sombreado superior */
-  z-index: 100 !important;
-}
-
 @media (min-width: 768px) {
   .product-expanded-overlay { align-items: center; padding: 20px; }
-  .product-expanded-card { height: 80vh !important; max-height: 700px; border-radius: 1.5rem; transform: scale(0.95); overflow: hidden !important; }
+  .product-expanded-card { height: 80vh !important; max-height: 700px; border-radius: 1.5rem; transform: scale(0.95); }
   .product-expanded-overlay.show .product-expanded-card { transform: scale(1); }
-  #productExpandedCard button:last-of-type { border-radius: 0 0 1.5rem 1.5rem !important; }
+  .btn-comprar-flotante { border-radius: 0 0 1.5rem 1.5rem !important; }
 }
 </style>
 </head>
@@ -1214,6 +1219,59 @@ async function procesarLiquidacionIA(inputElement) {
     }
 }
 </script>
+
+<!-- SCRIPT FIX MODAL PRODUCTO PARA ASEGURAR ORDEN PERFECTO -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const card = document.getElementById('productExpandedCard');
+  if(!card) return;
+  
+  const observer = new MutationObserver(() => {
+    // 1. Ocultar la etiqueta basura de categoría (esa palabra "GENERAL" naranjada)
+    const textos = card.querySelectorAll('span, div');
+    textos.forEach(el => {
+      const t = (el.innerText || '').trim().toUpperCase();
+      // Detectamos si es la famosa palabra molesta o la clase default
+      if(t === 'GENERAL' || el.classList.contains('badge-naranja') || el.classList.contains('badge-dorado') || el.innerHTML.includes('GENERAL')) {
+        // Ocultamos el contenedor padre para no dejar bordes sueltos
+        if (el.parentElement && el.parentElement.style.border) {
+          el.parentElement.style.display = 'none';
+        } else {
+          el.style.display = 'none';
+        }
+      }
+    });
+
+    // 2. Encontrar botones y forzarlos a sus posiciones correctas (sin que se peleen)
+    const botones = card.querySelectorAll('button');
+    botones.forEach(btn => {
+      const t = (btn.innerText || '').toUpperCase();
+      // Si es el botón de comprar, le asignamos la clase que lo tira al fondo
+      if(t.includes('AÑADIR') || t.includes('AGREGAR') || t.includes('CARRITO') || btn.querySelector('.ri-shopping-cart-line')) {
+        btn.classList.add('btn-comprar-flotante');
+      } else {
+        // Si no, es la X de cerrar y va arriba flotando
+        btn.classList.add('btn-cerrar-flotante');
+      }
+    });
+
+    // 3. Encontrar foto principal
+    const img = card.querySelector('img:not([src*="ui-avatars"])');
+    if(img) img.classList.add('img-producto-modal');
+
+    // 4. Encontrar los divs intermedios de texto para que queden centrados
+    Array.from(card.children).forEach(hijo => {
+       if(hijo.tagName === 'DIV' && !hijo.classList.contains('btn-cerrar-flotante')) {
+         hijo.classList.add('contenedor-textos-modal');
+       }
+    });
+  });
+  
+  // El observer se queda vigilando. Cada vez que toques un producto, se activa el fix solo.
+  observer.observe(card, { childList: true, subtree: true });
+});
+</script>
+
 </body>
 </html>
 
