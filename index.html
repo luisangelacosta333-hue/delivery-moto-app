@@ -219,16 +219,16 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 
 /* ==========================================
    ESTILOS ORIGINALES DE TU TARJETA MODAL + FIX DE ESTRUCTURA PREMIUM 
-   (ESTO CONGELA LA TARJETA Y LA HACE VER COMO LAS FOTOS 9 Y 10)
+   (ESTO CONGELA LA TARJETA Y LA HACE VER COMO LA IMAGEN 965016.jpg)
    ========================================== */
 .product-expanded-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 9999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
 .product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
 
-/* AQUÍ ESTABA EL PROBLEMA DE QUE LA TARJETA SE ROMPÍA Y SCROLLEABA. AHORA QUEDA ESTÁTICA */
+/* LA TARJETA OCUPA EL 90% DEL ALTO, SCROLLEA SUAVEMENTE */
 .product-expanded-card {
   background: #ffffff;
   width: 100%;
-  height: 90vh; /* Altura controlada, ocupa casi todo el celular pero no scrollea la pantalla */
+  height: 90vh; /* Altura controlada, ocupa casi todo el celular */
   max-height: 850px;
   max-width: 500px;
   border-radius: 1.5rem 1.5rem 0 0;
@@ -238,23 +238,25 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
-  overflow-y: auto !important; /* Si el contenido es largo, scrollea por dentro suavemente */
+  overflow-y: auto !important; 
   -webkit-overflow-scrolling: touch;
+  padding-bottom: 0 !important; /* Importante para que el botón pegue abajo */
 }
 .product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
 
-/* CORRECCIONES AUTOMÁTICAS PARA LOS ELEMENTOS INYECTADOS POR TU APP */
-
-/* 1. Congelar y acomodar la imagen principal */
+/* 1. IMAGEN PRINCIPAL: Ocupa casi el 50% de la pantalla sin achicarse */
 #productExpandedCard > img:first-child,
 #productExpandedCard > div:first-child > img {
-  max-height: 45vh !important;
+  height: 45vh !important; /* 45% del alto de la pantalla */
+  min-height: 45vh !important;
   width: 100% !important;
   object-fit: cover !important;
   border-radius: 1.5rem 1.5rem 0 0 !important;
+  flex-shrink: 0 !important; /* Evita que el texto empuje y aplaste la foto */
+  display: block !important;
 }
 
-/* 2. Arreglar el botón de Cerrar gigante (El de la X) */
+/* 2. BOTÓN DE CERRAR ("X"): Flotando arriba a la derecha */
 #productExpandedCard button:first-of-type {
   position: absolute !important;
   top: 15px !important;
@@ -262,8 +264,9 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   width: 40px !important;
   height: 40px !important;
   border-radius: 50% !important;
-  background: white !important;
-  color: black !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(4px) !important;
+  color: #0f172a !important;
   z-index: 100 !important;
   display: flex !important;
   align-items: center !important;
@@ -273,7 +276,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   border: none !important;
 }
 
-/* 3. Arreglar el Logo Gigante del Kiosco ("KI") para que quede chiquito */
+/* 3. LOGO DEL KIOSCO: Alineado a la izquierda */
 #productExpandedCard img[src*="ui-avatars"],
 #productExpandedCard div[style*="background-color: rgb(249, 115, 22)"] {
   width: 50px !important;
@@ -288,27 +291,31 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   float: left !important;
 }
 
-/* 4. Anclar el Botón "Añadir al Carrito" Abajo de todo */
+/* 4. BOTÓN "AÑADIR AL CARRITO": Pegado al fondo, al 100% de ancho */
 #productExpandedCard button:last-of-type {
-  width: 90% !important;
-  margin: 20px auto 16px auto !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  margin: auto 0 0 0 !important; /* Lo empuja abajo si hay poco texto */
   background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400) !important;
   color: white !important;
-  padding: 16px !important;
-  border-radius: 1rem !important;
+  padding: 18px !important;
+  border-radius: 0 !important; /* Borde recto para anclarse perfecto al margen inferior */
   font-size: 16px !important;
   font-weight: 800 !important;
   border: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  box-shadow: 0 8px 20px rgba(255,107,0,0.4) !important;
+  box-shadow: 0 -6px 20px rgba(0,0,0,0.15) !important; /* Sombreado superior */
+  z-index: 100 !important;
 }
 
 @media (min-width: 768px) {
   .product-expanded-overlay { align-items: center; padding: 20px; }
-  .product-expanded-card { height: 80vh !important; max-height: 700px; border-radius: 1.5rem; transform: scale(0.95); }
+  .product-expanded-card { height: 80vh !important; max-height: 700px; border-radius: 1.5rem; transform: scale(0.95); overflow: hidden !important; }
   .product-expanded-overlay.show .product-expanded-card { transform: scale(1); }
+  #productExpandedCard button:last-of-type { border-radius: 0 0 1.5rem 1.5rem !important; }
 }
 </style>
 </head>
