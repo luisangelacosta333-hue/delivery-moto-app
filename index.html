@@ -246,33 +246,34 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 /* ESTOS ESTILOS LOS APLICA EL SCRIPT AUTOMÁTICO DE ABAJO */
 .img-producto-modal {
   order: 1 !important;
-  height: 48vh !important; /* Ocupa casi la mitad exacta de la pantalla */
-  min-height: 48vh !important;
+  height: 45vh !important; /* Ocupa casi la mitad exacta de la pantalla */
+  min-height: 45vh !important;
   width: 100% !important;
-  object-fit: cover !important;
+  object-fit: contain !important; /* ESTO HACE QUE NO SE CORTE NADA DE LA IMAGEN */
+  background: transparent !important; /* FONDO 100% TRANSPARENTE */
   border-radius: 1.5rem 1.5rem 0 0 !important;
   flex-shrink: 0 !important;
   display: block !important;
-  margin: 0 !important;
+  margin: 0 auto !important;
+  padding: 10px !important;
 }
 
 .btn-cerrar-flotante {
   position: absolute !important;
-  top: 15px !important;
-  right: 15px !important;
+  top: 12px !important;
+  right: 12px !important;
   width: 40px !important;
   height: 40px !important;
   border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(4px) !important;
+  background: #ffffff !important;
   color: #0f172a !important;
   z-index: 1000 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   padding: 0 !important;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-  border: none !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  border: 1px solid #e2e8f0 !important;
 }
 
 .btn-comprar-flotante {
@@ -295,25 +296,16 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   z-index: 100 !important;
 }
 
-/* EL CONTENEDOR DE TEXTOS AL MEDIO */
+/* EL CONTENEDOR DE TEXTOS AL MEDIO EMPUJADO PARA QUE NO PISE LA FOTO */
 .contenedor-textos-modal {
   order: 2 !important;
   flex: 1 !important;
-}
-
-/* Arreglar el Logo Gigante del Kiosco ("KI") */
-#productExpandedCard img[src*="ui-avatars"],
-#productExpandedCard div[style*="background-color: rgb(249, 115, 22)"] {
-  width: 50px !important;
-  height: 50px !important;
-  min-width: 50px !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 20px !important;
-  margin-right: 12px !important;
-  float: left !important;
+  margin-top: 15px !important; /* ESTO BAJA LA DESCRIPCIÓN PARA QUE NO PISE LA FOTO */
+  padding: 0 20px 20px 20px !important;
+  background: #ffffff !important; /* Para que quede prolijo el texto */
+  position: relative !important;
+  z-index: 10 !important;
+  transform: none !important;
 }
 
 @media (min-width: 768px) {
@@ -1220,20 +1212,18 @@ async function procesarLiquidacionIA(inputElement) {
 }
 </script>
 
-<!-- SCRIPT FIX MODAL PRODUCTO PARA ASEGURAR ORDEN PERFECTO -->
+<!-- SCRIPT FIX MODAL PRODUCTO PARA ASEGURAR ORDEN PERFECTO Y QUITAR ETIQUETAS BASURA -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const card = document.getElementById('productExpandedCard');
   if(!card) return;
   
   const observer = new MutationObserver(() => {
-    // 1. Ocultar la etiqueta basura de categoría (esa palabra "GENERAL" naranjada)
+    // 1. Ocultar la etiqueta basura de categoría (esa palabra "GENERAL" naranjada y parecidas)
     const textos = card.querySelectorAll('span, div');
     textos.forEach(el => {
       const t = (el.innerText || '').trim().toUpperCase();
-      // Detectamos si es la famosa palabra molesta o la clase default
       if(t === 'GENERAL' || el.classList.contains('badge-naranja') || el.classList.contains('badge-dorado') || el.innerHTML.includes('GENERAL')) {
-        // Ocultamos el contenedor padre para no dejar bordes sueltos
         if (el.parentElement && el.parentElement.style.border) {
           el.parentElement.style.display = 'none';
         } else {
@@ -1242,32 +1232,46 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 2. Encontrar botones y forzarlos a sus posiciones correctas (sin que se peleen)
+    // 2. Encontrar botones y forzarlos a sus posiciones correctas
     const botones = card.querySelectorAll('button');
     botones.forEach(btn => {
       const t = (btn.innerText || '').toUpperCase();
-      // Si es el botón de comprar, le asignamos la clase que lo tira al fondo
       if(t.includes('AÑADIR') || t.includes('AGREGAR') || t.includes('CARRITO') || btn.querySelector('.ri-shopping-cart-line')) {
         btn.classList.add('btn-comprar-flotante');
       } else {
-        // Si no, es la X de cerrar y va arriba flotando
         btn.classList.add('btn-cerrar-flotante');
       }
     });
 
-    // 3. Encontrar foto principal
-    const img = card.querySelector('img:not([src*="ui-avatars"])');
-    if(img) img.classList.add('img-producto-modal');
+    // 3. Encontrar foto principal y evitar que se corte
+    const img = card.querySelector('img:not([src*="ui-avatars"]):not(.ri-shopping-cart-line)');
+    if(img) {
+      img.classList.add('img-producto-modal');
+      img.style.objectFit = 'contain';
+      img.style.background = 'transparent';
+    }
 
-    // 4. Encontrar los divs intermedios de texto para que queden centrados
+    // 4. Bajar los textos para que NO pisen la foto
     Array.from(card.children).forEach(hijo => {
        if(hijo.tagName === 'DIV' && !hijo.classList.contains('btn-cerrar-flotante')) {
          hijo.classList.add('contenedor-textos-modal');
        }
     });
+
+    // 5. Arreglar el Logo del Kiosco (El KI que manda la base de datos por defecto)
+    const logoLocal = card.querySelector('img[src*="ui-avatars"], div[style*="background-color: rgb"]');
+    if(logoLocal) {
+       logoLocal.style.width = '45px';
+       logoLocal.style.height = '45px';
+       logoLocal.style.borderRadius = '50%';
+       logoLocal.style.border = '2px solid #ff6b00';
+       logoLocal.style.objectFit = 'cover';
+       logoLocal.style.float = 'left';
+       logoLocal.style.marginRight = '12px';
+    }
   });
   
-  // El observer se queda vigilando. Cada vez que toques un producto, se activa el fix solo.
+  // El observer vigila. Cada vez que abras un producto, el script se encarga solo de acomodarlo.
   observer.observe(card, { childList: true, subtree: true });
 });
 </script>
