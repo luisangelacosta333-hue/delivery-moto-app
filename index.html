@@ -218,117 +218,91 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"].chip-activo { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: white !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important; }
 
 /* ==========================================
-   TARJETA MODAL ESTÁTICA (CERO SCROLL, BOTÓN FIJO, LOGO CHICO)
+   ESTILOS ORIGINALES DE TU TARJETA MODAL + FIX DE ESTRUCTURA PREMIUM 
+   (ESTO CONGELA LA TARJETA Y LA HACE VER COMO LAS FOTOS 9 Y 10)
    ========================================== */
 .product-expanded-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 9999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
 .product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
 
+/* AQUÍ ESTABA EL PROBLEMA DE QUE LA TARJETA SE ROMPÍA Y SCROLLEABA. AHORA QUEDA ESTÁTICA */
 .product-expanded-card {
   background: #ffffff;
   width: 100%;
-  height: 88vh !important; /* ALTURA FIJA ESTRICTA PARA CELULAR */
-  max-height: 800px;
+  height: 90vh; /* Altura controlada, ocupa casi todo el celular pero no scrollea la pantalla */
+  max-height: 850px;
   max-width: 500px;
-  border-radius: 1.8rem 1.8rem 0 0;
+  border-radius: 1.5rem 1.5rem 0 0;
   position: relative;
-  overflow: hidden !important; /* CORTA EL SCROLL GLOBAL */
   display: flex !important;
   flex-direction: column !important;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+  overflow-y: auto !important; /* Si el contenido es largo, scrollea por dentro suavemente */
+  -webkit-overflow-scrolling: touch;
 }
 .product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
 
-/* MITAD SUPERIOR: LA FOTO */
-#productExpandedCard > div:first-child {
-  height: 45% !important;
+/* CORRECCIONES AUTOMÁTICAS PARA LOS ELEMENTOS INYECTADOS POR TU APP */
+
+/* 1. Congelar y acomodar la imagen principal */
+#productExpandedCard > img:first-child,
+#productExpandedCard > div:first-child > img {
+  max-height: 45vh !important;
   width: 100% !important;
-  background: #f8fafc !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-}
-#productExpandedCard > div:first-child img {
-  width: 100% !important;
-  height: 100% !important;
   object-fit: cover !important;
+  border-radius: 1.5rem 1.5rem 0 0 !important;
 }
 
-/* MITAD INFERIOR: LA INFORMACIÓN */
-#productExpandedCard > div:nth-child(2),
-#productExpandedCard > div:last-child {
-  height: 55% !important;
-  flex: 1 !important;
-  padding: 16px 20px 85px 20px !important; /* El padding inferior hace hueco para el botón */
+/* 2. Arreglar el botón de Cerrar gigante (El de la X) */
+#productExpandedCard button:first-of-type {
+  position: absolute !important;
+  top: 15px !important;
+  right: 15px !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background: white !important;
+  color: black !important;
+  z-index: 100 !important;
   display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important; /* Evita desbordes si el texto es muy largo */
-  position: relative !important;
-  background: #ffffff !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+  border: none !important;
 }
 
-/* LIMITAR LOS TEXTOS LARGOS A 2 LÍNEAS PARA QUE NADA SE ROMPA */
-#productExpandedCard h2 {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-  font-size: 20px !important;
-  line-height: 1.2 !important;
-  margin: 4px 0 !important;
-}
-#productExpandedCard p {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-  font-size: 13.5px !important;
-  color: #64748b !important;
-  line-height: 1.3 !important;
-}
-
-/* MAGIA: MINIATURIZAR AUTOMÁTICAMENTE EL LOGO DEL KIOSCO (CUADRO NARANJA GIGANTE) */
-#productExpandedCard > div:nth-child(2) div[style*="background-color"], 
-#productExpandedCard > div:nth-child(2) img[src*="ui-avatars"],
-#productExpandedCard > div:nth-child(2) img[alt*="logo"] {
+/* 3. Arreglar el Logo Gigante del Kiosco ("KI") para que quede chiquito */
+#productExpandedCard img[src*="ui-avatars"],
+#productExpandedCard div[style*="background-color: rgb(249, 115, 22)"] {
   width: 50px !important;
   height: 50px !important;
   min-width: 50px !important;
-  min-height: 50px !important;
-  border-radius: 12px !important;
-  object-fit: cover !important;
-  font-size: 20px !important; /* Por si usan las letras KI */
-  line-height: 50px !important;
-  display: inline-flex !important;
+  border-radius: 50% !important;
+  display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  float: left !important;
+  font-size: 20px !important;
   margin-right: 12px !important;
-  border: 1px solid #e2e8f0 !important;
+  float: left !important;
 }
 
-/* CLAVAR EL BOTÓN DE AÑADIR AL CARRITO EN EL FONDO */
-#productExpandedCard button:last-of-type,
-#productExpandedCard .btn-primary,
-#productExpandedCard button[onclick*="Añadir"] {
-  position: absolute !important;
-  bottom: 16px !important;
-  left: 20px !important;
-  width: calc(100% - 40px) !important;
+/* 4. Anclar el Botón "Añadir al Carrito" Abajo de todo */
+#productExpandedCard button:last-of-type {
+  width: 90% !important;
+  margin: 20px auto 16px auto !important;
   background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400) !important;
+  color: white !important;
   padding: 16px !important;
-  border-radius: 1.2rem !important;
+  border-radius: 1rem !important;
   font-size: 16px !important;
   font-weight: 800 !important;
-  color: white !important;
-  text-transform: uppercase !important;
-  box-shadow: 0 8px 25px rgba(255,107,0,0.35) !important;
-  z-index: 100 !important;
   border: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  cursor: pointer !important;
+  box-shadow: 0 8px 20px rgba(255,107,0,0.4) !important;
 }
 
 @media (min-width: 768px) {
@@ -343,7 +317,6 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <nav class="nav-fixed">
   <div class="nav-container">
     <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <!-- LOGO 1: NAV (Redondela Restaurada) -->
       <div style="position:relative;width:46px;height:46px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(255,107,0,.6);border:2px solid #ffd700;">
         <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo Delivery Moto">
       </div>
@@ -401,13 +374,13 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   
   <div style="max-width:1000px;margin:0 auto;position:relative;z-index:2;text-align:center;">
     <div style="position:relative;display:inline-block;margin-bottom:22px;z-index:10;">
-      <!-- LOS AROS AMARILLOS MÁS GRANDES (2mm extra) -->
+      <!-- LOS AROS AMARILLOS ADAPTADOS AL NUEVO TAMAÑO -->
       <div style="position:absolute;inset:-26px;border-radius:50%;border:2px dashed rgba(255,215,0,.38);" class="animate-ring"></div>
       <div style="position:absolute;inset:-46px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);" class="animate-ring-slow"></div>
       <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.55),transparent 70%);filter:blur(28px);"></div>
-      <!-- LOGO 2: HERO (160px con scale 1.1 para que se vea la moto entera) -->
+      <!-- LOGO 2: HERO (160px con scale 1.2, redondela perfecta y sin asfixiar la moto) -->
       <div class="animate-float" style="position:relative;width:160px;height:160px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7),inset 0 0 25px rgba(0,0,0,.25);">
-        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.1);position:relative;z-index:1;" alt="Logo Delivery Moto">
+        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.2);position:relative;z-index:1;" alt="Logo Delivery Moto">
       </div>
     </div>
     
@@ -753,7 +726,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <!-- MODALES DEL MARKETPLACE -->
 <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9999999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
 
-<!-- EL OVERLAY DEL PRODUCTO VUELVE AL ID ORIGINAL PARA QUE LA GRILLA JS FUNCIONE -->
+<!-- EL OVERLAY DEL PRODUCTO EXPANDIDO (VOLVIÓ A SU ID ORIGINAL PARA QUE EL JS DE LA GRILLA LO ENCUENTRE Y ABRA AL INSTANTE) -->
 <div id="productExpandedOverlay" class="product-expanded-overlay" onclick="if(event.target===this && window.cerrarProductoExpandido)window.cerrarProductoExpandido()">
   <div class="product-expanded-card" id="productExpandedCard"></div>
 </div>
