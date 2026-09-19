@@ -216,6 +216,39 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"] { display: inline-flex !important; align-items: center !important; gap: 6px !important; padding: 8px 14px !important; border-radius: 999px !important; background: #ffffff !important; color: #475569 !important; border: 1.5px solid #e2e8f0 !important; font-size: 12px !important; font-weight: 700 !important; cursor: pointer !important; flex-shrink: 0 !important; transition: all 0.25s ease !important; white-space: nowrap !important; box-shadow: none !important; }
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"]:hover { border-color: #f97316 !important; color: #ea580c !important; background: #fff7ed !important; }
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"].chip-activo { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: white !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important; }
+
+/* ==========================================
+   MODAL DE PRODUCTO EXPANDIDO (SCROLL Y BOTÓN FIJO)
+   ========================================== */
+.product-expanded-overlay {
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+  z-index: 9999999; display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none; transition: all 0.3s ease;
+}
+.product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
+
+.product-expanded-card {
+  background: #ffffff; width: 100%; height: 92vh; max-width: 500px;
+  border-radius: 1.5rem 1.5rem 0 0; display: flex; flex-direction: column;
+  transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative; overflow: hidden;
+}
+.product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
+
+.product-expanded-content {
+  flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column;
+}
+
+.product-expanded-footer {
+  padding: 16px; background: #ffffff; border-top: 1px solid #e2e8f0;
+  flex-shrink: 0; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .product-expanded-overlay { align-items: center; padding: 20px; }
+  .product-expanded-card { height: auto; max-height: 90vh; border-radius: 1.5rem; transform: scale(0.95); }
+  .product-expanded-overlay.show .product-expanded-card { transform: scale(1); }
+}
 </style>
 </head>
 <body>
@@ -223,8 +256,8 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <nav class="nav-fixed">
   <div class="nav-container">
     <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <div style="position:relative;width:46px;height:46px;border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 15px rgba(255,107,0,.6);border:2px solid #ffd700;">
-        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.4);" alt="Logo Delivery Moto">
+      <div style="position:relative;width:46px;height:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="max-width:100%;max-height:100%;object-fit:contain;" alt="Logo Delivery Moto">
       </div>
       <div style="display:flex;flex-direction:column;">
         <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:white;line-height:1;">DELIVERY MOTO</span>
@@ -283,8 +316,8 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
       <div style="position:absolute;inset:-22px;border-radius:50%;border:2px dashed rgba(255,215,0,.38);" class="animate-ring"></div>
       <div style="position:absolute;inset:-42px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);" class="animate-ring-slow"></div>
       <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.55),transparent 70%);filter:blur(28px);"></div>
-      <div class="animate-float" style="position:relative;width:150px;height:150px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7),inset 0 0 25px rgba(0,0,0,.25);">
-        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);position:relative;z-index:1;" alt="Logo Delivery Moto">
+      <div class="animate-float" style="position:relative;width:150px;height:150px;margin:0 auto;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 25px rgba(255,107,0,.6));">
+        <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="max-width:100%;max-height:100%;object-fit:contain;position:relative;z-index:1;" alt="Logo Delivery Moto">
       </div>
     </div>
     
@@ -593,8 +626,8 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
     <div style="display:grid;grid-template-columns:1fr;gap:32px;margin-bottom:32px;" class="md:grid-cols-3">
       <div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-          <div style="width:50px;height:50px;border-radius:1rem;overflow:hidden;flex-shrink:0;box-shadow:0 4px 16px rgba(255,107,0,.55);border:2.5px solid #ffd700;">
-            <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo" onerror="this.style.display='none'">
+          <div style="width:50px;height:50px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+            <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="max-width:100%;max-height:100%;object-fit:contain;" alt="Logo" onerror="this.style.display='none'">
           </div>
           <div>
             <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:white;letter-spacing:-.5px;line-height:1;">DELIVERY MOTO</div>
@@ -639,8 +672,8 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
     <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:15px 20px; position:relative; overflow:hidden; flex-shrink:0;">
       <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
       <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
-        <div style="width:40px; height:40px; border-radius:1rem; overflow:hidden; flex-shrink:0; border:2px solid #ffd700;">
-          <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo" onerror="this.style.display='none'">
+        <div style="width:40px; height:40px; flex-shrink:0; display:flex;align-items:center;justify-content:center;">
+          <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="max-width:100%;max-height:100%;object-fit:contain;" alt="Logo" onerror="this.style.display='none'">
         </div>
         <div style="text-align:left; flex:1;">
           <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:white; line-height:1;">MARKETPLACE</div>
