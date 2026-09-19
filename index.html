@@ -129,6 +129,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 .nav-link { color: rgba(255,255,255,.92); font-weight: 700; font-size: 14px; transition: all .2s; cursor: pointer; padding: 5px 2px; border-bottom: 2px solid transparent; white-space: nowrap; }
 .nav-link:hover { color: #ffd700; border-bottom-color: #ffd700; }
 
+/* MODALES */
 .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.95); backdrop-filter: blur(10px); z-index: 999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all .3s ease; padding: 0; }
 .modal-overlay.show { opacity: 1; pointer-events: auto; }
 .modal-box { background: #fff7ed; border-radius: 0; width: 100%; height: 100vh; max-height: 100vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.16,1,.3,1); position: relative; display: flex; flex-direction: column; }
@@ -218,52 +219,53 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"].chip-activo { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: white !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important; }
 
 /* ==========================================
-   ESTILOS ORIGINALES DE TU TARJETA MODAL + FIX PREMIUM BLINDADO
+   ESTILOS ORIGINALES DE TU TARJETA MODAL + FIX PREMIUM BLINDADO 9:16
    ========================================== */
-.product-expanded-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 9999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
+.product-expanded-overlay { position: fixed; inset: 0; background: #ffffff; z-index: 9999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s ease; padding: 0 !important; /* PANTALLA COMPLETA 100% SIN MÁRGENES */ }
 .product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
 
 .product-expanded-card {
   background: #ffffff;
-  width: 100%;
-  height: 90vh; /* Altura controlada, 90% del celular */
-  max-height: 850px;
-  max-width: 500px;
-  border-radius: 1.5rem 1.5rem 0 0;
+  width: 100vw !important; /* 100% ANCHO */
+  height: 100vh !important; /* 100% ALTO (9:16 REAL PANTALLA COMPLETA) */
+  max-height: 100vh !important;
+  max-width: 100vw !important;
+  border-radius: 0 !important; /* SIN BORDES REDONDEADOS - FULL SCREEN */
   position: relative;
   display: flex !important;
   flex-direction: column !important;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+  box-shadow: none !important; /* Al ser full screen no necesita sombra externa */
   overflow-x: hidden !important;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 0 !important; /* Para que el botón pegue perfecto abajo */
+  padding-bottom: 0 !important;
+  margin: 0 !important;
 }
 .product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
 
-/* ESTOS ESTILOS LOS APLICA EL SCRIPT AUTOMÁTICO DE ABAJO */
+/* ESTOS ESTILOS LOS APLICA EL SCRIPT AUTOMÁTICO DE ABAJO PARA GARANTIZAR ORDEN */
 .img-producto-modal {
   order: 1 !important;
-  height: 45vh !important; /* Ocupa casi la mitad exacta de la pantalla */
-  min-height: 45vh !important;
+  height: 55vh !important; /* 55% DE LA PANTALLA EXACTO COMO PEDISTE */
+  min-height: 55vh !important;
   width: 100% !important;
-  object-fit: contain !important; /* ESTO HACE QUE NO SE CORTE NADA DE LA IMAGEN */
+  object-fit: contain !important; /* NO SE CORTA NADA, 100% COMPLETA */
   background: transparent !important; /* FONDO 100% TRANSPARENTE */
-  border-radius: 1.5rem 1.5rem 0 0 !important;
+  border-radius: 0 !important;
   flex-shrink: 0 !important;
   display: block !important;
-  margin: 0 auto !important;
+  margin: 0 !important;
   padding: 10px !important;
 }
 
 .btn-cerrar-flotante {
   position: absolute !important;
-  top: 12px !important;
-  right: 12px !important;
-  width: 40px !important;
-  height: 40px !important;
+  top: 15px !important;
+  right: 15px !important;
+  width: 44px !important;
+  height: 44px !important;
   border-radius: 50% !important;
   background: #ffffff !important;
   color: #0f172a !important;
@@ -272,45 +274,65 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
   align-items: center !important;
   justify-content: center !important;
   padding: 0 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
   border: 1px solid #e2e8f0 !important;
+  font-size: 24px !important;
 }
 
 .btn-comprar-flotante {
-  order: 999 !important; /* Lo empuja obligatoriamente al fondo de la tarjeta */
+  order: 999 !important; /* FUERZA AL BOTÓN AL FONDO ABSOLUTO */
   position: sticky !important;
   bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
   width: 100% !important;
   margin: auto 0 0 0 !important; 
   background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400) !important;
   color: white !important;
-  padding: 18px !important;
+  padding: 20px !important;
   border-radius: 0 !important;
-  font-size: 16px !important;
-  font-weight: 800 !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
   border: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  box-shadow: 0 -6px 20px rgba(0,0,0,0.15) !important;
-  z-index: 100 !important;
+  box-shadow: 0 -8px 25px rgba(0,0,0,0.15) !important;
+  z-index: 1000 !important;
 }
 
-/* EL CONTENEDOR DE TEXTOS AL MEDIO EMPUJADO PARA QUE NO PISE LA FOTO */
+/* EL CONTENEDOR DE TEXTOS AL MEDIO */
 .contenedor-textos-modal {
   order: 2 !important;
   flex: 1 !important;
-  margin-top: 15px !important; /* ESTO BAJA LA DESCRIPCIÓN PARA QUE NO PISE LA FOTO */
-  padding: 0 20px 20px 20px !important;
-  background: #ffffff !important; /* Para que quede prolijo el texto */
+  margin-top: 15px !important; /* BAJA LA DESCRIPCIÓN, NO PISA LA FOTO */
+  padding: 0 24px 24px 24px !important;
+  background: #ffffff !important;
   position: relative !important;
   z-index: 10 !important;
   transform: none !important;
 }
 
+/* Arreglar el Logo del Kiosco ("KI") a la izquierda */
+#productExpandedCard img[src*="ui-avatars"],
+#productExpandedCard div[style*="background-color: rgb(249, 115, 22)"] {
+  width: 50px !important;
+  height: 50px !important;
+  min-width: 50px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 20px !important;
+  margin-right: 12px !important;
+  float: left !important;
+  border: 2px solid #ff6b00 !important;
+}
+
 @media (min-width: 768px) {
-  .product-expanded-overlay { align-items: center; padding: 20px; }
-  .product-expanded-card { height: 80vh !important; max-height: 700px; border-radius: 1.5rem; transform: scale(0.95); }
+  /* Si la abren en una compu, que no sea gigante y fea, que quede como un modal centrado */
+  .product-expanded-overlay { align-items: center; padding: 20px !important; background: rgba(15, 23, 42, 0.95); }
+  .product-expanded-card { height: 85vh !important; max-height: 800px !important; max-width: 450px !important; border-radius: 1.5rem !important; transform: scale(0.95); margin: auto !important; box-shadow: 0 20px 50px rgba(0,0,0,0.4) !important;}
   .product-expanded-overlay.show .product-expanded-card { transform: scale(1); }
   .btn-comprar-flotante { border-radius: 0 0 1.5rem 1.5rem !important; }
 }
@@ -382,7 +404,6 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
       <div style="position:absolute;inset:-26px;border-radius:50%;border:2px dashed rgba(255,215,0,.38);" class="animate-ring"></div>
       <div style="position:absolute;inset:-46px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);" class="animate-ring-slow"></div>
       <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.55),transparent 70%);filter:blur(28px);"></div>
-      <!-- LOGO 2: HERO (160px con scale 1.2, redondela perfecta y sin asfixiar la moto) -->
       <div class="animate-float" style="position:relative;width:160px;height:160px;border-radius:50%;overflow:hidden;margin:0 auto;border:5px solid #ffd700;box-shadow:0 0 70px rgba(255,107,0,.7),inset 0 0 25px rgba(0,0,0,.25);">
         <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.2);position:relative;z-index:1;" alt="Logo Delivery Moto">
       </div>
@@ -730,7 +751,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <!-- MODALES DEL MARKETPLACE -->
 <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9999999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
 
-<!-- EL OVERLAY DEL PRODUCTO EXPANDIDO (VOLVIÓ A SU ID ORIGINAL PARA QUE EL JS DE LA GRILLA LO ENCUENTRE Y ABRA AL INSTANTE) -->
+<!-- EL OVERLAY DEL PRODUCTO EXPANDIDO -->
 <div id="productExpandedOverlay" class="product-expanded-overlay" onclick="if(event.target===this && window.cerrarProductoExpandido)window.cerrarProductoExpandido()">
   <div class="product-expanded-card" id="productExpandedCard"></div>
 </div>
@@ -1212,27 +1233,21 @@ async function procesarLiquidacionIA(inputElement) {
 }
 </script>
 
-<!-- SCRIPT FIX MODAL PRODUCTO PARA ASEGURAR ORDEN PERFECTO Y QUITAR ETIQUETAS BASURA -->
+<!-- SCRIPT FIX MODAL PRODUCTO (PRECIOS, ETIQUETAS Y PANTALLA COMPLETA) -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const card = document.getElementById('productExpandedCard');
   if(!card) return;
   
   const observer = new MutationObserver(() => {
-    // 1. Ocultar la etiqueta basura de categoría (esa palabra "GENERAL" naranjada y parecidas)
-    const textos = card.querySelectorAll('span, div');
-    textos.forEach(el => {
-      const t = (el.innerText || '').trim().toUpperCase();
-      if(t === 'GENERAL' || el.classList.contains('badge-naranja') || el.classList.contains('badge-dorado') || el.innerHTML.includes('GENERAL')) {
-        if (el.parentElement && el.parentElement.style.border) {
-          el.parentElement.style.display = 'none';
-        } else {
-          el.style.display = 'none';
-        }
-      }
-    });
+    // 1. Convertir a pantalla completa 9:16 pura
+    card.style.height = '100vh';
+    card.style.maxHeight = '100vh';
+    card.style.maxWidth = '100vw';
+    card.style.borderRadius = '0';
+    card.style.margin = '0';
 
-    // 2. Encontrar botones y forzarlos a sus posiciones correctas
+    // 2. Forzar botones
     const botones = card.querySelectorAll('button');
     botones.forEach(btn => {
       const t = (btn.innerText || '').toUpperCase();
@@ -1243,22 +1258,54 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 3. Encontrar foto principal y evitar que se corte
+    // 3. Foto al 55% y sin cortar (object-fit: contain)
     const img = card.querySelector('img:not([src*="ui-avatars"]):not(.ri-shopping-cart-line)');
     if(img) {
       img.classList.add('img-producto-modal');
-      img.style.objectFit = 'contain';
-      img.style.background = 'transparent';
     }
 
-    // 4. Bajar los textos para que NO pisen la foto
+    // 4. Textos, Etiquetas y Precios
+    const elementos = card.querySelectorAll('span, p, div, s, strike, b, strong, i');
+    elementos.forEach(el => {
+      const t = (el.innerText || '').trim();
+      const tUpper = t.toUpperCase();
+      
+      // Muerte a "Golosinas" y cualquier etiqueta de base de datos
+      if(tUpper === 'GOLOSINAS' || tUpper === 'GENERAL' || el.innerHTML.includes('ri-price-tag')) {
+         el.style.display = 'none';
+         if(el.parentElement && el.parentElement.tagName !== 'DIV' && el.parentElement.tagName !== 'BODY') {
+             el.parentElement.style.display = 'none';
+         }
+      }
+
+      // Precios Premium (Verde Grande y Gris Tachado)
+      if(t.startsWith('$') && el.children.length === 0) {
+         const esViejo = el.tagName === 'S' || el.tagName === 'STRIKE' || el.outerHTML.includes('line-through') || el.classList.contains('line-through');
+         
+         if(esViejo) {
+            el.style.setProperty('font-size', '24px', 'important');
+            el.style.setProperty('color', '#94a3b8', 'important');
+            el.style.setProperty('text-decoration', 'line-through', 'important');
+            el.style.setProperty('font-weight', '600', 'important');
+         } else {
+            el.style.setProperty('font-size', '42px', 'important');
+            el.style.setProperty('color', '#16a34a', 'important');
+            el.style.setProperty('font-weight', '900', 'important');
+            el.style.setProperty('font-family', "'Sora', sans-serif", 'important');
+            el.style.setProperty('display', 'block', 'important');
+            el.style.setProperty('line-height', '1', 'important');
+         }
+      }
+    });
+
+    // Bajar los textos para que NO pisen la foto
     Array.from(card.children).forEach(hijo => {
        if(hijo.tagName === 'DIV' && !hijo.classList.contains('btn-cerrar-flotante')) {
          hijo.classList.add('contenedor-textos-modal');
        }
     });
 
-    // 5. Arreglar el Logo del Kiosco (El KI que manda la base de datos por defecto)
+    // Arreglar el Logo del Kiosco ("KI") a la izquierda
     const logoLocal = card.querySelector('img[src*="ui-avatars"], div[style*="background-color: rgb"]');
     if(logoLocal) {
        logoLocal.style.width = '45px';
@@ -1271,7 +1318,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  // El observer vigila. Cada vez que abras un producto, el script se encarga solo de acomodarlo.
   observer.observe(card, { childList: true, subtree: true });
 });
 </script>
