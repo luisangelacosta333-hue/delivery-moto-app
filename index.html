@@ -192,7 +192,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 .badge-cerrado { background: #ffedd5; color: #ea580c; border: 1px solid #fdba74; padding: 2px 6px; border-radius: 6px; font-size: 9px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
 .btn-desactivado { background: #e2e8f0 !important; color: #94a3b8 !important; border: none !important; box-shadow: none !important; pointer-events: none !important; }
 
-/* DISEÑO PREMIUM BLANCO - NUEVO SISTEMA DE COMPRA */
+/* DISEÑO PREMIUM BLANCO - GRILLA DEL MARKETPLACE */
 #gridMercadoLibre .card-premium { background: #ffffff !important; border-radius: 20px !important; border: 1px solid #f1f5f9 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06) !important; padding: 0 !important; overflow: hidden !important; cursor: pointer !important; transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important; position: relative !important; display: flex !important; flex-direction: column !important; }
 #gridMercadoLibre .card-premium::before { display: none !important; }
 #gridMercadoLibre .card-premium:hover { transform: translateY(-4px) !important; box-shadow: 0 12px 32px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05) !important; border-color: #e2e8f0 !important; }
@@ -200,8 +200,6 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #gridMercadoLibre .card-premium > div:first-child { height: 140px !important; position: relative !important; flex-shrink: 0 !important; }
 #gridMercadoLibre .card-premium > div:first-child img { width: 100% !important; height: 140px !important; object-fit: cover !important; cursor: pointer !important; }
 #gridMercadoLibre .card-premium > div:first-child > div:nth-child(3) { display: none !important; }
-.product-zoom-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; color: #64748b; font-size: 14px; transition: all 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-.product-zoom-btn:hover { background: #ffffff; color: #f97316; transform: scale(1.1); }
 .product-time-badge { position: absolute; top: 8px; left: 8px; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 3px; z-index: 10; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 #gridMercadoLibre .card-premium > div:last-child { padding: 12px !important; display: flex !important; flex-direction: column !important; flex: 1 !important; justify-content: space-between !important; background: #ffffff !important; }
 #gridMercadoLibre .card-premium > div:last-child > div:first-child { font-family: 'Sora', sans-serif !important; font-weight: 700 !important; font-size: 14px !important; color: #0f172a !important; line-height: 1.3 !important; margin-bottom: 6px !important; }
@@ -218,7 +216,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"].chip-activo { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: white !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important; }
 
 /* ==========================================
-   MODAL DE PRODUCTO EXPANDIDO (MAGIA SCROLL Y BOTÓN NARANJA FIJO)
+   MODAL DE PRODUCTO EXPANDIDO (ESTÁTICA, 100% SIN SCROLL, SUPER PREMIUM)
    ========================================== */
 .product-expanded-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 9999999; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
 .product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
@@ -226,63 +224,56 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 .product-expanded-card {
   background: #ffffff;
   width: 100%;
-  height: 92vh; /* Altura máxima estricta */
-  max-height: 92vh;
+  height: 86vh; /* ALTURA FIJA ESTRICTA */
+  max-height: 800px;
   max-width: 500px;
-  border-radius: 1.5rem 1.5rem 0 0;
+  border-radius: 1.8rem 1.8rem 0 0;
   position: relative;
-  overflow-y: auto !important; /* ACTIVA EL SCROLL AQUÍ DIRECTAMENTE */
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch; /* Scroll fluido para iOS */
+  overflow: hidden !important; /* BLOQUEA TOTALMENTE EL SCROLL */
+  display: flex;
+  flex-direction: column;
   transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
 }
 .product-expanded-overlay.show .product-expanded-card { transform: translateY(0); }
 
-/* ESTA REGLA PEGA EL ÚLTIMO CONTENEDOR (BOTÓN) ABAJO DEL TODO SIN ROMPER EL SCROLL */
-#productExpandedCard > div:last-child,
-#productExpandedCard > button:last-child {
-  position: sticky !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  background: #ffffff !important;
-  padding: 16px 20px 24px 20px !important;
-  border-top: 1px solid #f1f5f9 !important;
-  box-shadow: 0 -10px 25px rgba(0,0,0,0.08) !important;
-  z-index: 1000 !important;
-  margin-top: auto; /* Empuja el fondo hacia abajo si falta contenido */
-}
+/* MITAD SUPERIOR: FOTO (42%) */
+.premium-modal-image { width: 100%; height: 42%; position: relative; background: #f8fafc; flex-shrink: 0; }
+.premium-modal-image img { width: 100%; height: 100%; object-fit: cover; }
+.premium-modal-close { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #0f172a; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10; transition: transform 0.2s; }
+.premium-modal-close:hover { transform: scale(1.1); background: #ff6b00; color: white; }
 
-/* REGLA ESTRICTA QUE FUERZA AL BOTON A SER NARANJA */
-#productExpandedCard button:last-child {
-  background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400) !important;
-  color: white !important;
-  width: 100% !important;
-  padding: 18px !important;
-  border-radius: 1rem !important;
-  font-size: 16px !important;
-  font-weight: 800 !important;
-  text-transform: uppercase !important;
-  border: none !important;
-  box-shadow: 0 10px 25px rgba(255,107,0,0.4) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 10px !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-}
+/* MITAD INFERIOR: INFORMACIÓN (58%) MATEMÁTICAMENTE DISTRIBUIDA */
+.premium-modal-body { height: 58%; padding: 18px 22px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
 
-#productExpandedCard button:last-child:active {
-  transform: scale(0.96) !important;
-}
+.premium-modal-header { display: flex; flex-direction: column; gap: 4px; }
+.premium-modal-header .tag { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 4px; }
+.premium-modal-header h2 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.2; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.premium-modal-header p { font-size: 13.5px; color: #64748b; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+
+/* CAJA DEL COMERCIO PREMIUM (CON LOGO CHIQUITO) */
+.premium-modal-commerce { display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 1rem; border: 1px solid #e2e8f0; margin: 4px 0; }
+.premium-modal-commerce img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1.5px solid #cbd5e1; flex-shrink: 0; background: white; }
+.premium-modal-commerce-info { flex: 1; overflow: hidden; }
+.premium-modal-commerce-info h4 { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 800; color: #0f172a; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.premium-modal-commerce-info div { font-size: 11px; color: #64748b; font-weight: 700; display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* PRECIOS Y BADGE */
+.premium-modal-pricing { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 6px; }
+.premium-modal-pricing .prices { display: flex; flex-direction: column; }
+.premium-modal-pricing .old-price { font-size: 14px; color: #94a3b8; text-decoration: line-through; font-weight: 700; margin-bottom: -2px; }
+.premium-modal-pricing .new-price { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: #16a34a; line-height: 1; }
+.premium-modal-pricing .badge-abierto { background: #dcfce7; color: #16a34a; padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; border: 1.5px solid #86efac; box-shadow: 0 2px 6px rgba(22,163,74,0.1); }
+
+/* BOTÓN GIGANTE ANARANJADO */
+.premium-modal-button { width: 100%; padding: 18px; background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc4400); color: white; border: none; border-radius: 1.2rem; font-size: 16px; font-weight: 800; text-transform: uppercase; box-shadow: 0 8px 25px rgba(255,107,0,0.35); display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: transform 0.2s; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2); }
+.premium-modal-button:active { transform: scale(0.96); }
 
 @media (min-width: 768px) {
   .product-expanded-overlay { align-items: center; padding: 20px; }
-  .product-expanded-card { height: auto; max-height: 90vh; border-radius: 1.5rem; transform: scale(0.95); }
+  .product-expanded-card { height: 80vh; max-height: 700px; border-radius: 1.5rem; transform: scale(0.95); }
   .product-expanded-overlay.show .product-expanded-card { transform: scale(1); }
-  #productExpandedCard > div:last-child { padding: 16px 20px !important; border-radius: 0 0 1.5rem 1.5rem !important; }
 }
 </style>
 </head>
@@ -291,7 +282,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <nav class="nav-fixed">
   <div class="nav-container">
     <div style="display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0;" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <!-- LOGO 1: NAV (Puro, Completo) -->
+      <!-- LOGO 1: NAV (Puro, sin recortes) -->
       <div style="position:relative;width:55px;height:55px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
         <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="max-width:100%;max-height:100%;object-fit:contain;" alt="Logo Delivery Moto">
       </div>
@@ -1065,7 +1056,7 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 </div>
 
 <!-- ========================================================
-     SCRIPT OFICIAL: INTEGRACIÓN DE APIS CON IA (OpenAI)
+     SCRIPT OFICIAL: INTEGRACIÓN DE APIS CON IA (OpenAI) Y RENDER DE TARJETA PREMIUM
      ======================================================== -->
 <script>
 // Función auxiliar para convertir las fotos del celular en Base64 (Data URI)
@@ -1080,57 +1071,45 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 async function auditarDocumentosIA() {
     try {
         const fileSelfie = document.getElementById('uploadDoc1').files[0];
-        const fileDni = document.getElementById('uploadDoc2').files[0]; // Capturado si existe
-        const filePolicial = document.getElementById('uploadDoc3').files[0];
         const fileAfip = document.getElementById('uploadDoc4').files[0];
+        const filePolicial = document.getElementById('uploadDoc3').files[0];
 
         if (!fileSelfie || !fileAfip || !filePolicial) {
             alert("Faltan documentos obligatorios. Por favor, subí tu foto Selfie, la Constancia de AFIP y tu Certificado de Buena Conducta.");
             return;
         }
 
-        // Feedback UI: Cambiar botón a estado "Cargando"
         const btn = document.querySelector('button[onclick="auditarDocumentosIA()"]');
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="ri-loader-4-line ri-spin" style="font-size:20px;"></i> AUDITANDO CON IA...';
         btn.style.pointerEvents = 'none';
         btn.style.opacity = '0.8';
 
-        // Procesar archivos a Base64
         const b64Selfie = await fileToBase64(fileSelfie);
         const b64Afip = await fileToBase64(fileAfip);
         const b64Policial = await fileToBase64(filePolicial);
 
-        // Enviar POST directo al Handler de Vercel
         const res = await fetch('/api/auditoria', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                foto_selfie: b64Selfie,
-                constancia_afip: b64Afip,
-                cert_policial: b64Policial
-            })
+            body: JSON.stringify({ foto_selfie: b64Selfie, constancia_afip: b64Afip, cert_policial: b64Policial })
         });
 
         const data = await res.json();
         
-        // Restaurar estado del botón
         btn.innerHTML = originalText;
         btn.style.pointerEvents = 'auto';
         btn.style.opacity = '1';
 
-        // Manejar respuesta de la IA
         if (data.aprobado) {
             alert(`¡Perfil Aprobado por la IA!\n\nNombre Validado: ${data.nombre_real}\nCUIT: ${data.cuit}\nMotivo: ${data.motivo}`);
-            // TODO: Agregar lógica de supabase o avanzar de paso en el HTML
         } else {
-            alert(`Perfil Rechazado\n\nMotivo: ${data.motivo}\nPor favor, verificá que los documentos sean legibles y correspondan a la misma persona.`);
+            alert(`Perfil Rechazado\n\nMotivo: ${data.motivo}`);
         }
 
     } catch (error) {
         console.error("Error en auditoría:", error);
-        alert("Hubo un error de conexión con la IA. Verificá tu internet y volvé a intentar.");
-        
+        alert("Hubo un error de conexión con la IA.");
         const btn = document.querySelector('button[onclick="auditarDocumentosIA()"]');
         btn.innerHTML = '<i class="ri-robot-2-fill" style="font-size:20px;"></i> AUDITAR PERFIL CON IA';
         btn.style.pointerEvents = 'auto';
@@ -1144,18 +1123,16 @@ async function procesarLiquidacionIA(inputElement) {
         const file = inputElement.files[0];
         if (!file) return;
 
-        // Leer la deuda actual directo de la UI
         const deudaElement = document.getElementById('deudaMoto');
         const deudaTexto = deudaElement.innerText.replace('$', '').replace(',', '').trim();
         const montoEsperado = parseFloat(deudaTexto) || 0;
 
         if (montoEsperado <= 0) {
             alert("Actualmente no tenés deuda acumulada para liquidar.");
-            inputElement.value = ''; // Limpiar el input
+            inputElement.value = '';
             return;
         }
 
-        // Feedback UI: Cambiar botón a estado "Procesando"
         const labelBtn = inputElement.parentElement;
         const originalHTML = labelBtn.innerHTML;
         labelBtn.innerHTML = '<i class="ri-loader-4-line ri-spin" style="font-size:20px;"></i> VERIFICANDO PAGO...';
@@ -1164,46 +1141,109 @@ async function procesarLiquidacionIA(inputElement) {
 
         const b64Comprobante = await fileToBase64(file);
 
-        // Enviar POST al Handler de Vercel
         const res = await fetch('/api/pago', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                comprobante_url: b64Comprobante,
-                monto_esperado: montoEsperado
-            })
+            body: JSON.stringify({ comprobante_url: b64Comprobante, monto_esperado: montoEsperado })
         });
 
         const data = await res.json();
 
-        // Restaurar botón de carga
         labelBtn.innerHTML = originalHTML;
         labelBtn.style.pointerEvents = 'auto';
         labelBtn.style.opacity = '1';
-        inputElement.value = ''; // Resetear el control file
+        inputElement.value = '';
 
-        // Manejar respuesta de la IA
         if (data.pago_valido) {
             alert(`¡Comprobante verificado con éxito!\nMonto Detectado: $${data.monto_leido}\n\nRespuesta de la IA: ${data.motivo}`);
-            
-            // Actualizar la interfaz a 0
             deudaElement.innerText = '$0';
-            
-            // TODO: Podés conectar acá con Supabase para marcar deuda como 'pagado = true'
         } else {
-            alert(`Pago Rechazado o Inválido\nMotivo: ${data.motivo}\nAsegurate de enviar un comprobante donde se lea claro el monto total.`);
+            alert(`Pago Rechazado o Inválido\nMotivo: ${data.motivo}`);
         }
 
     } catch (error) {
         console.error("Error en la validación del pago:", error);
         alert("Ocurrió un error al contactar al auditor contable de la IA.");
-        
         const labelBtn = inputElement.parentElement;
         labelBtn.innerHTML = `<i class="ri-upload-cloud-2-fill" style="font-size:20px;"></i> ENVIAR COMPROBANTE PAGO <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">`;
         labelBtn.style.pointerEvents = 'auto';
         labelBtn.style.opacity = '1';
     }
 }
+
+// 3. GENERADOR DE TARJETA ESTÁTICA SUPER PREMIUM (No Scroll)
+// Esta es la función que debés llamar cuando el usuario toca un producto en la grilla.
+window.renderizarTarjetaPremium = function(imgSrc, nombre, descripcion, logoComercio, nombreComercio, direccion, tiempoMin, precioOriginal, precioFinal) {
+    const card = document.getElementById('productExpandedCard');
+    
+    // Inyectamos la estructura matemáticamente dividida para que NUNCA scrollee
+    card.innerHTML = `
+        <button class="premium-modal-close" onclick="window.cerrarProductoExpandido()">
+            <i class="ri-close-line"></i>
+        </button>
+        
+        <div class="premium-modal-image">
+            <img src="${imgSrc}" alt="${nombre}">
+        </div>
+        
+        <div class="premium-modal-body">
+            <div class="premium-modal-header">
+                <div class="tag"><i class="ri-price-tag-3-line"></i> General</div>
+                <h2>${nombre}</h2>
+                <p>${descripcion || 'Este local no incluyó una descripción detallada.'}</p>
+            </div>
+            
+            <div class="premium-modal-commerce">
+                <img src="${logoComercio || 'https://via.placeholder.com/100?text=Local'}" alt="Logo Local">
+                <div class="premium-modal-commerce-info">
+                    <h4>${nombreComercio}</h4>
+                    <div><i class="ri-map-pin-2-fill" style="color:#ef4444;font-size:14px;"></i> ${direccion}</div>
+                    <div style="margin-top:2px;"><i class="ri-time-fill" style="color:#0f172a;font-size:14px;"></i> ${tiempoMin} min</div>
+                </div>
+            </div>
+            
+            <div class="premium-modal-pricing">
+                <div class="prices">
+                    <span class="old-price">$${precioOriginal}</span>
+                    <span class="new-price">$${precioFinal}</span>
+                </div>
+                <span class="badge-abierto">ABIERTO</span>
+            </div>
+            
+            <button class="premium-modal-button" onclick="agregarAlCarritoAnimado()">
+                <i class="ri-shopping-cart-2-fill" style="font-size:22px;"></i> AÑADIR AL CARRITO
+            </button>
+        </div>
+    `;
+    
+    // Mostramos la ventana
+    document.getElementById('productExpandedOverlay').classList.add('show');
+};
+
+// Cierra la tarjeta vuelve a la grilla
+window.cerrarProductoExpandido = function() {
+    document.getElementById('productExpandedOverlay').classList.remove('show');
+};
+
+// Añadir al carrito, cerrar y mostrar notificacion
+window.agregarAlCarritoAnimado = function() {
+    window.cerrarProductoExpandido();
+    
+    // Mostramos el carrito flotante y sumamos 1
+    const badge = document.getElementById('badgeCarrito');
+    badge.innerText = parseInt(badge.innerText) + 1;
+    
+    const btnFloat = document.getElementById('btnFloatingCart');
+    btnFloat.style.display = 'flex';
+    btnFloat.style.transform = 'scale(1.2)';
+    setTimeout(() => { btnFloat.style.transform = 'scale(1)'; }, 200);
+};
+
+// ==========================================
+// TEST RÁPIDO PARA VER QUE FUNCIONA PERFECTO 
+// (Borrá esto si no lo necesitas, es para probar la tarjeta desde la consola o con un botón)
+// renderizarTarjetaPremium("https://via.placeholder.com/600x600/e2e8f0/0f172a?text=Foto+Producto", "Fernet Branca 1 litro", "La mejor calidad en fernet clásico.", "https://via.placeholder.com/100/ff6b00/fff?text=KI", "Kiosco Mamolita", "Azcuénaga 474, FAMAILLÁ", "21", "15.000", "12.000");
+// ==========================================
 </script>
 </body>
 </html>
