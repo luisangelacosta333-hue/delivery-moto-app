@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -1043,9 +1042,166 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
     </div>
   </div>
 </div>
+
+<!-- ==========================================
+// INTEGRACIÓN API INTELIGENCIA ARTIFICIAL
+// ========================================== -->
+<script>
+// 1. URL base de tu backend (Cambiala si tu HTML y tus APIs están en dominios distintos)
+// Si está todo junto en Vercel o Next.js, dejá '' para que use rutas relativas.
+const API_BASE_URL = ''; 
+
+// 2. Compresor de imágenes (Vital para no saturar OpenAI ni Vercel)
+async function comprimirYConvertirABase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        // Redimensionamos a máximo 800px (Perfecto para la lectura de OpenAI Vision)
+        const MAX_WIDTH = 800; 
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+        } else {
+          if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Exportamos en JPEG al 70% de calidad para ahorrar ancho de banda
+        resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+      };
+      img.src = event.target.result;
+    };
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
+// ==========================================
+// API 1: AUDITORÍA DE CADETES (ONBOARDING)
+// ==========================================
+async function auditarDocumentosIA() {
+  const fileSelfie = document.getElementById('uploadDoc1')?.files[0];
+  const fileConducta = document.getElementById('uploadDoc3')?.files[0];
+  const fileAFIP = document.getElementById('uploadDoc4')?.files[0];
+
+  if (!fileSelfie || !fileConducta || !fileAFIP) {
+    alert("⚠️ Faltan documentos. Asegurate de cargar tu Selfie, Buena Conducta y Constancia AFIP.");
+    return;
+  }
+
+  // Animación de carga
+  const btn = document.querySelector('button[onclick="auditarDocumentosIA()"]');
+  const txtOriginal = btn.innerHTML;
+  btn.innerHTML = '<i class="ri-loader-4-line animate-ring" style="font-size:20px;"></i> AUDITANDO PERFIL CON IA...';
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+
+  try {
+    // Comprimimos localmente
+    const foto_selfie = await comprimirYConvertirABase64(fileSelfie);
+    const cert_policial = await comprimirYConvertirABase64(fileConducta);
+    const constancia_afip = await comprimirYConvertirABase64(fileAFIP);
+
+    // Llamada a la API de auditoría
+    const respuesta = await fetch(`${API_BASE_URL}/api/auditoria`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ foto_selfie, constancia_afip, cert_policial })
+    });
+
+    const data = await respuesta.json();
+
+    if (respuesta.ok && data.aprobado) {
+      alert(`✅ ¡Perfil Aprobado!\nBienvenido/a ${data.nombre_real}.\nCUIT Registrado: ${data.cuit}`);
+      // Aquí agregás tu lógica para avanzar: Ej: irPaso('modal-step-servimoto');
+    } else {
+      alert(`❌ Perfil Rechazado\nMotivo de la IA: ${data.motivo || data.error}`);
+    }
+
+  } catch (error) {
+    console.error("Error en auditoría:", error);
+    alert("⚠️ Ocurrió un error al conectar con la central de IA. Intentá nuevamente.");
+  } finally {
+    // Restauramos botón
+    if(btn) {
+      btn.innerHTML = txtOriginal;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    }
+  }
+}
+
+// ==========================================
+// API 2: LIQUIDACIÓN DE DEUDA (PAGOS)
+// ==========================================
+async function procesarLiquidacionIA(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  // Obtenemos la deuda actual de la interfaz y la limpiamos (Ej: "$1500" -> 1500)
+  const deudaElemento = document.getElementById('deudaMoto');
+  const deudaTexto = deudaElemento ? deudaElemento.innerText : "$0";
+  const monto_esperado = parseFloat(deudaTexto.replace(/[^0-9.-]+/g, "")) || 0;
+
+  if (monto_esperado <= 0) {
+    alert("✅ No tenés deudas acumuladas por el momento.");
+    input.value = ""; // Limpiar input
+    return;
+  }
+
+  // Animación de carga en el botón
+  const labelPadre = input.parentElement;
+  const htmlOriginal = labelPadre.innerHTML;
+  labelPadre.innerHTML = '<i class="ri-loader-4-line animate-ring" style="font-size:20px;"></i> VERIFICANDO PAGO...';
+  labelPadre.style.pointerEvents = 'none';
+  labelPadre.style.opacity = '0.7';
+
+  try {
+    // Comprimimos el comprobante de MercadoPago / Banco
+    const comprobante_url = await comprimirYConvertirABase64(file);
+
+    // Llamada a la API de pago
+    const respuesta = await fetch(`${API_BASE_URL}/api/pago`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comprobante_url, monto_esperado })
+    });
+
+    const data = await respuesta.json();
+
+    if (respuesta.ok && data.pago_valido) {
+      alert(`✅ Transferencia Aprobada.\nMonto detectado: $${data.monto_leido}.\nHas liquidado tu deuda con éxito.`);
+      // Limpiamos la deuda en la interfaz
+      if(deudaElemento) deudaElemento.innerText = "$0";
+      // Opcional: Actualizar tu base de datos de Supabase aquí
+    } else {
+      alert(`❌ Comprobante Rechazado.\nAuditoría: ${data.motivo || data.error}`);
+    }
+
+  } catch (error) {
+    console.error("Error validando pago:", error);
+    alert("⚠️ Falló la validación del comprobante. Revisá tu conexión a internet.");
+  } finally {
+    // Restauramos el botón
+    labelPadre.innerHTML = htmlOriginal;
+    labelPadre.style.pointerEvents = 'auto';
+    labelPadre.style.opacity = '1';
+    input.value = ""; // Reseteamos el input para que permita volver a seleccionar el mismo archivo si hubo error
+  }
+}
+</script>
 </body>
 </html>
-
 
 <script>
 // ==========================================
