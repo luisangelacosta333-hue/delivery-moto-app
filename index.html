@@ -13,7 +13,7 @@
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4/fonts/remixicon.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- LEAFLET MAPAS (reemplaza Google Maps - funciona SIN API KEY) -->
+<!-- LEAFLET MAPAS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1/dist/leaflet.css">
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1/dist/leaflet.js"></script>
 
@@ -216,6 +216,178 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"] { display: inline-flex !important; align-items: center !important; gap: 6px !important; padding: 8px 14px !important; border-radius: 999px !important; background: #ffffff !important; color: #475569 !important; border: 1.5px solid #e2e8f0 !important; font-size: 12px !important; font-weight: 700 !important; cursor: pointer !important; flex-shrink: 0 !important; transition: all 0.25s ease !important; white-space: nowrap !important; box-shadow: none !important; }
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"]:hover { border-color: #f97316 !important; color: #ea580c !important; background: #fff7ed !important; }
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"].chip-activo { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: white !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important; }
+
+/* ========================================================
+   ESTILOS ORIGINALES DE TU TARJETA MODAL + FIX PREMIUM BLINDADO 50% IMAGEN
+   ======================================================== */
+.product-expanded-overlay { 
+  position: fixed; inset: 0; background: #ffffff !important; z-index: 9999999; 
+  display: flex; align-items: center; justify-content: center; opacity: 0; 
+  pointer-events: none; transition: all 0.3s ease; padding: 0 !important; 
+  margin: 0 !important; overflow: hidden !important; 
+}
+.product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
+
+/* DISEÑO DE TARJETA ESTÁTICA - IMITA LA CAPTURA */
+.premium-fullscreen-card {
+  background: #ffffff !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  max-width: 100vw !important;
+  border-radius: 0 !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: none !important;
+  overflow: hidden !important; 
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.product-expanded-overlay.show .premium-fullscreen-card { transform: translateY(0); }
+
+/* CONTENEDOR FLEX PRINCIPAL */
+.modal-content-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important; 
+}
+
+/* LA IMAGEN 50% EXACTO, PURA, NÍTIDA Y SIN SOMBRA */
+.img-producto-modal {
+  height: 50dvh !important; 
+  min-height: 50dvh !important;
+  max-height: 50dvh !important;
+  width: 100vw !important;
+  object-fit: contain !important; /* Mantiene la nitidez completa sin recortes */
+  background: #ffffff !important;
+  box-shadow: none !important; /* Sin sombra */
+  border: none !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* TEXTOS EN LA MITAD INFERIOR */
+.contenedor-textos-modal {
+  flex: 1 !important;
+  padding: 20px 24px 100px 24px !important; /* Espacio inferior para el botón */
+  background: #ffffff !important;
+  position: relative !important;
+  z-index: 10 !important;
+  display: block !important; /* Cambiado a block para que el scroll funcione natural */
+  overflow-y: auto !important; /* Solo scrollea el texto si es muy largo */
+}
+
+/* BOTÓN FIJADO AL FONDO Y CENTRADO */
+.btn-comprar-flotante {
+  position: absolute !important; /* Lo fija abajo */
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  background: linear-gradient(135deg, #ff8c00, #ea580c) !important;
+  color: white !important;
+  padding: 22px !important;
+  border-radius: 0 !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important; 
+  gap: 10px !important;
+  box-shadow: none !important;
+  z-index: 1000 !important;
+  text-transform: uppercase !important;
+}
+
+.btn-cerrar-flotante {
+  position: absolute !important;
+  top: 15px !important;
+  right: 15px !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  background: rgba(255,255,255,0.9) !important;
+  backdrop-filter: blur(4px);
+  color: #0f172a !important;
+  z-index: 2000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+  border: 1px solid #e2e8f0 !important;
+  font-size: 24px !important;
+}
+
+/* PRECIOS GIGANTES Y VERDES */
+.precio-nuevo-modal {
+  font-size: 56px !important; 
+  color: #16a34a !important; 
+  font-weight: 900 !important;
+  font-family: 'Sora', sans-serif !important;
+  display: block !important;
+  line-height: 1 !important;
+  margin-top: 4px !important;
+  margin-bottom: 16px !important;
+  letter-spacing: -1.5px !important;
+}
+
+/* LOGO DEL KIOSCO UBICADO A LA IZQUIERDA Y FLOTANTE */
+.logo-kiosco-modal {
+  width: 60px !important;
+  height: 60px !important;
+  min-width: 60px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  margin-right: 14px !important;
+  float: left !important;
+  border: 2px solid #ff6b00 !important;
+  object-fit: cover !important;
+  background: #ff6b00 !important;
+  color: white !important;
+}
+
+/* BADGE MOTO EN VERDE (ENVÍO GRATIS) */
+.envio-gratis-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: #dcfce7 !important;
+  color: #16a34a !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  margin-bottom: 12px !important;
+  border: 1.5px solid #86efac !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.clearfix-modal::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+@media (min-width: 768px) {
+  .product-expanded-overlay { padding: 20px !important; background: rgba(15, 23, 42, 0.95) !important; }
+  .premium-fullscreen-card { height: 85vh !important; max-height: 800px !important; max-width: 450px !important; border-radius: 1.5rem !important; transform: scale(0.95); margin: auto !important; box-shadow: 0 20px 50px rgba(0,0,0,0.4) !important;}
+  .product-expanded-overlay.show .premium-fullscreen-card { transform: scale(1); }
+  .btn-comprar-flotante { border-radius: 0 0 1.5rem 1.5rem !important; position: absolute !important; bottom: 0 !important; }
+}
 </style>
 </head>
 <body>
@@ -630,20 +802,14 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 <!-- MODALES DEL MARKETPLACE -->
 <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9999999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
 
-<!-- EL OVERLAY DEL PRODUCTO EXPANDIDO -->
-<div id="productExpandedOverlay" class="product-expanded-overlay" onclick="if(event.target===this && window.cerrarProductoExpandido)window.cerrarProductoExpandido()">
-  <div class="product-expanded-card" id="productExpandedCard"></div>
-</div>
-
 <div id="modalMarketplace" class="modal-overlay" onclick="if(event.target===this)cerrarModalMarketplace()">
   <div class="modal-box" style="background:#fff7ed;">
     <button class="modal-close-btn" onclick="cerrarModalMarketplace()" title="Cerrar"><i class="ri-close-line"></i></button>
     <div style="background:linear-gradient(135deg, #0a0500, #2d1200); padding:15px 20px; position:relative; overflow:hidden; flex-shrink:0;">
       <div style="position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(255,107,0,0.3), transparent 70%);"></div>
       <div style="position:relative; z-index:2; display:flex; align-items:center; gap:14px;">
-        <!-- LOGO 4: CABECERA MODAL (Redondela Restaurada) -->
         <div style="width:40px; height:40px; border-radius:1rem; overflow:hidden; flex-shrink:0; border:2px solid #ffd700;">
-          <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo" onerror="this.style.display='none'">
+          <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/9ae216e2d1ec4c198560fab7be59f74e.jpeg~tplv-0es2k971ck-image.image?rcl=202609051335595271FA927120539F5101&rk3s=8e244e95&rrcfp=02a80fc2&x-expires=1791178606&x-signature=X43fBDJyxy25SpnXFL7weAb6GSQ%3D" style="width:100%;height:100%;object-fit:cover;transform:scale(1.5);" alt="Logo">
         </div>
         <div style="text-align:left; flex:1;">
           <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; color:white; line-height:1;">MARKETPLACE</div>
@@ -653,473 +819,35 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
     </div>
 
     <div style="padding:0; flex:1; display:flex; flex-direction:column; overflow-y:auto;" onscroll="handleScrollFeed(this)">
-      
-      <!-- MENÚ PRINCIPAL -->
       <div id="modal-step-1" class="sub-step active" style="padding:24px 16px;">
         <h4 style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:#0f172a; margin-bottom:16px;">¿Qué necesitás hoy?</h4>
         <div style="display:flex; flex-direction:column; gap:12px;">
           <button class="option-card" onclick="irPaso('feed-global')" style="border:2px solid #ff6b00; background:linear-gradient(to right, #fff, #fff7ed);">
-            <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(255,107,0,0.4); flex-shrink:0;"><i class="ri-shopping-bag-3-fill"></i></div>
+            <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #ff8c00, #cc4400); color:white; display:flex; align-items:center; justify-content:center; font-size:22px;"><i class="ri-shopping-bag-3-fill"></i></div>
             <div style="flex:1; text-align:left;">
               <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a;">Quiero Comprar</div>
               <div style="font-size:12px; color:#64748b; font-weight:600;">Explorá los locales y elegí qué comer.</div>
             </div>
-            <i class="ri-arrow-right-s-line" style="font-size:26px; color:#ff6b00;"></i>
-          </button>
-          <button class="option-card" onclick="irPaso('pedido-especial')" style="border:2px solid #3b82f6; background:linear-gradient(to right, #fff, #eff6ff);">
-            <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #3b82f6, #1d4ed8); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(59,130,246,0.4); flex-shrink:0;"><i class="ri-motorbike-fill"></i></div>
-            <div style="flex:1; text-align:left;">
-              <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a;">Pedir un Cadete</div>
-              <div style="font-size:12px; color:#64748b; font-weight:600;">Viajes especiales o paquetes rápidos.</div>
-            </div>
-            <i class="ri-arrow-right-s-line" style="font-size:26px; color:#3b82f6;"></i>
-          </button>
-          <button class="option-card" onclick="iniciarLogin('comercio')" style="border:2px solid #f59e0b; background:linear-gradient(to right, #fff, #fffbeb);">
-            <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #f59e0b, #d97706); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(245,158,11,0.4); flex-shrink:0;"><i class="ri-store-2-fill"></i></div>
-            <div style="flex:1; text-align:left;">
-              <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a;">Soy Comercio</div>
-              <div style="font-size:12px; color:#64748b; font-weight:600;">Publicá tus productos y vendé más.</div>
-            </div>
-            <i class="ri-arrow-right-s-line" style="font-size:26px; color:#f59e0b;"></i>
-          </button>
-          <button class="option-card-dark" onclick="iniciarLogin('cadete')" style="flex-direction:row; text-align:left; border:2px solid #16a34a;">
-            <div style="width:48px; height:48px; border-radius:1rem; background:linear-gradient(135deg, #16a34a, #15803d); color:white; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 6px 20px rgba(22,163,74,0.4); flex-shrink:0;"><i class="ri-shield-keyhole-fill"></i></div>
-            <div style="flex:1; text-align:left;">
-              <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:white;">ServiMoto</div>
-              <div style="font-size:12px; color:#cbd5e1; font-weight:600;">Panel de cadete y radar GPS.</div>
-            </div>
-            <i class="ri-arrow-right-s-line" style="font-size:26px; color:#4ade80;"></i>
-          </button>
-          <div style="background:linear-gradient(135deg, #fffde7, #fff9c4); border:2px dashed #f59e0b; border-radius:1.2rem; padding:16px; display:flex; align-items:center; gap:14px; margin-top:8px; box-shadow:0 8px 25px rgba(245,158,11,0.15);">
-            <div class="animate-pulse-glow" style="width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg, #ffd700, #f59e0b); color:white; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 4px 15px rgba(245,158,11,0.5); flex-shrink:0;"><i class="ri-vip-crown-fill"></i></div>
-            <div style="flex:1;">
-              <div style="font-family:'Sora',sans-serif; font-weight:900; font-size:14px; color:#d97706; text-transform:uppercase;">¡Meta ServiMoto!</div>
-              <div style="font-size:12px; color:#92400e; font-weight:700; line-height:1.4;">Completá <strong style="color:#b45309; font-size:13px;">100 viajes</strong> y ganá tu <strong style="color:#d97706;">Estrella Dorada</strong> con beneficios exclusivos.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- FEED GLOBAL -->
-      <div id="modal-step-feed-global" class="sub-step" style="padding:0;">
-        <div style="padding:8px 12px 6px 12px; background:white; position:sticky; top:0; z-index:10; border-bottom:1px solid #e2e8f0; box-shadow:0 4px 10px rgba(0,0,0,0.03);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <button class="btn-volver" style="margin:0; padding:6px 12px; font-size:12px;" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Inicio</button>
-            <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; margin:0;">Catálogo Global</h3>
-          </div>
-          <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:8px; scrollbar-width:none;">
-            <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('')">Todos</button>
-            <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('pizza')">🍕 Pizza</button>
-            <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('comida rápida')">🍔 Rápida</button>
-            <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('farmacia')">💊 Farma</button>
-            <button class="badge-dorado" style="background:white; color:#cc4400; border:1px solid #ffb380; padding:6px 12px; font-size:11px; cursor:pointer; flex-shrink:0;" onclick="filtrarFeedGlobal('kiosco')">🍫 Kiosco</button>
-          </div>
-          <div style="display:flex; gap:6px;" id="cajaFiltrosFeedHTML">
-            <select class="select-provincia" id="filtroProvincia" style="margin:0; padding:6px 10px; font-size:12px; flex:1; border-radius:8px;" onchange="filtrarFeedGlobal()"></select>
-            <input type="text" class="input-buscar" id="filtroCiudad" placeholder="Tu Ciudad..." style="margin:0; padding:6px 10px; font-size:12px; flex:1; border-radius:8px;" onkeyup="filtrarFeedGlobal()">
-          </div>
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(2, 1fr); align-items:start; gap:10px; padding:12px;" id="gridMercadoLibre"></div>
-      </div>
-
-      <!-- LOGIN -->
-      <div id="modal-step-login" class="sub-step" style="padding:24px 16px;">
-        <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
-        <div class="step-indicator" id="lblTipoLogin">Acceso a Cuenta</div>
-        <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px;">Ingresá tus credenciales</h3>
-        <p style="color:#64748b; font-size:14px; margin-bottom:16px; line-height:1.5;" id="descLogin">Registrate o iniciá sesión de forma segura.</p>
-        <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
-          <input type="tel" class="input-buscar" id="loginCelular" placeholder="Tu Celular (Sin 0 ni 15)">
-          <input type="text" class="input-buscar" id="loginClave" placeholder="Clave (Ej: ABC123 o PIN Nuevo)">
-          <button class="btn-primary" style="padding:14px;" onclick="validarLogin()">INGRESAR A MI CUENTA <i class="ri-arrow-right-line"></i></button>
-        </div>
-      </div>
-
-      <!-- COMPLETAR PERFIL DEL CLIENTE -->
-      <div id="modal-step-cliente-ubicacion" class="sub-step" style="padding:24px 16px;">
-        <div class="step-indicator" style="background:#dcfce7; color:#166534; border-color:#86efac;"><i class="ri-map-pin-user-fill"></i> Completar Perfil</div>
-        <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin-bottom:4px;">Tus Datos y Destino</h3>
-        <p style="color:#64748b;font-size:13.5px;margin-bottom:20px;line-height:1.5;">Configurá tu nombre, dirección de entrega y selfie por única vez por seguridad.</p>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <input type="text" class="input-buscar" id="inputNombreCliente" placeholder="Tu Nombre y Apellido Completo" style="margin:0;">
-          <label id="boxSelfieClienteModal" style="background:#f8fafc; border:3px dashed #3b82f6; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; position:relative; overflow:hidden;">
-            <div style="width:70px; height:70px; border-radius:50%; background:#eff6ff; display:flex; align-items:center; justify-content:center; border:2px solid #bfdbfe;" id="iconSelfieClienteContenedor">
-              <i class="ri-camera-lens-fill" style="font-size:36px; color:#2563eb;"></i>
-            </div>
-            <span style="font-weight:800; color:#1d4ed8; font-size:15px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblTextSelfieCliente">Selfie de Seguridad (Obligatoria)</span>
-            <input type="file" accept="image/*" capture="user" id="uploadSelfieCliente" style="display:none;" onchange="previewSelfieCliente(this)">
-          </label>
-          <select class="select-provincia" id="selProvinciaCliente" style="margin:0;"></select>
-          <input type="text" class="input-buscar" id="inputCiudadCliente" placeholder="Ciudad (Ej: Famaillá)" style="margin:0;">
-          <input type="text" class="input-buscar" id="inputDireccionCliente" placeholder="Tu Dirección exacta y Nro" style="margin:0;">
-          <button class="btn-primary" style="padding:16px; margin-top: 8px; font-size:15px; background:linear-gradient(135deg, #16a34a, #15803d); border:none; box-shadow:0 10px 25px rgba(22,163,74,0.4);" onclick="guardarPerfilCliente()">GUARDAR Y CONTINUAR COMPRA</button>
-        </div>
-      </div>
-
-      <!-- PANEL COMERCIO -->
-      <div id="modal-step-comercio" class="sub-step" style="padding:24px 16px;">
-        <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
-        <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 16px;">Panel Comercial</h3>
-        <div id="bandejaPedidosComercio" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;"></div>
-        
-        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
-          <label id="boxSelfieComercioModal" style="background:#f0fdf4; border:3px dashed #4ade80; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 220px; position:relative; overflow:hidden;">
-            <div style="width:70px; height:70px; border-radius:50%; background:#dcfce7; display:flex; align-items:center; justify-content:center; border:2px solid #86efac;" id="iconSelfieComercioContenedor"><i class="ri-camera-lens-fill" style="font-size:36px; color:#16a34a;"></i></div>
-            <span style="font-weight:800; color:#15803d; font-size:15px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblTextSelfieComercio">1. Selfie de Seguridad (Obligatorio)</span>
-            <input type="file" accept="image/*" capture="user" id="uploadSelfieComercio" style="display:none;" onchange="previewSelfieComercioModal(this)">
-          </label>
-          <label id="boxPortadaComercio" style="background:#f8fafc; border:3px dashed #ffb380; padding:32px 16px; border-radius:1.5rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background-size: cover; background-position: center; min-height: 200px; position:relative; overflow:hidden;">
-            <div style="width:64px; height:64px; border-radius:16px; background:#fff7ed; display:flex; align-items:center; justify-content:center; border:2px solid #ffd4b3;" id="iconPortadaContenedor"><i class="ri-image-add-fill" style="font-size:32px; color:#ff6b00;"></i></div>
-            <span style="font-weight:800; color:#cc4400; font-size:14px; z-index: 2; background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 8px;" id="lblPortadaComercio">2. Subir Foto de Portada (Local)</span>
-            <input type="file" accept="image/*" id="uploadPortadaComercio" style="display:none;" onchange="previewPortada(this)">
-          </label>
-          
-          <input type="text" class="input-buscar" id="comercioNombre" placeholder="Nombre Comercial (Ej: Kiosco Mamoly)" style="margin:0;">
-          <input type="text" class="input-buscar" id="comercioDireccionExacta" placeholder="Dirección Exacta (Ej: 9 de Julio 120)" style="margin:0;">
-          <select class="select-provincia" id="comercioCategoria" style="margin:0; padding:16px; font-size:15px; border-color:#3b82f6;">
-            <option value="">Rubro / Categoría de tu Local...</option>
-            <option value="Comida Rápida">🍔 Comida Rápida / Sandwichería</option>
-            <option value="Pizzería">🍕 Pizzería / Empanadas</option>
-            <option value="Kiosco">🍫 Kiosco / Almacén / Minimarket</option>
-            <option value="Farmacia">💊 Farmacia / Perfumería</option>
-            <option value="Bebidas">🍷 Bebidas / Heladería</option>
-            <option value="Ropa">👕 Tienda de Ropa / Accesorios</option>
-            <option value="Varios">🛍️ Comercios Varios</option>
-          </select>
-          <div style="margin-bottom: 4px; margin-top:4px;">
-            <label style="font-weight: 800; font-size: 13px; color: #0f172a; display: block; margin-bottom: 6px;"> <i class="ri-bank-card-fill" style="color: #2563eb;"></i> Alias / CBU para recibir transferencias: </label>
-            <input type="text" class="input-buscar" id="comercioAlias" placeholder="Ej: kiosco.mamoly.mp" style="margin:0;">
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
-            <div>
-              <label style="font-size:11px; font-weight:800; color:#64748b;">Abre:</label>
-              <input type="time" class="input-buscar" id="comercioAbre" style="margin:0; padding:12px; font-size:14px;">
-            </div>
-            <div>
-              <label style="font-size:11px; font-weight:800; color:#64748b;">Cierra:</label>
-              <input type="time" class="input-buscar" id="comercioCierra" style="margin:0; padding:12px; font-size:14px;">
-            </div>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <select class="select-provincia" id="comercioProvincia" style="margin:0; padding:14px; font-size:14px;"></select>
-            <input type="text" class="input-buscar" id="comercioCiudad" placeholder="Ciudad..." style="margin:0; padding:14px; font-size:14px;">
-          </div>
-          <button class="btn-primary" style="padding:16px; font-size:15px; margin-top:8px;" onclick="guardarComercio()">GUARDAR DATOS DEL LOCAL</button>
-        </div>
-
-        <button class="btn-secondary" style="width:100%; padding:14px; margin-bottom: 24px; border-color:#2563eb; color:#1d4ed8; background:#eff6ff;" onclick="pedirFavorCadeteWhatsApp()">
-          <i class="ri-whatsapp-fill" style="font-size:22px; margin-right:8px; vertical-align:middle;"></i> <span style="vertical-align:middle;">PEDIR ENCARGO A SERVIMOTO</span>
-        </button>
-
-        <div style="background:#f8fafc; border:2px solid #cbd5e1; border-radius:1.5rem; padding:20px; margin-bottom:20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
-          <h4 style="font-weight:800; font-size:18px; margin-bottom:16px; color:#0f172a;"><i class="ri-add-circle-fill" style="color:#3b82f6;"></i> Crear Artículo Nuevo</h4>
-          <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
-            <input type="text" class="input-buscar" id="newArtNombre" placeholder="Nombre del Artículo (Ej: Lomo Completo)" style="margin:0; padding:16px; font-size:16px;">
-            <input type="number" class="input-buscar" id="newArtPrecio" placeholder="Precio Final ($)" style="margin:0; padding:16px; font-size:16px; font-weight:800; color:#16a34a;">
-            <textarea class="input-buscar" id="newArtDescripcion" placeholder="Descripción del artículo (ingredientes, detalles, recomendaciones...)" style="margin:0; padding:16px; font-size:15px; min-height:100px; resize:vertical; font-family:inherit;"></textarea>
-          </div>
-          <label id="boxArticuloNuevo" style="background:white; border:3px dashed #94a3b8; padding:32px 16px; border-radius:1.2rem; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:16px; background-size: cover; background-position: center; min-height: 180px; position: relative; overflow:hidden; transition:all 0.3s;">
-            <div style="width:60px; height:60px; border-radius:16px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; border:2px solid #e2e8f0; margin-bottom:10px;" id="iconPlatoContenedor"><i class="ri-camera-3-fill" style="font-size:32px; color:#64748b;"></i></div>
-            <span style="font-size:15px; font-weight:800; color:#0f172a; position: relative; z-index: 2; background: rgba(255,255,255,0.95); padding: 8px 16px; border-radius: 10px;" id="lblArtFoto">Subir Foto Real (Obligatorio)</span>
-            <input type="file" accept="image/*" id="uploadArticulo" style="display:none;" onchange="previewArtFoto(this)">
-          </label>
-          <button class="btn-primary" style="width:100%; padding:16px; font-size:16px; background:linear-gradient(135deg, #3b82f6, #1d4ed8); border:none; box-shadow:0 10px 25px rgba(59,130,246,0.4);" onclick="agregarArticuloComercio()">
-            <i class="ri-upload-cloud-2-fill"></i> PUBLICAR EN EL CATÁLOGO
-          </button>
-        </div>
-
-        <div id="contenedorListaArticulos" style="background:white; border-radius:1.5rem; padding:20px; border:2px solid #ffe4cc; transition: all 0.3s ease;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-            <h4 style="font-family:'Sora',sans-serif; font-weight:800; font-size:16px; color:#0f172a; margin:0;"><i class="ri-list-check" style="color:#ff6b00;"></i> Tus Artículos</h4>
-            <button onclick="togglePantallaCompletaArticulos()" style="background:#fff7ed; color:#cc4400; border:2px solid #ffd4b3; border-radius:8px; padding:6px 10px; font-weight:800; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">
-              <i class="ri-fullscreen-line" id="iconExpandir"></i> <span id="textExpandir">Expandir</span>
-            </button>
-          </div>
-          <div id="listaAdminComercio" style="display:flex; flex-direction:column; gap:10px; max-height:250px; overflow-y:auto; padding-right:4px; transition: all 0.3s ease;"></div>
-        </div>
-      </div>
-
-      <!-- PANEL CADETE ONBOARDING -->
-      <div id="modal-step-servimoto-onboarding" class="sub-step" style="padding:24px 16px;">
-        <button class="btn-volver" onclick="irPaso('login')"><i class="ri-arrow-left-s-line"></i> Atrás</button>
-        <div class="step-indicator" style="background:#dcfce7; color:#166534; border-color:#86efac;"><i class="ri-shield-keyhole-fill"></i> Registro Oficial Cadetes</div>
-        <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#0f172a; margin:0 0 8px;">Certificación de Identidad</h3>
-        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:24px;">
-          <input type="text" class="input-buscar" id="inputNombreCadete" placeholder="Tu Nombre y Apellido Completo" style="margin:0;">
-          <label id="cajaDoc1" style="background:white; border:3px dashed #ff6b00; border-radius:1.5rem; padding:28px 16px; text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; min-height: 200px; position:relative; overflow:hidden;">
-            <div style="width:64px; height:64px; border-radius:50%; background:#fff7ed; display:flex; align-items:center; justify-content:center; border:2px solid #ffb380;" id="iconoSelfieContenedorCadete"><i class="ri-camera-lens-fill" style="font-size:32px; color:#ff6b00;"></i></div>
-            <span style="font-size:15px; font-weight:800; color:#0f172a; position:relative; z-index:2;" id="txtDoc1">1. Tomate una Foto Selfie (Rostro)</span>
-            <input type="file" accept="image/*" capture="user" id="uploadDoc1" style="display:none;" onchange="previewSelfieCadete(this)">
-          </label>
-          <div style="display:grid; grid-template-columns:1fr; gap:12px;">
-            <label id="cajaDoc2" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
-              <div style="width:40px; height:40px; border-radius:10px; background:#eff6ff; display:flex; align-items:center; justify-content:center; border:1px solid #bfdbfe;"><i id="iconDoc2" class="ri-id-card-fill" style="font-size:20px; color:#3b82f6;"></i></div>
-              <div style="flex:1;"><div style="font-size:13.5px; font-weight:800; color:#0f172a;" id="txtDoc2">2. Foto DNI (Frente y Dorso)</div></div>
-              <input type="file" accept="image/*,application/pdf" id="uploadDoc2" style="display:none;" onchange="docCargado(this, 'txtDoc2', 'cajaDoc2', 'iconDoc2')">
-            </label>
-            <label id="cajaDoc3" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
-              <div style="width:40px; height:40px; border-radius:10px; background:#f0fdf4; display:flex; align-items:center; justify-content:center; border:1px solid #bbf7d0;"><i id="iconDoc3" class="ri-file-shield-2-fill" style="font-size:20px; color:#16a34a;"></i></div>
-              <div style="flex:1;"><div style="font-size:13.5px; font-weight:800; color:#0f172a;" id="txtDoc3">3. Buena Conducta</div></div>
-              <input type="file" accept="image/*,application/pdf" id="uploadDoc3" style="display:none;" onchange="docCargado(this, 'txtDoc3', 'cajaDoc3', 'iconDoc3')">
-            </label>
-            <label id="cajaDoc4" class="card-premium" style="padding:16px; cursor:pointer; display:flex; align-items:center; gap:14px;">
-              <div style="width:40px; height:40px; border-radius:10px; background:#fef3c7; display:flex; align-items:center; justify-content:center; border:1px solid #fde68a;"><i id="iconDoc4" class="ri-government-fill" style="font-size:20px; color:#d97706;"></i></div>
-              <div style="flex:1;"><div style="font-size:13.5px; font-weight:800; color:#0f172a;" id="txtDoc4">4. Constancia AFIP</div></div>
-              <input type="file" accept="image/*,application/pdf" id="uploadDoc4" style="display:none;" onchange="docCargado(this, 'txtDoc4', 'cajaDoc4', 'iconDoc4')">
-            </label>
-          </div>
-        </div>
-        <button class="btn-primary" style="width:100%; padding:16px; font-size:15px; background:linear-gradient(135deg, #16a34a, #15803d);" onclick="auditarDocumentosIA()">
-          <i class="ri-robot-2-fill" style="font-size:20px;"></i> AUDITAR PERFIL CON IA
-        </button>
-      </div>
-
-      <!-- PANEL CADETE RADAR -->
-      <div id="modal-step-servimoto" class="sub-step" style="padding:24px 16px;">
-        <button class="btn-volver" onclick="irPaso(1)"><i class="ri-logout-box-line"></i> Cerrar Sesión</button>
-        <div style="background:linear-gradient(135deg, #0f172a, #050505); border-radius:1.5rem; padding:22px; border:3px solid #ff6b00; color:white; box-shadow:0 15px 35px rgba(0,0,0,0.5);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-            <span class="badge-dorado" style="border:1px solid rgba(74,222,128,0.5);"><i class="ri-shield-check-fill" style="color:#4ade80;"></i> IA ACTIVA</span>
-            <span style="color:#4ade80; font-size:11.5px; font-weight:800; font-family:monospace;">MOTO-902</span>
-          </div>
-          <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin:0 0 4px; text-align:center;">Panel de Operación</h3>
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:1rem; margin-top:16px; margin-bottom:24px;">
-            <div style="font-size:14px; font-weight:800; color:rgba(255,255,255,0.9);">Turno Actual:</div>
-            <button id="btnEstadoTrabajo" onclick="toggleEstadoTrabajo()" style="background:#f97316; color:white; border:none; padding:10px 18px; border-radius:999px; font-weight:800; font-size:12px; cursor:pointer; box-shadow:0 4px 12px rgba(249,115,22,0.4); transition:all 0.3s;"><i class="ri-close-circle-fill"></i> INACTIVO</button>
-          </div>
-          
-          <div style="display:flex; justify-content:center; margin-bottom: 32px; margin-top: 20px;">
-            <button id="btnRadar" onclick="activarRadar()" style="width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #1e3a8a, #0f172a); color: white; border: 4px solid #3b82f6; box-shadow: 0 0 30px rgba(59,130,246,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; cursor:pointer; position: relative;">
-              <i class="ri-radar-fill" style="font-size: 48px; margin-bottom: 4px; z-index:2; position:relative;"></i>
-              <span style="font-weight: 800; font-size: 15px; font-family:'Sora', sans-serif; z-index:2; position:relative; letter-spacing:1px;">RADAR</span>
-            </button>
-          </div>
-
-          <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:20px; border-radius:1.2rem; text-align:center; margin-bottom:16px;">
-            <div style="font-size:11px; font-weight:800; color:#ffd700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">Deuda Acumulada a Pagar</div>
-            <div id="deudaMoto" style="font-family:'Sora',sans-serif; font-size:46px; font-weight:800; color:white; line-height:1; margin-bottom:8px;">$0</div>
-            <div style="font-size:13px; color:#ff8c00; font-weight:800; background:rgba(255,107,0,0.15); display:inline-block; padding:6px 16px; border-radius:999px; margin-bottom: 12px;" id="viajesMotoBadge">0 Viajes Confirmados</div>
-            
-            <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:16px; border-radius:1.2rem; text-align:left; margin-bottom:16px;">
-              <div style="font-size:12px; font-weight:800; color:#4ade80; margin-bottom:8px;"><i class="ri-bank-card-fill"></i> DATOS PARA LIQUIDAR DEUDA</div>
-              <div style="font-size:14px; color:white; font-weight:700; margin-bottom:4px;">Alias: <span style="color:#ffd700; user-select:all;">noir.elite.ceo</span></div>
-              <div style="font-size:14px; color:white; font-weight:700;">CBU: <span style="color:#ffd700; user-select:all;">0110257630025717844115</span></div>
-            </div>
-            <div id="listaViajesCadete" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px; max-height:150px; overflow-y:auto; text-align:left;"></div>
-
-            <label class="btn-primary" style="width:100%; padding:14px; font-size:14px; cursor:pointer; background:linear-gradient(135deg,#16a34a,#15803d); border:none; justify-content:center;">
-              <i class="ri-upload-cloud-2-fill" style="font-size:20px;"></i> ENVIAR COMPROBANTE PAGO
-              <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- PEDIDO ESPECIAL (REMIS) -->
-      <div id="modal-step-pedido-especial" class="sub-step" style="padding:24px 16px;">
-        <button class="btn-volver" onclick="irPaso(1)"><i class="ri-arrow-left-s-line"></i> Atrás</button>
-        <div class="step-indicator" style="color:#1d4ed8; background:#eff6ff;"><i class="ri-map-pin-user-fill"></i> Viajes Especiales</div>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <input type="text" class="input-buscar" id="dirOrigenEspecial" placeholder="¿Dónde retira el Cadete? (Ej: San Martín 100)">
-          <select class="select-provincia" id="selProvinciaEspecial" style="margin:0;"></select>
-          <input type="text" class="input-buscar" id="ciuDestinoEspecial" placeholder="Ciudad Destino...">
-          <input type="text" class="input-buscar" id="dirDestinoEspecial" placeholder="¿De qué calle a qué calle? (Ej: San Martín 100 al 500)">
-          <textarea class="textarea-buscar" id="txtPedidoEspecial" placeholder="Detalle (Ej: Encomienda o paquete rápido)"></textarea>
-          <button class="btn-primary" style="padding:14px; background:linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="enviarPedidoEspecial()">CALCULAR ENVÍO EN MAPA</button>
-          <div style="text-align:center; margin: 4px 0; font-weight:800; color:#64748b; font-size:12px;">O</div>
-          <button class="btn-secondary" style="padding:14px; border-color:#2563eb; color:#1d4ed8; background:#eff6ff;" onclick="pedirFavorDirectoCliente()">
-            <i class="ri-whatsapp-fill" style="font-size:22px; margin-right:8px; vertical-align:middle;"></i> <span style="vertical-align:middle;">PEDIR ENCARGO POR WHATSAPP</span>
           </button>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<!-- ==========================================
-// MODAL DEL CARRITO DE COMPRAS
-// ========================================== -->
-<div id="modalCarritoFinal" class="modal-overlay" onclick="if(event.target===this)cerrarCarrito()">
-  <div class="modal-box" style="padding:24px; border:3.5px solid #16a34a; max-width:440px; border-radius:1.5rem; height:auto;">
-    <button class="modal-close-btn" style="border-color:#16a34a; color:#15803d;" onclick="cerrarCarrito()"><i class="ri-close-line"></i></button>
-    <h3 style="font-family:'Sora',sans-serif; font-size:20px; font-weight:800; margin:0 0 16px;"><i class="ri-shopping-cart-2-fill" style="color:#16a34a;"></i> Tu Carrito</h3>
-    <div id="contenidoCarrito" style="max-height:450px; overflow-y:auto; padding-right:6px; margin-bottom:16px; display:flex; flex-direction:column; gap:8px;"></div>
-    <div style="background:#f0fdf4; padding:14px; border-radius:1rem; border:2px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-      <span style="font-size:13.5px; font-weight:800; color:#166534; text-transform:uppercase;">Subtotal Comida</span>
-      <span id="totalFinalCarrito" style="font-family:'Sora',sans-serif; font-size:26px; font-weight:800; color:#15803d; line-height:1;">$0</span>
-    </div>
-    <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="abrirMapaMago()">
-      <i class="ri-map-pin-line" style="font-size:22px;"></i> CALCULAR ENVÍO EN MAPA
-    </button>
-  </div>
-</div>
-
-<!-- ==========================================
-// MAPA GPS (LEAFLET INTEGRADO - CHECKOUT)
-// ========================================== -->
-<div id="modalMapaGrande" class="modal-overlay" style="background:rgba(15,23,42,.98);">
-  <div style="width:100%; max-width:850px; height:100vh; background:#0f172a; border-radius:0; border:none; position:relative; overflow:hidden; box-shadow:0 0 100px rgba(255,107,0,0.5); display:flex; flex-direction:column; transform:scale(0.95); transition:all .35s; opacity:0;" id="mapaBox">
-    <div style="position:absolute; top:16px; left:16px; right:16px; z-index:1000; display:flex; justify-content:space-between; align-items:flex-start;">
-      <div style="background:rgba(255,255,255,.95); padding:12px 18px; border-radius:1rem; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:2px solid #ff6b00;">
-        <h3 style="font-family:'Sora',sans-serif; font-weight:800; font-size:17px; color:#0f172a; margin:0;"><i class="ri-radar-fill" style="color:#ff6b00;"></i> Trazado GPS</h3>
-      </div>
-      <button onclick="cerrarMapa()" style="width:40px; height:40px; border-radius:50%; background:#f97316; color:white; border:2px solid #fff; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ri-close-line"></i></button>
-    </div>
-    
-    <div style="flex:1; width:100%; height:100%; min-height:350px; position:relative; background:#e6eef5;">
-      <div id="mapaCanvas" style="width:100%; height:100%; position:absolute; inset:0; z-index:1;"></div>
-      <div id="mapFallbackText" style="position:absolute; inset:0; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:#0f172a; z-index:2;">
-        <div class="animate-moto" style="font-size:64px; color:#ff6b00;"><i class="ri-motorbike-fill"></i></div>
-        <div style="font-family:'Sora',sans-serif; font-weight:800; color:white; font-size:18px;">Calculando cotización matemática de envío...</div>
-      </div>
-    </div>
-    
-    <div style="background:white; padding:20px 24px; border-top:4px solid #ff6b00; position:relative; z-index:1000;">
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
-        <div style="background:#f8fafc; padding:12px; border-radius:1rem; border:2px solid #cbd5e1; text-align:center;">
-          <div style="font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase;">Distancia GPS</div>
-          <div id="mapaKm" style="font-family:'Sora',sans-serif; font-size:22px; font-weight:800; color:#0f172a; margin-top:2px;">...</div>
-        </div>
-        <div style="background:#fff7ed; padding:12px; border-radius:1rem; border:2px solid #ffd4b3; text-align:center;">
-          <div style="font-size:10px; font-weight:800; color:#cc4400; text-transform:uppercase;" id="lblTarifaBase">Costo Envío (Al Cadete)</div>
-          <div id="mapaCosto" style="font-family:'Sora',sans-serif; font-size:22px; font-weight:800; color:#ff6b00; margin-top:2px;">$--</div>
-        </div>
-      </div>
-      <p style="font-size:11.5px; color:#166534; text-align:center; font-weight:800; background:#f0fdf4; padding:8px; border-radius:8px; margin-bottom:12px;">
-        💡 Importante: El envío se paga por separado directamente al ServiMoto.
-      </p>
-      <button class="btn-primary" style="width:100%; padding:15px; font-size:15px; background:linear-gradient(135deg,#16a34a,#15803d); border:none;" onclick="procesarEnvioMapa()">
-        ENVIAR PEDIDO A CENTRAL <i class="ri-robot-2-fill" style="font-size:22px;"></i>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ========================================================
-     SCRIPT OFICIAL: INTEGRACIÓN DE APIS CON IA (OpenAI)
-     ======================================================== -->
-<script>
-// Función auxiliar para convertir fotos a Base64
-const fileToBase64 = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-});
-
-// 1. Conexión API Auditoría de Cadetes (/api/auditoria)
-async function auditarDocumentosIA() {
-    try {
-        const fileSelfie = document.getElementById('uploadDoc1').files[0];
-        const fileAfip = document.getElementById('uploadDoc4').files[0];
-        const filePolicial = document.getElementById('uploadDoc3').files[0];
-
-        if (!fileSelfie || !fileAfip || !filePolicial) {
-            alert("Faltan documentos obligatorios. Por favor, subí tu foto Selfie, la Constancia de AFIP y tu Certificado de Buena Conducta.");
-            return;
-        }
-
-        const btn = document.querySelector('button[onclick="auditarDocumentosIA()"]');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="ri-loader-4-line ri-spin" style="font-size:20px;"></i> AUDITANDO CON IA...';
-        btn.style.pointerEvents = 'none';
-        btn.style.opacity = '0.8';
-
-        const b64Selfie = await fileToBase64(fileSelfie);
-        const b64Afip = await fileToBase64(fileAfip);
-        const b64Policial = await fileToBase64(filePolicial);
-
-        const res = await fetch('/api/auditoria', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ foto_selfie: b64Selfie, constancia_afip: b64Afip, cert_policial: b64Policial })
-        });
-
-        const data = await res.json();
-        
-        btn.innerHTML = originalText;
-        btn.style.pointerEvents = 'auto';
-        btn.style.opacity = '1';
-
-        if (data.aprobado) {
-            alert(`¡Perfil Aprobado por la IA!\n\nNombre Validado: ${data.nombre_real}\nCUIT: ${data.cuit}\nMotivo: ${data.motivo}`);
-        } else {
-            alert(`Perfil Rechazado\n\nMotivo: ${data.motivo}`);
-        }
-
-    } catch (error) {
-        console.error("Error en auditoría:", error);
-        alert("Hubo un error de conexión con la IA.");
-        const btn = document.querySelector('button[onclick="auditarDocumentosIA()"]');
-        btn.innerHTML = '<i class="ri-robot-2-fill" style="font-size:20px;"></i> AUDITAR PERFIL CON IA';
-        btn.style.pointerEvents = 'auto';
-        btn.style.opacity = '1';
-    }
-}
-
-// 2. Conexión API Pagos Automáticos IA (/api/pago)
-async function procesarLiquidacionIA(inputElement) {
-    try {
-        const file = inputElement.files[0];
-        if (!file) return;
-
-        const deudaElement = document.getElementById('deudaMoto');
-        const deudaTexto = deudaElement.innerText.replace('$', '').replace(',', '').trim();
-        const montoEsperado = parseFloat(deudaTexto) || 0;
-
-        if (montoEsperado <= 0) {
-            alert("Actualmente no tenés deuda acumulada para liquidar.");
-            inputElement.value = '';
-            return;
-        }
-
-        const labelBtn = inputElement.parentElement;
-        const originalHTML = labelBtn.innerHTML;
-        labelBtn.innerHTML = '<i class="ri-loader-4-line ri-spin" style="font-size:20px;"></i> VERIFICANDO PAGO...';
-        labelBtn.style.pointerEvents = 'none';
-        labelBtn.style.opacity = '0.8';
-
-        const b64Comprobante = await fileToBase64(file);
-
-        const res = await fetch('/api/pago', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ comprobante_url: b64Comprobante, monto_esperado: montoEsperado })
-        });
-
-        const data = await res.json();
-
-        labelBtn.innerHTML = originalHTML;
-        labelBtn.style.pointerEvents = 'auto';
-        labelBtn.style.opacity = '1';
-        inputElement.value = '';
-
-        if (data.pago_valido) {
-            alert(`¡Comprobante verificado con éxito!\nMonto Detectado: $${data.monto_leido}\n\nRespuesta de la IA: ${data.motivo}`);
-            deudaElement.innerText = '$0';
-        } else {
-            alert(`Pago Rechazado o Inválido\nMotivo: ${data.motivo}`);
-        }
-
-    } catch (error) {
-        console.error("Error en la validación del pago:", error);
-        alert("Ocurrió un error al contactar al auditor contable de la IA.");
-        const labelBtn = inputElement.parentElement;
-        labelBtn.innerHTML = `<i class="ri-upload-cloud-2-fill" style="font-size:20px;"></i> ENVIAR COMPROBANTE PAGO <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">`;
-        labelBtn.style.pointerEvents = 'auto';
-        labelBtn.style.opacity = '1';
-    }
-}
-</script>
 
 <style>
 /* ========================================================
-   ESTILOS ORIGINALES DE TU TARJETA MODAL + FIX PREMIUM BLINDADO 9:16
+   ESTILOS ORIGINALES DE TU TARJETA MODAL + FIX PREMIUM BLINDADO 50% IMAGEN
    ======================================================== */
-.product-expanded-overlay { position: fixed; inset: 0; background: #ffffff !important; z-index: 9999999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: all 0.3s ease; padding: 0 !important; margin: 0 !important; overflow: hidden !important; }
+.product-expanded-overlay { 
+  position: fixed; inset: 0; background: #ffffff !important; z-index: 9999999; 
+  display: flex; align-items: center; justify-content: center; opacity: 0; 
+  pointer-events: none; transition: all 0.3s ease; padding: 0 !important; 
+  margin: 0 !important; overflow: hidden !important; 
+}
 .product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
 
-/* DISEÑO DE TARJETA SIN SCROLL INTERNO (NATIVA), IMITA LA CAPTURA */
+/* DISEÑO DE TARJETA ESTÁTICA - IMITA LA CAPTURA */
 .premium-fullscreen-card {
   background: #ffffff !important;
   width: 100vw !important;
@@ -1146,39 +874,45 @@ async function procesarLiquidacionIA(inputElement) {
   flex-direction: column !important;
   height: 100% !important;
   width: 100% !important;
-  overflow: hidden !important; /* Bloqueamos el scroll */
+  overflow: hidden !important; 
 }
 
-/* LA IMAGEN ARRIBA */
+/* LA IMAGEN 50% EXACTO, PURA, NÍTIDA Y SIN SOMBRA */
 .img-producto-modal {
-  height: 48vh !important; /* Permite ver bien la foto sin abarcar todo */
-  width: 100% !important;
-  object-fit: cover !important; 
+  height: 50dvh !important; 
+  min-height: 50dvh !important;
+  max-height: 50dvh !important;
+  width: 100vw !important;
+  object-fit: contain !important; /* Mantiene la nitidez completa sin recortes */
   background: #ffffff !important;
+  box-shadow: none !important; /* Sin sombra */
+  border: none !important;
   flex-shrink: 0 !important;
   display: block !important;
   margin: 0 !important;
   padding: 0 !important;
 }
 
-/* TEXTOS EN EL MEDIO */
+/* TEXTOS EN LA MITAD INFERIOR */
 .contenedor-textos-modal {
   flex: 1 !important;
-  padding: 20px 24px !important;
+  padding: 20px 24px 100px 24px !important; /* Espacio inferior para el botón */
   background: #ffffff !important;
   position: relative !important;
   z-index: 10 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important; /* No hay scroll en los textos */
+  display: block !important; /* Cambiado a block para que el scroll funcione natural */
+  overflow-y: auto !important; /* Solo scrollea el texto si es muy largo */
 }
 
 /* BOTÓN FIJADO AL FONDO Y CENTRADO */
 .btn-comprar-flotante {
-  width: 100% !important;
+  position: absolute !important; /* Lo fija abajo */
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
   background: linear-gradient(135deg, #ff8c00, #ea580c) !important;
   color: white !important;
-  padding: 20px !important;
+  padding: 22px !important;
   border-radius: 0 !important;
   font-size: 18px !important;
   font-weight: 900 !important;
@@ -1187,11 +921,9 @@ async function procesarLiquidacionIA(inputElement) {
   align-items: center !important;
   justify-content: center !important; 
   gap: 10px !important;
-  box-shadow: 0 -8px 25px rgba(0,0,0,0.15) !important;
+  box-shadow: none !important;
   z-index: 1000 !important;
   text-transform: uppercase !important;
-  margin-top: auto !important; 
-  flex-shrink: 0 !important;
 }
 
 .btn-cerrar-flotante {
@@ -1209,21 +941,12 @@ async function procesarLiquidacionIA(inputElement) {
   align-items: center !important;
   justify-content: center !important;
   padding: 0 !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
   border: 1px solid #e2e8f0 !important;
   font-size: 24px !important;
 }
 
 /* PRECIOS GIGANTES Y VERDES */
-.precio-viejo-modal {
-  font-size: 20px !important;
-  color: #94a3b8 !important;
-  text-decoration: line-through !important;
-  font-weight: 600 !important;
-  margin-bottom: 2px !important;
-  display: block !important;
-}
-
 .precio-nuevo-modal {
   font-size: 56px !important; 
   color: #16a34a !important; 
@@ -1282,9 +1005,14 @@ async function procesarLiquidacionIA(inputElement) {
   .product-expanded-overlay { padding: 20px !important; background: rgba(15, 23, 42, 0.95) !important; }
   .premium-fullscreen-card { height: 85vh !important; max-height: 800px !important; max-width: 450px !important; border-radius: 1.5rem !important; transform: scale(0.95); margin: auto !important; box-shadow: 0 20px 50px rgba(0,0,0,0.4) !important;}
   .product-expanded-overlay.show .premium-fullscreen-card { transform: scale(1); }
-  .btn-comprar-flotante { border-radius: 0 0 1.5rem 1.5rem !important; }
+  .btn-comprar-flotante { border-radius: 0 0 1.5rem 1.5rem !important; position: absolute !important; bottom: 0 !important; }
 }
 </style>
+
+<!-- EL OVERLAY DEL PRODUCTO EXPANDIDO -->
+<div id="productExpandedOverlay" class="product-expanded-overlay" onclick="if(event.target===this && window.cerrarProductoExpandido)window.cerrarProductoExpandido()">
+  <div class="product-expanded-card" id="productExpandedCard"></div>
+</div>
 
 <!-- ========================================================
      SCRIPT FIX MODAL PRODUCTO: APLICACIÓN NATIVA SIN SCROLL
@@ -1352,15 +1080,23 @@ document.addEventListener('DOMContentLoaded', () => {
              const textos = hijo.querySelectorAll('*');
              let precioNuevoEncontrado = null;
              textos.forEach(txt => {
-                 if(txt.children.length === 0 && (txt.innerText || '').trim().startsWith('$')) {
-                     const estilo = (txt.getAttribute('style') || '').toLowerCase();
-                     const esViejo = txt.tagName === 'S' || txt.tagName === 'STRIKE' || txt.classList.contains('line-through') || estilo.includes('line-through');
-                     
-                     if(esViejo) {
-                         txt.classList.add('precio-viejo-modal');
-                     } else {
-                         txt.classList.add('precio-nuevo-modal');
-                         precioNuevoEncontrado = txt;
+                 // Buscar elementos que contengan $ y un número
+                 if(txt.children.length === 0 && (txt.innerText || '').trim().includes('$')) {
+                     const textoStr = txt.innerText.trim();
+                     if(/\d/.test(textoStr)) {
+                         const estilo = (txt.getAttribute('style') || '').toLowerCase();
+                         const textDeco = window.getComputedStyle(txt).textDecoration || '';
+                         
+                         const esViejo = txt.tagName === 'S' || txt.tagName === 'STRIKE' || txt.tagName === 'DEL' || 
+                                         txt.classList.contains('line-through') || estilo.includes('line-through') || 
+                                         textDeco.includes('line-through');
+                         
+                         if(esViejo) {
+                             txt.style.display = 'none'; // Ocultamos el precio viejo por completo
+                         } else {
+                             txt.classList.add('precio-nuevo-modal');
+                             precioNuevoEncontrado = txt;
+                         }
                      }
                  }
              });
@@ -1383,7 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                  logoLocal.classList.add('logo-kiosco-modal');
                  const possibleTitles = hijo.querySelectorAll('p, h2, h3, div');
                  for (let p of possibleTitles) {
-                     if (p.innerText && p.innerText.trim().length > 0 && !p.innerText.trim().startsWith('$') && p !== logoLocal) {
+                     if (p.innerText && p.innerText.trim().length > 0 && !p.innerText.trim().includes('$') && p !== logoLocal) {
                          if (p.parentNode === hijo) {
                             hijo.insertBefore(logoLocal, p);
                          }
