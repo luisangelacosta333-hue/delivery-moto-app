@@ -991,9 +991,151 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
     </div>
   </div>
 </div>
+
+<!-- ========================================================
+     SCRIPT OFICIAL: INTEGRACIÓN DE APIS CON IA (OpenAI)
+     ======================================================== -->
+<script>
+// Función auxiliar para convertir las fotos del celular en Base64 (Data URI)
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+// 1. Conexión API Auditoría de Cadetes (/api/auditoria)
+async function auditarDocumentosIA() {
+    try {
+        const fileSelfie = document.getElementById('uploadDoc1').files[0];
+        const fileDni = document.getElementById('uploadDoc2').files[0]; // Capturado si existe
+        const filePolicial = document.getElementById('uploadDoc3').files[0];
+        const fileAfip = document.getElementById('uploadDoc4').files[0];
+
+        if (!fileSelfie || !fileAfip || !filePolicial) {
+            alert("Faltan documentos obligatorios. Por favor, subí tu foto Selfie, la Constancia de AFIP y tu Certificado de Buena Conducta.");
+            return;
+        }
+
+        // Feedback UI: Cambiar botón a estado "Cargando"
+        const btn = document.querySelector('button[onclick="auditarDocumentosIA()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="ri-loader-4-line ri-spin" style="font-size:20px;"></i> AUDITANDO CON IA...';
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.8';
+
+        // Procesar archivos a Base64
+        const b64Selfie = await fileToBase64(fileSelfie);
+        const b64Afip = await fileToBase64(fileAfip);
+        const b64Policial = await fileToBase64(filePolicial);
+
+        // Enviar POST directo al Handler de Vercel
+        const res = await fetch('/api/auditoria', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                foto_selfie: b64Selfie,
+                constancia_afip: b64Afip,
+                cert_policial: b64Policial
+            })
+        });
+
+        const data = await res.json();
+        
+        // Restaurar estado del botón
+        btn.innerHTML = originalText;
+        btn.style.pointerEvents = 'auto';
+        btn.style.opacity = '1';
+
+        // Manejar respuesta de la IA
+        if (data.aprobado) {
+            alert(`¡Perfil Aprobado por la IA!\n\nNombre Validado: ${data.nombre_real}\nCUIT: ${data.cuit}\nMotivo: ${data.motivo}`);
+            // TODO: Agregar lógica de supabase o avanzar de paso en el HTML
+        } else {
+            alert(`Perfil Rechazado\n\nMotivo: ${data.motivo}\nPor favor, verificá que los documentos sean legibles y correspondan a la misma persona.`);
+        }
+
+    } catch (error) {
+        console.error("Error en auditoría:", error);
+        alert("Hubo un error de conexión con la IA. Verificá tu internet y volvé a intentar.");
+        
+        const btn = document.querySelector('button[onclick="auditarDocumentosIA()"]');
+        btn.innerHTML = '<i class="ri-robot-2-fill" style="font-size:20px;"></i> AUDITAR PERFIL CON IA';
+        btn.style.pointerEvents = 'auto';
+        btn.style.opacity = '1';
+    }
+}
+
+// 2. Conexión API Pagos Automáticos IA (/api/pago)
+async function procesarLiquidacionIA(inputElement) {
+    try {
+        const file = inputElement.files[0];
+        if (!file) return;
+
+        // Leer la deuda actual directo de la UI
+        const deudaElement = document.getElementById('deudaMoto');
+        const deudaTexto = deudaElement.innerText.replace('$', '').replace(',', '').trim();
+        const montoEsperado = parseFloat(deudaTexto) || 0;
+
+        if (montoEsperado <= 0) {
+            alert("Actualmente no tenés deuda acumulada para liquidar.");
+            inputElement.value = ''; // Limpiar el input
+            return;
+        }
+
+        // Feedback UI: Cambiar botón a estado "Procesando"
+        const labelBtn = inputElement.parentElement;
+        const originalHTML = labelBtn.innerHTML;
+        labelBtn.innerHTML = '<i class="ri-loader-4-line ri-spin" style="font-size:20px;"></i> VERIFICANDO PAGO...';
+        labelBtn.style.pointerEvents = 'none';
+        labelBtn.style.opacity = '0.8';
+
+        const b64Comprobante = await fileToBase64(file);
+
+        // Enviar POST al Handler de Vercel
+        const res = await fetch('/api/pago', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                comprobante_url: b64Comprobante,
+                monto_esperado: montoEsperado
+            })
+        });
+
+        const data = await res.json();
+
+        // Restaurar botón de carga
+        labelBtn.innerHTML = originalHTML;
+        labelBtn.style.pointerEvents = 'auto';
+        labelBtn.style.opacity = '1';
+        inputElement.value = ''; // Resetear el control file
+
+        // Manejar respuesta de la IA
+        if (data.pago_valido) {
+            alert(`¡Comprobante verificado con éxito!\nMonto Detectado: $${data.monto_leido}\n\nRespuesta de la IA: ${data.motivo}`);
+            
+            // Actualizar la interfaz a 0
+            deudaElement.innerText = '$0';
+            
+            // TODO: Podés conectar acá con Supabase para marcar deuda como 'pagado = true'
+        } else {
+            alert(`Pago Rechazado o Inválido\nMotivo: ${data.motivo}\nAsegurate de enviar un comprobante donde se lea claro el monto total.`);
+        }
+
+    } catch (error) {
+        console.error("Error en la validación del pago:", error);
+        alert("Ocurrió un error al contactar al auditor contable de la IA.");
+        
+        const labelBtn = inputElement.parentElement;
+        labelBtn.innerHTML = `<i class="ri-upload-cloud-2-fill" style="font-size:20px;"></i> ENVIAR COMPROBANTE PAGO <input type="file" accept="image/*,application/pdf" style="display:none;" onchange="procesarLiquidacionIA(this)">`;
+        labelBtn.style.pointerEvents = 'auto';
+        labelBtn.style.opacity = '1';
+    }
+}
+</script>
 </body>
 </html>
-</script>
+
 <script>
 // ==========================================
 // 1. INICIALIZACIÓN Y VARIABLES GLOBALES
@@ -3123,3 +3265,4 @@ window.iniciarRastreoPedidoCliente = function(pedidoId) {
   window.addEventListener('resize', () => { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
 </script>
+
