@@ -1256,7 +1256,6 @@ window.descargarAPK = async function() {
 </script>
 </body>
 </html>
-
 <script>
 // ==========================================
 // 1. INICIALIZACIÓN Y VARIABLES GLOBALES
@@ -1703,20 +1702,22 @@ window.expandirProducto = function(productoId) {
   let htmlPrecio = `<div class="expanded-price-value" style="font-size:26px;">$${Number(datos.precio || 0).toLocaleString('es-AR')}</div>`;
   if(datos.precio_viejo && parseFloat(datos.precio_viejo) > parseFloat(datos.precio)) {
       htmlPrecio = `
-         <div style="font-size:15px; text-decoration:line-through; text-decoration-color:#94a3b8; text-decoration-thickness:2px; color:#94a3b8; font-weight:800; margin-bottom: 0px;">$${Number(datos.precio_viejo).toLocaleString('es-AR')}</div>
-         <div class="expanded-price-value" style="color:#16a34a; font-size:26px; line-height: 1;">$${Number(datos.precio || 0).toLocaleString('es-AR')}</div>
+         <div style="display:flex; flex-direction:column;">
+            <span style="font-size:26px; text-decoration:line-through; text-decoration-color:#94a3b8; text-decoration-thickness:3px; color:#94a3b8; font-weight:900; line-height: 1; margin-bottom:4px;">$${Number(datos.precio_viejo).toLocaleString('es-AR')}</span>
+            <span class="expanded-price-value" style="color:#16a34a; font-size:26px; line-height: 1;">$${Number(datos.precio || 0).toLocaleString('es-AR')}</span>
+         </div>
       `;
   }
 
-  // ETIQUETA ENVÍO GRATIS EN MODAL CON ESPACIADO REDUCIDO PARA QUE TODO ENTRE BIEN
+  // ETIQUETA ENVÍO GRATIS EN MODAL CON NUEVO DISEÑO RESALTADO
   let htmlEnvioGratisModal = '';
   if(datos.envio_gratis) {
       htmlEnvioGratisModal = `
-          <div style="display:flex; align-items:center; gap:6px; justify-content:center; background:#ecfdf5; border:1px solid #6ee7b7; border-radius:8px; padding:6px; margin-bottom:4px;">
-              <i class="ri-motorbike-fill" style="color:#059669; font-size:16px;"></i>
+          <div style="display:flex; align-items:center; gap:10px; justify-content:center; background:#ecfdf5; border:2px solid #34d399; border-radius:12px; padding:10px; margin-bottom:8px;">
+              <i class="ri-motorbike-fill" style="color:#059669; font-size:24px;"></i>
               <div style="display:flex; flex-direction:column; text-align:left;">
-                  <span style="color:#059669; font-weight:900; font-size:11px; line-height:1;">ENVÍO GRATIS</span>
-                  <span style="color:#10b981; font-weight:700; font-size:9px; letter-spacing:0.5px;">A CARGO DEL LOCAL</span>
+                  <span style="color:#059669; font-weight:900; font-size:15px; line-height:1;">ENVÍO GRATIS</span>
+                  <span style="color:#10b981; font-weight:800; font-size:11px; letter-spacing:0.5px;">A CARGO DEL LOCAL</span>
               </div>
           </div>
       `;
@@ -1754,6 +1755,13 @@ window.expandirProducto = function(productoId) {
           <span style="background:#dcfce7;color:#16a34a;border:1px solid #86efac;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;">ABIERTO</span>
         </div>
         
+        <!-- SELLO COMPRA SEGURA -->
+        <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top: 4px; margin-bottom: 2px;">
+            <i class="ri-shield-check-fill" style="color:#16a34a; font-size:18px;"></i>
+            <span style="font-size:11px; font-weight:800; color:#15803d; text-transform:uppercase; letter-spacing:0.5px;">Compra Segura: Pagás al ServiMoto al recibir</span>
+        </div>
+
+        <!-- BOTÓN PEGADITO AL PRECIO/SELLO -->
         <button class="expanded-add-btn" style="position:relative; width:100%; border-radius:14px; box-shadow:0 6px 15px rgba(249, 115, 22, 0.3); background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 14px; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Quicksand', sans-serif; font-weight: 900; font-size: 16px; cursor: pointer; margin-top: 0;" onclick="window.agregarDesdeExpandido('${datos.id}')">
           <i class="ri-shopping-cart-2-fill" style="font-size:20px;"></i> AÑADIR AL CARRITO
         </button>
@@ -3423,3 +3431,4 @@ window.iniciarRastreoPedidoCliente = function(pedidoId) {
   window.addEventListener('resize', () => { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
 </script>
+
