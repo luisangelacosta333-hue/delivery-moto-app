@@ -1218,6 +1218,36 @@ async function procesarLiquidacionIA(input) {
     input.value = ""; 
   }
 }
+
+// ==========================================
+// FUNCIÓN DE DESCARGA APK / PWA (PRODUCCIÓN)
+// ==========================================
+window.descargarAPK = async function() {
+  // 1. Aclaración obligatoria para el ServiMoto (Cadete)
+  mostrarToast("⚠️ ATENCIÓN CADETES: Es obligatorio instalar la App para que el radar GPS tome la señal en segundo plano.", "exito");
+
+  setTimeout(async () => {
+    // 2. Lógica de instalación PWA
+    if (typeof deferredPrompt !== 'undefined' && deferredPrompt) {
+      // Muestra el cartel nativo de Android/Chrome para instalar
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      if (outcome === 'accepted') {
+        mostrarToast("✅ ¡Instalación iniciada con éxito! Buscá el ícono en tu menú.", "exito");
+      } else {
+        mostrarToast("❌ Instalación cancelada.", "error");
+      }
+      
+      // Limpiamos la variable para que no se repita
+      deferredPrompt = null;
+    } else {
+      // 3. Si ya la tiene instalada, está en iPhone (iOS) o en PC
+      mostrarToast("⚠️ La App ya está instalada o estás en un iPhone. Si estás en iPhone, tocá 'Compartir' y luego 'Agregar a inicio'.", "error");
+    }
+  }, 2500); // Le damos 2.5 segundos para que lean el aviso del radar primero
+};
+
 </script>
 </body>
 </html>
