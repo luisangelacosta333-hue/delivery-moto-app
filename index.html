@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es" style="margin: 0; padding: 0; scroll-behavior: smooth;">
 <head>
@@ -1255,6 +1256,7 @@ window.descargarAPK = async function() {
 </script>
 </body>
 </html>
+
 <script>
 // ==========================================
 // 1. INICIALIZACIÓN Y VARIABLES GLOBALES
@@ -1344,11 +1346,16 @@ const inyectarEstilosPremium = () => {
     .expanded-container { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 9999999 !important; border-radius: 0 !important; border: none !important; margin: 0 !important; display: flex !important; flex-direction: column !important; background:#fff7ed !important; padding: 20px !important; box-sizing: border-box !important; }
     .expanded-list-content { max-height: calc(100vh - 100px) !important; flex: 1 !important; overflow-y:auto !important; padding-bottom: 20px !important; }
 
-    /* FIX PESTAÑEO MODAL PRODUCTO (Efecto Glass Premium) */
-    .product-expanded-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999998; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; padding: 15px; }
+    /* FIX PESTAÑEO MODAL PRODUCTO 9:16 SIN BORDES ABSOLUTO */
+    .product-expanded-overlay { position: fixed; inset: 0; background: #ffffff !important; z-index: 9999998; display: flex; align-items: flex-start; justify-content: flex-start; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; padding: 0 !important; margin: 0 !important; }
     .product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
-    .product-expanded-card { background: #ffffff; width: 100%; max-width: 480px; max-height: 90vh; border-radius: 24px; overflow-y: auto; overflow-x: hidden; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); display:flex; flex-direction:column; transform: scale(0.98); opacity:0; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-    .product-expanded-overlay.show .product-expanded-card { transform: scale(1); opacity:1; }
+    .product-expanded-card { background: #ffffff; width: 100vw !important; height: 100vh !important; max-width: 100vw !important; max-height: 100vh !important; border-radius: 0 !important; border: none !important; margin: 0 !important; padding: 0 !important; overflow-y: auto; overflow-x: hidden; position: relative; box-shadow: none !important; display: block; transform: translateY(20px); opacity:0; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    .product-expanded-overlay.show .product-expanded-card { transform: translateY(0); opacity:1; }
+    
+    @media (min-width: 768px) {
+      .product-expanded-overlay { align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.95) !important; padding: 20px !important; }
+      .product-expanded-card { border-radius: 20px !important; max-width: 450px !important; max-height: 90vh !important; height: 90vh !important; border: 2px solid #ff6b00 !important; }
+    }
     
     /* Prevenir salto de scroll al ocultar el body */
     body.modal-open { overflow: hidden; padding-right: 0px; }
@@ -1715,34 +1722,34 @@ window.expandirProducto = function(productoId) {
       `;
   }
   
-  // ACÁ EL BOTÓN ESTÁ METIDO ADENTRO DEL CONTENEDOR PRINCIPAL
-  // ESTO EVITA ESPACIOS RAROS ABAJO Y LO PEGA AL PRECIO
+  // HTML MODAL - BOTÓN PEGADITO Y FOTO SIN MÁRGENES
   card.innerHTML = `
-    <div class="expanded-image-container" style="height:45vh; min-height:280px; flex-shrink:0; position:relative; width:100%;">
+    <div class="expanded-image-container" style="height:50vh; min-height:300px; flex-shrink:0; position:relative; width:100%; margin: 0; padding: 0;">
       <button class="expanded-back" onclick="window.cerrarProductoExpandido()" style="background:rgba(255,255,255,0.9);"><i class="ri-arrow-left-line"></i></button>
       <button class="expanded-close" onclick="window.cerrarProductoExpandido()" style="background:rgba(255,255,255,0.9);"><i class="ri-close-line"></i></button>
-      <img src="${datos.img}" alt="${datos.nombre}" class="expanded-image" style="width:100%; height:100%; object-fit:cover;">
+      <img src="${datos.img}" alt="${datos.nombre}" class="expanded-image" style="width:100%; height:100%; object-fit:cover; margin: 0; padding: 0; display: block;">
       <div class="expanded-gradient" style="position:absolute; bottom:0; left:0; right:0; height:100px; background:linear-gradient(to top, #ffffff, transparent); pointer-events:none;"></div>
     </div>
-    <div class="expanded-content" style="padding: 20px 20px 40px 20px;">
-      <div class="expanded-category"><i class="ri-price-tag-3-line"></i> ${datos.categoria || "General"}</div>
-      <h1 class="expanded-name">${datos.nombre}</h1>
-      <p class="expanded-description">${datos.descripcion}</p>
+    <div class="expanded-content" style="padding: 16px 20px 30px 20px; margin: 0;">
+      <div class="expanded-category" style="margin-bottom: 8px;"><i class="ri-price-tag-3-line"></i> ${datos.categoria || "General"}</div>
+      <h1 class="expanded-name" style="margin-bottom: 6px;">${datos.nombre}</h1>
+      <p class="expanded-description" style="margin-bottom: 12px;">${datos.descripcion}</p>
       ${htmlEnvioGratisModal}
-      <div class="expanded-local-info">
+      <div class="expanded-local-info" style="margin-bottom: 12px;">
         <img src="${logoLocal}" alt="${datos.local}">
         <div class="expanded-local-details">
           <div class="expanded-local-name">${datos.local || "Local Asociado"}</div>
-          <div class="expanded-local-address"><i class="ri-map-pin-2-fill" style="color:#ef4444;font-size:13px;"></i>${datos.dirLocal || "Famaillá, Tucumán"}</div>
+          <div class="expanded-local-address"><i class="ri-map-pin-2-fill" style="color:#ef4444;font-size:13px;"></i>${datos.dirLocal || "Tucumán"}</div>
         </div>
         <div class="expanded-time-info"><i class="ri-timer-flash-line"></i> ${datos.tiempo || "20 min"}</div>
       </div>
-      <div class="expanded-price-section" style="margin-bottom: 16px;">
+      <div class="expanded-price-section" style="margin-bottom: 8px;">
         <div><div class="expanded-price-label">Precio por unidad</div>${htmlPrecio}</div>
         <span style="background:#dcfce7;color:#16a34a;border:1px solid #86efac;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;">ABIERTO</span>
       </div>
       
-      <button class="expanded-add-btn" style="position:relative; width:100%; border-radius:14px; box-shadow:0 6px 15px rgba(249, 115, 22, 0.3); background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 16px; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Quicksand', sans-serif; font-weight: 900; font-size: 16px; cursor: pointer;" onclick="window.agregarDesdeExpandido('${datos.id}')">
+      <!-- BOTÓN PEGADITO AL PRECIO -->
+      <button class="expanded-add-btn" style="position:relative; width:100%; border-radius:14px; box-shadow:0 6px 15px rgba(249, 115, 22, 0.3); background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 16px; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Quicksand', sans-serif; font-weight: 900; font-size: 16px; cursor: pointer; margin-top: 0;" onclick="window.agregarDesdeExpandido('${datos.id}')">
         <i class="ri-shopping-cart-2-fill" style="font-size:20px;"></i> AÑADIR AL CARRITO
       </button>
     </div>`;
