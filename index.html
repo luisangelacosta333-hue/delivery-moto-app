@@ -229,9 +229,10 @@ html, body { width: 100%; overflow-x: hidden; font-family: 'Quicksand', sans-ser
 #modal-step-feed-global button[onclick*="filtrarFeedGlobal"].chip-activo { background: linear-gradient(135deg, #f97316, #ea580c) !important; color: white !important; border-color: transparent !important; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3) !important; }
 
 /* MODAL EXPANSIÓN PRODUCTO (PANTALLA COMPLETA 9:16 SIN BORDES NI FLASHEO) */
-.product-expanded-overlay { position: fixed; inset: 0; background: #ffffff; z-index: 9999998; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; padding: 0 !important; }
+.product-expanded-overlay { position: fixed; inset: 0; background: #ffffff; z-index: 9999998; display: flex; align-items: flex-start; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; padding: 0 !important; }
 .product-expanded-overlay.show { opacity: 1; pointer-events: auto; }
-.product-expanded-card { background: #ffffff; width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; border-radius: 0 !important; overflow-y: auto; transform: none !important; position: relative; box-shadow: none !important; display: flex; flex-direction: column; }
+.product-expanded-card { background: #ffffff; width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; border-radius: 0 !important; overflow-y: auto; overflow-x: hidden; position: relative; box-shadow: none !important; display: block; transform: translateY(20px); opacity:0; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+.product-expanded-overlay.show .product-expanded-card { transform: translateY(0); opacity:1; }
 @media (min-width: 768px) {
   .product-expanded-overlay { align-items: center; padding: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); }
   .product-expanded-card { border-radius: 20px !important; max-width: 450px; max-height: 90vh; height: 90vh; border: 2px solid #ff6b00; }
@@ -1188,16 +1189,6 @@ async function procesarLiquidacionIA(input) {
   const file = input.files[0];
   if (!file) return;
 
-  const deudaElemento = document.getElementById('deudaMoto');
-  const deudaTexto = deudaElemento ? deudaElemento.innerText : "$0";
-  const monto_esperado = parseFloat(deudaTexto.replace(/[^0-9.-]+/g, "")) || 0;
-
-  if (monto_esperado <= 0) {
-    mostrarToast("✅ No tenés deudas acumuladas por el momento.", "exito");
-    input.value = ""; 
-    return;
-  }
-
   const labelPadre = input.parentElement;
   const htmlOriginal = labelPadre.innerHTML;
   labelPadre.innerHTML = '<i class="ri-loader-4-line animate-ring" style="font-size:20px;"></i> VERIFICANDO PAGO...';
@@ -1206,22 +1197,27 @@ async function procesarLiquidacionIA(input) {
 
   try {
     const comprobante_url = await comprimirYConvertirABase64(file);
+    const id_cadete = sessionActual.id; // Added this
 
     const respuesta = await fetch(`${API_BASE_URL}/api/pago`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ comprobante_url, monto_esperado })
+      body: JSON.stringify({ comprobante_url, id_cadete }) // Removed monto_esperado
     });
 
     const data = await respuesta.json();
 
     if (respuesta.ok && data.pago_valido) {
       mostrarToast(`✅ Transferencia Aprobada.\nMonto detectado: $${data.monto_leido}.\nHas liquidado tu deuda con éxito.`, "exito");
+      const deudaElemento = document.getElementById('deudaMoto');
       if(deudaElemento) deudaElemento.innerText = "$0";
+      const badgeViajes = document.getElementById('viajesMotoBadge');
+      if(badgeViajes) badgeViajes.innerText = "0 Viajes Confirmados";
+      if(typeof deudaMotoAcumulada !== 'undefined') deudaMotoAcumulada = 0;
+      if(typeof viajesMotoCount !== 'undefined') viajesMotoCount = 0;
     } else {
       mostrarToast(`❌ Comprobante Rechazado.\nAuditoría: ${data.motivo || data.error}`, "error");
     }
-
   } catch (error) {
     console.error("Error validando pago:", error);
     mostrarToast("⚠️ Falló la validación del comprobante. Revisá tu conexión a internet.", "error");
@@ -1259,7 +1255,6 @@ window.descargarAPK = async function() {
 </script>
 </body>
 </html>
-
 <script>
 // ==========================================
 // 1. INICIALIZACIÓN Y VARIABLES GLOBALES
@@ -1720,6 +1715,8 @@ window.expandirProducto = function(productoId) {
       `;
   }
   
+  // ACÁ EL BOTÓN ESTÁ METIDO ADENTRO DEL CONTENEDOR PRINCIPAL
+  // ESTO EVITA ESPACIOS RAROS ABAJO Y LO PEGA AL PRECIO
   card.innerHTML = `
     <div class="expanded-image-container" style="height:45vh; min-height:280px; flex-shrink:0; position:relative; width:100%;">
       <button class="expanded-back" onclick="window.cerrarProductoExpandido()" style="background:rgba(255,255,255,0.9);"><i class="ri-arrow-left-line"></i></button>
@@ -1727,7 +1724,7 @@ window.expandirProducto = function(productoId) {
       <img src="${datos.img}" alt="${datos.nombre}" class="expanded-image" style="width:100%; height:100%; object-fit:cover;">
       <div class="expanded-gradient" style="position:absolute; bottom:0; left:0; right:0; height:100px; background:linear-gradient(to top, #ffffff, transparent); pointer-events:none;"></div>
     </div>
-    <div class="expanded-content" style="flex:1; padding: 20px 20px 30px;">
+    <div class="expanded-content" style="padding: 20px 20px 40px 20px;">
       <div class="expanded-category"><i class="ri-price-tag-3-line"></i> ${datos.categoria || "General"}</div>
       <h1 class="expanded-name">${datos.nombre}</h1>
       <p class="expanded-description">${datos.descripcion}</p>
@@ -1740,13 +1737,14 @@ window.expandirProducto = function(productoId) {
         </div>
         <div class="expanded-time-info"><i class="ri-timer-flash-line"></i> ${datos.tiempo || "20 min"}</div>
       </div>
-      <div class="expanded-price-section">
+      <div class="expanded-price-section" style="margin-bottom: 16px;">
         <div><div class="expanded-price-label">Precio por unidad</div>${htmlPrecio}</div>
         <span style="background:#dcfce7;color:#16a34a;border:1px solid #86efac;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;">ABIERTO</span>
       </div>
-    </div>
-    <div style="padding:15px; border-top:1px solid #e2e8f0; background:#f8fafc; border-radius:0 0 24px 24px; flex-shrink:0;">
-       <button class="expanded-add-btn" style="position:relative; width:100%; border-radius:14px; box-shadow:0 6px 15px rgba(249, 115, 22, 0.3);" onclick="window.agregarDesdeExpandido('${datos.id}')"><i class="ri-shopping-cart-2-fill" style="font-size:20px;"></i> AÑADIR AL CARRITO</button>
+      
+      <button class="expanded-add-btn" style="position:relative; width:100%; border-radius:14px; box-shadow:0 6px 15px rgba(249, 115, 22, 0.3); background: linear-gradient(135deg, #f97316, #ea580c); color: white; padding: 16px; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Quicksand', sans-serif; font-weight: 900; font-size: 16px; cursor: pointer;" onclick="window.agregarDesdeExpandido('${datos.id}')">
+        <i class="ri-shopping-cart-2-fill" style="font-size:20px;"></i> AÑADIR AL CARRITO
+      </button>
     </div>`;
   
   const overlay = document.getElementById('productExpandedOverlay');
@@ -2607,31 +2605,54 @@ window.toggleEstadoTrabajo = async function() {
 };
 
 window.procesarLiquidacionIA = async function(input) {
-  var fileInput = input || document.getElementById('file-comprobante');
-  if(!fileInput || !fileInput.files || fileInput.files.length === 0) return mostrarToast("Adjuntá el comprobante primero.", "error");
-  var file = fileInput.files[0];
-  mostrarToast("⏳ Subiendo comprobante al servidor...", "success");
+  const file = input.files[0];
+  if (!file) return;
+
+  const labelPadre = input.parentElement;
+  const htmlOriginal = labelPadre.innerHTML;
+  labelPadre.innerHTML = '<i class="ri-loader-4-line animate-ring" style="font-size:20px;"></i> VERIFICANDO PAGO...';
+  labelPadre.style.pointerEvents = 'none';
+  labelPadre.style.opacity = '0.7';
+
   try {
-    if(!sessionActual || !sessionActual.id) throw new Error("Debes iniciar sesión");
-    const fileName = `pagos/pago_${sessionActual.id}_${Date.now()}.jpg`;
-    await supabaseClient.storage.from('moto_media').upload(fileName, file);
-    const compUrl = supabaseClient.storage.from('moto_media').getPublicUrl(fileName).data.publicUrl;
-    mostrarToast("🤖 IA Analizando transferencia...", "success");
-    if (deudaMotoAcumulada <= 0) throw new Error("No tenés deuda pendiente para pagar.");
+    const comprobante_url = await comprimirYConvertirABase64(file);
     
-    setTimeout(async () => {
-      await supabaseClient.from('moto_cadetes').update({ viajes_realizados: 0, deuda_acumulada: 0 }).eq('id', sessionActual.id);
-      viajesMotoCount = 0; deudaMotoAcumulada = 0;
-      let elemDeuda = document.getElementById('deudaMoto');
-      if(elemDeuda) { elemDeuda.style.color = '#16a34a'; elemDeuda.textContent = '$0'; }
-      let elemViajes = document.getElementById('viajesMotoBadge');
-      if(elemViajes) elemViajes.innerHTML = '<i class="ri-check-double-line"></i> IA: Cuenta al día';
-      let listaViajes = document.getElementById('listaViajesCadete');
-      if(listaViajes) listaViajes.innerHTML = '';
-      mostrarToast("✅ Pago validado por IA. Deuda en cero.", "success");
-      if(input) input.value = '';
-    }, 2000);
-  } catch (error) { mostrarToast("Pago Rechazado: " + error.message, "error"); if(input) input.value = ''; }
+    // ENVIAMOS SOLO EL ID Y LA FOTO. NADA DE MONTO.
+    const id_cadete = sessionActual.id;
+
+    const respuesta = await fetch(`${API_BASE_URL}/api/pago`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ comprobante_url, id_cadete })
+    });
+
+    const data = await respuesta.json();
+
+    if (respuesta.ok && data.pago_valido) {
+      mostrarToast(`✅ Transferencia Aprobada.\nMonto detectado: $${data.monto_leido}.\nHas liquidado tu deuda con éxito.`, "exito");
+      
+      const deudaElemento = document.getElementById('deudaMoto');
+      if(deudaElemento) deudaElemento.innerText = "$0";
+      
+      const badgeViajes = document.getElementById('viajesMotoBadge');
+      if(badgeViajes) badgeViajes.innerText = "0 Viajes Confirmados";
+      
+      if(typeof deudaMotoAcumulada !== 'undefined') deudaMotoAcumulada = 0;
+      if(typeof viajesMotoCount !== 'undefined') viajesMotoCount = 0;
+      
+    } else {
+      mostrarToast(`❌ Comprobante Rechazado.\nAuditoría: ${data.motivo || data.error}`, "error");
+    }
+
+  } catch (error) {
+    console.error("Error validando pago:", error);
+    mostrarToast("⚠️ Falló la validación del comprobante. Revisá tu conexión a internet.", "error");
+  } finally {
+    labelPadre.innerHTML = htmlOriginal;
+    labelPadre.style.pointerEvents = 'auto';
+    labelPadre.style.opacity = '1';
+    input.value = ""; 
+  }
 };
 
 // ==========================================
@@ -3389,4 +3410,3 @@ window.iniciarRastreoPedidoCliente = function(pedidoId) {
   window.addEventListener('resize', () => { if (mapaDemo) mapaDemo.invalidateSize(); });
 })();
 </script>
-
